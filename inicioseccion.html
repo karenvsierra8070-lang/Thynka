@@ -372,6 +372,28 @@
             to { transform: rotate(360deg); }
         }
 
+        #message {
+            margin-top: 15px;
+            font-weight: bold;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        #message.error {
+            background-color: #f8d7da;
+            color: #d9534f;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        #message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
         @media (max-width: 480px) {
             .app-name {
                 font-size: 2.8rem;
@@ -465,29 +487,26 @@
 
             <!-- Formulario de Inicio de Sesión -->
             <div class="form-content active" id="login-form">
-                <form id="login-form-element">
+                <form id="loginFormElement">
                     <div class="form-group">
                         <label for="login-email">Correo electrónico</label>
                         <input type="email" id="login-email" class="form-control" placeholder="tu@email.com" required>
-                        <div class="error-message" id="login-email-error"></div>
                     </div>
                     <div class="form-group">
                         <label for="login-password">Contraseña</label>
                         <input type="password" id="login-password" class="form-control" placeholder="••••••••" required>
-                        <div class="error-message" id="login-password-error"></div>
                     </div>
                     <button type="submit" class="btn btn-primary">
                         <span class="loading" id="login-loading"></span>
                         Iniciar Sesión
                     </button>
-                    <div class="success-message" id="login-success"></div>
                 </form>
 
                 <div class="divider">
                     <span>o</span>
                 </div>
 
-                <button class="btn btn-google" id="google-login">
+                <button class="btn btn-google" id="google-signin-btn">
                     <i class="fab fa-google"></i>
                     Iniciar con Google
                 </button>
@@ -499,39 +518,34 @@
 
             <!-- Formulario de Registro -->
             <div class="form-content" id="register-form">
-                <form id="register-form-element">
+                <form id="registerFormElement">
                     <div class="form-group">
                         <label for="register-name">Nombre completo</label>
                         <input type="text" id="register-name" class="form-control" placeholder="Tu nombre" required>
-                        <div class="error-message" id="register-name-error"></div>
                     </div>
                     <div class="form-group">
                         <label for="register-email">Correo electrónico</label>
                         <input type="email" id="register-email" class="form-control" placeholder="tu@email.com" required>
-                        <div class="error-message" id="register-email-error"></div>
                     </div>
                     <div class="form-group">
                         <label for="register-password">Contraseña</label>
                         <input type="password" id="register-password" class="form-control" placeholder="Mínimo 8 caracteres" required>
-                        <div class="error-message" id="register-password-error"></div>
                     </div>
                     <div class="form-group">
                         <label for="register-confirm-password">Confirmar contraseña</label>
                         <input type="password" id="register-confirm-password" class="form-control" placeholder="Repite tu contraseña" required>
-                        <div class="error-message" id="register-confirm-password-error"></div>
                     </div>
                     <button type="submit" class="btn btn-primary">
                         <span class="loading" id="register-loading"></span>
                         Crear Cuenta
                     </button>
-                    <div class="success-message" id="register-success"></div>
                 </form>
 
                 <div class="divider">
                     <span>o</span>
                 </div>
 
-                <button class="btn btn-google" id="google-register">
+                <button class="btn btn-google" id="google-signin-register-btn">
                     <i class="fab fa-google"></i>
                     Registrarse con Google
                 </button>
@@ -541,6 +555,8 @@
                 </div>
             </div>
         </div>
+
+        <div id="message"></div>
 
         <div class="coffee">
             <div class="coffee-steam">
@@ -555,15 +571,15 @@
         </div>
     </div>
 
-    <!-- Firebase SDK - Versión más reciente y estable -->
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, updateProfile } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-analytics.js";
 
-    <script>
-        // Tu configuración de Firebase
+        // --- CONFIGURACIÓN DINÁMICA DE FIREBASE ---
         const firebaseConfig = {
             apiKey: "AIzaSyBH42jsEEaEOFa02LhD59aDkwFfo_RVVB4",
-            authDomain: "thynka-1dd68.firebaseapp.com",
             projectId: "thynka-1dd68",
             storageBucket: "thynka-1dd68.firebasestorage.app",
             messagingSenderId: "704622327906",
@@ -571,219 +587,139 @@
             measurementId: "G-5WYWTXZ562"
         };
 
-        // Inicializar Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
+        // Detectar si estamos en local o en producción y asignar el authDomain correcto
+        if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+            firebaseConfig.authDomain = "localhost";
+        } else {
+            firebaseConfig.authDomain = "thynka-1dd68.firebaseapp.com";
+        }
 
-        // Referencias a elementos del DOM
-        const loginTab = document.getElementById('login-tab');
-        const registerTab = document.getElementById('register-tab');
-        const loginForm = document.getElementById('login-form');
-        const registerForm = document.getElementById('register-form');
-        const loginFormElement = document.getElementById('login-form-element');
-        const registerFormElement = document.getElementById('register-form-element');
-        const googleLoginBtn = document.getElementById('google-login');
-        const googleRegisterBtn = document.getElementById('google-register');
-        const guestLoginBtn = document.getElementById('guest-login');
-        const guestRegisterBtn = document.getElementById('guest-register');
-        const loginLoading = document.getElementById('login-loading');
-        const registerLoading = document.getElementById('register-loading');
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth(app);
 
-        // Función para cambiar entre formularios
-        function switchForm(formToShow) {
-            loginTab.classList.remove('active');
-            registerTab.classList.remove('active');
-            loginForm.classList.remove('active');
-            registerForm.classList.remove('active');
+        // --- FUNCIONES DE LA INTERFAZ ---
+        function switchForm(form) {
+            const loginTab = document.getElementById('login-tab');
+            const registerTab = document.getElementById('register-tab');
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const messageDiv = document.getElementById('message');
             
-            if (formToShow === 'login') {
-                loginTab.classList.add('active');
-                loginForm.classList.add('active');
-            } else {
+            messageDiv.style.display = 'none';
+            messageDiv.className = '';
+
+            if (form === 'register') {
+                loginTab.classList.remove('active');
                 registerTab.classList.add('active');
+                loginForm.classList.remove('active');
                 registerForm.classList.add('active');
+            } else {
+                registerTab.classList.remove('active');
+                loginTab.classList.add('active');
+                registerForm.classList.remove('active');
+                loginForm.classList.add('active');
             }
         }
 
-        loginTab.addEventListener('click', () => switchForm('login'));
-        registerTab.addEventListener('click', () => switchForm('register'));
+        function showMessage(text, isError = false) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = isError ? 'error' : 'success';
+            messageDiv.style.display = 'block';
+        }
 
-        // Inicio de sesión con correo y contraseña
-        loginFormElement.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            
-            loginLoading.style.display = 'inline-block';
-            document.getElementById('login-email-error').style.display = 'none';
-            document.getElementById('login-password-error').style.display = 'none';
-            
-            auth.signInWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    const user = userCredential.user;
-                    console.log('Usuario inició sesión:', user);
-                    
-                    const successMsg = document.getElementById('login-success');
-                    successMsg.textContent = '¡Inicio de sesión exitoso! Redirigiendo...';
-                    successMsg.style.display = 'block';
-                    
-                    loginLoading.style.display = 'none';
-                    
-                    setTimeout(() => {
-                        window.location.href = 'dashboard.html';
-                    }, 1500);
-                })
-                .catch((error) => {
-                    const errorCode = error.code;
-                    const errorElement = errorCode.includes('password') 
-                        ? document.getElementById('login-password-error')
-                        : document.getElementById('login-email-error');
-                    
-                    errorElement.textContent = getErrorMessage(errorCode);
-                    errorElement.style.display = 'block';
-                    
-                    loginLoading.style.display = 'none';
-                });
-        });
-
-        // Registro con correo y contraseña
-        registerFormElement.addEventListener('submit', (e) => {
+        // --- LÓGICA DE REGISTRO ---
+        document.getElementById('registerFormElement').addEventListener('submit', (e) => {
             e.preventDefault();
             const name = document.getElementById('register-name').value;
             const email = document.getElementById('register-email').value;
             const password = document.getElementById('register-password').value;
             const confirmPassword = document.getElementById('register-confirm-password').value;
             
-            registerLoading.style.display = 'inline-block';
-            
-            document.getElementById('register-name-error').style.display = 'none';
-            document.getElementById('register-email-error').style.display = 'none';
-            document.getElementById('register-password-error').style.display = 'none';
-            document.getElementById('register-confirm-password-error').style.display = 'none';
-            
+            // Validar que las contraseñas coincidan
             if (password !== confirmPassword) {
-                const errorElement = document.getElementById('register-confirm-password-error');
-                errorElement.textContent = 'Las contraseñas no coinciden';
-                errorElement.style.display = 'block';
-                registerLoading.style.display = 'none';
+                showMessage('Las contraseñas no coinciden', true);
                 return;
             }
             
+            // Validar longitud de contraseña
             if (password.length < 8) {
-                const errorElement = document.getElementById('register-password-error');
-                errorElement.textContent = 'La contraseña debe tener al menos 8 caracteres';
-                errorElement.style.display = 'block';
-                registerLoading.style.display = 'none';
+                showMessage('La contraseña debe tener al menos 8 caracteres', true);
                 return;
             }
-            
-            auth.createUserWithEmailAndPassword(email, password)
+
+            createUserWithEmailAndPassword(auth, email, password)
                 .then((userCredential) => {
-                    const user = userCredential.user;
-                    return user.updateProfile({
+                    // Actualizar el perfil del usuario con el nombre
+                    return updateProfile(userCredential.user, {
                         displayName: name
+                    }).then(() => {
+                        showMessage('¡Cuenta creada exitosamente! Redirigiendo...', false);
+                        setTimeout(() => window.location.href = 'dashboard.html', 2000);
                     });
                 })
-                .then(() => {
-                    console.log('Usuario registrado correctamente');
-                    
-                    const successMsg = document.getElementById('register-success');
-                    successMsg.textContent = '¡Cuenta creada exitosamente! Redirigiendo...';
-                    successMsg.style.display = 'block';
-                    
-                    registerLoading.style.display = 'none';
-                    
-                    setTimeout(() => {
-                        window.location.href = 'dashboard.html';
-                    }, 1500);
-                })
                 .catch((error) => {
-                    const errorCode = error.code;
-                    let errorElement;
-                    
-                    if (errorCode.includes('email')) {
-                        errorElement = document.getElementById('register-email-error');
-                    } else if (errorCode.includes('password')) {
-                        errorElement = document.getElementById('register-password-error');
-                    } else {
-                        errorElement = document.getElementById('register-name-error');
-                    }
-                    
-                    errorElement.textContent = getErrorMessage(errorCode);
-                    errorElement.style.display = 'block';
-                    
-                    registerLoading.style.display = 'none';
+                    showMessage(error.message, true);
                 });
         });
 
-        // Inicio de sesión con Google - Versión simplificada
-        function signInWithGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            
-            auth.signInWithRedirect(provider)
-                .then(() => {
-                    // El usuario será redirigido a la página de Google
-                    console.log('Redirigiendo a Google...');
+        // --- LÓGICA DE INICIO DE SESIÓN ---
+        document.getElementById('loginFormElement').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    showMessage('¡Sesión iniciada! Redirigiendo...', false);
+                    setTimeout(() => window.location.href = 'dashboard.html', 1000);
                 })
                 .catch((error) => {
-                    console.error('Error:', error);
-                    const errorElement = document.getElementById('login-email-error');
-                    errorElement.textContent = 'Error al iniciar sesión con Google: ' + error.message;
-                    errorElement.style.display = 'block';
+                    showMessage(error.message, true);
+                });
+        });
+
+        // --- LÓGICA DE INICIO DE SESIÓN CON GOOGLE ---
+        function signInWithGoogle() {
+            const provider = new GoogleAuthProvider();
+            signInWithPopup(auth, provider)
+                .then((result) => {
+                    showMessage('¡Bienvenido! Redirigiendo...', false);
+                    setTimeout(() => window.location.href = 'dashboard.html', 1000);
+                }).catch((error) => {
+                    showMessage(error.message, true);
                 });
         }
 
-        googleLoginBtn.addEventListener('click', signInWithGoogle);
-        googleRegisterBtn.addEventListener('click', signInWithGoogle);
+        document.getElementById('google-signin-btn').addEventListener('click', signInWithGoogle);
+        document.getElementById('google-signin-register-btn').addEventListener('click', signInWithGoogle);
 
-        // Verificar si viene de redirección de Google
-        auth.getRedirectResult()
-            .then((result) => {
-                if (result.user) {
-                    console.log('Usuario autenticado con Google:', result.user);
-                    window.location.href = 'dashboard.html';
-                }
-            })
-            .catch((error) => {
-                console.error('Error en redirección:', error);
-            });
-
-        // Acceso como invitado
+        // --- ACCESO COMO INVITADO ---
         function guestAccess() {
             localStorage.setItem('isGuest', 'true');
             window.location.href = 'dashboard.html';
         }
 
-        guestLoginBtn.addEventListener('click', (e) => {
+        document.getElementById('guest-login').addEventListener('click', (e) => {
             e.preventDefault();
             guestAccess();
         });
 
-        guestRegisterBtn.addEventListener('click', (e) => {
+        document.getElementById('guest-register').addEventListener('click', (e) => {
             e.preventDefault();
             guestAccess();
         });
 
-        function getErrorMessage(errorCode) {
-            switch (errorCode) {
-                case 'auth/user-not-found':
-                    return 'No existe una cuenta con este correo electrónico';
-                case 'auth/wrong-password':
-                    return 'Contraseña incorrecta';
-                case 'auth/email-already-in-use':
-                    return 'Este correo electrónico ya está en uso';
-                case 'auth/weak-password':
-                    return 'La contraseña es muy débil';
-                case 'auth/invalid-email':
-                    return 'Correo electrónico inválido';
-                case 'auth/user-disabled':
-                    return 'Esta cuenta ha sido deshabilitada';
-                case 'auth/too-many-requests':
-                    return 'Demasiados intentos fallidos. Inténtalo más tarde';
-                default:
-                    return 'Error: ' + errorCode;
-            }
-        }
+        // --- EVENT LISTENERS PARA CAMBIAR DE FORMULARIO ---
+        document.getElementById('login-tab').addEventListener('click', () => {
+            switchForm('login');
+        });
+
+        document.getElementById('register-tab').addEventListener('click', () => {
+            switchForm('register');
+        });
     </script>
 </body>
 </html>
