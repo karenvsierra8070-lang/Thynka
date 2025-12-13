@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thynka - Iniciar Sesión</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47;
+            --primary-light: #a3846c;
+            --primary-dark: #6b5538;
+            --cream: #f8f5f2;
+            --beige: #f0e6dc;
+            --brown: #5a4032;
+            --gray: #9a9a9a;
+            --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--cream);
+            color: var(--brown);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .owl-container {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            position: relative;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .owl-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 6px rgba(107, 85, 56, 0.1));
+        }
+
+        .app-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            color: var(--primary-dark);
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(107, 85, 56, 0.1);
+        }
+
+        .tagline {
+            font-size: 0.95rem;
+            color: var(--gray);
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+
+        .coffee {
+            position: absolute;
+            right: 20px;
+            bottom: 20px;
+            width: 70px;
+            height: 80px;
+            opacity: 0.8;
+        }
+
+        .coffee-body {
+            width: 55px;
+            height: 45px;
+            background-color: var(--beige);
+            border-radius: 0 0 28px 28px;
+            position: relative;
+        }
+
+        .coffee-handle {
+            width: 18px;
+            height: 22px;
+            border: 3px solid var(--beige);
+            border-left: none;
+            border-radius: 0 18px 18px 0;
+            position: absolute;
+            right: -18px;
+            top: 6px;
+        }
+
+        .coffee-top {
+            width: 55px;
+            height: 12px;
+            background-color: var(--primary);
+            border-radius: 6px;
+            position: absolute;
+            top: -6px;
+        }
+
+        .coffee-steam {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 6px;
+        }
+
+        .steam {
+            width: 3px;
+            height: 12px;
+            background-color: var(--gray);
+            opacity: 0.5;
+            border-radius: 3px;
+            animation: steam 2.5s infinite ease-in-out;
+        }
+
+        .steam:nth-child(2) {
+            animation-delay: 0.4s;
+            height: 18px;
+        }
+
+        .steam:nth-child(3) {
+            animation-delay: 0.8s;
+            height: 15px;
+        }
+
+        @keyframes steam {
+            0%, 100% {
+                transform: translateY(0);
+                opacity: 0.5;
+            }
+            50% {
+                transform: translateY(-8px);
+                opacity: 0.8;
+            }
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 380px;
+            background-color: var(--white);
+            border-radius: 24px;
+            padding: 35px;
+            box-shadow: 0 15px 35px var(--shadow);
+            margin-bottom: 20px;
+        }
+
+        .form-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--beige);
+            padding-bottom: 18px;
+        }
+
+        .form-tab {
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: var(--gray);
+            cursor: pointer;
+            padding-bottom: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+            user-select: none;
+        }
+
+        .form-tab.active {
+            color: var(--primary);
+        }
+
+        .form-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -19px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--primary);
+        }
+
+        .form-content {
+            display: none;
+        }
+
+        .form-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(15px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--brown);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 18px;
+            border: 1px solid var(--beige);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background-color: var(--cream);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            background-color: var(--white);
+            box-shadow: 0 0 0 3px rgba(163, 132, 108, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 18px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(107, 85, 56, 0.25);
+        }
+
+        .btn-google {
+            background-color: var(--white);
+            color: var(--brown);
+            border: 1px solid var(--beige);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .btn-google:hover {
+            background-color: var(--beige);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--shadow);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 25px 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background-color: var(--beige);
+        }
+
+        .divider span {
+            padding: 0 18px;
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        .guest-option {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .guest-link {
+            color: var(--gray);
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            padding: 8px 16px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        .guest-link:hover {
+            color: var(--primary);
+            background-color: var(--cream);
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            margin-top: 8px;
+            display: none;
+            padding: 8px 12px;
+            background-color: #fdf2f2;
+            border-radius: 8px;
+            border-left: 3px solid #e74c3c;
+        }
+
+        .success-message {
+            color: #27ae60;
+            font-size: 0.85rem;
+            margin-top: 8px;
+            display: none;
+            padding: 8px 12px;
+            background-color: #f2fdf5;
+            border-radius: 8px;
+            border-left: 3px solid #27ae60;
+        }
+
+        @media (max-width: 480px) {
+            .app-name {
+                font-size: 2.8rem;
+            }
+            
+            .form-container {
+                padding: 25px;
+            }
+
+            .coffee {
+                width: 50px;
+                height: 60px;
+            }
+
+            .coffee-body {
+                width: 40px;
+                height: 32px;
+            }
+
+            .coffee-top {
+                width: 40px;
+                height: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-container">
+            <div class="owl-container">
+                <!-- Lechuza SVG profesional -->
+                <svg class="owl-image" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <radialGradient id="owlGradient" cx="50%" cy="40%">
+                            <stop offset="0%" style="stop-color:#a3846c;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#8b6b47;stop-opacity:1" />
+                        </radialGradient>
+                    </defs>
+                    
+                    <!-- Cuerpo principal -->
+                    <ellipse cx="100" cy="110" rx="65" ry="75" fill="url(#owlGradient)"/>
+                    
+                    <!-- Alas -->
+                    <ellipse cx="55" cy="110" rx="25" ry="55" fill="#6b5538" opacity="0.8"/>
+                    <ellipse cx="145" cy="110" rx="25" ry="55" fill="#6b5538" opacity="0.8"/>
+                    
+                    <!-- Parte frontal del vientre -->
+                    <ellipse cx="100" cy="125" rx="40" ry="50" fill="#f0e6dc"/>
+                    
+                    <!-- Orejas -->
+                    <path d="M 65 50 L 55 25 L 75 40 Z" fill="#8b6b47"/>
+                    <path d="M 135 50 L 145 25 L 125 40 Z" fill="#8b6b47"/>
+                    
+                    <!-- Círculos alrededor de los ojos -->
+                    <circle cx="75" cy="85" r="25" fill="#f0e6dc"/>
+                    <circle cx="125" cy="85" r="25" fill="#f0e6dc"/>
+                    
+                    <!-- Ojos -->
+                    <circle cx="75" cy="85" r="18" fill="#5a4032"/>
+                    <circle cx="125" cy="85" r="18" fill="#5a4032"/>
+                    
+                    <!-- Pupilas -->
+                    <circle cx="75" cy="85" r="10" fill="#2c2416"/>
+                    <circle cx="125" cy="85" r="10" fill="#2c2416"/>
+                    
+                    <!-- Brillo en los ojos -->
+                    <circle cx="78" cy="82" r="4" fill="white" opacity="0.8"/>
+                    <circle cx="128" cy="82" r="4" fill="white" opacity="0.8"/>
+                    
+                    <!-- Pico -->
+                    <path d="M 100 95 L 90 105 L 100 108 L 110 105 Z" fill="#d4a574"/>
+                    
+                    <!-- Patas -->
+                    <rect x="85" y="170" width="8" height="20" fill="#8b6b47" rx="4"/>
+                    <rect x="107" y="170" width="8" height="20" fill="#8b6b47" rx="4"/>
+                    
+                    <!-- Detalles de plumas -->
+                    <path d="M 70 140 Q 80 145 90 140" stroke="#6b5538" stroke-width="2" fill="none" opacity="0.5"/>
+                    <path d="M 110 140 Q 120 145 130 140" stroke="#6b5538" stroke-width="2" fill="none" opacity="0.5"/>
+                </svg>
+            </div>
+            <h1 class="app-name">Thynka</h1>
+            <p class="tagline">Aprende de forma inteligente</p>
+        </div>
+
+        <div class="form-container">
+            <div class="form-header">
+                <div class="form-tab active" id="login-tab">Iniciar Sesión</div>
+                <div class="form-tab" id="register-tab">Registro</div>
+            </div>
+
+            <!-- Formulario de Inicio de Sesión -->
+            <div class="form-content active" id="login-form">
+                <form id="login-form-element">
+                    <div class="form-group">
+                        <label for="login-email">Correo electrónico</label>
+                        <input type="email" id="login-email" class="form-control" placeholder="tu@email.com" required>
+                        <div class="error-message" id="login-email-error"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Contraseña</label>
+                        <input type="password" id="login-password" class="form-control" placeholder="••••••••" required>
+                        <div class="error-message" id="login-password-error"></div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+                    <div class="success-message" id="login-success"></div>
+                </form>
+
+                <div class="divider">
+                    <span>o</span>
+                </div>
+
+                <button class="btn btn-google" id="google-login">
+                    <i class="fab fa-google"></i>
+                    Iniciar con Google
+                </button>
+
+                <div class="guest-option">
+                    <a href="#" class="guest-link" id="guest-login">Seguir como invitado</a>
+                </div>
+            </div>
+
+            <!-- Formulario de Registro -->
+            <div class="form-content" id="register-form">
+                <form id="register-form-element">
+                    <div class="form-group">
+                        <label for="register-name">Nombre completo</label>
+                        <input type="text" id="register-name" class="form-control" placeholder="Tu nombre" required>
+                        <div class="error-message" id="register-name-error"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-email">Correo electrónico</label>
+                        <input type="email" id="register-email" class="form-control" placeholder="tu@email.com" required>
+                        <div class="error-message" id="register-email-error"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">Contraseña</label>
+                        <input type="password" id="register-password" class="form-control" placeholder="Mínimo 8 caracteres" required>
+                        <div class="error-message" id="register-password-error"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-confirm-password">Confirmar contraseña</label>
+                        <input type="password" id="register-confirm-password" class="form-control" placeholder="Repite tu contraseña" required>
+                        <div class="error-message" id="register-confirm-password-error"></div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Crear Cuenta</button>
+                    <div class="success-message" id="register-success"></div>
+                </form>
+
+                <div class="divider">
+                    <span>o</span>
+                </div>
+
+                <button class="btn btn-google" id="google-register">
+                    <i class="fab fa-google"></i>
+                    Registrarse con Google
+                </button>
+
+                <div class="guest-option">
+                    <a href="#" class="guest-link" id="guest-register">Seguir como invitado</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="coffee">
+            <div class="coffee-steam">
+                <div class="steam"></div>
+                <div class="steam"></div>
+                <div class="steam"></div>
+            </div>
+            <div class="coffee-top"></div>
+            <div class="coffee-body">
+                <div class="coffee-handle"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+
+    <script>
+        // Configuración de Firebase (reemplaza con tu configuración)
+        const firebaseConfig = {
+            apiKey: "AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+            authDomain: "tu-proyecto.firebaseapp.com",
+            projectId: "tu-proyecto",
+            storageBucket: "tu-proyecto.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdef123456"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // Referencias a elementos del DOM
+        const loginTab = document.getElementById('login-tab');
+        const registerTab = document.getElementById('register-tab');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const loginFormElement = document.getElementById('login-form-element');
+        const registerFormElement = document.getElementById('register-form-element');
+        const googleLoginBtn = document.getElementById('google-login');
+        const googleRegisterBtn = document.getElementById('google-register');
+        const guestLoginBtn = document.getElementById('guest-login');
+        const guestRegisterBtn = document.getElementById('guest-register');
+
+        // Función para cambiar entre formularios
+        function switchForm(formToShow) {
+            // Quitar clase active de todos
+            loginTab.classList.remove('active');
+            registerTab.classList.remove('active');
+            loginForm.classList.remove('active');
+            registerForm.classList.remove('active');
+            
+            // Agregar clase active al formulario seleccionado
+            if (formToShow === 'login') {
+                loginTab.classList.add('active');
+                loginForm.classList.add('active');
+            } else {
+                registerTab.classList.add('active');
+                registerForm.classList.add('active');
+            }
+        }
+
+        // Event listeners para las pestañas
+        loginTab.addEventListener('click', () => {
+            switchForm('login');
+        });
+
+        registerTab.addEventListener('click', () => {
+            switchForm('register');
+        });
+
+        // Inicio de sesión con correo y contraseña
+        loginFormElement.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            // Limpiar mensajes de error
+            document.getElementById('login-email-error').style.display = 'none';
+            document.getElementById('login-password-error').style.display = 'none';
+            
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Inicio de sesión exitoso
+                    const user = userCredential.user;
+                    console.log('Usuario inició sesión:', user);
+                    
+                    // Mostrar mensaje de éxito
+                    const successMsg = document.getElementById('login-success');
+                    successMsg.textContent = '¡Inicio de sesión exitoso! Redirigiendo...';
+                    successMsg.style.display = 'block';
+                    
+                    // Redirigir al dashboard
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1500);
+                })
+                .catch((error) => {
+                    // Manejar errores
+                    const errorCode = error.code;
+                    const errorElement = errorCode.includes('password') 
+                        ? document.getElementById('login-password-error')
+                        : document.getElementById('login-email-error');
+                    
+                    errorElement.textContent = getErrorMessage(errorCode);
+                    errorElement.style.display = 'block';
+                });
+        });
+
+        // Registro con correo y contraseña
+        registerFormElement.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('register-confirm-password').value;
+            
+            // Limpiar mensajes de error
+            document.getElementById('register-name-error').style.display = 'none';
+            document.getElementById('register-email-error').style.display = 'none';
+            document.getElementById('register-password-error').style.display = 'none';
+            document.getElementById('register-confirm-password-error').style.display = 'none';
+            
+            // Validar que las contraseñas coincidan
+            if (password !== confirmPassword) {
+                const errorElement = document.getElementById('register-confirm-password-error');
+                errorElement.textContent = 'Las contraseñas no coinciden';
+                errorElement.style.display = 'block';
+                return;
+            }
+            
+            // Validar longitud de contraseña
+            if (password.length < 8) {
+                const errorElement = document.getElementById('register-password-error');
+                errorElement.textContent = 'La contraseña debe tener al menos 8 caracteres';
+                errorElement.style.display = 'block';
+                return;
+            }
+            
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Registro exitoso
+                    const user = userCredential.user;
+                    
+                    // Actualizar el perfil del usuario con el nombre
+                    return user.updateProfile({
+                        displayName: name
+                    });
+                })
+                .then(() => {
+                    console.log('Usuario registrado correctamente');
+                    
+                    // Mostrar mensaje de éxito
+                    const successMsg = document.getElementById('register-success');
+                    successMsg.textContent = '¡Cuenta creada exitosamente! Redirigiendo...';
+                    successMsg.style.display = 'block';
+                    
+                    // Redirigir al dashboard
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1500);
+                })
+                .catch((error) => {
+                    // Manejar errores
+                    const errorCode = error.code;
+                    let errorElement;
+                    
+                    if (errorCode.includes('email')) {
+                        errorElement = document.getElementById('register-email-error');
+                    } else if (errorCode.includes('password')) {
+                        errorElement = document.getElementById('register-password-error');
+                    } else {
+                        errorElement = document.getElementById('register-name-error');
+                    }
+                    
+                    errorElement.textContent = getErrorMessage(errorCode);
+                    errorElement.style.display = 'block';
+                });
+        });
+
+        // Inicio de sesión con Google
+        const googleSignIn = () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    // Inicio de sesión con Google exitoso
+                    const user = result.user;
+                    console.log('Usuario inició sesión con Google:', user);
+                    
+                    // Redirigir al dashboard
+                    window.location.href = 'dashboard.html';
+                })
+                .catch((error) => {
+                    // Manejar errores
+                    console.error('Error al iniciar sesión con Google:', error);
+                    
+                    // Mostrar mensaje de error genérico
+                    const errorElement = document.getElementById('login-email-error');
+                    errorElement.textContent = 'Error al iniciar sesión con Google. Inténtalo de nuevo.';
+                    errorElement.style.display = 'block';
+                });
+        };
+
+        googleLoginBtn.addEventListener('click', googleSignIn);
+        googleRegisterBtn.addEventListener('click', googleSignIn);
+
+        // Acceso como invitado
+        const guestAccess = () => {
+            // Guardar en localStorage que el usuario es invitado
+            localStorage.setItem('isGuest', 'true');
+            
+            // Redirigir al dashboard
+            window.location.href = 'dashboard.html';
+        };
+
+        guestLoginBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            guestAccess();
+        });
+
+        guestRegisterBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            guestAccess();
+        });
+
+        // Función para obtener mensajes de error en español
+        function getErrorMessage(errorCode) {
+            switch (errorCode) {
+                case 'auth/user-not-found':
+                    return 'No existe una cuenta con este correo electrónico';
+                case 'auth/wrong-password':
+                    return 'Contraseña incorrecta';
+                case 'auth/email-already-in-use':
+                    return 'Este correo electrónico ya está en uso';
+                case 'auth/weak-password':
+                    return 'La contraseña es muy débil';
+                case 'auth/invalid-email':
+                    return 'Correo electrónico inválido';
+                case 'auth/user-disabled':
+                    return 'Esta cuenta ha sido deshabilitada';
+                case 'auth/too-many-requests':
+                    return 'Demasiados intentos fallidos. Inténtalo más tarde';
+                default:
+                    return 'Error: ' + errorCode;
+            }
+        }
+    </script>
+</body>
+</html>
