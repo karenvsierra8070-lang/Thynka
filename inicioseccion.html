@@ -265,6 +265,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             margin-bottom: 18px;
+            position: relative;
         }
 
         .btn-primary {
@@ -748,10 +749,17 @@
                 });
         });
 
-        // Inicio de sesión con Google
+        // Inicio de sesión con Google - versión mejorada
         const googleSignIn = () => {
+            // Crear proveedor de Google
             const provider = new firebase.auth.GoogleAuthProvider();
             
+            // Configurar el proveedor con tu ID de cliente
+            provider.setCustomParameters({
+                'client_id': '704622327906-kthq2857qjkum1qa12a8cjth5poi23ul.apps.googleusercontent.com'
+            });
+            
+            // Iniciar sesión con popup
             auth.signInWithPopup(provider)
                 .then((result) => {
                     // Inicio de sesión con Google exitoso
@@ -765,9 +773,9 @@
                     // Manejar errores
                     console.error('Error al iniciar sesión con Google:', error);
                     
-                    // Mostrar mensaje de error genérico
+                    // Mostrar mensaje de error específico
                     const errorElement = document.getElementById('login-email-error');
-                    errorElement.textContent = 'Error al iniciar sesión con Google. Inténtalo de nuevo.';
+                    errorElement.textContent = getErrorMessage(error.code);
                     errorElement.style.display = 'block';
                 });
         };
@@ -811,8 +819,14 @@
                     return 'Esta cuenta ha sido deshabilitada';
                 case 'auth/too-many-requests':
                     return 'Demasiados intentos fallidos. Inténtalo más tarde';
+                case 'auth/popup-closed-by-user':
+                    return 'Ventana de autenticación cerrada antes de completar el proceso';
+                case 'auth/popup-blocked':
+                    return 'Ventana emergente bloqueada por el navegador. Permite las ventanas emergentes para este sitio';
+                case 'auth/cancelled-popup-request':
+                    return 'Se canceló la solicitud de autenticación';
                 default:
-                    return 'Error: ' + errorCode;
+                    return 'Error al iniciar sesión con Google. Inténtalo de nuevo.';
             }
         }
     </script>
