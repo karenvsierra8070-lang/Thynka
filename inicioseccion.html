@@ -356,6 +356,21 @@
             border-left: 3px solid #27ae60;
         }
 
+        .loading {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         @media (max-width: 480px) {
             .app-name {
                 font-size: 2.8rem;
@@ -460,7 +475,10 @@
                         <input type="password" id="login-password" class="form-control" placeholder="••••••••" required>
                         <div class="error-message" id="login-password-error"></div>
                     </div>
-                    <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+                    <button type="submit" class="btn btn-primary">
+                        <span class="loading" id="login-loading"></span>
+                        Iniciar Sesión
+                    </button>
                     <div class="success-message" id="login-success"></div>
                 </form>
 
@@ -501,7 +519,10 @@
                         <input type="password" id="register-confirm-password" class="form-control" placeholder="Repite tu contraseña" required>
                         <div class="error-message" id="register-confirm-password-error"></div>
                     </div>
-                    <button type="submit" class="btn btn-primary">Crear Cuenta</button>
+                    <button type="submit" class="btn btn-primary">
+                        <span class="loading" id="register-loading"></span>
+                        Crear Cuenta
+                    </button>
                     <div class="success-message" id="register-success"></div>
                 </form>
 
@@ -538,14 +559,15 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 
     <script>
-        // Configuración de Firebase (reemplaza con tu configuración)
+        // Tu configuración de Firebase
         const firebaseConfig = {
-            apiKey: "AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-            authDomain: "tu-proyecto.firebaseapp.com",
-            projectId: "tu-proyecto",
-            storageBucket: "tu-proyecto.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "1:123456789:web:abcdef123456"
+            apiKey: "AIzaSyBH42jsEEaEOFa02LhD59aDkwFfo_RVVB4",
+            authDomain: "thynka-1dd68.firebaseapp.com",
+            projectId: "thynka-1dd68",
+            storageBucket: "thynka-1dd68.firebasestorage.app",
+            messagingSenderId: "704622327906",
+            appId: "1:704622327906:web:57c4efb9da7b935b80f93b",
+            measurementId: "G-5WYWTXZ562"
         };
 
         // Inicializar Firebase
@@ -563,6 +585,8 @@
         const googleRegisterBtn = document.getElementById('google-register');
         const guestLoginBtn = document.getElementById('guest-login');
         const guestRegisterBtn = document.getElementById('guest-register');
+        const loginLoading = document.getElementById('login-loading');
+        const registerLoading = document.getElementById('register-loading');
 
         // Función para cambiar entre formularios
         function switchForm(formToShow) {
@@ -597,6 +621,9 @@
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
             
+            // Mostrar indicador de carga
+            loginLoading.style.display = 'inline-block';
+            
             // Limpiar mensajes de error
             document.getElementById('login-email-error').style.display = 'none';
             document.getElementById('login-password-error').style.display = 'none';
@@ -612,6 +639,9 @@
                     successMsg.textContent = '¡Inicio de sesión exitoso! Redirigiendo...';
                     successMsg.style.display = 'block';
                     
+                    // Ocultar indicador de carga
+                    loginLoading.style.display = 'none';
+                    
                     // Redirigir al dashboard
                     setTimeout(() => {
                         window.location.href = 'dashboard.html';
@@ -626,6 +656,9 @@
                     
                     errorElement.textContent = getErrorMessage(errorCode);
                     errorElement.style.display = 'block';
+                    
+                    // Ocultar indicador de carga
+                    loginLoading.style.display = 'none';
                 });
         });
 
@@ -636,6 +669,9 @@
             const email = document.getElementById('register-email').value;
             const password = document.getElementById('register-password').value;
             const confirmPassword = document.getElementById('register-confirm-password').value;
+            
+            // Mostrar indicador de carga
+            registerLoading.style.display = 'inline-block';
             
             // Limpiar mensajes de error
             document.getElementById('register-name-error').style.display = 'none';
@@ -648,6 +684,9 @@
                 const errorElement = document.getElementById('register-confirm-password-error');
                 errorElement.textContent = 'Las contraseñas no coinciden';
                 errorElement.style.display = 'block';
+                
+                // Ocultar indicador de carga
+                registerLoading.style.display = 'none';
                 return;
             }
             
@@ -656,6 +695,9 @@
                 const errorElement = document.getElementById('register-password-error');
                 errorElement.textContent = 'La contraseña debe tener al menos 8 caracteres';
                 errorElement.style.display = 'block';
+                
+                // Ocultar indicador de carga
+                registerLoading.style.display = 'none';
                 return;
             }
             
@@ -677,6 +719,9 @@
                     successMsg.textContent = '¡Cuenta creada exitosamente! Redirigiendo...';
                     successMsg.style.display = 'block';
                     
+                    // Ocultar indicador de carga
+                    registerLoading.style.display = 'none';
+                    
                     // Redirigir al dashboard
                     setTimeout(() => {
                         window.location.href = 'dashboard.html';
@@ -697,6 +742,9 @@
                     
                     errorElement.textContent = getErrorMessage(errorCode);
                     errorElement.style.display = 'block';
+                    
+                    // Ocultar indicador de carga
+                    registerLoading.style.display = 'none';
                 });
         });
 
