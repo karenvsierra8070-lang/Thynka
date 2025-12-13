@@ -555,9 +555,9 @@
         </div>
     </div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <!-- Firebase SDK - Versión más reciente y estable -->
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
 
     <script>
         // Tu configuración de Firebase
@@ -591,13 +591,11 @@
 
         // Función para cambiar entre formularios
         function switchForm(formToShow) {
-            // Quitar clase active de todos
             loginTab.classList.remove('active');
             registerTab.classList.remove('active');
             loginForm.classList.remove('active');
             registerForm.classList.remove('active');
             
-            // Agregar clase active al formulario seleccionado
             if (formToShow === 'login') {
                 loginTab.classList.add('active');
                 loginForm.classList.add('active');
@@ -607,14 +605,8 @@
             }
         }
 
-        // Event listeners para las pestañas
-        loginTab.addEventListener('click', () => {
-            switchForm('login');
-        });
-
-        registerTab.addEventListener('click', () => {
-            switchForm('register');
-        });
+        loginTab.addEventListener('click', () => switchForm('login'));
+        registerTab.addEventListener('click', () => switchForm('register'));
 
         // Inicio de sesión con correo y contraseña
         loginFormElement.addEventListener('submit', (e) => {
@@ -622,34 +614,26 @@
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
             
-            // Mostrar indicador de carga
             loginLoading.style.display = 'inline-block';
-            
-            // Limpiar mensajes de error
             document.getElementById('login-email-error').style.display = 'none';
             document.getElementById('login-password-error').style.display = 'none';
             
             auth.signInWithEmailAndPassword(email, password)
                 .then((userCredential) => {
-                    // Inicio de sesión exitoso
                     const user = userCredential.user;
                     console.log('Usuario inició sesión:', user);
                     
-                    // Mostrar mensaje de éxito
                     const successMsg = document.getElementById('login-success');
                     successMsg.textContent = '¡Inicio de sesión exitoso! Redirigiendo...';
                     successMsg.style.display = 'block';
                     
-                    // Ocultar indicador de carga
                     loginLoading.style.display = 'none';
                     
-                    // Redirigir al dashboard
                     setTimeout(() => {
                         window.location.href = 'dashboard.html';
                     }, 1500);
                 })
                 .catch((error) => {
-                    // Manejar errores
                     const errorCode = error.code;
                     const errorElement = errorCode.includes('password') 
                         ? document.getElementById('login-password-error')
@@ -658,7 +642,6 @@
                     errorElement.textContent = getErrorMessage(errorCode);
                     errorElement.style.display = 'block';
                     
-                    // Ocultar indicador de carga
                     loginLoading.style.display = 'none';
                 });
         });
@@ -671,43 +654,32 @@
             const password = document.getElementById('register-password').value;
             const confirmPassword = document.getElementById('register-confirm-password').value;
             
-            // Mostrar indicador de carga
             registerLoading.style.display = 'inline-block';
             
-            // Limpiar mensajes de error
             document.getElementById('register-name-error').style.display = 'none';
             document.getElementById('register-email-error').style.display = 'none';
             document.getElementById('register-password-error').style.display = 'none';
             document.getElementById('register-confirm-password-error').style.display = 'none';
             
-            // Validar que las contraseñas coincidan
             if (password !== confirmPassword) {
                 const errorElement = document.getElementById('register-confirm-password-error');
                 errorElement.textContent = 'Las contraseñas no coinciden';
                 errorElement.style.display = 'block';
-                
-                // Ocultar indicador de carga
                 registerLoading.style.display = 'none';
                 return;
             }
             
-            // Validar longitud de contraseña
             if (password.length < 8) {
                 const errorElement = document.getElementById('register-password-error');
                 errorElement.textContent = 'La contraseña debe tener al menos 8 caracteres';
                 errorElement.style.display = 'block';
-                
-                // Ocultar indicador de carga
                 registerLoading.style.display = 'none';
                 return;
             }
             
             auth.createUserWithEmailAndPassword(email, password)
                 .then((userCredential) => {
-                    // Registro exitoso
                     const user = userCredential.user;
-                    
-                    // Actualizar el perfil del usuario con el nombre
                     return user.updateProfile({
                         displayName: name
                     });
@@ -715,21 +687,17 @@
                 .then(() => {
                     console.log('Usuario registrado correctamente');
                     
-                    // Mostrar mensaje de éxito
                     const successMsg = document.getElementById('register-success');
                     successMsg.textContent = '¡Cuenta creada exitosamente! Redirigiendo...';
                     successMsg.style.display = 'block';
                     
-                    // Ocultar indicador de carga
                     registerLoading.style.display = 'none';
                     
-                    // Redirigir al dashboard
                     setTimeout(() => {
                         window.location.href = 'dashboard.html';
                     }, 1500);
                 })
                 .catch((error) => {
-                    // Manejar errores
                     const errorCode = error.code;
                     let errorElement;
                     
@@ -744,53 +712,47 @@
                     errorElement.textContent = getErrorMessage(errorCode);
                     errorElement.style.display = 'block';
                     
-                    // Ocultar indicador de carga
                     registerLoading.style.display = 'none';
                 });
         });
 
-        // Inicio de sesión con Google - versión mejorada
-        const googleSignIn = () => {
-            // Crear proveedor de Google
+        // Inicio de sesión con Google - Versión simplificada
+        function signInWithGoogle() {
             const provider = new firebase.auth.GoogleAuthProvider();
             
-            // Configurar el proveedor con tu ID de cliente
-            provider.setCustomParameters({
-                'client_id': '704622327906-kthq2857qjkum1qa12a8cjth5poi23ul.apps.googleusercontent.com'
-            });
-            
-            // Iniciar sesión con popup
-            auth.signInWithPopup(provider)
-                .then((result) => {
-                    // Inicio de sesión con Google exitoso
-                    const user = result.user;
-                    console.log('Usuario inició sesión con Google:', user);
-                    
-                    // Redirigir al dashboard
-                    window.location.href = 'dashboard.html';
+            auth.signInWithRedirect(provider)
+                .then(() => {
+                    // El usuario será redirigido a la página de Google
+                    console.log('Redirigiendo a Google...');
                 })
                 .catch((error) => {
-                    // Manejar errores
-                    console.error('Error al iniciar sesión con Google:', error);
-                    
-                    // Mostrar mensaje de error específico
+                    console.error('Error:', error);
                     const errorElement = document.getElementById('login-email-error');
-                    errorElement.textContent = getErrorMessage(error.code);
+                    errorElement.textContent = 'Error al iniciar sesión con Google: ' + error.message;
                     errorElement.style.display = 'block';
                 });
-        };
+        }
 
-        googleLoginBtn.addEventListener('click', googleSignIn);
-        googleRegisterBtn.addEventListener('click', googleSignIn);
+        googleLoginBtn.addEventListener('click', signInWithGoogle);
+        googleRegisterBtn.addEventListener('click', signInWithGoogle);
+
+        // Verificar si viene de redirección de Google
+        auth.getRedirectResult()
+            .then((result) => {
+                if (result.user) {
+                    console.log('Usuario autenticado con Google:', result.user);
+                    window.location.href = 'dashboard.html';
+                }
+            })
+            .catch((error) => {
+                console.error('Error en redirección:', error);
+            });
 
         // Acceso como invitado
-        const guestAccess = () => {
-            // Guardar en localStorage que el usuario es invitado
+        function guestAccess() {
             localStorage.setItem('isGuest', 'true');
-            
-            // Redirigir al dashboard
             window.location.href = 'dashboard.html';
-        };
+        }
 
         guestLoginBtn.addEventListener('click', (e) => {
             e.preventDefault();
@@ -802,7 +764,6 @@
             guestAccess();
         });
 
-        // Función para obtener mensajes de error en español
         function getErrorMessage(errorCode) {
             switch (errorCode) {
                 case 'auth/user-not-found':
@@ -819,14 +780,8 @@
                     return 'Esta cuenta ha sido deshabilitada';
                 case 'auth/too-many-requests':
                     return 'Demasiados intentos fallidos. Inténtalo más tarde';
-                case 'auth/popup-closed-by-user':
-                    return 'Ventana de autenticación cerrada antes de completar el proceso';
-                case 'auth/popup-blocked':
-                    return 'Ventana emergente bloqueada por el navegador. Permite las ventanas emergentes para este sitio';
-                case 'auth/cancelled-popup-request':
-                    return 'Se canceló la solicitud de autenticación';
                 default:
-                    return 'Error al iniciar sesión con Google. Inténtalo de nuevo.';
+                    return 'Error: ' + errorCode;
             }
         }
     </script>
