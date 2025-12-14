@@ -61,7 +61,6 @@
             display: flex;
             overflow-x: hidden;
             transition: background-color 0.3s ease, color 0.3s ease;
-            user-select: none; /* Evitar selección de texto */
         }
 
         /* Theme Toggle */
@@ -187,6 +186,31 @@
             text-align: center;
         }
 
+        /* Tutorial Button in Menu */
+        .tutorial-menu-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            font-weight: 400;
+            cursor: pointer;
+        }
+
+        .tutorial-menu-item:hover {
+            background-color: var(--bg-tertiary);
+            border-left-color: var(--primary);
+            padding-left: 30px;
+        }
+
+        .tutorial-menu-item i {
+            width: 20px;
+            margin-right: 15px;
+            text-align: center;
+        }
+
         /* Main Content */
         .main-content {
             flex: 1;
@@ -258,7 +282,7 @@
         .card-title {
             font-size: 1.3rem;
             font-weight: 600;
-            color: var(--primary-dark);
+            color: --primary-dark);
         }
 
         .task-item, .exam-item {
@@ -649,7 +673,7 @@
             </a>
             <a href="asistente.html" class="menu-item" id="menu-asistente">
                 <i class="fas fa-robot"></i>
-                Asistente de comprensión
+                Asistente IA
             </a>
             <a href="recomendaciones.html" class="menu-item" id="menu-recomendaciones">
                 <i class="fas fa-graduation-cap"></i>
@@ -662,6 +686,11 @@
             <a href="patron.html" class="menu-item" id="menu-patron">
                 <i class="fas fa-chart-line"></i>
                 Análisis patrones
+            </a>
+            <!-- Tutorial Menu Item -->
+            <div class="tutorial-menu-item" id="tutorial-trigger">
+                <i class="fas fa-play-circle"></i>
+                <span>Tutorial</span>
             </a>
         </div>
     </nav>
@@ -702,6 +731,7 @@
                 <circle cx="125" cy="85" r="18" fill="#ffffff" opacity="0.8"/>
                 <circle cx="75" cy="85" r="10" fill="#ffffff"/>
                 <circle cx="125" cy="85" r="10" fill="#ffffff"/>
+                <circle cx="75" cy="85" r="10" fill="#ffffff"/>
                 <path d="M 100 95 L 90 105 L 100 108 L 110 105 Z" fill="#ffffff" opacity="0.8"/>
             </svg>
             <h2 class="welcome-title">¿No sabes qué hacer ahora?</h2>
@@ -811,7 +841,7 @@
             themeIcon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
         }
 
-        // Menu Toggle - CORREGIDO
+        // Menu Toggle
         const menuToggle = document.getElementById('menuToggle');
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
@@ -834,7 +864,7 @@
             menuToggle.classList.remove('active');
         });
 
-        // Tutorial System - CORREGIDO
+        // Tutorial System
         const tutorialOverlay = document.getElementById('tutorialOverlay');
         const tutorialTooltip = document.getElementById('tutorialTooltip');
         const tutorialArrow = document.getElementById('tutorialArrow');
@@ -845,6 +875,7 @@
         const tutorialSkip = document.getElementById('tutorialSkip');
         const tutorialProgress = document.getElementById('tutorialProgress');
         const tutorialDots = tutorialProgress.querySelectorAll('.tutorial-dot');
+        const tutorialTrigger = document.getElementById('tutorial-trigger');
 
         let currentStep = 0;
         let tutorialActive = false;
@@ -861,7 +892,8 @@
                     'Exámenes: Preparación con simulacros',
                     'Asistente IA: Ayuda personalizada 24/7',
                     'Cuestionarios: Práctica adaptativa',
-                    'Análisis: Patrones de estudio y progreso'
+                    'Análisis: Patrones de estudio y progreso',
+                    'Tutorial: Repetir tutorial completo'
                 ],
                 position: 'right'
             },
@@ -1031,23 +1063,22 @@
 
             // Mark tutorial as completed
             localStorage.setItem('tutorialCompleted', 'true');
-
-            // DEJAR EL MENÚ ABIERTO Y FUNCIONAL
-            console.log('Abriendo menú automáticamente...');
-            setTimeout(() => {
-                toggleMenu();
-            // Restaurar comportamiento normal del cursor
-                document.body.style.userSelect = 'auto';
-            document.body.style.cursor = 'auto';
-            // Restaurar cualquier estilo que pueda interferir
-                document.body.style.webkitUserSelect = 'auto';
-                document.body.style.webkitUserModify = 'auto';
-            }, 500);
         }
 
         // Event listeners
         tutorialNext.addEventListener('click', nextTutorialStep);
         tutorialSkip.addEventListener('click', endTutorial);
+
+        // Tutorial Trigger from Menu
+        tutorialTrigger.addEventListener('click', () => {
+            if (localStorage.getItem('tutorialCompleted') === 'true') {
+                // Si ya completó, mostrar mensaje de confirmación
+                if (confirm('¿Quieres ver el tutorial de nuevo?')) {
+                    localStorage.removeItem('tutorialCompleted');
+                    startTutorialProcess();
+                }
+            }
+        });
 
         // Sample data
         const sampleTasks = [
@@ -1184,15 +1215,15 @@
             }
         }
 
-        // Check if tutorial should be shown
+        // Check if tutorial should be shown - CORREGIDO
         function checkTutorialStatus() {
             const tutorialCompleted = localStorage.getItem('tutorialCompleted');
             console.log('Tutorial completado:', tutorialCompleted);
             
-            // Show tutorial if it hasn't been completed - INMEDIATAMENTE
+            // Mostrar tutorial SOLO si es la primera vez
             if (tutorialCompleted !== 'true') {
                 console.log('Iniciando tutorial INMEDIATAMENTE...');
-                startTutorialProcess(); // SIN setTimeout
+                startTutorialProcess();
             }
         }
 
@@ -1201,7 +1232,7 @@
             console.log('Página cargada');
             checkAuth();
             initDashboard();
-            checkTutorialStatus(); // Tutorial inicia inmediatamente
+            checkTutorialStatus();
         });
     </script>
 </body>
