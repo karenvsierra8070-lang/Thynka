@@ -61,6 +61,7 @@
             display: flex;
             overflow-x: hidden;
             transition: background-color 0.3s ease, color 0.3s ease;
+            user-select: none; /* Evitar selección de texto */
         }
 
         /* Theme Toggle */
@@ -810,17 +811,21 @@
             themeIcon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
         }
 
-        // Menu Toggle
+        // Menu Toggle - CORREGIDO
         const menuToggle = document.getElementById('menuToggle');
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
 
-        menuToggle.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
+        function toggleMenu() {
             sidebar.classList.toggle('active');
             overlay.classList.toggle('active');
             menuToggle.classList.toggle('active');
+        }
+
+        menuToggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleMenu();
         });
 
         overlay.addEventListener('click', () => {
@@ -829,7 +834,7 @@
             menuToggle.classList.remove('active');
         });
 
-        // Tutorial System
+        // Tutorial System - CORREGIDO
         const tutorialOverlay = document.getElementById('tutorialOverlay');
         const tutorialTooltip = document.getElementById('tutorialTooltip');
         const tutorialArrow = document.getElementById('tutorialArrow');
@@ -1026,6 +1031,18 @@
 
             // Mark tutorial as completed
             localStorage.setItem('tutorialCompleted', 'true');
+
+            // DEJAR EL MENÚ ABIERTO Y FUNCIONAL
+            console.log('Abriendo menú automáticamente...');
+            setTimeout(() => {
+                toggleMenu();
+            // Restaurar comportamiento normal del cursor
+                document.body.style.userSelect = 'auto';
+            document.body.style.cursor = 'auto';
+            // Restaurar cualquier estilo que pueda interferir
+                document.body.style.webkitUserSelect = 'auto';
+                document.body.style.webkitUserModify = 'auto';
+            }, 500);
         }
 
         // Event listeners
@@ -1167,7 +1184,7 @@
             }
         }
 
-        // Check if tutorial should be shown - SIN RETRASO
+        // Check if tutorial should be shown
         function checkTutorialStatus() {
             const tutorialCompleted = localStorage.getItem('tutorialCompleted');
             console.log('Tutorial completado:', tutorialCompleted);
