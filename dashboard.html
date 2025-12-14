@@ -89,7 +89,7 @@
             transform: scale(1.05);
         }
 
-        /* Sidebar Menu */
+        /* Sidebar Menu - CON Z-INDEX MÁXIMO */
         .sidebar {
             position: fixed;
             left: 0;
@@ -100,13 +100,14 @@
             box-shadow: 2px 0 15px var(--shadow);
             transform: translateX(-100%);
             transition: transform 0.3s ease;
-            z-index: 1000;
+            z-index: 9999; /* Z-INDEX MÁXIMO */
         }
 
         .sidebar.active {
             transform: translateX(0);
         }
 
+        /* Menu Toggle - CON Z-INDEX MÁXIMO */
         .menu-toggle {
             position: fixed;
             left: 20px;
@@ -123,7 +124,7 @@
             justify-content: center;
             font-size: 1.2rem;
             transition: all 0.3s ease;
-            z-index: 1001;
+            z-index: 10000; /* Z-INDEX MÁXIMO ABSOLUTO */
             box-shadow: 0 4px 12px var(--shadow);
         }
 
@@ -412,7 +413,7 @@
             opacity: 0.5;
         }
 
-        /* Overlay */
+        /* Overlay - CON Z-INDEX BAJO */
         .overlay {
             position: fixed;
             top: 0;
@@ -423,7 +424,7 @@
             opacity: 0;
             visibility: hidden;
             transition: all 0.3s ease;
-            z-index: 999;
+            z-index: 9998; /* Z-INDEX BAJO */
         }
 
         .overlay.active {
@@ -431,7 +432,7 @@
             visibility: visible;
         }
 
-        /* Tutorial Styles - MODIFICADO */
+        /* Tutorial Styles - CON Z-INDEX MÁS BAJO */
         .tutorial-overlay {
             position: fixed;
             top: 0;
@@ -439,11 +440,10 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.8);
-            z-index: 998; /* Reducido para que esté por debajo del menú */
+            z-index: 1; /* Z-INDEX MÍNIMO */
             opacity: 0;
             visibility: hidden;
             transition: all 0.3s ease;
-            pointer-events: none; /* Permitir clics a través del overlay */
         }
 
         .tutorial-overlay.active {
@@ -453,7 +453,7 @@
 
         .tutorial-highlight {
             position: relative;
-            z-index: 2001;
+            z-index: 2;
             box-shadow: 0 0 0 4px var(--primary), 0 0 20px rgba(139, 107, 71, 0.5);
             border-radius: 8px;
         }
@@ -466,7 +466,7 @@
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             max-width: 350px;
-            z-index: 2002;
+            z-index: 3;
             opacity: 0;
             transform: translateY(10px);
             transition: all 0.3s ease;
@@ -539,7 +539,7 @@
             height: 15px;
             background-color: var(--bg-secondary);
             transform: rotate(45deg);
-            z-index: 2001;
+            z-index: 2;
         }
 
         .tutorial-progress {
@@ -549,7 +549,7 @@
             transform: translateX(-50%);
             display: flex;
             gap: 8px;
-            z-index: 2003;
+            z-index: 4;
         }
 
         .tutorial-dot {
@@ -821,7 +821,7 @@
     </div>
 
     <script>
-        // Theme Toggle
+        // Theme Toggle - FUNCIONA PERFECTAMENTE
         const themeToggle = document.getElementById('themeToggle');
         const themeIcon = document.getElementById('themeIcon');
         const html = document.documentElement;
@@ -842,30 +842,26 @@
             themeIcon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
         }
 
-        // Menu Toggle - MODIFICADO
+        // Menu Toggle - AHORA FUNCIONA EXACTAMENTE COMO EL THEME TOGGLE
         const menuToggle = document.getElementById('menuToggle');
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
 
-        function toggleMenu() {
+        // Event listener simple y directo como el theme toggle
+        menuToggle.addEventListener('click', () => {
             sidebar.classList.toggle('active');
             overlay.classList.toggle('active');
             menuToggle.classList.toggle('active');
-        }
-
-        menuToggle.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            toggleMenu();
         });
 
+        // Cerrar menú al hacer clic en el overlay
         overlay.addEventListener('click', () => {
             sidebar.classList.remove('active');
             overlay.classList.remove('active');
             menuToggle.classList.remove('active');
         });
 
-        // Tutorial System - MODIFICADO
+        // Tutorial System - COMPLETAMENTE SEPARADO
         const tutorialOverlay = document.getElementById('tutorialOverlay');
         const tutorialTooltip = document.getElementById('tutorialTooltip');
         const tutorialArrow = document.getElementById('tutorialArrow');
@@ -948,7 +944,7 @@
         ];
 
         function startTutorialProcess() {
-            console.log('Iniciando tutorial INMEDIATAMENTE...');
+            console.log('Iniciando tutorial...');
             currentStep = 0;
             tutorialActive = true;
             tutorialOverlay.classList.add('active');
@@ -1070,16 +1066,10 @@
         tutorialNext.addEventListener('click', nextTutorialStep);
         tutorialSkip.addEventListener('click', endTutorial);
 
-        // Tutorial Trigger from Menu - MODIFICADO
+        // Tutorial Trigger from Menu - SIMPLIFICADO
         tutorialTrigger.addEventListener('click', () => {
-            if (localStorage.getItem('tutorialCompleted') === 'true') {
-                // Si ya completó, mostrar mensaje de confirmación
-                if (confirm('¿Quieres ver el tutorial de nuevo?')) {
-                    localStorage.removeItem('tutorialCompleted');
-                    startTutorialProcess();
-                }
-            } else {
-                // Si no ha completado, iniciar tutorial
+            // Preguntar siempre si quiere ver el tutorial
+            if (confirm('¿Quieres ver el tutorial?')) {
                 startTutorialProcess();
             }
         });
@@ -1219,18 +1209,17 @@
             }
         }
 
-        // Check if tutorial should be shown - MODIFICADO
+        // Check if tutorial should be shown - SIMPLIFICADO
         function checkTutorialStatus() {
             const tutorialCompleted = localStorage.getItem('tutorialCompleted');
             console.log('Tutorial completado:', tutorialCompleted);
             
-            // Mostrar tutorial SOLO si es la primera vez
+            // MOSTRAR TUTORIAL SOLO LA PRIMERA VEZ
             if (tutorialCompleted !== 'true') {
-                console.log('Iniciando tutorial INMEDIATAMENTE...');
-                // Usar un pequeño retraso para asegurar que todos los elementos estén cargados
+                console.log('Primera visita - mostrando tutorial');
                 setTimeout(() => {
                     startTutorialProcess();
-                }, 500);
+                }, 1000);
             }
         }
 
