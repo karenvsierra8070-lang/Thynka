@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thynka - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Light Mode Colors */
+            --primary: #8b6b47;
+            --primary-light: #a3846c;
+            --primary-dark: #6b5538;
+            --cream: #f8f5f2;
+            --beige: #f0e6dc;
+            --brown: #5a4032;
+            --gray: #9a9a9a;
+            --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1);
+            --shadow-hover: rgba(107, 85, 56, 0.15);
+            --text-primary: #5a4032;
+            --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc;
+            --border-color: #f0e6dc;
+        }
+
+        [data-theme="dark"] {
+            /* Dark Mode Colors */
+            --primary: #a3846c;
+            --primary-light: #c0a686;
+            --primary-dark: #8b6b47;
+            --cream: #2a2520;
+            --beige: #3a342e;
+            --brown: #e0d5c7;
+            --gray: #a89b8b;
+            --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.3);
+            --shadow-hover: rgba(0, 0, 0, 0.4);
+            --text-primary: #e0d5c7;
+            --text-secondary: #a89b8b;
+            --bg-primary: #1a1815;
+            --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e;
+            --border-color: #3a342e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            right: 20px;
+            top: 20px;
+            width: 45px;
+            height: 45px;
+            background-color: var(--primary);
+            border: none;
+            border-radius: 12px;
+            color: var(--white);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            z-index: 1002;
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--primary-dark);
+            transform: scale(1.05);
+        }
+
+        /* Sidebar Menu */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            width: 280px;
+            background-color: var(--bg-secondary);
+            box-shadow: 2px 0 15px var(--shadow);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .sidebar.active {
+            transform: translateX(0);
+        }
+
+        .menu-toggle {
+            position: fixed;
+            left: 20px;
+            top: 20px;
+            width: 45px;
+            height: 45px;
+            background-color: var(--primary);
+            border: none;
+            border-radius: 12px;
+            color: var(--white);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            z-index: 1001;
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .menu-toggle:hover {
+            background-color: var(--primary-dark);
+            transform: scale(1.05);
+        }
+
+        .menu-toggle.active {
+            left: 300px;
+            background-color: var(--bg-secondary);
+            color: var(--primary);
+        }
+
+        .sidebar-header {
+            padding: 30px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .sidebar-owl {
+            width: 40px;
+            height: 40px;
+        }
+
+        .sidebar-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: var(--primary-dark);
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .menu-item {
+            display: block;
+            padding: 15px 25px;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            font-weight: 400;
+        }
+
+        .menu-item:hover {
+            background-color: var(--bg-tertiary);
+            border-left-color: var(--primary);
+            padding-left: 30px;
+        }
+
+        .menu-item i {
+            width: 20px;
+            margin-right: 15px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 80px 20px 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background-color: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 25px var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px var(--shadow-hover);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .card-icon {
+            width: 45px;
+            height: 45px;
+            background-color: var(--bg-tertiary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: var(--primary);
+            font-size: 1.3rem;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        .task-item, .exam-item {
+            padding: 15px;
+            margin-bottom: 12px;
+            background-color: var(--bg-tertiary);
+            border-radius: 12px;
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .task-item:hover, .exam-item:hover {
+            background-color: var(--beige);
+            transform: translateX(5px);
+        }
+
+        .task-item.urgent {
+            border-left-color: #e74c3c;
+            background-color: rgba(231, 76, 60, 0.1);
+        }
+
+        .task-item.urgent:hover {
+            background-color: rgba(231, 76, 60, 0.2);
+        }
+
+        .task-title, .exam-title {
+            font-weight: 500;
+            margin-bottom: 5px;
+            color: var(--text-primary);
+        }
+
+        .task-date, .exam-date {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .task-date i, .exam-date i {
+            font-size: 0.8rem;
+        }
+
+        .urgent-badge {
+            display: inline-block;
+            background-color: #e74c3c;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        /* Welcome Section */
+        .welcome-section {
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            border-radius: 25px;
+            padding: 40px;
+            color: var(--white);
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .welcome-owl {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            filter: brightness(0) invert(1);
+        }
+
+        .welcome-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .welcome-text {
+            font-size: 1rem;
+            line-height: 1.6;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .welcome-features {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .feature-item i {
+            font-size: 1.1rem;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        /* Overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Tutorial Styles */
+        .tutorial-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .tutorial-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .tutorial-highlight {
+            position: relative;
+            z-index: 2001;
+            box-shadow: 0 0 0 4px var(--primary), 0 0 20px rgba(139, 107, 71, 0.5);
+            border-radius: 8px;
+        }
+
+        .tutorial-tooltip {
+            position: absolute;
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 300px;
+            z-index: 2002;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
+
+        .tutorial-tooltip.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .tutorial-tooltip h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--primary-dark);
+        }
+
+        .tutorial-tooltip p {
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .tutorial-tooltip button {
+            background-color: var(--primary);
+            color: var(--white);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .tutorial-tooltip button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .tutorial-tooltip button.skip {
+            background-color: transparent;
+            color: var(--text-secondary);
+            margin-left: 10px;
+        }
+
+        .tutorial-tooltip button.skip:hover {
+            color: var(--text-primary);
+        }
+
+        .tutorial-arrow {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background-color: var(--bg-secondary);
+            transform: rotate(45deg);
+            z-index: 2001;
+        }
+
+        .tutorial-progress {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 2003;
+        }
+
+        .tutorial-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .tutorial-dot.active {
+            background-color: var(--primary);
+            transform: scale(1.2);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .main-content {
+                padding: 80px 15px 30px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .welcome-section {
+                padding: 30px 20px;
+            }
+
+            .welcome-features {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .menu-toggle {
+                left: 15px;
+                top: 15px;
+            }
+
+            .menu-toggle.active {
+                left: 295px;
+            }
+
+            .theme-toggle {
+                right: 15px;
+                top: 15px;
+            }
+
+            .tutorial-tooltip {
+                max-width: 250px;
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sidebar {
+                width: 250px;
+            }
+
+            .menu-toggle.active {
+                left: 265px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .welcome-section {
+                padding: 25px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Tutorial Overlay -->
+    <div class="tutorial-overlay" id="tutorialOverlay"></div>
+
+    <!-- Sidebar Menu -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <svg class="sidebar-owl" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <radialGradient id="sidebarOwlGradient" cx="50%" cy="40%">
+                            <stop offset="0%" style="stop-color:#a3846c;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#8b6b47;stop-opacity:1" />
+                        </radialGradient>
+                    </defs>
+                    <ellipse cx="100" cy="110" rx="65" ry="75" fill="url(#sidebarOwlGradient)"/>
+                    <circle cx="75" cy="85" r="25" fill="#f0e6dc"/>
+                    <circle cx="125" cy="85" r="25" fill="#f0e6dc"/>
+                    <circle cx="75" cy="85" r="18" fill="#5a4032"/>
+                    <circle cx="125" cy="85" r="18" fill="#5a4032"/>
+                    <circle cx="75" cy="85" r="10" fill="#2c2416"/>
+                    <circle cx="125" cy="85" r="10" fill="#2c2416"/>
+                    <path d="M 100 95 L 90 105 L 100 108 L 110 105 Z" fill="#d4a574"/>
+                </svg>
+                <h2 class="sidebar-title">Thynka</h2>
+            </div>
+        </div>
+        <div class="sidebar-menu">
+            <a href="cuenta.html" class="menu-item" id="menu-cuenta">
+                <i class="fas fa-user"></i>
+                Cuenta
+            </a>
+            <a href="tareas.html" class="menu-item" id="menu-tareas">
+                <i class="fas fa-tasks"></i>
+                Tareas
+            </a>
+            <a href="horario.html" class="menu-item" id="menu-horario">
+                <i class="fas fa-calendar-alt"></i>
+                Horario
+            </a>
+            <a href="examen.html" class="menu-item" id="menu-examen">
+                <i class="fas fa-file-alt"></i>
+                Exámenes
+            </a>
+            <a href="asistente.html" class="menu-item" id="menu-asistente">
+                <i class="fas fa-robot"></i>
+                Asistente de comprensión
+            </a>
+            <a href="recomendaciones.html" class="menu-item" id="menu-recomendaciones">
+                <i class="fas fa-graduation-cap"></i>
+                Aprende a estudiar
+            </a>
+            <a href="cuestionarios.html" class="menu-item" id="menu-cuestionarios">
+                <i class="fas fa-question-circle"></i>
+                Cuestionarios
+            </a>
+            <a href="patron.html" class="menu-item" id="menu-patron">
+                <i class="fas fa-chart-line"></i>
+                Análisis patrones
+            </a>
+        </div>
+    </nav>
+
+    <!-- Menu Toggle Button -->
+    <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="themeToggle">
+        <i class="fas fa-moon" id="themeIcon"></i>
+    </button>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="header">
+            <h1>Bienvenido de vuelta</h1>
+            <p>Tu centro de organización y aprendizaje inteligente</p>
+        </header>
+
+        <!-- Welcome Section -->
+        <section class="welcome-section" id="welcome-section">
+            <svg class="welcome-owl" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <radialGradient id="welcomeOwlGradient" cx="50%" cy="40%">
+                        <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.8" />
+                        <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0.4" />
+                    </radialGradient>
+                </defs>
+                <ellipse cx="100" cy="110" rx="65" ry="75" fill="url(#welcomeOwlGradient)"/>
+                <circle cx="75" cy="85" r="25" fill="#ffffff" opacity="0.6"/>
+                <circle cx="125" cy="85" r="25" fill="#ffffff" opacity="0.6"/>
+                <circle cx="75" cy="85" r="18" fill="#ffffff" opacity="0.8"/>
+                <circle cx="125" cy="85" r="18" fill="#ffffff" opacity="0.8"/>
+                <circle cx="75" cy="85" r="10" fill="#ffffff"/>
+                <circle cx="125" cy="85" r="10" fill="#ffffff"/>
+                <path d="M 100 95 L 90 105 L 100 108 L 110 105 Z" fill="#ffffff" opacity="0.8"/>
+            </svg>
+            <h2 class="welcome-title">¿No sabes qué hacer ahora?</h2>
+            <p class="welcome-text">
+                Thynka es tu asistente personal de aprendizaje. Te ayuda a organizar tus tareas, 
+                preparar exámenes y descubrir tu estilo de aprendizaje ideal. Confía en nuestro sistema 
+                para que puedas enfocarte en lo más importante: aprender.
+            </p>
+            <div class="welcome-features">
+                <div class="feature-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Organización inteligente</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-brain"></i>
+                    <span>Aprendizaje personalizado</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Seguimiento de progreso</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Tasks Due Soon -->
+            <div class="card" id="tasks-card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3 class="card-title">Tareas próximas (3 días)</h3>
+                </div>
+                <div id="tasksDueSoon">
+                    <!-- Tasks will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Upcoming Exams -->
+            <div class="card" id="exams-card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3 class="card-title">Próximos exámenes (2 semanas)</h3>
+                </div>
+                <div id="upcomingExams">
+                    <!-- Exams will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Urgent Tasks -->
+            <div class="card" id="urgent-card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h3 class="card-title">Tareas urgentes</h3>
+                </div>
+                <div id="urgentTasks">
+                    <!-- Urgent tasks will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Tutorial Tooltip -->
+    <div class="tutorial-tooltip" id="tutorialTooltip">
+        <div class="tutorial-arrow" id="tutorialArrow"></div>
+        <h3 id="tutorialTitle">Título</h3>
+        <p id="tutorialText">Texto de explicación</p>
+        <button id="tutorialNext">Siguiente</button>
+        <button id="tutorialSkip" class="skip">Saltar</button>
+    </div>
+
+    <!-- Tutorial Progress -->
+    <div class="tutorial-progress" id="tutorialProgress">
+        <div class="tutorial-dot active"></div>
+        <div class="tutorial-dot"></div>
+        <div class="tutorial-dot"></div>
+        <div class="tutorial-dot"></div>
+        <div class="tutorial-dot"></div>
+        <div class="tutorial-dot"></div>
+    </div>
+
+    <script>
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const html = document.documentElement;
+
+        // Check for saved theme preference or default to light
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-theme', currentTheme);
+        updateThemeIcon(currentTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const theme = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            updateThemeIcon(theme);
+        });
+
+        function updateThemeIcon(theme) {
+            themeIcon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+
+        // Menu Toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+            menuToggle.classList.toggle('active');
+        });
+
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            menuToggle.classList.remove('active');
+        });
+
+        // Tutorial System
+        const tutorialOverlay = document.getElementById('tutorialOverlay');
+        const tutorialTooltip = document.getElementById('tutorialTooltip');
+        const tutorialArrow = document.getElementById('tutorialArrow');
+        const tutorialTitle = document.getElementById('tutorialTitle');
+        const tutorialText = document.getElementById('tutorialText');
+        const tutorialNext = document.getElementById('tutorialNext');
+        const tutorialSkip = document.getElementById('tutorialSkip');
+        const tutorialProgress = document.getElementById('tutorialProgress');
+        const tutorialDots = tutorialProgress.querySelectorAll('.tutorial-dot');
+
+        let currentStep = 0;
+        let tutorialActive = false;
+
+        const tutorialSteps = [
+            {
+                element: '#menuToggle',
+                title: 'Menú de navegación',
+                text: 'Aquí encontrarás todas las secciones de Thynka. Haz clic para acceder a tu perfil, tareas, horarios y más.',
+                position: 'right'
+            },
+            {
+                element: '#themeToggle',
+                title: 'Modo oscuro/claro',
+                text: 'Personaliza tu experiencia cambiando entre el modo claro y oscuro. Tu preferencia se guardará automáticamente.',
+                position: 'left'
+            },
+            {
+                element: '#welcome-section',
+                title: 'Centro de bienvenida',
+                text: 'Esta sección te recuerda el propósito de Thynka y cómo puede ayudarte a organizar tu aprendizaje.',
+                position: 'bottom'
+            },
+            {
+                element: '#tasks-card',
+                title: 'Tareas próximas',
+                text: 'Aquí verás todas las tareas que vencen en los próximos 3 días. Mantente al día con tus entregas.',
+                position: 'top'
+            },
+            {
+                element: '#exams-card',
+                title: 'Próximos exámenes',
+                text: 'Prepárate con antelación. Esta sección muestra todos tus exámenes en las próximas dos semanas.',
+                position: 'top'
+            },
+            {
+                element: '#urgent-card',
+                title: 'Tareas urgentes',
+                text: 'Las tareas que has marcado como urgentes aparecen aquí para que no se te pasen por alto.',
+                position: 'top'
+            }
+        ];
+
+        function startTutorialProcess() {
+            currentStep = 0;
+            tutorialActive = true;
+            tutorialOverlay.classList.add('active');
+            showTutorialStep();
+        }
+
+        function showTutorialStep() {
+            if (currentStep >= tutorialSteps.length) {
+                endTutorial();
+                return;
+            }
+
+            const step = tutorialSteps[currentStep];
+            const element = document.querySelector(step.element);
+
+            // Remove previous highlights
+            document.querySelectorAll('.tutorial-highlight').forEach(el => {
+                el.classList.remove('tutorial-highlight');
+            });
+
+            // Add highlight to current element
+            element.classList.add('tutorial-highlight');
+
+            // Position tooltip
+            const rect = element.getBoundingClientRect();
+            const tooltipWidth = 300;
+            const tooltipHeight = 180;
+            const arrowSize = 15;
+
+            let top, left, arrowTop, arrowLeft, arrowRotation;
+
+            switch (step.position) {
+                case 'top':
+                    top = rect.top - tooltipHeight - 20;
+                    left = rect.left + (rect.width / 2) - (tooltipWidth / 2);
+                    arrowTop = tooltipHeight - 10;
+                    arrowLeft = tooltipWidth / 2 - arrowSize / 2;
+                    arrowRotation = 45;
+                    break;
+                case 'right':
+                    top = rect.top + (rect.height / 2) - (tooltipHeight / 2);
+                    left = rect.right + 20;
+                    arrowTop = tooltipHeight / 2 - arrowSize / 2;
+                    arrowLeft = -arrowSize / 2;
+                    arrowRotation = -45;
+                    break;
+                case 'bottom':
+                    top = rect.bottom + 20;
+                    left = rect.left + (rect.width / 2) - (tooltipWidth / 2);
+                    arrowTop = -arrowSize / 2;
+                    arrowLeft = tooltipWidth / 2 - arrowSize / 2;
+                    arrowRotation = -135;
+                    break;
+                case 'left':
+                    top = rect.top + (rect.height / 2) - (tooltipHeight / 2);
+                    left = rect.left - tooltipWidth - 20;
+                    arrowTop = tooltipHeight / 2 - arrowSize / 2;
+                    arrowLeft = tooltipWidth - 10;
+                    arrowRotation = 135;
+                    break;
+            }
+
+            // Adjust position if tooltip goes out of viewport
+            if (left < 10) left = 10;
+            if (left + tooltipWidth > window.innerWidth - 10) left = window.innerWidth - tooltipWidth - 10;
+            if (top < 10) top = 10;
+            if (top + tooltipHeight > window.innerHeight - 10) top = window.innerHeight - tooltipHeight - 10;
+
+            tutorialTooltip.style.top = `${top}px`;
+            tutorialTooltip.style.left = `${left}px`;
+            tutorialArrow.style.top = `${arrowTop}px`;
+            tutorialArrow.style.left = `${arrowLeft}px`;
+            tutorialArrow.style.transform = `rotate(${arrowRotation}deg)`;
+
+            // Update content
+            tutorialTitle.textContent = step.title;
+            tutorialText.textContent = step.text;
+
+            // Update button text
+            tutorialNext.textContent = currentStep === tutorialSteps.length - 1 ? 'Finalizar' : 'Siguiente';
+
+            // Update progress dots
+            tutorialDots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentStep);
+            });
+
+            // Show tooltip
+            setTimeout(() => {
+                tutorialTooltip.classList.add('active');
+            }, 100);
+        }
+
+        function nextTutorialStep() {
+            currentStep++;
+            tutorialTooltip.classList.remove('active');
+            setTimeout(showTutorialStep, 300);
+        }
+
+        function endTutorial() {
+            tutorialActive = false;
+            tutorialOverlay.classList.remove('active');
+            tutorialTooltip.classList.remove('active');
+            document.querySelectorAll('.tutorial-highlight').forEach(el => {
+                el.classList.remove('tutorial-highlight');
+            });
+
+            // Mark tutorial as completed
+            localStorage.setItem('tutorialCompleted', 'true');
+        }
+
+        // Event listeners
+        tutorialNext.addEventListener('click', nextTutorialStep);
+        tutorialSkip.addEventListener('click', endTutorial);
+
+        // Sample data (this would come from localStorage or API)
+        const sampleTasks = [
+            { id: 1, title: "Entregar proyecto de matemáticas", date: "2024-01-15", urgent: false },
+            { id: 2, title: "Resumen capítulo 5 historia", date: "2024-01-16", urgent: true },
+            { id: 3, title: "Ejercicios de química", date: "2024-01-17", urgent: false },
+            { id: 4, title: "Presentación inglés", date: "2024-01-18", urgent: true }
+        ];
+
+        const sampleExams = [
+            { id: 1, title: "Matemáticas - Parcial 2", date: "2024-01-20", subject: "Matemáticas" },
+            { id: 2, title: "Historia - Examen final", date: "2024-01-25", subject: "Historia" },
+            { id: 3, title: "Química - Laboratorio", date: "2024-01-28", subject: "Química" }
+        ];
+
+        // Function to format dates
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const today = new Date();
+            const diffTime = date - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 0) return 'Hoy';
+            if (diffDays === 1) return 'Mañana';
+            if (diffDays <= 7) return `En ${diffDays} días`;
+            return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+        }
+
+        // Load tasks due in next 3 days
+        function loadTasksDueSoon() {
+            const container = document.getElementById('tasksDueSoon');
+            const today = new Date();
+            const threeDaysFromNow = new Date(today.getTime() + (3 * 24 * 60 * 60 * 1000));
+            
+            const tasksDueSoon = sampleTasks.filter(task => {
+                const taskDate = new Date(task.date);
+                return taskDate >= today && taskDate <= threeDaysFromNow && !task.urgent;
+            });
+
+            if (tasksDueSoon.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-check-circle"></i>
+                        <p>No tienes tareas próximas</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = tasksDueSoon.map(task => `
+                <div class="task-item">
+                    <div class="task-title">${task.title}</div>
+                    <div class="task-date">
+                        <i class="fas fa-calendar"></i>
+                        ${formatDate(task.date)}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Load upcoming exams
+        function loadUpcomingExams() {
+            const container = document.getElementById('upcomingExams');
+            const today = new Date();
+            const twoWeeksFromNow = new Date(today.getTime() + (14 * 24 * 60 * 60 * 1000));
+            
+            const upcomingExams = sampleExams.filter(exam => {
+                const examDate = new Date(exam.date);
+                return examDate >= today && examDate <= twoWeeksFromNow;
+            });
+
+            if (upcomingExams.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-calendar-check"></i>
+                        <p>No hay exámenes próximos</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = upcomingExams.map(exam => `
+                <div class="exam-item">
+                    <div class="exam-title">${exam.title}</div>
+                    <div class="exam-date">
+                        <i class="fas fa-calendar"></i>
+                        ${formatDate(exam.date)}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Load urgent tasks
+        function loadUrgentTasks() {
+            const container = document.getElementById('urgentTasks');
+            const urgentTasks = sampleTasks.filter(task => task.urgent);
+
+            if (urgentTasks.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-check-circle"></i>
+                        <p>No hay tareas urgentes</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = urgentTasks.map(task => `
+                <div class="task-item urgent">
+                    <div class="task-title">
+                        ${task.title}
+                        <span class="urgent-badge">URGENTE</span>
+                    </div>
+                    <div class="task-date">
+                        <i class="fas fa-calendar"></i>
+                        ${formatDate(task.date)}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Initialize dashboard
+        function initDashboard() {
+            loadTasksDueSoon();
+            loadUpcomingExams();
+            loadUrgentTasks();
+        }
+
+        // Check if user is logged in
+        function checkAuth() {
+            const isGuest = localStorage.getItem('isGuest');
+            if (isGuest === 'true') {
+                console.log('Usuario invitado - funcionalidad limitada');
+            }
+        }
+
+        // Check if tutorial should be shown
+        function checkTutorialStatus() {
+            const tutorialCompleted = localStorage.getItem('tutorialCompleted');
+            const isFirstTime = localStorage.getItem('isFirstTime') === 'true';
+            
+            // Show tutorial if it's first time and tutorial hasn't been completed
+            if (isFirstTime && tutorialCompleted !== 'true') {
+                setTimeout(() => {
+                    startTutorialProcess();
+                }, 1500); // Wait for page to load
+            }
+        }
+
+        // Load page
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            initDashboard();
+            checkTutorialStatus();
+        });
+    </script>
+</body>
+  </html>
