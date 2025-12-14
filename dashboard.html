@@ -439,7 +439,7 @@
             padding: 20px;
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            max-width: 300px;
+            max-width: 350px;
             z-index: 2002;
             opacity: 0;
             transform: translateY(10px);
@@ -460,6 +460,26 @@
         .tutorial-tooltip p {
             margin-bottom: 15px;
             line-height: 1.5;
+        }
+
+        .tutorial-tooltip ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .tutorial-tooltip li {
+            margin-bottom: 8px;
+            list-style-type: none;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .tutorial-tooltip li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-weight: bold;
         }
 
         .tutorial-tooltip button {
@@ -558,7 +578,7 @@
             }
 
             .tutorial-tooltip {
-                max-width: 250px;
+                max-width: 280px;
                 padding: 15px;
             }
         }
@@ -753,6 +773,7 @@
         <div class="tutorial-arrow" id="tutorialArrow"></div>
         <h3 id="tutorialTitle">Título</h3>
         <p id="tutorialText">Texto de explicación</p>
+        <ul id="tutorialFeatures"></ul>
         <button id="tutorialNext">Siguiente</button>
         <button id="tutorialSkip" class="skip">Saltar</button>
     </div>
@@ -794,7 +815,9 @@
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
 
-        menuToggle.addEventListener('click', () => {
+        menuToggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
             sidebar.classList.toggle('active');
             overlay.classList.toggle('active');
             menuToggle.classList.toggle('active');
@@ -812,6 +835,7 @@
         const tutorialArrow = document.getElementById('tutorialArrow');
         const tutorialTitle = document.getElementById('tutorialTitle');
         const tutorialText = document.getElementById('tutorialText');
+        const tutorialFeatures = document.getElementById('tutorialFeatures');
         const tutorialNext = document.getElementById('tutorialNext');
         const tutorialSkip = document.getElementById('tutorialSkip');
         const tutorialProgress = document.getElementById('tutorialProgress');
@@ -824,42 +848,69 @@
             {
                 element: '#menuToggle',
                 title: 'Menú de navegación',
-                text: 'Aquí encontrarás todas las secciones de Thynka. Haz clic para acceder a tu perfil, tareas, horarios y más.',
+                text: 'Aquí encontrarás todas las secciones de Thynka. Cada opción tiene herramientas específicas para tu aprendizaje:',
+                features: [
+                    'Cuenta: Perfil personalizado y configuración',
+                    'Tareas: Organización con filtros y Pomodoro',
+                    'Horario: Vista semanal y mensual integrada',
+                    'Exámenes: Preparación con simulacros',
+                    'Asistente IA: Ayuda personalizada 24/7',
+                    'Cuestionarios: Práctica adaptativa',
+                    'Análisis: Patrones de estudio y progreso'
+                ],
                 position: 'right'
             },
             {
                 element: '#themeToggle',
                 title: 'Modo oscuro/claro',
-                text: 'Personaliza tu experiencia cambiando entre el modo claro y oscuro. Tu preferencia se guardará automáticamente.',
+                text: 'Personaliza tu experiencia cambiando entre el modo claro y oscuro. Tu preferencia se guardará automáticamente para futuras sesiones.',
+                features: [],
                 position: 'left'
             },
             {
                 element: '#welcome-section',
                 title: 'Centro de bienvenida',
-                text: 'Esta sección te recuerda el propósito de Thynka y cómo puede ayudarte a organizar tu aprendizaje.',
+                text: 'Esta sección te recuerda el propósito de Thynka y cómo puede ayudarte a organizar tu aprendizaje de manera inteligente.',
+                features: [],
                 position: 'bottom'
             },
             {
                 element: '#tasks-card',
                 title: 'Tareas próximas',
-                text: 'Aquí verás todas las tareas que vencen en los próximos 3 días. Mantente al día con tus entregas.',
+                text: 'Aquí verás todas las tareas que vencen en los próximos 3 días. Incluye:',
+                features: [
+                    'Filtros por materia y prioridad',
+                    'Recomendaciones de fecha/hora',
+                    'Lectura con IA para entender mejor',
+                    'Pomodoro integrado',
+                    'Subtareas desglosadas'
+                ],
                 position: 'top'
             },
             {
                 element: '#exams-card',
                 title: 'Próximos exámenes',
-                text: 'Prepárate con antelación. Esta sección muestra todos tus exámenes en las próximas dos semanas.',
+                text: 'Prepárate con antelación. Esta sección muestra:',
+                features: [
+                    'Exámenes en las próximas dos semanas',
+                    'Análisis de temas y dificultad',
+                    'Técnica Pomodoro adaptada',
+                    'Simulador de exámenes',
+                    'Cuestionarios personalizados'
+                ],
                 position: 'top'
             },
             {
                 element: '#urgent-card',
                 title: 'Tareas urgentes',
                 text: 'Las tareas que has marcado como urgentes aparecen aquí para que no se te pasen por alto.',
+                features: [],
                 position: 'top'
             }
         ];
 
         function startTutorialProcess() {
+            console.log('Iniciando tutorial INMEDIATAMENTE...');
             currentStep = 0;
             tutorialActive = true;
             tutorialOverlay.classList.add('active');
@@ -885,8 +936,8 @@
 
             // Position tooltip
             const rect = element.getBoundingClientRect();
-            const tooltipWidth = 300;
-            const tooltipHeight = 180;
+            const tooltipWidth = 350;
+            const tooltipHeight = step.features.length > 0 ? 250 : 180;
             const arrowSize = 15;
 
             let top, left, arrowTop, arrowLeft, arrowRotation;
@@ -938,6 +989,14 @@
             tutorialTitle.textContent = step.title;
             tutorialText.textContent = step.text;
 
+            // Update features list
+            if (step.features.length > 0) {
+                tutorialFeatures.innerHTML = step.features.map(feature => `<li>${feature}</li>`).join('');
+                tutorialFeatures.style.display = 'block';
+            } else {
+                tutorialFeatures.style.display = 'none';
+            }
+
             // Update button text
             tutorialNext.textContent = currentStep === tutorialSteps.length - 1 ? 'Finalizar' : 'Siguiente';
 
@@ -946,10 +1005,8 @@
                 dot.classList.toggle('active', index === currentStep);
             });
 
-            // Show tooltip
-            setTimeout(() => {
-                tutorialTooltip.classList.add('active');
-            }, 100);
+            // Show tooltip immediately
+            tutorialTooltip.classList.add('active');
         }
 
         function nextTutorialStep() {
@@ -959,6 +1016,7 @@
         }
 
         function endTutorial() {
+            console.log('Tutorial finalizado');
             tutorialActive = false;
             tutorialOverlay.classList.remove('active');
             tutorialTooltip.classList.remove('active');
@@ -974,7 +1032,7 @@
         tutorialNext.addEventListener('click', nextTutorialStep);
         tutorialSkip.addEventListener('click', endTutorial);
 
-        // Sample data (this would come from localStorage or API)
+        // Sample data
         const sampleTasks = [
             { id: 1, title: "Entregar proyecto de matemáticas", date: "2024-01-15", urgent: false },
             { id: 2, title: "Resumen capítulo 5 historia", date: "2024-01-16", urgent: true },
@@ -1109,25 +1167,25 @@
             }
         }
 
-        // Check if tutorial should be shown
+        // Check if tutorial should be shown - SIN RETRASO
         function checkTutorialStatus() {
             const tutorialCompleted = localStorage.getItem('tutorialCompleted');
-            const isFirstTime = localStorage.getItem('isFirstTime') === 'true';
+            console.log('Tutorial completado:', tutorialCompleted);
             
-            // Show tutorial if it's first time and tutorial hasn't been completed
-            if (isFirstTime && tutorialCompleted !== 'true') {
-                setTimeout(() => {
-                    startTutorialProcess();
-                }, 1500); // Wait for page to load
+            // Show tutorial if it hasn't been completed - INMEDIATAMENTE
+            if (tutorialCompleted !== 'true') {
+                console.log('Iniciando tutorial INMEDIATAMENTE...');
+                startTutorialProcess(); // SIN setTimeout
             }
         }
 
         // Load page
         document.addEventListener('DOMContentLoaded', () => {
+            console.log('Página cargada');
             checkAuth();
             initDashboard();
-            checkTutorialStatus();
+            checkTutorialStatus(); // Tutorial inicia inmediatamente
         });
     </script>
 </body>
-  </html>
+</html>
