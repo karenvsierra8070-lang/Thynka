@@ -8,50 +8,24 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #8b6b47;
-            --primary-light: #a3846c;
-            --primary-dark: #6b5538;
-            --cream: #f8f5f2;
-            --beige: #f0e6dc;
-            --brown: #5a4032;
-            --gray: #9a9a9a;
-            --white: #ffffff;
-            --shadow: rgba(107, 85, 56, 0.1);
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff; --shadow: rgba(107, 85, 56, 0.1);
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
         body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--cream);
-            color: var(--brown);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow-x: hidden;
+            font-family: 'Poppins', sans-serif; background-color: var(--cream);
+            color: var(--brown); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden;
         }
-
-        .container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            position: relative;
-        }
-
+        .container { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; position: relative; }
         .logo-container { text-align: center; margin-bottom: 30px; position: relative; }
-        .owl-container {
-            width: 120px; height: 120px; margin: 0 auto 20px; position: relative;
-            animation: float 3s ease-in-out infinite;
-        }
+        .owl-container { width: 120px; height: 120px; margin: 0 auto 20px; position: relative; animation: float 3s ease-in-out infinite; }
         @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
         .owl-image { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(107, 85, 56, 0.1)); }
         .app-name { font-family: 'Playfair Display', serif; font-size: 3.5rem; color: var(--primary-dark); letter-spacing: 3px; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(107, 85, 56, 0.1); }
         .tagline { font-size: 0.95rem; color: var(--gray); font-weight: 300; letter-spacing: 0.5px; }
         
-        /* Coffee & Steam CSS (Mantenemos tu diseño original) */
+        /* CSS omitido por brevedad, usa el mismo que tenías */
         .coffee { position: absolute; right: 20px; bottom: 20px; width: 70px; height: 80px; opacity: 0.8; }
         .coffee-body { width: 55px; height: 45px; background-color: var(--beige); border-radius: 0 0 28px 28px; position: relative; }
         .coffee-handle { width: 18px; height: 22px; border: 3px solid var(--beige); border-left: none; border-radius: 0 18px 18px 0; position: absolute; right: -18px; top: 6px; }
@@ -67,49 +41,32 @@
         .form-tab { font-size: 1.05rem; font-weight: 500; color: var(--gray); cursor: pointer; padding-bottom: 8px; transition: all 0.3s ease; position: relative; user-select: none; }
         .form-tab.active { color: var(--primary); }
         .form-tab.active::after { content: ''; position: absolute; bottom: -19px; left: 0; width: 100%; height: 2px; background-color: var(--primary); }
-        
         .form-content { display: none; }
         .form-content.active { display: block; animation: fadeIn 0.5s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-
         .form-group { margin-bottom: 22px; }
         .form-group label { display: block; margin-bottom: 10px; font-size: 0.95rem; font-weight: 500; color: var(--brown); }
         .form-control { width: 100%; padding: 14px 18px; border: 1px solid var(--beige); border-radius: 12px; font-size: 0.95rem; transition: all 0.3s ease; background-color: var(--cream); }
         .form-control:focus { outline: none; border-color: var(--primary-light); background-color: var(--white); box-shadow: 0 0 0 3px rgba(163, 132, 108, 0.1); }
-
         .btn { width: 100%; padding: 14px; border: none; border-radius: 12px; font-size: 1rem; font-weight: 500; cursor: pointer; transition: all 0.3s ease; margin-bottom: 18px; position: relative; }
         .btn-primary { background-color: var(--primary); color: var(--white); }
         .btn-primary:hover { background-color: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(107, 85, 56, 0.25); }
         .btn-google { background-color: var(--white); color: var(--brown); border: 1px solid var(--beige); display: flex; align-items: center; justify-content: center; gap: 12px; }
         .btn-google:hover { background-color: var(--beige); transform: translateY(-2px); box-shadow: 0 5px 15px var(--shadow); }
-
         .divider { display: flex; align-items: center; margin: 25px 0; }
         .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background-color: var(--beige); }
         .divider span { padding: 0 18px; font-size: 0.85rem; color: var(--gray); }
-
         .guest-option { text-align: center; margin-top: 25px; }
         .guest-link { color: var(--gray); font-size: 0.9rem; text-decoration: none; transition: all 0.3s ease; padding: 8px 16px; border-radius: 8px; display: inline-block; cursor: pointer; }
         .guest-link:hover { color: var(--primary); background-color: var(--cream); }
-
         #message { margin-top: 15px; font-weight: bold; padding: 10px; border-radius: 5px; display: none; text-align: center; }
         #message.error { background-color: #f8d7da; color: #d9534f; border: 1px solid #f5c6cb; display: block; }
         #message.success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; display: block; }
-
         .loading { display: none; width: 20px; height: 20px; border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; margin-right: 10px; }
         @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* Warning Box para Invitados */
-        .warning-box {
-            background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba;
-            border-radius: 8px; padding: 10px; margin-top: 15px; font-size: 0.85rem;
-            display: none; text-align: center;
-        }
+        .warning-box { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; border-radius: 8px; padding: 10px; margin-top: 15px; font-size: 0.85rem; display: none; text-align: center; }
         .warning-box.visible { display: block; }
-
-        @media (max-width: 480px) {
-            .app-name { font-size: 2.8rem; }
-            .form-container { padding: 25px; }
-        }
+        @media (max-width: 480px) { .app-name { font-size: 2.8rem; } .form-container { padding: 25px; } }
     </style>
 </head>
 <body>
@@ -192,9 +149,7 @@
                 </div>
             </div>
         </div>
-
         <div id="message"></div>
-
         <div class="coffee">
             <div class="coffee-steam"><div class="steam"></div><div class="steam"></div><div class="steam"></div></div>
             <div class="coffee-top"></div>
@@ -205,7 +160,8 @@
     <script type="module">
         // IMPORTS
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, updateProfile, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+        // CAMBIO: Importamos signInWithRedirect en lugar de Popup
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithRedirect, signInAnonymously, updateProfile, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
         // CONFIG
@@ -218,7 +174,7 @@
             measurementId: "G-5WYWTXZ562"
         };
 
-        // FIX LOCALHOST
+        // FIX LOCALHOST (CRUCIAL PARA TU REPO)
         if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
             firebaseConfig.authDomain = "localhost";
         } else {
@@ -229,6 +185,7 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        const googleProvider = new GoogleAuthProvider();
 
         // UI FUNCTIONS
         function switchForm(form) {
@@ -261,10 +218,10 @@
             messageDiv.style.display = 'block';
         }
 
-        // CORE LOGIC: Redirección Inteligente
+        // CORE LOGIC: Redirección Inteligente Unificada
         async function redirectUser(user) {
-            showMessage('Verificando perfil...', false);
             try {
+                // Mostramos mensaje sutil o Spinner global si tuvieras
                 const userDoc = await getDoc(doc(db, 'users', user.uid));
                 if (userDoc.exists()) {
                     window.location.href = 'dashboard.html';
@@ -272,12 +229,21 @@
                     window.location.href = 'cuenta.html';
                 }
             } catch (error) {
-                console.error("Error verificando perfil:", error);
-                window.location.href = 'cuenta.html'; // Fallback
+                console.error("Error redirigiendo:", error);
+                window.location.href = 'cuenta.html'; // Fallback seguro
             }
         }
 
-        // REGISTER
+        // LISTENER GLOBAL: Detecta login exitoso (Email o Google Redirect)
+        // Este listener se dispara automáticamente cuando el usuario vuelve de Google
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is signed in, see docs for a list of available properties
+                redirectUser(user);
+            }
+        });
+
+        // REGISTER EMAIL
         document.getElementById('registerFormElement').addEventListener('submit', (e) => {
             e.preventDefault();
             const name = document.getElementById('register-name').value;
@@ -292,12 +258,16 @@
             
             createUserWithEmailAndPassword(auth, email, password)
                 .then((userCredential) => {
-                    return updateProfile(userCredential.user, { displayName: name }).then(() => redirectUser(userCredential.user));
+                    return updateProfile(userCredential.user, { displayName: name });
+                    // No llamamos redirectUser aquí, onAuthStateChanged lo hará automáticamente
                 })
-                .catch((error) => { showMessage(error.message, true); document.getElementById('register-loading').style.display = 'none'; });
+                .catch((error) => { 
+                    showMessage(error.message, true); 
+                    document.getElementById('register-loading').style.display = 'none'; 
+                });
         });
 
-        // LOGIN
+        // LOGIN EMAIL
         document.getElementById('loginFormElement').addEventListener('submit', (e) => {
             e.preventDefault();
             const email = document.getElementById('login-email').value;
@@ -306,15 +276,17 @@
             document.getElementById('login-loading').style.display = 'inline-block';
 
             signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => redirectUser(userCredential.user))
-                .catch((error) => { showMessage(error.message, true); document.getElementById('login-loading').style.display = 'none'; });
+                // onAuthStateChanged manejará la redirección
+                .catch((error) => { 
+                    showMessage(error.message, true); 
+                    document.getElementById('login-loading').style.display = 'none'; 
+                });
         });
 
-        // GOOGLE
+        // GOOGLE LOGIN: CAMBIADO A REDIRECT
         function signInWithGoogle() {
-            const provider = new GoogleAuthProvider();
-            signInWithPopup(auth, provider)
-                .then((result) => redirectUser(result.user))
+            // Usamos Redirect en lugar de Popup para evitar bloqueos en GitHub Pages
+            signInWithRedirect(auth, googleProvider)
                 .catch((error) => showMessage(error.message, true));
         }
 
@@ -322,7 +294,6 @@
         document.getElementById('google-signin-register-btn').addEventListener('click', signInWithGoogle);
 
         // GUEST (Anonymous)
-        // Lógica para mostrar advertencia primero
         let guestClickedOnce = false;
         function handleGuestClick() {
             const warningBox = document.getElementById('warning-box-login');
@@ -333,12 +304,12 @@
             }
             
             signInAnonymously(auth)
-                .then((result) => redirectUser(result.user))
+                // onAuthStateChanged manejará la redirección
                 .catch((error) => showMessage(error.message, true));
         }
 
         document.getElementById('guest-login').addEventListener('click', handleGuestClick);
-        document.getElementById('guest-register').addEventListener('click', handleGuestClick); // Usamos la misma lógica
+        document.getElementById('guest-register').addEventListener('click', handleGuestClick);
 
         // TAB SWITCH
         document.getElementById('login-tab').addEventListener('click', () => switchForm('login'));
