@@ -5,287 +5,90 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thynka - Iniciar Sesión</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --bg-dark: #1a1d23;
-            --bg-card: #22262e;
-            --bg-input: #2a2f38;
-            --accent: #e8a857;
-            --accent-hover: #f0b76a;
-            --accent-soft: rgba(232, 168, 87, 0.15);
-            --text-primary: #f4f1ec;
-            --text-secondary: #9ca3af;
-            --text-muted: #6b7280;
-            --border: #363b44;
-            --error: #f87171;
-            --google-blue: #4285F4;
+            --bg-dark: #1a1d23; --bg-card: #22262e; --bg-input: #2a2f38;
+            --accent: #e8a857; --accent-hover: #f0b76a;
+            --text-primary: #f4f1ec; --text-secondary: #9ca3af;
+            --text-muted: #6b7280; --border: #363b44; --error: #f87171;
         }
-
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg-dark);
-            min-height: 100vh;
-            color: var(--text-primary);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem 1rem;
+            background: var(--bg-dark); min-height: 100vh; color: var(--text-primary);
+            display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem 1rem;
         }
-
         .bg-pattern {
-            position: fixed;
-            inset: 0;
-            background: 
-                radial-gradient(ellipse at 50% 0%, rgba(232, 168, 87, 0.1) 0%, transparent 50%),
-                radial-gradient(ellipse at 100% 100%, rgba(232, 168, 87, 0.05) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: 0;
+            position: fixed; inset: 0;
+            background: radial-gradient(ellipse at 50% 0%, rgba(232, 168, 87, 0.1) 0%, transparent 50%),
+                        radial-gradient(ellipse at 100% 100%, rgba(232, 168, 87, 0.05) 0%, transparent 50%);
+            pointer-events: none; z-index: 0;
         }
-
-        .container {
-            position: relative;
-            z-index: 1;
-            width: 100%;
-            max-width: 400px;
-        }
-
-        .logo-section {
-            text-align: center;
-            margin-bottom: 2.5rem;
-        }
-
-        .logo {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--accent);
-            letter-spacing: -0.02em;
-            margin-bottom: 0.5rem;
-            display: inline-block;
-        }
-
-        .logo-tagline {
-            color: var(--text-secondary);
-            font-size: 0.9375rem;
-        }
-
-        /* Card */
-        .auth-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 1.5rem;
-            padding: 2rem;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-        }
-
-        /* Tabs */
-        .tabs {
-            display: flex;
-            background: var(--bg-input);
-            border-radius: 0.75rem;
-            padding: 0.25rem;
-            margin-bottom: 2rem;
-        }
-
+        .container { position: relative; z-index: 1; width: 100%; max-width: 400px; }
+        .logo-section { text-align: center; margin-bottom: 2.5rem; }
+        .logo { font-size: 2.5rem; font-weight: 700; color: var(--accent); letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+        .logo-tagline { color: var(--text-secondary); font-size: 0.9375rem; }
+        
+        .auth-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 1.5rem; padding: 2rem; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+        .tabs { display: flex; background: var(--bg-input); border-radius: 0.75rem; padding: 0.25rem; margin-bottom: 2rem; }
         .tab-btn {
-            flex: 1;
-            background: none;
-            border: none;
-            padding: 0.75rem;
-            border-radius: 0.5rem;
-            color: var(--text-secondary);
-            font-size: 0.9375rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: inherit;
+            flex: 1; background: none; border: none; padding: 0.75rem; border-radius: 0.5rem;
+            color: var(--text-secondary); font-size: 0.9375rem; font-weight: 500; cursor: pointer;
+            transition: all 0.3s ease; font-family: inherit;
         }
-
-        .tab-btn.active {
-            background: var(--accent);
-            color: var(--bg-dark);
-            box-shadow: 0 4px 12px rgba(232, 168, 87, 0.3);
-        }
-
-        /* Form */
-        .form-group {
-            margin-bottom: 1.25rem;
-        }
-
-        .input-label {
-            display: block;
-            font-size: 0.8125rem;
-            font-weight: 500;
-            color: var(--text-secondary);
-            margin-bottom: 0.5rem;
-        }
-
+        .tab-btn.active { background: var(--accent); color: var(--bg-dark); box-shadow: 0 4px 12px rgba(232, 168, 87, 0.3); }
+        
+        .form-group { margin-bottom: 1.25rem; }
+        .input-label { display: block; font-size: 0.8125rem; font-weight: 500; color: var(--text-secondary); margin-bottom: 0.5rem; }
         .input-field {
-            width: 100%;
-            background: var(--bg-input);
-            border: 1px solid var(--border);
-            border-radius: 0.75rem;
-            padding: 0.875rem 1rem;
-            font-size: 1rem;
-            color: var(--text-primary);
-            transition: all 0.2s ease;
-            font-family: inherit;
+            width: 100%; background: var(--bg-input); border: 1px solid var(--border); border-radius: 0.75rem;
+            padding: 0.875rem 1rem; font-size: 1rem; color: var(--text-primary); transition: all 0.2s ease; font-family: inherit;
         }
-
-        .input-field:focus {
-            outline: none;
-            border-color: var(--accent);
-            background: var(--bg-dark);
-        }
-
+        .input-field:focus { outline: none; border-color: var(--accent); background: var(--bg-dark); }
+        
         .btn-submit {
-            width: 100%;
-            padding: 1rem;
-            background: var(--accent);
-            color: var(--bg-dark);
-            border: none;
-            border-radius: 0.75rem;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            margin-top: 0.5rem;
-            font-family: inherit;
+            width: 100%; padding: 1rem; background: var(--accent); color: var(--bg-dark); border: none;
+            border-radius: 0.75rem; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease;
+            margin-top: 0.5rem; font-family: inherit; display: flex; justify-content: center; align-items: center;
         }
-
-        .btn-submit:hover {
-            background: var(--accent-hover);
-            transform: translateY(-2px);
-        }
-
-        .btn-submit:disabled {
-            background: var(--text-muted);
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* Divider */
-        .divider {
-            display: flex;
-            align-items: center;
-            margin: 1.5rem 0;
-            color: var(--text-muted);
-            font-size: 0.8125rem;
-        }
-
-        .divider::before, .divider::after {
-            content: "";
-            flex: 1;
-            height: 1px;
-            background: var(--border);
-        }
-
-        .divider span {
-            padding: 0 1rem;
-        }
-
-        /* Social Buttons */
+        .btn-submit:hover { background: var(--accent-hover); transform: translateY(-2px); }
+        .btn-submit:disabled { background: var(--text-muted); cursor: not-allowed; transform: none; }
+        
+        .divider { display: flex; align-items: center; margin: 1.5rem 0; color: var(--text-muted); font-size: 0.8125rem; }
+        .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+        .divider span { padding: 0 1rem; }
+        
         .social-btn {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.75rem;
-            padding: 0.875rem;
-            border-radius: 0.75rem;
-            font-size: 0.9375rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            margin-bottom: 0.75rem;
-            font-family: inherit;
+            width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.75rem;
+            padding: 0.875rem; border-radius: 0.75rem; font-size: 0.9375rem; font-weight: 500; cursor: pointer;
+            transition: all 0.2s ease; margin-bottom: 0.75rem; font-family: inherit;
         }
-
-        .btn-google {
-            background: #fff;
-            color: #333;
-            border: none;
-        }
-        
+        .btn-google { background: #fff; color: #333; border: none; }
         .btn-google:hover { background: #f1f1f1; }
-
-        .btn-anonymous {
-            background: transparent;
-            color: var(--text-primary);
-            border: 1px solid var(--border);
-        }
-
-        .btn-anonymous:hover {
-            background: var(--bg-input);
-            border-color: var(--text-muted);
-        }
-
-        /* Warning Message */
-        .warning-box {
-            background: rgba(248, 113, 113, 0.1);
-            border: 1px solid rgba(248, 113, 113, 0.3);
-            border-radius: 0.5rem;
-            padding: 0.75rem;
-            margin-top: 1rem;
-            font-size: 0.8125rem;
-            color: #fca5a5;
-            text-align: center;
-            display: none; /* Oculto por defecto, se muestra al hacer click en anónimo */
-        }
-
-        .warning-box.visible {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-
-        /* Error Message */
-        .error-msg {
-            background: rgba(248, 113, 113, 0.1);
-            color: var(--error);
-            text-align: center;
-            padding: 0.75rem;
-            border-radius: 0.5rem;
-            margin-bottom: 1rem;
-            font-size: 0.875rem;
-            display: none;
-        }
-
-        .error-msg.visible { display: block; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Spinner */
-        .spinner {
-            width: 20px;
-            height: 20px;
-            border: 2px solid transparent;
-            border-top-color: currentColor;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            display: none;
-        }
+        .btn-anonymous { background: transparent; color: var(--text-primary); border: 1px solid var(--border); }
+        .btn-anonymous:hover { background: var(--bg-input); border-color: var(--text-muted); }
         
+        .warning-box {
+            background: rgba(248, 113, 113, 0.1); border: 1px solid rgba(248, 113, 113, 0.3);
+            border-radius: 0.5rem; padding: 0.75rem; margin-top: 1rem; font-size: 0.8125rem;
+            color: #fca5a5; text-align: center; display: none;
+        }
+        .warning-box.visible { display: block; animation: fadeIn 0.3s ease; }
+        
+        .error-msg {
+            background: rgba(248, 113, 113, 0.1); color: var(--error); text-align: center;
+            padding: 0.75rem; border-radius: 0.5rem; margin-bottom: 1rem; font-size: 0.875rem; display: none;
+        }
+        .error-msg.visible { display: block; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        .spinner { width: 20px; height: 20px; border: 2px solid transparent; border-top-color: currentColor; border-radius: 50%; animation: spin 0.8s linear infinite; display: none; }
         .btn-submit.loading .spinner { display: inline-block; }
         .btn-submit.loading .btn-text { display: none; }
-
         @keyframes spin { to { transform: rotate(360deg); } }
-
-        @media (max-width: 400px) {
-            .auth-card { padding: 1.5rem; }
-        }
     </style>
 </head>
 <body>
     <div class="bg-pattern"></div>
-
     <div class="container">
         <div class="logo-section">
             <div class="logo">Thynka</div>
@@ -293,16 +96,13 @@
         </div>
 
         <div class="auth-card">
-            <!-- Tabs -->
             <div class="tabs">
                 <button class="tab-btn active" id="tabLogin">Iniciar Sesión</button>
                 <button class="tab-btn" id="tabRegister">Registrarse</button>
             </div>
 
-            <!-- Error Message -->
             <div class="error-msg" id="errorMsg"></div>
 
-            <!-- Form -->
             <form id="authForm">
                 <div class="form-group">
                     <label class="input-label">Correo electrónico</label>
@@ -312,7 +112,6 @@
                     <label class="input-label">Contraseña</label>
                     <input type="password" class="input-field" id="password" placeholder="••••••••" required>
                 </div>
-
                 <button type="submit" class="btn-submit" id="btnSubmit">
                     <span class="btn-text">Iniciar Sesión</span>
                     <div class="spinner"></div>
@@ -321,7 +120,6 @@
 
             <div class="divider"><span>O continúa con</span></div>
 
-            <!-- Social Buttons -->
             <button class="social-btn btn-google" id="btnGoogle">
                 <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/></svg>
                 Continuar con Google
@@ -332,14 +130,12 @@
                 Entrar sin cuenta
             </button>
 
-            <!-- Warning for Anonymous -->
             <div class="warning-box" id="warningBox">
                 Advertencia: Si entras sin cuenta, tu progreso no se guardará en la nube y se perderá si cambias de dispositivo o limpias el navegador.
             </div>
         </div>
     </div>
 
-    <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
@@ -354,6 +150,13 @@
             appId: "1:704622327906:web:57c4efb9da7b935b80f93b",
             measurementId: "G-5WYWTXZ562"
         };
+
+        // CORRECCIÓN CRÍTICA: Lógica de tu código que funciona
+        if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+            firebaseConfig.authDomain = "localhost";
+        } else {
+            firebaseConfig.authDomain = "thynka-1dd68.firebaseapp.com";
+        }
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
@@ -374,24 +177,20 @@
 
         let isLogin = true;
 
-        // Listener de estado de autenticación (Redirección inteligente)
+        // Listener de estado de autenticación
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // Usuario logueado
                 const userId = user.uid;
                 const userDoc = await getDoc(doc(db, 'users', userId));
-                
                 if (userDoc.exists()) {
-                    // Si tiene perfil configurado -> Dashboard
                     window.location.href = 'dashboard.html';
                 } else {
-                    // Si no tiene perfil -> Página de configuración (cuenta.html)
                     window.location.href = 'cuenta.html';
                 }
             }
         });
 
-        // Cambiar entre Login y Registro
+        // Tabs
         tabLogin.addEventListener('click', () => {
             isLogin = true;
             tabLogin.classList.add('active');
@@ -408,22 +207,19 @@
             hideError();
         });
 
-        // Submit Form (Email/Password)
+        // Email/Password
         authForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = emailInput.value;
             const password = passwordInput.value;
-
             setLoading(true);
             hideError();
-
             try {
                 if (isLogin) {
                     await signInWithEmailAndPassword(auth, email, password);
                 } else {
                     await createUserWithEmailAndPassword(auth, email, password);
                 }
-                // onAuthStateChanged se encargará de redirigir
             } catch (error) {
                 showError(error.message);
                 setLoading(false);
@@ -442,16 +238,13 @@
 
         // Anonymous Login
         btnAnonymous.addEventListener('click', async () => {
-            // Si la advertencia no está visible, mostrarla y no hacer login todavía
             if (!warningBox.classList.contains('visible')) {
                 warningBox.classList.add('visible');
                 return;
             }
-
             hideError();
             try {
                 await signInAnonymously(auth);
-                // onAuthStateChanged redirigirá a cuenta.html (que debería ser tu página de configuración)
             } catch (error) {
                 showError(error.message);
             }
