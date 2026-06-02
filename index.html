@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thynka</title>
+    <title>Thynka - Configuración</title>
     <style>
         * {
             margin: 0;
@@ -33,7 +33,6 @@
             overflow-x: hidden;
         }
 
-        /* Background Pattern */
         .bg-pattern {
             position: fixed;
             inset: 0;
@@ -44,7 +43,7 @@
             z-index: 0;
         }
 
-        /* Splash Screen */
+        /* Splash */
         .splash {
             position: fixed;
             inset: 0;
@@ -96,7 +95,6 @@
             margin: 0 auto;
         }
 
-        /* Header */
         .header {
             display: flex;
             align-items: center;
@@ -120,7 +118,7 @@
             border: 1px solid var(--border);
         }
 
-        /* Progress Bar */
+        /* Progress */
         .progress-container {
             margin-bottom: 2.5rem;
         }
@@ -148,7 +146,7 @@
             color: var(--text-muted);
         }
 
-        /* Question Card */
+        /* Cards */
         .question-card {
             display: none;
             opacity: 0;
@@ -262,7 +260,7 @@
             color: var(--text-muted);
         }
 
-        /* Input Field */
+        /* Input */
         .input-group {
             margin-bottom: 1.5rem;
         }
@@ -297,12 +295,7 @@
             color: var(--text-muted);
         }
 
-        textarea.text-input {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        /* Time Input Row */
+        /* Time Row */
         .time-row {
             display: flex;
             gap: 1rem;
@@ -318,7 +311,7 @@
             font-size: 1.25rem;
         }
 
-        /* Day Selector */
+        /* Days Grid */
         .days-grid {
             display: flex;
             gap: 0.5rem;
@@ -405,40 +398,50 @@
             color: var(--text-primary);
         }
 
-        /* Tags Input */
-        .tags-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-top: 0.75rem;
+        /* Range Slider */
+        .range-container {
+            margin: 1rem 0;
         }
 
-        .tag {
-            background: var(--accent-soft);
-            border: 1px solid var(--accent);
-            border-radius: 2rem;
-            padding: 0.5rem 1rem;
-            font-size: 0.875rem;
+        .range-value {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .range-value-display {
+            font-size: 1.5rem;
+            font-weight: 600;
             color: var(--accent);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            animation: tagPop 0.2s ease;
         }
 
-        @keyframes tagPop {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+        .range-slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: var(--bg-input);
+            outline: none;
+            -webkit-appearance: none;
         }
 
-        .tag-remove {
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--accent);
             cursor: pointer;
-            opacity: 0.7;
-            transition: opacity 0.2s;
+            border: 3px solid var(--bg-dark);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
 
-        .tag-remove:hover {
-            opacity: 1;
+        .range-slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            border: 3px solid var(--bg-dark);
         }
 
         /* Buttons */
@@ -549,7 +552,6 @@
             }
         }
 
-        /* Reduced Motion */
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after {
                 animation-duration: 0.01ms !important;
@@ -561,7 +563,7 @@
 <body>
     <div class="bg-pattern"></div>
 
-    <!-- Splash Screen -->
+    <!-- Splash -->
     <div class="splash" id="splash">
         <div class="splash-content">
             <div class="splash-logo">Thynka</div>
@@ -569,7 +571,7 @@
         </div>
     </div>
 
-    <!-- Main Content -->
+    <!-- Main -->
     <div class="main-container" id="mainContainer">
         <div class="header">
             <div class="logo">Thynka</div>
@@ -586,11 +588,11 @@
             </div>
         </div>
 
-        <!-- Question 1: Learning Style -->
+        <!-- Q1: Learning Style -->
         <div class="question-card active" id="q1">
             <div class="question-section">
                 <h2 class="question">Como aprendes mejor</h2>
-                <p class="question-sub">Esto nos ayuda a adaptar el contenido a tu estilo</p>
+                <p class="question-sub">Adaptaremos la forma de presentar la informacion</p>
             </div>
             <div class="options">
                 <div class="option" data-value="ejemplos">
@@ -604,14 +606,14 @@
                     <div class="option-radio"></div>
                     <div class="option-content">
                         <div class="option-title">Paso a paso</div>
-                        <div class="option-desc">Prefiero instrucciones secuenciales</div>
+                        <div class="option-desc">Instrucciones secuenciales y ordenadas</div>
                     </div>
                 </div>
                 <div class="option" data-value="visual">
                     <div class="option-radio"></div>
                     <div class="option-content">
                         <div class="option-title">Visualmente</div>
-                        <div class="option-desc">Diagramas, mapas y graficos</div>
+                        <div class="option-desc">Diagramas, mapas mentales y graficos</div>
                     </div>
                 </div>
                 <div class="option" data-value="practico">
@@ -624,18 +626,18 @@
             </div>
         </div>
 
-        <!-- Question 2: Main Difficulty -->
+        <!-- Q2: Difficulty -->
         <div class="question-card" id="q2">
             <div class="question-section">
                 <h2 class="question">Que se te complica mas</h2>
-                <p class="question-sub">Trabajaremos en mejorar esto</p>
+                <p class="question-sub">Enfocaremos el sistema en mejorar esto</p>
             </div>
             <div class="options">
                 <div class="option" data-value="empezar">
                     <div class="option-radio"></div>
                     <div class="option-content">
                         <div class="option-title">Empezar</div>
-                        <div class="option-desc">Me cuesta sentarme a estudiar</div>
+                        <div class="option-desc">Me cuesta sentarme y dar el primer paso</div>
                     </div>
                 </div>
                 <div class="option" data-value="entender">
@@ -662,46 +664,8 @@
             </div>
         </div>
 
-        <!-- Question 3: Energy Time -->
+        <!-- Q3: Work -->
         <div class="question-card" id="q3">
-            <div class="question-section">
-                <h2 class="question">Cuando tienes mas energia</h2>
-                <p class="question-sub">Programaremos las tareas dificiles en tu mejor momento</p>
-            </div>
-            <div class="options">
-                <div class="option" data-value="manana">
-                    <div class="option-radio"></div>
-                    <div class="option-content">
-                        <div class="option-title">Manana temprano</div>
-                        <div class="option-desc">6:00 - 12:00, aprovecho el dia</div>
-                    </div>
-                </div>
-                <div class="option" data-value="mediodia">
-                    <div class="option-radio"></div>
-                    <div class="option-content">
-                        <div class="option-title">Mediodia</div>
-                        <div class="option-desc">12:00 - 17:00, despues de comer</div>
-                    </div>
-                </div>
-                <div class="option" data-value="tarde">
-                    <div class="option-radio"></div>
-                    <div class="option-content">
-                        <div class="option-title">Tarde - Noche</div>
-                        <div class="option-desc">17:00 - 22:00, rindo mejor tarde</div>
-                    </div>
-                </div>
-                <div class="option" data-value="madrugada">
-                    <div class="option-radio"></div>
-                    <div class="option-content">
-                        <div class="option-title">Madrugada</div>
-                        <div class="option-desc">22:00 - 6:00, soy nocturno</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Question 4: Work Status -->
-        <div class="question-card" id="q4">
             <div class="question-section">
                 <h2 class="question">Trabajas actualmente</h2>
                 <p class="question-sub">Ajustaremos tu horario de estudio alrededor de tu trabajo</p>
@@ -718,19 +682,18 @@
                     <div class="option-radio"></div>
                     <div class="option-content">
                         <div class="option-title">No trabajo</div>
-                        <div class="option-desc">Tengo el dia disponible para estudiar</div>
+                        <div class="option-desc">Tengo el dia disponible</div>
                     </div>
                 </div>
                 <div class="option" data-value="parcial">
                     <div class="option-radio"></div>
                     <div class="option-content">
-                        <div class="option-title">Trabajo parcial / freelance</div>
+                        <div class="option-title">Trabajo parcial o freelance</div>
                         <div class="option-desc">Mis horarios son variables</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Work Schedule Config -->
             <div class="work-schedule-card" id="workScheduleCard">
                 <div class="input-label">Selecciona los dias que trabajas</div>
                 <div class="days-grid" id="workDays">
@@ -742,114 +705,124 @@
                     <button type="button" class="day-btn" data-day="S">S</button>
                     <button type="button" class="day-btn" data-day="D">D</button>
                 </div>
-
                 <div id="scheduleInputs"></div>
             </div>
         </div>
 
-        <!-- Question 5: Study Time Available -->
+        <!-- Q4: Study Hours -->
+        <div class="question-card" id="q4">
+            <div class="question-section">
+                <h2 class="question">Cuantas horas puedes estudiar</h2>
+                <p class="question-sub">Tiempo diario que puedes dedicar al estudio</p>
+            </div>
+            <div class="range-container">
+                <div class="range-value">
+                    <span class="range-value-display" id="hoursValue">2 horas</span>
+                </div>
+                <input type="range" class="range-slider" id="hoursSlider" min="1" max="10" value="2">
+            </div>
+            <p class="question-sub" style="margin-top: 1rem;">Esto nos ayuda a calcular la carga de tareas recomendada por dia.</p>
+        </div>
+
+        <!-- Q5: Session Length -->
         <div class="question-card" id="q5">
             <div class="question-section">
-                <h2 class="question">Tiempo disponible para estudiar</h2>
-                <p class="question-sub">Cuantas horas puedes dedicar al dia aproximadamente</p>
+                <h2 class="question">Como prefieres estudiar</h2>
+                <p class="question-sub">Dividiremos tu tiempo segun tu preferencia</p>
             </div>
             <div class="options">
-                <div class="option" data-value="1-2">
+                <div class="option" data-value="pomodoro">
                     <div class="option-radio"></div>
                     <div class="option-content">
-                        <div class="option-title">1 a 2 horas</div>
-                        <div class="option-desc">Estudio ligero pero constante</div>
+                        <div class="option-title">Sesiones cortas (Pomodoro)</div>
+                        <div class="option-desc">25 min estudio + 5 min descanso</div>
                     </div>
                 </div>
-                <div class="option" data-value="2-4">
+                <div class="option" data-value="medio">
                     <div class="option-radio"></div>
                     <div class="option-content">
-                        <div class="option-title">2 a 4 horas</div>
-                        <div class="option-desc">Tiempo moderado para avanzar</div>
+                        <div class="option-title">Bloques medios</div>
+                        <div class="option-desc">50 min estudio + 10 min descanso</div>
                     </div>
                 </div>
-                <div class="option" data-value="4-6">
+                <div class="option" data-value="largo">
                     <div class="option-radio"></div>
                     <div class="option-content">
-                        <div class="option-title">4 a 6 horas</div>
-                        <div class="option-desc">Estudio intensivo</div>
+                        <div class="option-title">Sesiones largas</div>
+                        <div class="option-desc">90 min estudio + 20 min descanso</div>
                     </div>
                 </div>
-                <div class="option" data-value="6+">
+                <div class="option" data-value="flexible">
                     <div class="option-radio"></div>
                     <div class="option-content">
-                        <div class="option-title">Mas de 6 horas</div>
-                        <div class="option-desc">Dedicacion completa</div>
+                        <div class="option-title">Flexible</div>
+                        <div class="option-desc">Depende de la tarea y mi motivacion</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Question 6: Main Goal -->
+        <!-- Q6: Priority -->
         <div class="question-card" id="q6">
             <div class="question-section">
-                <h2 class="question">Cual es tu objetivo principal</h2>
-                <p class="question-sub">Adaptaremos las recomendaciones a tu meta</p>
+                <h2 class="question">Que necesitas organizar primero</h2>
+                <p class="question-sub">Priorizaremos las recomendaciones segun esto</p>
             </div>
             <div class="options">
-                <div class="option" data-value="examen">
+                <div class="option" data-value="examenes">
                     <div class="option-radio"></div>
                     <div class="option-content">
-                        <div class="option-title">Preparar un examen</div>
-                        <div class="option-desc">Tengo una fecha limite y necesito aprobar</div>
+                        <div class="option-title">Examenes proximos</div>
+                        <div class="option-desc">Tengo fechas de examen esta semana/mes</div>
                     </div>
                 </div>
-                <div class="option" data-value="habilidad">
+                <div class="option" data-value="tareas">
                     <div class="option-radio"></div>
                     <div class="option-content">
-                        <div class="option-title">Aprender una habilidad</div>
-                        <div class="option-desc">Programacion, idioma, diseno, etc.</div>
+                        <div class="option-title">Tareas pendientes</div>
+                        <div class="option-desc">Tengo trabajos y entregas acumuladas</div>
                     </div>
                 </div>
-                <div class="option" data-value="curso">
+                <div class="option" data-value="aprender">
                     <div class="option-radio"></div>
                     <div class="option-content">
-                        <div class="option-title">Completar un curso</div>
-                        <div class="option-desc">Estoy cursando una materia o certificacion</div>
+                        <div class="option-title">Aprender algo nuevo</div>
+                        <div class="option-desc">Quiero adquirir una habilidad</div>
                     </div>
                 </div>
-                <div class="option" data-value="organizarme">
+                <div class="option" data-value="repaso">
                     <div class="option-radio"></div>
                     <div class="option-content">
-                        <div class="option-title">Organizarme mejor</div>
-                        <div class="option-desc">Quiero ser mas productivo con mi tiempo</div>
+                        <div class="option-title">Repasar contenido</div>
+                        <div class="option-desc">Refrescar conocimientos previos</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Question 7: Subjects/Topics -->
+        <!-- Q7: Rest Day -->
         <div class="question-card" id="q7">
             <div class="question-section">
-                <h2 class="question">Que vas a estudiar</h2>
-                <p class="question-sub">Escribe las materias o temas, separados por coma</p>
+                <h2 class="question">Que dia prefieres descansar</h2>
+                <p class="question-sub">Respetaremos al menos un dia libre en tu horario</p>
             </div>
-            <div class="input-group">
-                <input type="text" class="text-input" id="subjectsInput" placeholder="Ej: Matematicas, Historia, Python, Ingles...">
+            <div class="days-grid" id="restDays" style="justify-content: center;">
+                <button type="button" class="day-btn" data-day="L">L</button>
+                <button type="button" class="day-btn" data-day="M">M</button>
+                <button type="button" class="day-btn" data-day="X">X</button>
+                <button type="button" class="day-btn" data-day="J">J</button>
+                <button type="button" class="day-btn" data-day="V">V</button>
+                <button type="button" class="day-btn" data-day="S">S</button>
+                <button type="button" class="day-btn" data-day="D">D</button>
             </div>
-            <div class="tags-container" id="subjectsTags"></div>
-
-            <div class="input-group" style="margin-top: 1.5rem;">
-                <label class="input-label">Tienes alguna fecha importante proxima (opcional)</label>
-                <input type="date" class="text-input" id="importantDate" style="color-scheme: dark;">
-            </div>
-
-            <div class="input-group" style="margin-top: 1rem;">
-                <label class="input-label">Descripcion del evento (opcional)</label>
-                <input type="text" class="text-input" id="eventDescription" placeholder="Ej: Examen final de calculo">
-            </div>
-
-            <div class="btn-group">
-                <button class="btn btn-primary" id="finishBtn" disabled>Guardar y comenzar</button>
+            <p class="question-sub" style="text-align: center; margin-top: 1.5rem;">Puedes seleccionar mas de un dia si lo deseas.</p>
+            
+            <div class="btn-group" style="margin-top: 2rem;">
+                <button class="btn btn-primary" id="finishBtn">Guardar perfil</button>
             </div>
         </div>
 
-        <!-- Navigation Buttons -->
+        <!-- Navigation -->
         <div class="btn-group" id="navButtons" style="display: none;">
             <button class="btn btn-secondary" id="backBtn">Atras</button>
             <button class="btn btn-primary" id="nextBtn" disabled>Siguiente</button>
@@ -865,13 +838,10 @@
         <span class="status-text" id="statusText">Datos guardados correctamente</span>
     </div>
 
-    <!-- Firebase SDK -->
     <script type="module">
-        // Firebase Imports
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
         import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
-        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBH42jsEEaEOFa02LhD59aDkwFfo_RVVB4",
             authDomain: "thynka-1dd68.firebaseapp.com",
@@ -882,11 +852,9 @@
             measurementId: "G-5WYWTXZ562"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // User ID Management
         function getUserId() {
             let userId = localStorage.getItem('thynka_user_id');
             if (!userId) {
@@ -898,7 +866,7 @@
 
         const currentUserId = getUserId();
 
-        // DOM Elements
+        // DOM
         const splash = document.getElementById('splash');
         const mainContainer = document.getElementById('mainContainer');
         const progressFill = document.getElementById('progressFill');
@@ -911,31 +879,27 @@
         const statusMessage = document.getElementById('statusMessage');
         const statusText = document.getElementById('statusText');
         const workScheduleCard = document.getElementById('workScheduleCard');
-        const subjectsInput = document.getElementById('subjectsInput');
-        const subjectsTags = document.getElementById('subjectsTags');
+        const hoursSlider = document.getElementById('hoursSlider');
+        const hoursValue = document.getElementById('hoursValue');
 
-        // State
         let currentQuestion = 1;
         const totalQuestions = 7;
-        const questions = ['q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'q7'];
 
         let userData = {
             learningStyle: '',
             difficulty: '',
-            energyTime: '',
             works: '',
             workSchedule: {},
-            studyTime: '',
-            mainGoal: '',
-            subjects: [],
-            importantDate: null,
-            eventDescription: '',
+            studyHours: 2,
+            sessionType: '',
+            priority: '',
+            restDays: [],
             createdAt: null
         };
 
         let selectedWorkDays = [];
+        let selectedRestDays = [];
 
-        // Initialize
         async function init() {
             try {
                 const userDoc = await getDoc(doc(db, 'users', currentUserId));
@@ -945,7 +909,6 @@
                     
                     setTimeout(() => {
                         if (userDoc.exists()) {
-                            // User already exists, redirect to dashboard
                             window.location.href = 'dashboard.html';
                         } else {
                             mainContainer.style.display = 'block';
@@ -955,7 +918,7 @@
                     }, 800);
                 }, 2000);
             } catch (error) {
-                console.error('Error checking user:', error);
+                console.error('Error:', error);
                 splash.classList.add('fade-out');
                 setTimeout(() => {
                     mainContainer.style.display = 'block';
@@ -965,102 +928,109 @@
             }
         }
 
-        // Setup Event Listeners
         function setupEventListeners() {
-            // Question options
-            for (let i = 1; i <= 6; i++) {
-                const card = document.getElementById(`q${i}`);
+            // Q1, Q2, Q5, Q6 - Standard options
+            [1, 2, 5, 6].forEach(qNum => {
+                const card = document.getElementById(`q${qNum}`);
                 const options = card.querySelectorAll('.option');
                 
                 options.forEach(opt => {
-                    opt.addEventListener('click', () => handleOptionSelect(i, opt, options));
+                    opt.addEventListener('click', () => {
+                        options.forEach(o => o.classList.remove('selected'));
+                        opt.classList.add('selected');
+                        
+                        const value = opt.dataset.value;
+                        
+                        switch(qNum) {
+                            case 1: userData.learningStyle = value; break;
+                            case 2: userData.difficulty = value; break;
+                            case 5: userData.sessionType = value; break;
+                            case 6: userData.priority = value; break;
+                        }
+                        
+                        nextBtn.disabled = false;
+                        setTimeout(() => goToNextQuestion(), 300);
+                    });
                 });
-            }
-
-            // Work days selector
-            const workDayBtns = document.querySelectorAll('#workDays .day-btn');
-            workDayBtns.forEach(btn => {
-                btn.addEventListener('click', () => toggleWorkDay(btn));
             });
 
-            // Subjects input
-            subjectsInput.addEventListener('input', handleSubjectsInput);
+            // Q3 - Work
+            const q3Options = document.getElementById('q3').querySelectorAll('.option');
+            q3Options.forEach(opt => {
+                opt.addEventListener('click', () => {
+                    q3Options.forEach(o => o.classList.remove('selected'));
+                    opt.classList.add('selected');
+                    
+                    const value = opt.dataset.value;
+                    userData.works = value;
+                    
+                    if (value === 'si') {
+                        workScheduleCard.classList.add('visible');
+                        nextBtn.disabled = selectedWorkDays.length === 0;
+                    } else {
+                        workScheduleCard.classList.remove('visible');
+                        selectedWorkDays = [];
+                        userData.workSchedule = {};
+                        document.querySelectorAll('#workDays .day-btn').forEach(b => b.classList.remove('selected'));
+                        nextBtn.disabled = false;
+                    }
+                });
+            });
+
+            // Work days
+            document.querySelectorAll('#workDays .day-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const day = btn.dataset.day;
+                    
+                    if (btn.classList.contains('selected')) {
+                        btn.classList.remove('selected');
+                        selectedWorkDays = selectedWorkDays.filter(d => d !== day);
+                        delete userData.workSchedule[day];
+                    } else {
+                        btn.classList.add('selected');
+                        selectedWorkDays.push(day);
+                        userData.workSchedule[day] = { start: '09:00', end: '17:00' };
+                    }
+                    
+                    renderWorkScheduleInputs();
+                    
+                    if (userData.works === 'si') {
+                        nextBtn.disabled = selectedWorkDays.length === 0;
+                    }
+                });
+            });
+
+            // Q4 - Hours slider
+            hoursSlider.addEventListener('input', () => {
+                const val = parseInt(hoursSlider.value);
+                userData.studyHours = val;
+                hoursValue.textContent = val === 1 ? '1 hora' : `${val} horas`;
+            });
+
+            // Q7 - Rest days
+            document.querySelectorAll('#restDays .day-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const day = btn.dataset.day;
+                    
+                    if (btn.classList.contains('selected')) {
+                        btn.classList.remove('selected');
+                        selectedRestDays = selectedRestDays.filter(d => d !== day);
+                    } else {
+                        btn.classList.add('selected');
+                        selectedRestDays.push(day);
+                    }
+                    
+                    userData.restDays = selectedRestDays;
+                });
+            });
 
             // Navigation
             backBtn.addEventListener('click', goToPreviousQuestion);
             nextBtn.addEventListener('click', goToNextQuestion);
             finishBtn.addEventListener('click', saveUserData);
-
-            // Important date and description
-            document.getElementById('importantDate').addEventListener('change', validateLastQuestion);
-            document.getElementById('eventDescription').addEventListener('input', validateLastQuestion);
         }
 
-        // Handle Option Selection
-        function handleOptionSelect(questionNum, selectedOption, allOptions) {
-            allOptions.forEach(opt => opt.classList.remove('selected'));
-            selectedOption.classList.add('selected');
-            
-            const value = selectedOption.dataset.value;
-            
-            switch(questionNum) {
-                case 1:
-                    userData.learningStyle = value;
-                    break;
-                case 2:
-                    userData.difficulty = value;
-                    break;
-                case 3:
-                    userData.energyTime = value;
-                    break;
-                case 4:
-                    userData.works = value;
-                    if (value === 'si') {
-                        workScheduleCard.classList.add('visible');
-                    } else {
-                        workScheduleCard.classList.remove('visible');
-                        selectedWorkDays = [];
-                        document.querySelectorAll('#workDays .day-btn').forEach(b => b.classList.remove('selected'));
-                        document.getElementById('scheduleInputs').innerHTML = '';
-                    }
-                    validateCurrentQuestion();
-                    return;
-                case 5:
-                    userData.studyTime = value;
-                    break;
-                case 6:
-                    userData.mainGoal = value;
-                    break;
-            }
-            
-            nextBtn.disabled = false;
-            
-            // Auto-advance for questions 1-6 (except 4 which has sub-options)
-            if (questionNum !== 4) {
-                setTimeout(() => goToNextQuestion(), 300);
-            }
-        }
-
-        // Toggle Work Day
-        function toggleWorkDay(btn) {
-            const day = btn.dataset.day;
-            
-            if (btn.classList.contains('selected')) {
-                btn.classList.remove('selected');
-                selectedWorkDays = selectedWorkDays.filter(d => d !== day);
-                delete userData.workSchedule[day];
-            } else {
-                btn.classList.add('selected');
-                selectedWorkDays.push(day);
-                userData.workSchedule[day] = { start: '09:00', end: '17:00' };
-            }
-            
-            renderScheduleInputs();
-            validateCurrentQuestion();
-        }
-
-        // Render Schedule Inputs
-        function renderScheduleInputs() {
+        function renderWorkScheduleInputs() {
             const container = document.getElementById('scheduleInputs');
             const dayNames = { L: 'Lunes', M: 'Martes', X: 'Miercoles', J: 'Jueves', V: 'Viernes', S: 'Sabado', D: 'Domingo' };
             
@@ -1073,97 +1043,33 @@
                         <div class="time-input">
                             <label class="input-label">Entrada</label>
                             <input type="time" class="text-input" value="${userData.workSchedule[day]?.start || '09:00'}" 
-                                   onchange="updateWorkTime('${day}', 'start', this.value)" style="color-scheme: dark;">
+                                   onchange="window.updateWorkTime('${day}', 'start', this.value)" style="color-scheme: dark;">
                         </div>
                         <span class="time-separator">a</span>
                         <div class="time-input">
                             <label class="input-label">Salida</label>
                             <input type="time" class="text-input" value="${userData.workSchedule[day]?.end || '17:00'}" 
-                                   onchange="updateWorkTime('${day}', 'end', this.value)" style="color-scheme: dark;">
+                                   onchange="window.updateWorkTime('${day}', 'end', this.value)" style="color-scheme: dark;">
                         </div>
                     </div>
                 </div>
             `).join('');
         }
 
-        // Update Work Time (global function for inline handlers)
         window.updateWorkTime = function(day, type, value) {
-            if (!userData.workSchedule[day]) {
-                userData.workSchedule[day] = {};
-            }
+            if (!userData.workSchedule[day]) userData.workSchedule[day] = {};
             userData.workSchedule[day][type] = value;
         };
 
-        // Handle Subjects Input
-        function handleSubjectsInput(e) {
-            const value = e.target.value;
-            const subjects = value.split(',').map(s => s.trim()).filter(s => s.length > 0);
-            userData.subjects = subjects;
-            
-            subjectsTags.innerHTML = subjects.map(subject => `
-                <span class="tag">
-                    ${escapeHtml(subject)}
-                    <span class="tag-remove" onclick="removeSubject('${escapeHtml(subject)}')">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                    </span>
-                </span>
-            `).join('');
-            
-            validateLastQuestion();
-        }
-
-        // Remove Subject
-        window.removeSubject = function(subjectToRemove) {
-            userData.subjects = userData.subjects.filter(s => s !== subjectToRemove);
-            subjectsInput.value = userData.subjects.join(', ');
-            handleSubjectsInput({ target: subjectsInput });
-        };
-
-        // Escape HTML
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        // Validate Current Question
-        function validateCurrentQuestion() {
-            if (currentQuestion === 4) {
-                if (userData.works === 'si') {
-                    nextBtn.disabled = selectedWorkDays.length === 0;
-                } else if (userData.works) {
-                    nextBtn.disabled = false;
-                } else {
-                    nextBtn.disabled = true;
-                }
-            }
-        }
-
-        // Validate Last Question
-        function validateLastQuestion() {
-            const hasSubjects = userData.subjects.length > 0;
-            finishBtn.disabled = !hasSubjects;
-        }
-
-        // Update Progress
         function updateProgress() {
             const percent = ((currentQuestion - 1) / totalQuestions) * 100;
             progressFill.style.width = `${percent}%`;
             progressPercent.textContent = `${Math.round(percent)}%`;
             stepCounter.textContent = `Paso ${currentQuestion} de ${totalQuestions}`;
             
-            // Show/hide nav buttons
-            if (currentQuestion === totalQuestions) {
-                navButtons.style.display = 'none';
-            } else {
-                navButtons.style.display = 'flex';
-            }
+            navButtons.style.display = currentQuestion === totalQuestions ? 'none' : 'flex';
         }
 
-        // Go to Next Question
         function goToNextQuestion() {
             if (currentQuestion >= totalQuestions) return;
             
@@ -1173,42 +1079,46 @@
             setTimeout(() => {
                 currentCard.classList.remove('active', 'exit');
                 currentQuestion++;
+                
                 const nextCard = document.getElementById(`q${currentQuestion}`);
                 nextCard.classList.add('active');
-                nextBtn.disabled = true;
-                updateProgress();
                 
-                // Pre-validate if there's already data
-                if (currentQuestion === 4 && userData.works) {
-                    validateCurrentQuestion();
+                // Reset next button based on question type
+                if (currentQuestion === 4) {
+                    nextBtn.disabled = false; // Slider always has value
+                } else if (currentQuestion === 7) {
+                    nextBtn.style.display = 'none';
+                    finishBtn.style.display = 'block';
+                } else {
+                    nextBtn.disabled = true;
                 }
+                
+                updateProgress();
             }, 300);
         }
 
-        // Go to Previous Question
         function goToPreviousQuestion() {
             if (currentQuestion <= 1) return;
             
             const currentCard = document.getElementById(`q${currentQuestion}`);
             currentCard.classList.remove('active');
             currentQuestion--;
+            
             const prevCard = document.getElementById(`q${currentQuestion}`);
             prevCard.classList.remove('exit');
             prevCard.classList.add('active');
+            
             nextBtn.disabled = false;
+            nextBtn.style.display = 'flex';
+            finishBtn.style.display = 'none';
+            
             updateProgress();
         }
 
-        // Save User Data to Firebase
         async function saveUserData() {
             finishBtn.disabled = true;
             finishBtn.textContent = 'Guardando...';
             
-            const importantDateValue = document.getElementById('importantDate').value;
-            const eventDescValue = document.getElementById('eventDescription').value;
-            
-            userData.importantDate = importantDateValue || null;
-            userData.eventDescription = eventDescValue || '';
             userData.createdAt = new Date().toISOString();
             
             try {
@@ -1222,14 +1132,13 @@
                 }, 1500);
                 
             } catch (error) {
-                console.error('Error saving user data:', error);
+                console.error('Error:', error);
                 showStatus('Error al guardar. Intenta de nuevo.', 'error');
                 finishBtn.disabled = false;
-                finishBtn.textContent = 'Guardar y comenzar';
+                finishBtn.textContent = 'Guardar perfil';
             }
         }
 
-        // Show Status Message
         function showStatus(message, type) {
             statusText.textContent = message;
             statusMessage.className = `status-message ${type} visible`;
@@ -1246,7 +1155,6 @@
             }, 3000);
         }
 
-        // Start
         init();
     </script>
 </body>
