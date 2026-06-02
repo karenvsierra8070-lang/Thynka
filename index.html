@@ -12,349 +12,1242 @@
         }
 
         :root {
-            --primary: #6b5b43;
-            --primary-light: #8b7b63;
-            --bg-cream: #faf8f5;
-            --card-bg: #ffffff;
-            --text-primary: #3a3025;
-            --text-secondary: #6b5b43;
-            --border: #f0ede8;
-            --shadow: rgba(107, 91, 67, 0.08);
+            --bg-dark: #1a1d23;
+            --bg-card: #22262e;
+            --bg-input: #2a2f38;
+            --accent: #e8a857;
+            --accent-soft: rgba(232, 168, 87, 0.15);
+            --text-primary: #f4f1ec;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            --border: #363b44;
+            --success: #4ade80;
+            --error: #f87171;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: var(--bg-cream);
-            height: 100vh;
-            overflow: hidden;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-dark);
+            min-height: 100vh;
             color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        /* Background Pattern */
+        .bg-pattern {
+            position: fixed;
+            inset: 0;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(232, 168, 87, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(232, 168, 87, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
         }
 
         /* Splash Screen */
         .splash {
             position: fixed;
             inset: 0;
-            background: url('fondo.png') center/cover no-repeat;
+            background: var(--bg-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             z-index: 1000;
-            animation: fadeOut 1s ease 2s forwards;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
         }
 
-        @keyframes fadeOut {
-            to {
-                opacity: 0;
-                visibility: hidden;
-            }
+        .splash.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .splash-content {
+            text-align: center;
+        }
+
+        .splash-logo {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: -0.02em;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.02); }
+        }
+
+        .splash-tagline {
+            margin-top: 0.75rem;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 300;
         }
 
         /* Main Container */
         .main-container {
+            position: relative;
+            z-index: 1;
             display: none;
-            height: 100vh;
-            padding: 2rem 1.5rem;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
+            min-height: 100vh;
+            padding: 2rem 1.5rem 3rem;
+            max-width: 480px;
+            margin: 0 auto;
         }
 
-        /* Progress Indicator */
-        .progress {
+        /* Header */
+        .header {
             display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-            margin-bottom: 3rem;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
         }
 
-        .progress-dot {
-            width: 0.5rem;
-            height: 0.5rem;
-            border-radius: 50%;
-            background: var(--border);
-            transition: all 0.4s ease;
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: -0.02em;
         }
 
-        .progress-dot.active {
-            width: 2rem;
-            border-radius: 0.25rem;
-            background: var(--primary);
+        .step-counter {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            background: var(--bg-card);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            border: 1px solid var(--border);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin-bottom: 2.5rem;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: var(--bg-input);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), #f0c078);
+            border-radius: 2px;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 0%;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.75rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
         }
 
         /* Question Card */
         .question-card {
-            max-width: 400px;
-            margin: 0 auto;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeInUp 0.6s ease forwards;
             display: none;
+            opacity: 0;
+            transform: translateX(30px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
         }
 
         .question-card.active {
             display: block;
+            opacity: 1;
+            transform: translateX(0);
         }
 
-        @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .question-card.exit {
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+
+        .question-section {
+            margin-bottom: 2rem;
         }
 
         .question {
             font-size: 1.75rem;
-            font-weight: 300;
-            line-height: 1.3;
-            margin-bottom: 2.5rem;
-            text-align: center;
+            font-weight: 600;
+            line-height: 1.2;
+            margin-bottom: 0.5rem;
             color: var(--text-primary);
         }
 
-        /* Options Grid */
+        .question-sub {
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Options */
         .options {
-            display: grid;
-            gap: 1rem;
-            margin-bottom: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.875rem;
         }
 
         .option {
-            background: var(--card-bg);
+            background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 1rem;
-            padding: 1.25rem;
+            padding: 1.125rem 1.25rem;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.25s ease;
             display: flex;
             align-items: center;
             gap: 1rem;
         }
 
         .option:hover {
+            background: var(--bg-input);
+            border-color: var(--text-muted);
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px var(--shadow);
-            border-color: var(--primary-light);
         }
 
         .option.selected {
-            background: var(--bg-cream);
-            border-color: var(--primary);
-            box-shadow: 0 4px 12px var(--shadow);
+            background: var(--accent-soft);
+            border-color: var(--accent);
         }
 
-        .option-icon {
-            width: 40px;
-            height: 40px;
+        .option-radio {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid var(--text-muted);
             display: flex;
             align-items: center;
             justify-content: center;
-            background: var(--bg-cream);
-            border-radius: 0.75rem;
-            transition: all 0.3s ease;
+            transition: all 0.25s ease;
+            flex-shrink: 0;
         }
 
-        .option.selected .option-icon {
-            background: var(--primary);
-            color: white;
+        .option.selected .option-radio {
+            border-color: var(--accent);
+            background: var(--accent);
         }
 
-        .option-text {
+        .option-radio::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--bg-dark);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .option.selected .option-radio::after {
+            opacity: 1;
+        }
+
+        .option-content {
+            flex: 1;
+        }
+
+        .option-title {
             font-size: 1rem;
-            color: var(--text-secondary);
-            font-weight: 400;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 0.125rem;
         }
 
-        .option.selected .option-text {
-            color: var(--text-primary);
+        .option-desc {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+        }
+
+        /* Input Field */
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.625rem;
             font-weight: 500;
         }
 
-        /* Continue Button */
-        .continue-btn {
+        .text-input {
             width: 100%;
-            padding: 1rem;
-            background: var(--primary);
-            color: white;
-            border: none;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 0.875rem;
+            padding: 1rem 1.125rem;
+            font-size: 1rem;
+            color: var(--text-primary);
+            transition: all 0.25s ease;
+            font-family: inherit;
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: var(--bg-input);
+        }
+
+        .text-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        textarea.text-input {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        /* Time Input Row */
+        .time-row {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .time-input {
+            flex: 1;
+        }
+
+        .time-separator {
+            color: var(--text-muted);
+            font-size: 1.25rem;
+        }
+
+        /* Day Selector */
+        .days-grid {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .day-btn {
+            width: 44px;
+            height: 44px;
             border-radius: 0.75rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .day-btn:hover {
+            background: var(--bg-input);
+            border-color: var(--text-muted);
+        }
+
+        .day-btn.selected {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--bg-dark);
+        }
+
+        /* Work Schedule Card */
+        .work-schedule-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 1.25rem;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .work-schedule-card.visible {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .schedule-day {
+            display: none;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .schedule-day:last-child {
+            border-bottom: none;
+        }
+
+        .schedule-day.visible {
+            display: block;
+        }
+
+        .schedule-day-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .schedule-day-name {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        /* Tags Input */
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .tag {
+            background: var(--accent-soft);
+            border: 1px solid var(--accent);
+            border-radius: 2rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            animation: tagPop 0.2s ease;
+        }
+
+        @keyframes tagPop {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .tag-remove {
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .tag-remove:hover {
+            opacity: 1;
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border-radius: 0.875rem;
             font-size: 1rem;
             font-weight: 500;
             cursor: pointer;
-            opacity: 0.3;
-            pointer-events: none;
-            transition: all 0.3s ease;
-            margin-top: 1rem;
+            transition: all 0.25s ease;
+            border: none;
+            font-family: inherit;
         }
 
-        .continue-btn.active {
-            opacity: 1;
-            pointer-events: auto;
+        .btn-primary {
+            background: var(--accent);
+            color: var(--bg-dark);
         }
 
-        .continue-btn:hover.active {
-            background: var(--primary-light);
-            transform: translateY(-1px);
+        .btn-primary:hover {
+            background: #f0b76a;
+            transform: translateY(-2px);
         }
 
-        /* Icons */
-        .icon {
+        .btn-primary:disabled {
+            background: var(--bg-input);
+            color: var(--text-muted);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        /* Status Message */
+        .status-message {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            z-index: 100;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            max-width: 90%;
+        }
+
+        .status-message.visible {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .status-message.success {
+            border-color: var(--success);
+        }
+
+        .status-message.error {
+            border-color: var(--error);
+        }
+
+        .status-icon {
             width: 20px;
             height: 20px;
-            stroke: currentColor;
-            stroke-width: 2;
-            fill: none;
-            stroke-linecap: round;
-            stroke-linejoin: round;
+        }
+
+        .status-message.success .status-icon {
+            color: var(--success);
+        }
+
+        .status-message.error .status-icon {
+            color: var(--error);
+        }
+
+        .status-text {
+            font-size: 0.9375rem;
+            color: var(--text-primary);
         }
 
         /* Responsive */
-        @media (max-width: 380px) {
+        @media (max-width: 400px) {
             .question {
                 font-size: 1.5rem;
+            }
+            
+            .day-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 0.8125rem;
+            }
+        }
+
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
             }
         }
     </style>
 </head>
 <body>
+    <div class="bg-pattern"></div>
+
     <!-- Splash Screen -->
-    <div class="splash"></div>
-
-    <!-- Main Content -->
-    <div class="main-container">
-        <!-- Progress Indicator -->
-        <div class="progress">
-            <div class="progress-dot active"></div>
-            <div class="progress-dot"></div>
-        </div>
-
-        <!-- Question 1 -->
-        <div class="question-card active" id="q1">
-            <h2 class="question">¿Cómo prefieres aprender?</h2>
-            <div class="options">
-                <div class="option" data-value="ejemplos">
-                    <div class="option-icon">
-                        <svg class="icon"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="9" y1="9" x2="15" y2="9"></line><line x1="9" y1="12" x2="15" y2="12"></line></svg>
-                    </div>
-                    <span class="option-text">Con ejemplos</span>
-                </div>
-                <div class="option" data-value="pasos">
-                    <div class="option-icon">
-                        <svg class="icon"><path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"></path></svg>
-                    </div>
-                    <span class="option-text">Paso a paso</span>
-                </div>
-                <div class="option" data-value="visual">
-                    <div class="option-icon">
-                        <svg class="icon"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>
-                    </div>
-                    <span class="option-text">Visualmente</span>
-                </div>
-                <div class="option" data-value="practico">
-                    <div class="option-icon">
-                        <svg class="icon"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                    </div>
-                    <span class="option-text">Practicando</span>
-                </div>
-                <div class="option" data-value="teoria">
-                    <div class="option-icon">
-                        <svg class="icon"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-                    </div>
-                    <span class="option-text">Con teoría</span>
-                </div>
-            </div>
-            <button class="continue-btn" id="btn1">Continuar</button>
-        </div>
-
-        <!-- Question 2 -->
-        <div class="question-card" id="q2">
-            <h2 class="question">¿Qué te cuesta más?</h2>
-            <div class="options">
-                <div class="option" data-value="empezar">
-                    <div class="option-icon">
-                        <svg class="icon"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-                    </div>
-                    <span class="option-text">Empezar</span>
-                </div>
-                <div class="option" data-value="entender">
-                    <div class="option-icon">
-                        <svg class="icon"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                    </div>
-                    <span class="option-text">Entender</span>
-                </div>
-                <div class="option" data-value="memorizar">
-                    <div class="option-icon">
-                        <svg class="icon"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                    </div>
-                    <span class="option-text">Memorizar</span>
-                </div>
-                <div class="option" data-value="organizar">
-                    <div class="option-icon">
-                        <svg class="icon"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                    </div>
-                    <span class="option-text">Organizar</span>
-                </div>
-            </div>
-            <button class="continue-btn" id="btn2">Comenzar</button>
+    <div class="splash" id="splash">
+        <div class="splash-content">
+            <div class="splash-logo">Thynka</div>
+            <p class="splash-tagline">Tu asistente de estudio inteligente</p>
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const isFirstTime = localStorage.getItem('hasVisited');
-            
-            setTimeout(() => {
-                if (isFirstTime) {
-                    window.location.href = 'dashboard.html';
-                } else {
-                    document.querySelector('.main-container').style.display = 'block';
-                    initOnboarding();
-                }
-            }, 2500);
+    <!-- Main Content -->
+    <div class="main-container" id="mainContainer">
+        <div class="header">
+            <div class="logo">Thynka</div>
+            <div class="step-counter" id="stepCounter">Paso 1 de 7</div>
+        </div>
 
-            function initOnboarding() {
-                const q1 = document.getElementById('q1');
-                const q2 = document.getElementById('q2');
-                const btn1 = document.getElementById('btn1');
-                const btn2 = document.getElementById('btn2');
-                const progressDots = document.querySelectorAll('.progress-dot');
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-label">
+                <span>Configurando tu perfil</span>
+                <span id="progressPercent">0%</span>
+            </div>
+        </div>
+
+        <!-- Question 1: Learning Style -->
+        <div class="question-card active" id="q1">
+            <div class="question-section">
+                <h2 class="question">Como aprendes mejor</h2>
+                <p class="question-sub">Esto nos ayuda a adaptar el contenido a tu estilo</p>
+            </div>
+            <div class="options">
+                <div class="option" data-value="ejemplos">
+                    <div class="option-radio"></div>
+                    <div class="option-content">
+                        <div class="option-title">Con ejemplos practicos</div>
+                        <div class="option-desc">Ver casos reales me ayuda a entender</div>
+                    </div>
+                </div>
+                <div class="option" data-value="pasos">
+                    <div class="option-radio"></div>
+                    <div class="option-content">
+                        <div class="option-title">Paso a paso</div>
+                        <div class="option-desc">Prefiero instrucciones secuenciales</div>
+                    </div>
+                </div>
+                <div class="option" data-value="visual">
+                    <div class="option-radio"></div>
+                    <div class="option-content">
+                        <div class="option-title">Visualmente</div>
+                        <div class="option-desc">Diagramas, mapas y graficos</div>
+                    </div>
+                </div>
+                <div class="option" data-value="practico">
+                    <div class="option-radio"></div>
+                    <div class="option-content">
+                        <div class="option-title">Practicando</div>
+                        <div class="option-desc">Aprendo haciendo, no solo leyendo</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Question 2: Main Difficulty -->
+        <div class="question-card" id="q2">
+            <div class="question-section">
+                <h2 class="question">Que se te complica mas</h2>
+                <p class="question-sub">Trabajaremos en mejorar esto</p>
+            </div>
+            <div class="options">
+                <div class="option" data-value="empezar">
+                    <div class="option-radio"></div>
+                    <div class="option-content">
+                        <div class="option-title">Empezar</div>
+                        <div class="option-desc">Me cuesta sentarme a estudiar</div>
+                    </div>
+                </div>
+                <div class="option" data-value="entender">
+                    <div class="option-radio"></div>
+                    <div class="option-content">
+                        <div class="option-title">Entender conceptos</div>
+                        <div class="option-desc">Necesito que me expliquen diferente</div>
+                    </div>
+                </div>
+                <div class="option" data-value="memorizar">
+                    <div class="option-radio"></div>
+                    <div class="option-content">
+                        <div class="option-title">Memorizar</div>
+                        <div class="option-desc">Se me olvida lo que estudio</div>
+                    </div>
+                </div>
+                <div class="option" data-value="organizar">
+                    <div class="option-radio"></div>
+                    <div class="option-content">
+                        <div class="option-title">Organizar mi tiempo</div>
+                        <div class="option-desc">No se como distribuir las tareas</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Question 3: Energy Time -->
+        <div class="question-card" id="q3">
+            <div class="question-section">
+                <h2 class="question">Cuando tienes mas energia</h2>
+                <p class="question-sub">Programaremos las tareas dificiles en tu mejor momento</p>
+            </div>
+            <div class="options">
+                <div class="option" data-value="manana">
+                    <div class="option-radio"></div>
+                    <div class="option-content">
+                        <div class="option-title">Manana temprano</div>
+                        <div class="option-desc">6:00 - 12:00, aprovecho el dia</div>
+                    </div>
+                </div>
+                <div class="option" data-value="mediodia">
+                    <div class="option-radio"></div>
+                    <div class="option-content">
+                        <div class="option-title">Mediodia</div>
+                        <div class="option-desc">12:00 - 17:00, despues de comer</div>
+                    </div>
+                </div>
+                <div class="option" data-value="tarde">
+                    <div class="option-radio"></div>
+                    <div class="option-content">
+                        <div class="option-title">Tarde - Noche</div>
+                        <div class="option-desc">17:00 - 22:00, rindo mejor tarde</div>
+                    </div>
+                </div>
+                <div class="option" data-value="madrugada">
+                    <div class="option-radio"></div>
+                    <div class="option-content">
+                        <div class="option-title">Madrugada</div>
+                        <div class="option-desc">22:00 - 6:00, soy nocturno</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Question 4: Work Status -->
+        <div class="question-card" id="q4">
+            <div class="question-section">
+                <h2 class="question">Trabajas actualmente</h2>
+                <p class="question-sub">Ajustaremos tu horario de estudio alrededor de tu trabajo</p>
+            </div>
+            <div class="options">
+                <div class="option" data-value="si">
+                    <div class="option-radio"></div>
+                    <div class="option-content">
+                        <div class="option-title">Si, trabajo</div>
+                        <div class="option-desc">Configurare mis horarios laborales</div>
+                    </div>
+                </div>
+                <div class="option" data-value="no">
+                    <div class="option-radio"></div>
+                    <div class="option-content">
+                        <div class="option-title">No trabajo</div>
+                        <div class="option-desc">Tengo el dia disponible para estudiar</div>
+                    </div>
+                </div>
+                <div class="option" data-value="parcial">
+                    <div class="option-radio"></div>
+                    <div class="option-content">
+                        <div class="option-title">Trabajo parcial / freelance</div>
+                        <div class="option-desc">Mis horarios son variables</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Work Schedule Config -->
+            <div class="work-schedule-card" id="workScheduleCard">
+                <div class="input-label">Selecciona los dias que trabajas</div>
+                <div class="days-grid" id="workDays">
+                    <button type="button" class="day-btn" data-day="L">L</button>
+                    <button type="button" class="day-btn" data-day="M">M</button>
+                    <button type="button" class="day-btn" data-day="X">X</button>
+                    <button type="button" class="day-btn" data-day="J">J</button>
+                    <button type="button" class="day-btn" data-day="V">V</button>
+                    <button type="button" class="day-btn" data-day="S">S</button>
+                    <button type="button" class="day-btn" data-day="D">D</button>
+                </div>
+
+                <div id="scheduleInputs"></div>
+            </div>
+        </div>
+
+        <!-- Question 5: Study Time Available -->
+        <div class="question-card" id="q5">
+            <div class="question-section">
+                <h2 class="question">Tiempo disponible para estudiar</h2>
+                <p class="question-sub">Cuantas horas puedes dedicar al dia aproximadamente</p>
+            </div>
+            <div class="options">
+                <div class="option" data-value="1-2">
+                    <div class="option-radio"></div>
+                    <div class="option-content">
+                        <div class="option-title">1 a 2 horas</div>
+                        <div class="option-desc">Estudio ligero pero constante</div>
+                    </div>
+                </div>
+                <div class="option" data-value="2-4">
+                    <div class="option-radio"></div>
+                    <div class="option-content">
+                        <div class="option-title">2 a 4 horas</div>
+                        <div class="option-desc">Tiempo moderado para avanzar</div>
+                    </div>
+                </div>
+                <div class="option" data-value="4-6">
+                    <div class="option-radio"></div>
+                    <div class="option-content">
+                        <div class="option-title">4 a 6 horas</div>
+                        <div class="option-desc">Estudio intensivo</div>
+                    </div>
+                </div>
+                <div class="option" data-value="6+">
+                    <div class="option-radio"></div>
+                    <div class="option-content">
+                        <div class="option-title">Mas de 6 horas</div>
+                        <div class="option-desc">Dedicacion completa</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Question 6: Main Goal -->
+        <div class="question-card" id="q6">
+            <div class="question-section">
+                <h2 class="question">Cual es tu objetivo principal</h2>
+                <p class="question-sub">Adaptaremos las recomendaciones a tu meta</p>
+            </div>
+            <div class="options">
+                <div class="option" data-value="examen">
+                    <div class="option-radio"></div>
+                    <div class="option-content">
+                        <div class="option-title">Preparar un examen</div>
+                        <div class="option-desc">Tengo una fecha limite y necesito aprobar</div>
+                    </div>
+                </div>
+                <div class="option" data-value="habilidad">
+                    <div class="option-radio"></div>
+                    <div class="option-content">
+                        <div class="option-title">Aprender una habilidad</div>
+                        <div class="option-desc">Programacion, idioma, diseno, etc.</div>
+                    </div>
+                </div>
+                <div class="option" data-value="curso">
+                    <div class="option-radio"></div>
+                    <div class="option-content">
+                        <div class="option-title">Completar un curso</div>
+                        <div class="option-desc">Estoy cursando una materia o certificacion</div>
+                    </div>
+                </div>
+                <div class="option" data-value="organizarme">
+                    <div class="option-radio"></div>
+                    <div class="option-content">
+                        <div class="option-title">Organizarme mejor</div>
+                        <div class="option-desc">Quiero ser mas productivo con mi tiempo</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Question 7: Subjects/Topics -->
+        <div class="question-card" id="q7">
+            <div class="question-section">
+                <h2 class="question">Que vas a estudiar</h2>
+                <p class="question-sub">Escribe las materias o temas, separados por coma</p>
+            </div>
+            <div class="input-group">
+                <input type="text" class="text-input" id="subjectsInput" placeholder="Ej: Matematicas, Historia, Python, Ingles...">
+            </div>
+            <div class="tags-container" id="subjectsTags"></div>
+
+            <div class="input-group" style="margin-top: 1.5rem;">
+                <label class="input-label">Tienes alguna fecha importante proxima (opcional)</label>
+                <input type="date" class="text-input" id="importantDate" style="color-scheme: dark;">
+            </div>
+
+            <div class="input-group" style="margin-top: 1rem;">
+                <label class="input-label">Descripcion del evento (opcional)</label>
+                <input type="text" class="text-input" id="eventDescription" placeholder="Ej: Examen final de calculo">
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" id="finishBtn" disabled>Guardar y comenzar</button>
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="btn-group" id="navButtons" style="display: none;">
+            <button class="btn btn-secondary" id="backBtn">Atras</button>
+            <button class="btn btn-primary" id="nextBtn" disabled>Siguiente</button>
+        </div>
+    </div>
+
+    <!-- Status Message -->
+    <div class="status-message" id="statusMessage">
+        <svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        <span class="status-text" id="statusText">Datos guardados correctamente</span>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Firebase Imports
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBH42jsEEaEOFa02LhD59aDkwFfo_RVVB4",
+            authDomain: "thynka-1dd68.firebaseapp.com",
+            projectId: "thynka-1dd68",
+            storageBucket: "thynka-1dd68.firebasestorage.app",
+            messagingSenderId: "704622327906",
+            appId: "1:704622327906:web:57c4efb9da7b935b80f93b",
+            measurementId: "G-5WYWTXZ562"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // User ID Management
+        function getUserId() {
+            let userId = localStorage.getItem('thynka_user_id');
+            if (!userId) {
+                userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('thynka_user_id', userId);
+            }
+            return userId;
+        }
+
+        const currentUserId = getUserId();
+
+        // DOM Elements
+        const splash = document.getElementById('splash');
+        const mainContainer = document.getElementById('mainContainer');
+        const progressFill = document.getElementById('progressFill');
+        const progressPercent = document.getElementById('progressPercent');
+        const stepCounter = document.getElementById('stepCounter');
+        const navButtons = document.getElementById('navButtons');
+        const backBtn = document.getElementById('backBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const finishBtn = document.getElementById('finishBtn');
+        const statusMessage = document.getElementById('statusMessage');
+        const statusText = document.getElementById('statusText');
+        const workScheduleCard = document.getElementById('workScheduleCard');
+        const subjectsInput = document.getElementById('subjectsInput');
+        const subjectsTags = document.getElementById('subjectsTags');
+
+        // State
+        let currentQuestion = 1;
+        const totalQuestions = 7;
+        const questions = ['q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'q7'];
+
+        let userData = {
+            learningStyle: '',
+            difficulty: '',
+            energyTime: '',
+            works: '',
+            workSchedule: {},
+            studyTime: '',
+            mainGoal: '',
+            subjects: [],
+            importantDate: null,
+            eventDescription: '',
+            createdAt: null
+        };
+
+        let selectedWorkDays = [];
+
+        // Initialize
+        async function init() {
+            try {
+                const userDoc = await getDoc(doc(db, 'users', currentUserId));
                 
-                let answers = {
-                    learning: '',
-                    difficulty: ''
-                };
+                setTimeout(() => {
+                    splash.classList.add('fade-out');
+                    
+                    setTimeout(() => {
+                        if (userDoc.exists()) {
+                            // User already exists, redirect to dashboard
+                            window.location.href = 'dashboard.html';
+                        } else {
+                            mainContainer.style.display = 'block';
+                            setupEventListeners();
+                            updateProgress();
+                        }
+                    }, 800);
+                }, 2000);
+            } catch (error) {
+                console.error('Error checking user:', error);
+                splash.classList.add('fade-out');
+                setTimeout(() => {
+                    mainContainer.style.display = 'block';
+                    setupEventListeners();
+                    updateProgress();
+                }, 800);
+            }
+        }
 
-                // Question 1
-                const q1Options = q1.querySelectorAll('.option');
-                q1Options.forEach(opt => {
-                    opt.addEventListener('click', () => {
-                        q1Options.forEach(o => o.classList.remove('selected'));
-                        opt.classList.add('selected');
-                        answers.learning = opt.dataset.value;
-                        btn1.classList.add('active');
-                    });
-                });
-
-                btn1.addEventListener('click', () => {
-                    q1.classList.remove('active');
-                    q2.classList.add('active');
-                    progressDots[0].classList.remove('active');
-                    progressDots[1].classList.add('active');
-                });
-
-                // Question 2
-                const q2Options = q2.querySelectorAll('.option');
-                q2Options.forEach(opt => {
-                    opt.addEventListener('click', () => {
-                        q2Options.forEach(o => o.classList.remove('selected'));
-                        opt.classList.add('selected');
-                        answers.difficulty = opt.dataset.value;
-                        btn2.classList.add('active');
-                    });
-                });
-
-                btn2.addEventListener('click', () => {
-                    localStorage.setItem('userProfile', JSON.stringify(answers));
-                    localStorage.setItem('hasVisited', 'true');
-                    window.location.href = 'inicioseccion.html';
+        // Setup Event Listeners
+        function setupEventListeners() {
+            // Question options
+            for (let i = 1; i <= 6; i++) {
+                const card = document.getElementById(`q${i}`);
+                const options = card.querySelectorAll('.option');
+                
+                options.forEach(opt => {
+                    opt.addEventListener('click', () => handleOptionSelect(i, opt, options));
                 });
             }
-        });
+
+            // Work days selector
+            const workDayBtns = document.querySelectorAll('#workDays .day-btn');
+            workDayBtns.forEach(btn => {
+                btn.addEventListener('click', () => toggleWorkDay(btn));
+            });
+
+            // Subjects input
+            subjectsInput.addEventListener('input', handleSubjectsInput);
+
+            // Navigation
+            backBtn.addEventListener('click', goToPreviousQuestion);
+            nextBtn.addEventListener('click', goToNextQuestion);
+            finishBtn.addEventListener('click', saveUserData);
+
+            // Important date and description
+            document.getElementById('importantDate').addEventListener('change', validateLastQuestion);
+            document.getElementById('eventDescription').addEventListener('input', validateLastQuestion);
+        }
+
+        // Handle Option Selection
+        function handleOptionSelect(questionNum, selectedOption, allOptions) {
+            allOptions.forEach(opt => opt.classList.remove('selected'));
+            selectedOption.classList.add('selected');
+            
+            const value = selectedOption.dataset.value;
+            
+            switch(questionNum) {
+                case 1:
+                    userData.learningStyle = value;
+                    break;
+                case 2:
+                    userData.difficulty = value;
+                    break;
+                case 3:
+                    userData.energyTime = value;
+                    break;
+                case 4:
+                    userData.works = value;
+                    if (value === 'si') {
+                        workScheduleCard.classList.add('visible');
+                    } else {
+                        workScheduleCard.classList.remove('visible');
+                        selectedWorkDays = [];
+                        document.querySelectorAll('#workDays .day-btn').forEach(b => b.classList.remove('selected'));
+                        document.getElementById('scheduleInputs').innerHTML = '';
+                    }
+                    validateCurrentQuestion();
+                    return;
+                case 5:
+                    userData.studyTime = value;
+                    break;
+                case 6:
+                    userData.mainGoal = value;
+                    break;
+            }
+            
+            nextBtn.disabled = false;
+            
+            // Auto-advance for questions 1-6 (except 4 which has sub-options)
+            if (questionNum !== 4) {
+                setTimeout(() => goToNextQuestion(), 300);
+            }
+        }
+
+        // Toggle Work Day
+        function toggleWorkDay(btn) {
+            const day = btn.dataset.day;
+            
+            if (btn.classList.contains('selected')) {
+                btn.classList.remove('selected');
+                selectedWorkDays = selectedWorkDays.filter(d => d !== day);
+                delete userData.workSchedule[day];
+            } else {
+                btn.classList.add('selected');
+                selectedWorkDays.push(day);
+                userData.workSchedule[day] = { start: '09:00', end: '17:00' };
+            }
+            
+            renderScheduleInputs();
+            validateCurrentQuestion();
+        }
+
+        // Render Schedule Inputs
+        function renderScheduleInputs() {
+            const container = document.getElementById('scheduleInputs');
+            const dayNames = { L: 'Lunes', M: 'Martes', X: 'Miercoles', J: 'Jueves', V: 'Viernes', S: 'Sabado', D: 'Domingo' };
+            
+            container.innerHTML = selectedWorkDays.map(day => `
+                <div class="schedule-day visible" id="schedule-${day}">
+                    <div class="schedule-day-header">
+                        <span class="schedule-day-name">${dayNames[day]}</span>
+                    </div>
+                    <div class="time-row">
+                        <div class="time-input">
+                            <label class="input-label">Entrada</label>
+                            <input type="time" class="text-input" value="${userData.workSchedule[day]?.start || '09:00'}" 
+                                   onchange="updateWorkTime('${day}', 'start', this.value)" style="color-scheme: dark;">
+                        </div>
+                        <span class="time-separator">a</span>
+                        <div class="time-input">
+                            <label class="input-label">Salida</label>
+                            <input type="time" class="text-input" value="${userData.workSchedule[day]?.end || '17:00'}" 
+                                   onchange="updateWorkTime('${day}', 'end', this.value)" style="color-scheme: dark;">
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Update Work Time (global function for inline handlers)
+        window.updateWorkTime = function(day, type, value) {
+            if (!userData.workSchedule[day]) {
+                userData.workSchedule[day] = {};
+            }
+            userData.workSchedule[day][type] = value;
+        };
+
+        // Handle Subjects Input
+        function handleSubjectsInput(e) {
+            const value = e.target.value;
+            const subjects = value.split(',').map(s => s.trim()).filter(s => s.length > 0);
+            userData.subjects = subjects;
+            
+            subjectsTags.innerHTML = subjects.map(subject => `
+                <span class="tag">
+                    ${escapeHtml(subject)}
+                    <span class="tag-remove" onclick="removeSubject('${escapeHtml(subject)}')">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </span>
+                </span>
+            `).join('');
+            
+            validateLastQuestion();
+        }
+
+        // Remove Subject
+        window.removeSubject = function(subjectToRemove) {
+            userData.subjects = userData.subjects.filter(s => s !== subjectToRemove);
+            subjectsInput.value = userData.subjects.join(', ');
+            handleSubjectsInput({ target: subjectsInput });
+        };
+
+        // Escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Validate Current Question
+        function validateCurrentQuestion() {
+            if (currentQuestion === 4) {
+                if (userData.works === 'si') {
+                    nextBtn.disabled = selectedWorkDays.length === 0;
+                } else if (userData.works) {
+                    nextBtn.disabled = false;
+                } else {
+                    nextBtn.disabled = true;
+                }
+            }
+        }
+
+        // Validate Last Question
+        function validateLastQuestion() {
+            const hasSubjects = userData.subjects.length > 0;
+            finishBtn.disabled = !hasSubjects;
+        }
+
+        // Update Progress
+        function updateProgress() {
+            const percent = ((currentQuestion - 1) / totalQuestions) * 100;
+            progressFill.style.width = `${percent}%`;
+            progressPercent.textContent = `${Math.round(percent)}%`;
+            stepCounter.textContent = `Paso ${currentQuestion} de ${totalQuestions}`;
+            
+            // Show/hide nav buttons
+            if (currentQuestion === totalQuestions) {
+                navButtons.style.display = 'none';
+            } else {
+                navButtons.style.display = 'flex';
+            }
+        }
+
+        // Go to Next Question
+        function goToNextQuestion() {
+            if (currentQuestion >= totalQuestions) return;
+            
+            const currentCard = document.getElementById(`q${currentQuestion}`);
+            currentCard.classList.add('exit');
+            
+            setTimeout(() => {
+                currentCard.classList.remove('active', 'exit');
+                currentQuestion++;
+                const nextCard = document.getElementById(`q${currentQuestion}`);
+                nextCard.classList.add('active');
+                nextBtn.disabled = true;
+                updateProgress();
+                
+                // Pre-validate if there's already data
+                if (currentQuestion === 4 && userData.works) {
+                    validateCurrentQuestion();
+                }
+            }, 300);
+        }
+
+        // Go to Previous Question
+        function goToPreviousQuestion() {
+            if (currentQuestion <= 1) return;
+            
+            const currentCard = document.getElementById(`q${currentQuestion}`);
+            currentCard.classList.remove('active');
+            currentQuestion--;
+            const prevCard = document.getElementById(`q${currentQuestion}`);
+            prevCard.classList.remove('exit');
+            prevCard.classList.add('active');
+            nextBtn.disabled = false;
+            updateProgress();
+        }
+
+        // Save User Data to Firebase
+        async function saveUserData() {
+            finishBtn.disabled = true;
+            finishBtn.textContent = 'Guardando...';
+            
+            const importantDateValue = document.getElementById('importantDate').value;
+            const eventDescValue = document.getElementById('eventDescription').value;
+            
+            userData.importantDate = importantDateValue || null;
+            userData.eventDescription = eventDescValue || '';
+            userData.createdAt = new Date().toISOString();
+            
+            try {
+                await setDoc(doc(db, 'users', currentUserId), userData);
+                
+                showStatus('Perfil guardado correctamente', 'success');
+                
+                setTimeout(() => {
+                    localStorage.setItem('hasVisited', 'true');
+                    window.location.href = 'dashboard.html';
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Error saving user data:', error);
+                showStatus('Error al guardar. Intenta de nuevo.', 'error');
+                finishBtn.disabled = false;
+                finishBtn.textContent = 'Guardar y comenzar';
+            }
+        }
+
+        // Show Status Message
+        function showStatus(message, type) {
+            statusText.textContent = message;
+            statusMessage.className = `status-message ${type} visible`;
+            
+            const icon = statusMessage.querySelector('.status-icon');
+            if (type === 'success') {
+                icon.innerHTML = '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>';
+            } else {
+                icon.innerHTML = '<circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line>';
+            }
+            
+            setTimeout(() => {
+                statusMessage.classList.remove('visible');
+            }, 3000);
+        }
+
+        // Start
+        init();
     </script>
 </body>
 </html>
