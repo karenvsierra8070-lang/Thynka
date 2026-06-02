@@ -909,6 +909,7 @@
                     
                     setTimeout(() => {
                         if (userDoc.exists()) {
+                            // Si ya tiene datos, va directo al dashboard
                             window.location.href = 'dashboard.html';
                         } else {
                             mainContainer.style.display = 'block';
@@ -929,7 +930,7 @@
         }
 
         function setupEventListeners() {
-            // Q1, Q2, Q5, Q6 - Standard options
+            // Q1, Q2, Q5, Q6 - Standard options (Sin auto-avance)
             [1, 2, 5, 6].forEach(qNum => {
                 const card = document.getElementById(`q${qNum}`);
                 const options = card.querySelectorAll('.option');
@@ -948,8 +949,7 @@
                             case 6: userData.priority = value; break;
                         }
                         
-                        nextBtn.disabled = false;
-                        setTimeout(() => goToNextQuestion(), 300);
+                        nextBtn.disabled = false; // Solo activamos el botón, no avanza solo
                     });
                 });
             });
@@ -1128,7 +1128,8 @@
                 
                 setTimeout(() => {
                     localStorage.setItem('hasVisited', 'true');
-                    window.location.href = 'dashboard.html';
+                    // CAMBIO IMPORTANTE: Redirige a cuenta.html
+                    window.location.href = 'cuenta.html';
                 }, 1500);
                 
             } catch (error) {
