@@ -43,7 +43,7 @@
             z-index: 0;
         }
 
-        /* Splash */
+        /* Splash - Optimizado para carga rápida */
         .splash {
             position: fixed;
             inset: 0;
@@ -52,7 +52,8 @@
             align-items: center;
             justify-content: center;
             z-index: 1000;
-            transition: opacity 0.8s ease, visibility 0.8s ease;
+            /* Transición rápida de 0.3s en lugar de 0.8s */
+            transition: opacity 0.3s ease, visibility 0.3s ease; 
         }
 
         .splash.fade-out {
@@ -151,7 +152,7 @@
             display: none;
             opacity: 0;
             transform: translateX(30px);
-            transition: opacity 0.4s ease, transform 0.4s ease;
+            transition: opacity 0.3s ease, transform 0.3s ease; /* Ligeramente más rápido */
         }
 
         .question-card.active {
@@ -839,7 +840,6 @@
     </div>
 
     <script type="module">
-        // Se usan las versiones 12.5.0 consistentes con tu index.html
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
@@ -895,7 +895,6 @@
         // --- LOGICA PRINCIPAL ---
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
-                // Si no hay usuario logueado, mandar a login
                 window.location.href = 'index.html';
                 return;
             }
@@ -905,21 +904,21 @@
             try {
                 const userDoc = await getDoc(doc(db, 'users', currentUserId));
                 
+                // CAMBIO 1: Carga rápida. Eliminamos el setTimeout de 2s.
+                // Iniciamos el fade out inmediatamente.
+                splash.classList.add('fade-out');
+                
+                // Esperamos solo lo necesario para la transición CSS (ahora 300ms)
                 setTimeout(() => {
-                    splash.classList.add('fade-out');
-                    
-                    setTimeout(() => {
-                        if (userDoc.exists()) {
-                            // YA TIENE DATOS: REDIRIGIR AL DASHBOARD
-                            window.location.href = 'dashboard.html';
-                        } else {
-                            // NO TIENE DATOS: MOSTRAR PREGUNTAS
-                            mainContainer.style.display = 'block';
-                            setupEventListeners(currentUserId);
-                            updateProgress();
-                        }
-                    }, 800);
-                }, 2000);
+                    if (userDoc.exists()) {
+                        window.location.href = 'dashboard.html';
+                    } else {
+                        mainContainer.style.display = 'block';
+                        setupEventListeners(currentUserId);
+                        updateProgress();
+                    }
+                }, 300); // Tiempo reducido drásticamente
+                
             } catch (error) {
                 console.error('Error:', error);
                 splash.classList.add('fade-out');
@@ -927,7 +926,7 @@
                     mainContainer.style.display = 'block';
                     setupEventListeners(currentUserId);
                     updateProgress();
-                }, 800);
+                }, 300);
             }
         });
 
@@ -1123,14 +1122,12 @@
             userData.createdAt = new Date().toISOString();
             
             try {
+                // Guardar en Firebase
                 await setDoc(doc(db, 'users', userId), userData);
                 
-                showStatus('Perfil guardado correctamente', 'success');
-                
-                setTimeout(() => {
-                    // REDIRIGIR AL DASHBOARD
-                    window.location.href = 'dashboard.html';
-                }, 1500);
+                // CAMBIO 2: Redirección directa y rápida.
+                // Eliminamos el showStatus y el setTimeout de 1.5s.
+                window.location.href = 'dashboard.html';
                 
             } catch (error) {
                 console.error('Error:', error);
