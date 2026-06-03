@@ -921,6 +921,9 @@
             else if(sort === 'priority') list.sort((a,b) => rankP(a[1].priority) - rankP(b[1].priority));
 
             list = list.filter(([id, t]) => {
+                // MODIFICACIÓN: Ocultar tareas completadas
+                if(t.completed) return false;
+
                 const due = new Date(t.dueDate);
                 const diffDays = Math.ceil((due - now) / (1000*60*60*24));
                 if(timeF === '3days' && diffDays > 3) return false;
