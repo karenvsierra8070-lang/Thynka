@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thynka - Gestión de Tareas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* --- VARIABLES Y ESTILOS BASE --- */
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.15);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --danger: #e74c3c; --success: #27ae60; --warning: #f39c12; --info: #3498db;
+            --overlay-bg: rgba(0, 0, 0, 0.6);
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.3); --shadow-hover: rgba(0, 0, 0, 0.4);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+            --overlay-bg: rgba(0, 0, 0, 0.8);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* --- SIDEBAR (Mantenida del Dashboard) --- */
+        .sidebar {
+            position: fixed; left: 0; top: 0; height: 100vh; width: 280px;
+            background-color: var(--bg-secondary);
+            box-shadow: 2px 0 15px var(--shadow);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            z-index: 9999;
+            display: flex; flex-direction: column;
+        }
+        .sidebar.active { transform: translateX(0); }
+        
+        .sidebar-header {
+            padding: 30px 20px; border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; gap: 15px;
+        }
+        .sidebar-logo { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--primary-dark); }
+        .sidebar-menu { flex: 1; overflow-y: auto; padding: 20px 0; }
+        .menu-item {
+            display: block; padding: 15px 25px; color: var(--text-primary);
+            text-decoration: none; transition: all 0.3s ease; border-left: 3px solid transparent;
+            display: flex; align-items: center; gap: 15px;
+        }
+        .menu-item:hover { background-color: var(--bg-tertiary); border-left-color: var(--primary); }
+        .menu-item.active { background-color: var(--bg-tertiary); border-left-color: var(--primary); font-weight: 600; }
+        .menu-item i { width: 20px; text-align: center; }
+
+        /* --- CONTROLES SUPERIORES --- */
+        .menu-toggle {
+            position: fixed; left: 20px; top: 20px; width: 45px; height: 45px;
+            background-color: var(--primary); border: none; border-radius: 12px;
+            color: var(--white); cursor: pointer; display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; transition: all 0.3s ease; z-index: 10000; box-shadow: 0 4px 12px var(--shadow);
+        }
+        .menu-toggle.active { left: 300px; background-color: var(--bg-secondary); color: var(--primary); }
+        
+        .theme-toggle {
+            position: fixed; right: 20px; top: 20px; width: 45px; height: 45px;
+            background-color: var(--primary); border: none; border-radius: 12px;
+            color: var(--white); cursor: pointer; display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; z-index: 10000; box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--overlay-bg); opacity: 0; visibility: hidden;
+            transition: all 0.3s ease; z-index: 9998;
+        }
+        .overlay.active { opacity: 1; visibility: visible; }
+
+        /* --- CONTENIDO PRINCIPAL --- */
+        .main-content {
+            flex: 1; padding: 80px 20px 40px; max-width: 1400px;
+            margin: 0 auto; width: 100%;
+        }
+
+        .page-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 30px; flex-wrap: wrap; gap: 20px;
+        }
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--primary-dark);
+        }
+        .page-subtitle { color: var(--text-secondary); font-size: 0.9rem; margin-top: 5px; display: block; }
+
+        /* --- TARJETAS Y CONTENEDORES --- */
+        .card {
+            background-color: var(--bg-secondary); border-radius: 15px;
+            box-shadow: 0 4px 15px var(--shadow); overflow: hidden; margin-bottom: 20px;
+        }
+        .card-header {
+            padding: 20px; border-bottom: 1px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .card-title { font-weight: 600; color: var(--primary-dark); display: flex; align-items: center; gap: 10px; }
+        .card-body { padding: 20px; }
+
+        /* --- FORMULARIOS Y BOTONES --- */
+        .btn {
+            padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer;
+            font-weight: 500; transition: all 0.2s; display: inline-flex;
+            align-items: center; gap: 8px; font-size: 0.9rem; font-family: inherit;
+        }
+        .btn-primary { background-color: var(--primary); color: var(--white); }
+        .btn-primary:hover { background-color: var(--primary-dark); transform: translateY(-2px); }
+        .btn-secondary { background-color: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background-color: var(--border-color); }
+        .btn-success { background-color: var(--success); color: white; }
+        .btn-danger { background-color: var(--danger); color: white; }
+        .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+        
+        input[type="text"], input[type="date"], input[type="time"], input[type="number"],
+        select, textarea {
+            width: 100%; background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 8px; padding: 10px 15px; color: var(--text-primary);
+            font-family: inherit; font-size: 0.95rem; transition: border-color 0.2s;
+        }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); }
+        
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-primary); }
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        
+        .checkbox-group { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary); }
+
+        /* --- MODALES --- */
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--overlay-bg); display: flex; justify-content: center;
+            align-items: center; z-index: 10001; opacity: 0; visibility: hidden;
+            transition: all 0.3s; padding: 20px;
+        }
+        .modal.active { opacity: 1; visibility: visible; }
+        .modal-content {
+            background: var(--bg-secondary); width: 100%; max-width: 700px;
+            max-height: 90vh; overflow-y: auto; border-radius: 20px;
+            position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.3); animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        
+        .modal-header {
+            padding: 20px 25px; border-bottom: 1px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center; position: sticky;
+            top: 0; background: var(--bg-secondary); z-index: 10;
+        }
+        .modal-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--primary-dark); }
+        .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-secondary); transition: color 0.2s; }
+        .modal-close:hover { color: var(--danger); }
+        .modal-body { padding: 25px; }
+        .modal-footer { padding: 20px 25px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 10px; }
+
+        /* --- TABLAS Y LISTAS --- */
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th, .data-table td { padding: 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        .data-table th { background: var(--bg-tertiary); color: var(--text-secondary); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; }
+        .data-table tr:hover td { background: var(--bg-tertiary); }
+        
+        .badge {
+            display: inline-block; padding: 4px 10px; border-radius: 20px;
+            font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+        }
+        .badge-subject { color: white; }
+        .badge-priority-alta { background-color: var(--danger); color: white; }
+        .badge-priority-media { background-color: var(--warning); color: var(--bg-dark); }
+        .badge-priority-baja { background-color: var(--success); color: white; }
+
+        /* --- VISTA AGENDA --- */
+        .agenda-item {
+            display: flex; gap: 20px; padding: 20px; border-bottom: 1px solid var(--border-color);
+            transition: background 0.2s; align-items: center;
+        }
+        .agenda-item:hover { background: var(--bg-tertiary); }
+        .agenda-date {
+            min-width: 60px; text-align: center; padding: 10px;
+            background: var(--bg-tertiary); border-radius: 10px;
+        }
+        .agenda-day { font-size: 1.8rem; font-weight: 700; color: var(--primary-dark); line-height: 1; }
+        .agenda-month { font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; }
+        .agenda-content { flex: 1; }
+        .agenda-title { font-weight: 600; margin-bottom: 5px; font-size: 1.1rem; }
+        .agenda-meta { display: flex; gap: 15px; font-size: 0.85rem; color: var(--text-secondary); flex-wrap: wrap; }
+        .agenda-actions { display: flex; gap: 10px; }
+
+        /* --- PASOS (STEPS) --- */
+        .steps-list { margin-top: 10px; }
+        .step-item { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
+        .step-item input { flex: 1; }
+
+        /* --- POMODORO OVERLAY --- */
+        .pomo-overlay {
+            position: fixed; inset: 0; background: var(--bg-primary);
+            z-index: 10005; display: none; flex-direction: column;
+            justify-content: center; align-items: center; text-align: center;
+            padding: 20px;
+        }
+        .pomo-overlay.active { display: flex; }
+        .pomo-timer { font-size: 8rem; font-weight: 700; color: var(--primary); line-height: 1; }
+        .pomo-task-name { font-size: 1.5rem; margin: 20px 0 40px; }
+        .pomo-controls { display: flex; gap: 20px; }
+        .pomo-message { margin-top: 40px; font-style: italic; color: var(--text-secondary); font-size: 1.1rem; }
+
+        /* --- REGISTRO DE HORARIOS (SIDEBAR DERECHO) --- */
+        .schedule-register {
+            position: fixed; right: 0; top: 0; height: 100vh; width: 350px;
+            background: var(--bg-secondary); box-shadow: -2px 0 15px var(--shadow);
+            transform: translateX(100%); transition: transform 0.3s ease; z-index: 9999;
+            display: flex; flex-direction: column;
+        }
+        .schedule-register.active { transform: translateX(0); }
+        .schedule-header { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .schedule-body { flex: 1; overflow-y: auto; padding: 20px; }
+        
+        /* --- EMPTY STATE --- */
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
+        .empty-state i { font-size: 4rem; margin-bottom: 20px; opacity: 0.3; }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            .page-title { font-size: 1.5rem; }
+            .agenda-item { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .agenda-date { display: none; }
+            .modal-content { max-width: 100%; height: 100%; max-height: 100%; border-radius: 0; }
+            .schedule-register { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR IZQUIERDA -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div style="width:40px;height:40px;background:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;">T</div>
+            <h2 class="sidebar-logo">Thynka</h2>
+        </div>
+        <div class="sidebar-menu">
+            <a href="dashboard.html" class="menu-item"><i class="fas fa-home"></i> Inicio</a>
+            <a href="tareas.html" class="menu-item active"><i class="fas fa-tasks"></i> Tareas</a>
+            <a href="horario.html" class="menu-item"><i class="fas fa-calendar-alt"></i> Horario</a>
+            <a href="examen.html" class="menu-item"><i class="fas fa-file-alt"></i> Exámenes</a>
+            <a href="asistente.html" class="menu-item"><i class="fas fa-robot"></i> Asistente IA</a>
+            <a href="recomendaciones.html" class="menu-item"><i class="fas fa-graduation-cap"></i> Aprende</a>
+            <a href="cuestionarios.html" class="menu-item"><i class="fas fa-question-circle"></i> Cuestionarios</a>
+            <a href="patron.html" class="menu-item"><i class="fas fa-chart-line"></i> Análisis</a>
+        </div>
+    </nav>
+
+    <!-- PANEL DERECHO: REGISTRO DE HORARIOS -->
+    <div class="schedule-register" id="schedulePanel">
+        <div class="schedule-header">
+            <h3 style="color:var(--primary-dark)">Mi Horario</h3>
+            <button class="btn btn-secondary btn-sm" onclick="toggleSchedulePanel()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="schedule-body">
+            <p style="margin-bottom:15px; font-size:0.9rem; color:var(--text-secondary);">Registra tus clases de universidad o institución para que Thynka no te asigne tareas en esas horas.</p>
+            
+            <div class="form-group">
+                <label>Días de Clase</label>
+                <div class="days-grid" id="classDaysGrid">
+                    <button type="button" class="day-btn" data-day="L">L</button>
+                    <button type="button" class="day-btn" data-day="M">M</button>
+                    <button type="button" class="day-btn" data-day="X">X</button>
+                    <button type="button" class="day-btn" data-day="J">J</button>
+                    <button type="button" class="day-btn" data-day="V">V</button>
+                    <button type="button" class="day-btn" data-day="S">S</button>
+                    <button type="button" class="day-btn" data-day="D">D</button>
+                </div>
+            </div>
+
+            <div id="classTimeInputs">
+                <!-- Se generan dinámicamente -->
+            </div>
+
+            <button class="btn btn-primary" style="width:100%; margin-top:20px;" onclick="saveClassSchedule()">
+                <i class="fas fa-save"></i> Guardar Horario
+            </button>
+            <div id="scheduleMsg" style="margin-top:10px; text-align:center; font-size:0.9rem;"></div>
+        </div>
+    </div>
+
+    <!-- OVERLAY GENERAL -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- CONTROLES -->
+    <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+    <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+
+    <!-- MODAL: FORMULARIO DE TAREA -->
+    <div class="modal" id="taskModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Registrar Nueva Tarea</h3>
+                <button class="modal-close" onclick="closeModal('taskModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="taskForm">
+                    <div class="form-group">
+                        <label>Título de la Tarea *</label>
+                        <input type="text" id="taskTitle" required placeholder="Ej: Ensayo de Historia">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Asignatura</label>
+                            <div style="display:flex; gap:10px;">
+                                <select id="taskSubject" style="flex:1"></select>
+                                <button type="button" class="btn btn-secondary" onclick="addNewSubject()" title="Agregar Materia"><i class="fas fa-plus"></i></button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Tipo de Actividad</label>
+                            <select id="taskType">
+                                <option value="Tarea">Tarea</option>
+                                <option value="Proyecto">Proyecto</option>
+                                <option value="Ensayo">Ensayo</option>
+                                <option value="Presentación">Presentación</option>
+                                <option value="Laboratorio">Laboratorio</option>
+                                <option value="Lectura">Lectura</option>
+                                <option value="Investigación">Investigación</option>
+                                <option value="Estudio">Estudio</option>
+                                <option value="Ejercicios">Ejercicios</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Fecha de Entrega *</label>
+                            <input type="date" id="taskDueDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Hora Límite</label>
+                            <input type="time" id="taskDueTime" value="23:59">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Modalidad</label>
+                            <select id="taskMode">
+                                <option value="individual">Individual</option>
+                                <option value="grupo">Grupal</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Prioridad</label>
+                            <select id="taskPriority">
+                                <option value="alta">Alta</option>
+                                <option value="media">Media</option>
+                                <option value="baja">Baja</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Dificultad</label>
+                            <select id="taskDifficulty">
+                                <option value="alta">Alta</option>
+                                <option value="media">Media</option>
+                                <option value="baja">Baja</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Valor (%)</label>
+                            <input type="number" id="taskGradeValue" placeholder="Ej: 10" min="0" max="100">
+                            <div class="checkbox-group" style="margin-top:5px;">
+                                <input type="checkbox" id="taskGradeUnknown">
+                                <label for="taskGradeUnknown" style="font-size:0.8rem; font-weight:400;">No sé / No aplica</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Formato de Entrega</label>
+                        <input type="text" id="taskFormat" placeholder="Ej: PDF, Físico, Enlace">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Instrucciones / Enlaces</label>
+                        <textarea id="taskInstructions" rows="3" placeholder="Pega aquí las instrucciones o enlaces..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Pasos de la Actividad</label>
+                        <div class="steps-list" id="stepsContainer">
+                            <!-- Pasos dinámicos -->
+                        </div>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="addStepInput()" style="margin-top:10px;">
+                            <i class="fas fa-plus"></i> Agregar Paso
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('taskModal')">Cancelar</button>
+                <button class="btn btn-primary" id="saveTaskBtn" onclick="saveTask()">
+                    <i class="fas fa-save"></i> Guardar y Recomendar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ALERTA DE RECOMENDACIÓN -->
+    <div class="modal" id="recommendModal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fas fa-magic" style="color:var(--primary)"></i> Recomendación Generada</h3>
+                <button class="modal-close" onclick="closeModal('recommendModal')">&times;</button>
+            </div>
+            <div class="modal-body" style="text-align: center;">
+                <p style="margin-bottom: 20px;">Basado en tu prioridad, dificultad y tiempo disponible, te sugerimos empezar:</p>
+                <div style="font-size: 2rem; font-weight: 700; color: var(--primary); margin: 20px 0;" id="recDateDisplay">--</div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);" id="recReasonDisplay">Razón del cálculo...</p>
+                <div id="alertHighDelay" style="display:none; margin-top:20px; padding:10px; background:rgba(231, 76, 60, 0.1); border-radius:8px; color:var(--danger);">
+                    <strong>¡Atención!</strong> La fecha sugerida está muy cerca de la entrega (360% de capacidad). ¡Empieza ya!
+                </div>
+            </div>
+            <div class="modal-footer" style="justify-content: center;">
+                <button class="btn btn-primary" onclick="confirmRecommendation()">Confirmar y Guardar</button>
+                <button class="btn btn-secondary" onclick="closeModal('recommendModal')">Editar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POMODORO OVERLAY -->
+    <div class="pomo-overlay" id="pomoOverlay">
+        <div class="pomo-task-name" id="pomoTaskName">Nombre de la tarea</div>
+        <div class="pomo-timer" id="pomoTimer">25:00</div>
+        <div class="pomo-message" id="pomoMessage">¡Tú puedes! Un paso a la vez.</div>
+        <div class="pomo-controls">
+            <button class="btn btn-success btn-lg" id="pomoStartBtn" onclick="toggleTimer()"><i class="fas fa-play"></i> Iniciar</button>
+            <button class="btn btn-secondary btn-lg" onclick="resetTimer()"><i class="fas fa-redo"></i> Reset</button>
+            <button class="btn btn-danger btn-lg" onclick="closePomodoro()"><i class="fas fa-times"></i> Salir</button>
+        </div>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Gestión de Tareas</h1>
+                <span class="page-subtitle">Organiza, prioriza y cumple tus metas</span>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <button class="btn btn-secondary" onclick="toggleSchedulePanel()"><i class="fas fa-school"></i> Mi Horario</button>
+                <button class="btn btn-primary" onclick="openModal('taskModal')"><i class="fas fa-plus"></i> Nueva Tarea</button>
+            </div>
+        </div>
+
+        <!-- FILTROS -->
+        <div class="card" style="margin-bottom:20px; background:var(--bg-secondary);">
+            <div class="card-body" style="padding: 15px 20px;">
+                <div style="display:flex; gap:15px; flex-wrap:wrap; align-items:center;">
+                    <div class="form-group" style="margin-bottom:0; flex:1; min-width:150px;">
+                        <select id="filterMain" onchange="renderTasks()">
+                            <option value="dueDate">Ordenar por Vencimiento</option>
+                            <option value="priority">Ordenar por Prioridad</option>
+                            <option value="difficulty">Ordenar por Dificultad</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom:0; flex:1; min-width:150px;">
+                        <select id="filterTime" onchange="renderTasks()">
+                            <option value="all">Todas</option>
+                            <option value="3days">Vencen en 3 días</option>
+                            <option value="week">Esta semana</option>
+                            <option value="month">Este mes</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom:0; flex:1; min-width:150px;">
+                        <select id="filterSubject" onchange="renderTasks()">
+                            <option value="all">Todas las materias</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LISTA DE TAREAS -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-list"></i> Listado de Tareas</h3>
+                <div style="display:flex; gap:5px;">
+                    <button class="btn btn-sm btn-secondary active" onclick="switchView('agenda')"><i class="fas fa-th-list"></i></button>
+                    <button class="btn btnsm btn-secondary" onclick="switchView('table')"><i class="fas fa-table"></i></button>
+                </div>
+            </div>
+            <div id="agendaView" style="padding:0;">
+                <!-- Tareas aquí -->
+            </div>
+            <div id="tableView" style="display:none; overflow-x:auto;">
+                <table class="data-table">
+                    <thead><tr><th>Tarea</th><th>Materia</th><th>Entrega</th><th>Prioridad</th><th>Acciones</th></tr></thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase, ref, set, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBH42jsEEaEOFa02LhD59aDkwFfo_RVVB4",
+            authDomain: "thynka-1dd68.firebaseapp.com",
+            databaseURL: "https://thynka-1dd68-default-rtdb.firebaseio.com",
+            projectId: "thynka-1dd68",
+            storageBucket: "thynka-1dd68.appspot.com",
+            messagingSenderId: "704622327906",
+            appId: "1:704622327906:web:57c4efb9da7b935b80f93b"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        let currentUser = null;
+        let userData = { settings: {}, subjects: {}, tasks: {}, classSchedule: {} };
+        let selectedTaskForPomo = null;
+        let timerInterval = null;
+        let timeLeft = 25 * 60;
+        let selectedClassDays = [];
+
+        // --- INICIALIZACIÓN ---
+        onAuthStateChanged(auth, user => {
+            if (user) {
+                currentUser = user;
+                loadAllData();
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        function loadAllData() {
+            onValue(ref(db, `users/${currentUser.uid}`), snap => {
+                userData.settings = snap.val() || {};
+            });
+            
+            onValue(ref(db, `subjects/${currentUser.uid}`), snap => {
+                userData.subjects = snap.val() || {};
+                renderSubjectOptions();
+                renderSubjectFilters();
+            });
+
+            onValue(ref(db, `tasks/${currentUser.uid}`), snap => {
+                userData.tasks = snap.val() || {};
+                renderTasks();
+            });
+
+            onValue(ref(db, `classSchedule/${currentUser.uid}`), snap => {
+                userData.classSchedule = snap.val() || {};
+                if(snap.exists()) loadClassScheduleUI(snap.val());
+            });
+        }
+
+        // --- UI: SIDEBAR & THEME ---
+        document.getElementById('menuToggle').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        });
+        document.getElementById('overlay').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.remove('active');
+            document.getElementById('schedulePanel').classList.remove('active');
+            document.getElementById('overlay').classList.remove('active');
+        });
+
+        // Theme
+        const theme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', theme);
+        document.getElementById('themeToggle').innerHTML = theme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            const curr = document.documentElement.getAttribute('data-theme');
+            const next = curr === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+            document.getElementById('themeToggle').innerHTML = next === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        });
+
+        // --- UI: MODALS ---
+        window.openModal = (id) => { document.getElementById(id).classList.add('active'); };
+        window.closeModal = (id) => { document.getElementById(id).classList.remove('active'); };
+
+        // --- UI: SCHEDULE PANEL ---
+        window.toggleSchedulePanel = () => {
+            const panel = document.getElementById('schedulePanel');
+            panel.classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        };
+
+        // --- LÓGICA: MATERIAS ---
+        window.addNewSubject = () => {
+            const name = prompt("Nombre de la nueva materia:");
+            if (name && name.trim()) {
+                const color = `hsl(${Math.random()*360}, 60%, 65%)`;
+                push(ref(db, `subjects/${currentUser.uid}`), { name: name.trim(), color: color, icon: 'book' });
+            }
+        };
+
+        function renderSubjectOptions() {
+            const sel = document.getElementById('taskSubject');
+            sel.innerHTML = Object.entries(userData.subjects).map(([id, s]) => 
+                `<option value="${id}">${s.name}</option>`
+            ).join('');
+        }
+
+        function renderSubjectFilters() {
+            const sel = document.getElementById('filterSubject');
+            sel.innerHTML = `<option value="all">Todas las materias</option>` + 
+            Object.entries(userData.subjects).map(([id, s]) => 
+                `<option value="${id}">${s.name}</option>`
+            ).join('');
+        }
+
+        // --- LÓGICA: PASOS ---
+        window.addStepInput = (val = '') => {
+            const container = document.getElementById('stepsContainer');
+            const div = document.createElement('div');
+            div.className = 'step-item';
+            div.innerHTML = `
+                <input type="text" class="step-input" value="${val}" placeholder="Describe un paso...">
+                <button type="button" class="btn btn-sm btn-secondary" onclick="this.parentElement.remove()"><i class="fas fa-trash"></i></button>
+            `;
+            container.appendChild(div);
+        };
+
+        // --- LÓGICA: HORARIOS DE CLASE ---
+        document.querySelectorAll('#classDaysGrid .day-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                btn.classList.toggle('active');
+                const d = btn.dataset.day;
+                if(btn.classList.contains('active')) selectedClassDays.push(d);
+                else selectedClassDays = selectedClassDays.filter(x => x !== d);
+                renderClassTimeInputs();
+            });
+        });
+
+        function renderClassTimeInputs() {
+            const container = document.getElementById('classTimeInputs');
+            const dayNames = {L:'Lunes', M:'Martes', X:'Miércoles', J:'Jueves', V:'Viernes', S:'Sábado', D:'Domingo'};
+            container.innerHTML = selectedClassDays.map(d => `
+                <div style="margin-bottom:15px; padding:10px; background:var(--bg-tertiary); border-radius:8px;">
+                    <label style="font-size:0.9rem; font-weight:600; margin-bottom:5px; display:block;">${dayNames[d]}</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="time" id="classStart${d}" value="08:00" style="flex:1">
+                        <input type="time" id="classEnd${d}" value="14:00" style="flex:1">
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadClassScheduleUI(data) {
+            selectedClassDays = Object.keys(data);
+            selectedClassDays.forEach(d => {
+                document.querySelector(`#classDaysGrid .day-btn[data-day="${d}"]`).classList.add('active');
+            });
+            renderClassTimeInputs();
+            
+            // Set values
+            setTimeout(() => {
+                Object.entries(data).forEach(([day, times]) => {
+                    const startInp = document.getElementById(`classStart${day}`);
+                    const endInp = document.getElementById(`classEnd${day}`);
+                    if(startInp) startInp.value = times.start;
+                    if(endInp) endInp.value = times.end;
+                });
+            }, 100);
+        }
+
+        window.saveClassSchedule = async () => {
+            const scheduleData = {};
+            selectedClassDays.forEach(d => {
+                const start = document.getElementById(`classStart${d}`).value;
+                const end = document.getElementById(`classEnd${d}`).value;
+                scheduleData[d] = { start, end };
+            });
+
+            try {
+                await set(ref(db, `classSchedule/${currentUser.uid}`), scheduleData);
+                document.getElementById('scheduleMsg').innerHTML = `<span style="color:var(--success)">¡Horario guardado!</span>`;
+                setTimeout(() => document.getElementById('scheduleMsg').innerHTML = '', 2000);
+            } catch(e) {
+                alert("Error al guardar horario: " + e.message);
+            }
+        };
+
+        // --- LÓGICA: GUARDAR TAREA ---
+        window.saveTask = async () => {
+            const title = document.getElementById('taskTitle').value;
+            if(!title) return alert("Pon un título");
+
+            const steps = [];
+            document.querySelectorAll('.step-input').forEach(inp => { if(inp.value.trim()) steps.push(inp.value.trim()); });
+
+            const taskData = {
+                title, 
+                subjectId: document.getElementById('taskSubject').value,
+                type: document.getElementById('taskType').value,
+                dueDate: document.getElementById('taskDueDate').value,
+                dueTime: document.getElementById('taskDueTime').value,
+                mode: document.getElementById('taskMode').value,
+                priority: document.getElementById('taskPriority').value,
+                difficulty: document.getElementById('taskDifficulty').value,
+                gradeValue: document.getElementById('taskGradeUnknown').checked ? 'unknown' : Number(document.getElementById('taskGradeValue').value || 0),
+                format: document.getElementById('taskFormat').value,
+                instructions: document.getElementById('taskInstructions').value,
+                steps: steps,
+                completed: false,
+                createdAt: Date.now()
+            };
+
+            // Generar Recomendación ANTES de guardar para mostrar en modal
+            const rec = generateRecommendation(taskData);
+            
+            // Mostrar modal de recomendación
+            document.getElementById('recDateDisplay').innerText = rec.dateString;
+            document.getElementById('recReasonDisplay').innerText = rec.reason;
+            document.getElementById('alertHighDelay').style.display = rec.isDelayed ? 'block' : 'none';
+            
+            // Guardar temporalmente para confirmar
+            window.tempTaskData = taskData;
+            openModal('recommendModal');
+        };
+
+        window.confirmRecommendation = async () => {
+            if(!window.tempTaskData) return;
+            try {
+                await push(ref(db, `tasks/${currentUser.uid}`), window.tempTaskData);
+                closeModal('recommendModal');
+                closeModal('taskModal');
+                document.getElementById('taskForm').reset();
+                document.getElementById('stepsContainer').innerHTML = '';
+            } catch(e) {
+                alert("Error guardando: " + e.message);
+            }
+        };
+
+        // --- ALGORITMO DE RECOMENDACIÓN ---
+        function generateRecommendation(task) {
+            const now = new Date();
+            const due = new Date(task.dueDate + 'T' + task.dueTime);
+            const totalHours = (due - now) / (1000 * 60 * 60);
+            
+            if(totalHours < 0) return { dateString: "¡Vencida!", reason: "Esta tarea ya venció.", isDelayed: true };
+
+            // Factores
+            let pFactor = task.priority === 'alta' ? 0.2 : (task.priority === 'media' ? 0.35 : 0.45);
+            let dFactor = task.difficulty === 'alta' ? 1.2 : (task.difficulty === 'media' ? 1.0 : 0.8);
+            
+            // Cálculo simple de "Horas recomendadas de trabajo"
+            let hoursNeeded = totalHours * pFactor * dFactor;
+            
+            // Buscar slot disponible simulado (simplificado para demo)
+            // En una app real, iteraríamos sobre los horarios guardados
+            let recDate = new Date(now.getTime() + (hoursNeeded * 1000 * 60 * 60));
+            
+            // Validar cruces (Simulación simple)
+            // Si está muy cerca del límite
+            let isDelayed = false;
+            if(recDate > new Date(due.getTime() - (2*60*60*1000))) {
+                isDelayed = true;
+                recDate = new Date(now.getTime() + (1 * 60 * 60 * 1000)); // Sugiere empezar ya
+            }
+
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute:'2-digit' };
+            return {
+                dateString: recDate.toLocaleDateString('es-ES', options),
+                reason: `Basado en prioridad ${task.priority} y dificultad ${task.difficulty}. Tiempo estimado: ${Math.round(hoursNeeded)} horas.`,
+                isDelayed: isDelayed
+            };
+        }
+
+        // --- RENDERIZAR TAREAS ---
+        window.renderTasks = () => {
+            const view = document.getElementById('agendaView');
+            const table = document.getElementById('tableBody');
+            let tasksArr = Object.entries(userData.tasks);
+
+            // Filters
+            const timeF = document.getElementById('filterTime').value;
+            const subjF = document.getElementById('filterSubject').value;
+            
+            if(subjF !== 'all') tasksArr = tasksArr.filter(([id, t]) => t.subjectId === subjF);
+            
+            // Sort
+            const mainF = document.getElementById('filterMain').value;
+            if(mainF === 'dueDate') tasksArr.sort((a,b) => new Date(a[1].dueDate) - new Date(b[1].dueDate));
+            if(mainF === 'priority') {
+                const order = {'alta':1, 'media':2, 'baja':3};
+                tasksArr.sort((a,b) => order[a[1].priority] - order[b[1].priority]);
+            }
+
+            if(tasksArr.length === 0) {
+                view.innerHTML = `<div class="empty-state"><i class="fas fa-coffee"></i><p>No hay tareas para mostrar.</p></div>`;
+                table.innerHTML = '<tr><td colspan="5" style="text-align:center">No hay datos</td></tr>';
+                return;
+            }
+
+            view.innerHTML = tasksArr.map(([id, t]) => {
+                const subj = userData.subjects[t.subjectId] || {name:'General', color:'#888'};
+                const date = new Date(t.dueDate + 'T' + t.dueTime);
+                return `
+                <div class="agenda-item">
+                    <div class="agenda-date">
+                        <div class="agenda-day">${date.getDate()}</div>
+                        <div class="agenda-month">${date.toLocaleString('es', {month:'short'})}</div>
+                    </div>
+                    <div class="agenda-content">
+                        <div class="agenda-title">${t.title}</div>
+                        <div class="agenda-meta">
+                            <span class="badge badge-subject" style="background:${subj.color}">${subj.name}</span>
+                            <span><i class="fas fa-clock"></i> ${date.toLocaleTimeString('es', {hour:'2-digit', minute:'2-digit'})}</span>
+                            <span class="badge badge-priority-${t.priority}">${t.priority}</span>
+                        </div>
+                    </div>
+                    <div class="agenda-actions">
+                        <button class="btn btn-sm btn-success" onclick="startPomodoro('${id}')"><i class="fas fa-play"></i></button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteTask('${id}')"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>`;
+            }).join('');
+
+            table.innerHTML = tasksArr.map(([id, t]) => {
+                const subj = userData.subjects[t.subjectId] || {name:'General', color:'#888'};
+                return `
+                <tr>
+                    <td>${t.title}</td>
+                    <td><span class="badge badge-subject" style="background:${subj.color}">${subj.name}</span></td>
+                    <td>${t.dueDate}</td>
+                    <td><span class="badge badge-priority-${t.priority}">${t.priority}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-success" onclick="startPomodoro('${id}')"><i class="fas fa-play"></i></button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteTask('${id}')"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>`;
+            }).join('');
+        };
+
+        window.switchView = (type) => {
+            if(type === 'agenda') {
+                document.getElementById('agendaView').style.display = 'block';
+                document.getElementById('tableView').style.display = 'none';
+            } else {
+                document.getElementById('agendaView').style.display = 'none';
+                document.getElementById('tableView').style.display = 'block';
+            }
+        };
+
+        window.deleteTask = async (id) => {
+            if(confirm("¿Eliminar esta tarea?")) {
+                await remove(ref(db, `tasks/${currentUser.uid}/${id}`));
+            }
+        };
+
+        // --- POMODORO ---
+        window.startPomodoro = (id) => {
+            const task = userData.tasks[id];
+            if(!task) return;
+            selectedTaskForPomo = task;
+            document.getElementById('pomoTaskName').innerText = task.title;
+            
+            let mins = 25;
+            if(userData.settings.sessionType === 'medio') mins = 50;
+            if(userData.settings.sessionType === 'largo') mins = 90;
+            
+            timeLeft = mins * 60;
+            updatePomoDisplay();
+            document.getElementById('pomoOverlay').classList.add('active');
+        };
+
+        window.closePomodoro = () => {
+            clearInterval(timerInterval);
+            document.getElementById('pomoOverlay').classList.remove('active');
+        };
+
+        window.toggleTimer = () => {
+            const btn = document.getElementById('pomoStartBtn');
+            if(timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                btn.innerHTML = '<i class="fas fa-play"></i> Iniciar';
+            } else {
+                timerInterval = setInterval(() => {
+                    timeLeft--;
+                    updatePomoDisplay();
+                    if(timeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        alert("¡Tiempo terminado!");
+                    }
+                }, 1000);
+                btn.innerHTML = '<i class="fas fa-pause"></i> Pausar';
+            }
+        };
+
+        window.resetTimer = () => {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            let mins = 25;
+            if(userData.settings.sessionType === 'medio') mins = 50;
+            if(userData.settings.sessionType === 'largo') mins = 90;
+            timeLeft = mins * 60;
+            updatePomoDisplay();
+            document.getElementById('pomoStartBtn').innerHTML = '<i class="fas fa-play"></i> Iniciar';
+        };
+
+        function updatePomoDisplay() {
+            const m = Math.floor(timeLeft / 60);
+            const s = timeLeft % 60;
+            document.getElementById('pomoTimer').innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+
+    </script>
+</body>
+</html>
