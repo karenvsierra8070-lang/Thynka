@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thynka - Sistema Inteligente de Gestión</title>
+    <title>Thynka - Sistema Inteligente de Gestión de Tiempo</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -18,6 +18,8 @@
             --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
             --danger: #e74c3c; --success: #27ae60; --warning: #f39c12; --info: #3498db;
             --overlay-bg: rgba(0, 0, 0, 0.7);
+            --sidebar-width: 280px;
+            --panel-width: 400px;
         }
         [data-theme="dark"] {
             --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
@@ -32,52 +34,60 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; display: flex; overflow-x: hidden; }
 
-        /* --- LAYOUT PRINCIPAL --- */
+        /* --- SIDEBAR PRINCIPAL --- */
         .sidebar {
-            position: fixed; left: 0; top: 0; height: 100vh; width: 280px;
+            position: fixed; left: 0; top: 0; height: 100vh; width: var(--sidebar-width);
             background: var(--bg-secondary); box-shadow: 2px 0 15px var(--shadow);
             transform: translateX(-100%); transition: transform 0.3s ease; z-index: 9999;
             display: flex; flex-direction: column;
         }
         .sidebar.active { transform: translateX(0); }
-        .sidebar-header { padding: 30px 20px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 15px; background: var(--bg-tertiary); }
-        .sidebar-logo { font-family: 'Playfair Display', serif; font-size: 1.9rem; color: var(--primary-dark); letter-spacing: 1px; }
+        .sidebar-header { padding: 30px 20px; border-bottom: 1px solid var(--border-color); background: var(--bg-tertiary); }
+        .sidebar-logo { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--primary-dark); letter-spacing: 1px; }
+        
         .sidebar-menu { flex: 1; padding: 20px 0; overflow-y: auto; }
-        .menu-item { display: block; padding: 15px 25px; color: var(--text-primary); text-decoration: none; transition: all 0.2s; border-left: 3px solid transparent; display: flex; align-items: center; gap: 15px; font-weight: 500; }
+        .menu-section-title { padding: 10px 25px; font-size: 0.75rem; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 1px; font-weight: 700; }
+        .menu-item { display: block; padding: 14px 25px; color: var(--text-primary); text-decoration: none; transition: all 0.2s; border-left: 3px solid transparent; display: flex; align-items: center; gap: 15px; font-weight: 500; }
         .menu-item:hover, .menu-item.active { background: var(--bg-tertiary); border-left-color: var(--primary); }
         .menu-item i { width: 20px; text-align: center; opacity: 0.7; font-size: 1.1rem; }
         .menu-item.active i { opacity: 1; color: var(--primary); }
 
-        .sidebar-subjects { padding: 20px; border-top: 1px solid var(--border-color); margin-top: auto; background: var(--bg-tertiary); }
+        .sidebar-subjects { padding: 20px; border-top: 1px solid var(--border-color); margin-top: auto; background: var(--bg-tertiary); max-height: 250px; overflow-y: auto; }
         .sidebar-subjects h4 { color: var(--text-secondary); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 15px; padding-left: 5px; letter-spacing: 1px; }
-        .subject-list { list-style: none; max-height: 200px; overflow-y: auto; }
+        .subject-list { list-style: none; }
         .subject-list-item { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 8px; margin-bottom: 5px; font-size: 0.9rem; cursor: pointer; transition: background 0.2s; }
         .subject-list-item:hover { background: var(--bg-secondary); }
         .subject-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 
-        /* --- PANEL HORARIO (DESLIZABLE DERECHA) --- */
+        /* --- PANEL CONFIGURACION (CLASES/TRABAJO) --- */
         .schedule-panel {
-            position: fixed; right: 0; top: 0; height: 100vh; width: 380px;
+            position: fixed; right: 0; top: 0; height: 100vh; width: var(--panel-width);
             background: var(--bg-secondary); box-shadow: -2px 0 15px var(--shadow);
             transform: translateX(100%); transition: transform 0.3s; z-index: 9999;
             display: flex; flex-direction: column;
         }
         .schedule-panel.active { transform: translateX(0); }
         .panel-header { padding: 25px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--bg-tertiary); }
-        .panel-header h3 { font-size: 1.1rem; color: var(--primary-dark); }
+        .panel-header h3 { font-size: 1.1rem; color: var(--primary-dark); display: flex; align-items: center; gap: 10px; }
         .panel-body { flex: 1; overflow-y: auto; padding: 25px; }
         
-        .days-selector { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 25px; justify-content: center; }
+        .config-section { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); }
+        .config-section h4 { margin-bottom: 15px; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+        
+        .days-selector { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
         .day-circle {
             width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--border-color);
             background: var(--bg-primary); display: flex; align-items: center; justify-content: center;
             cursor: pointer; transition: all 0.2s; font-weight: 600; color: var(--text-secondary);
         }
         .day-circle.selected { background: var(--primary); color: white; border-color: var(--primary); transform: scale(1.1); box-shadow: 0 4px 10px var(--shadow); }
+        
+        .time-input-group { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
+        .time-input-group label { flex: 0 0 40px; font-weight: 600; font-size: 0.9rem; }
 
         /* --- CONTROLES GLOBALES --- */
         .menu-toggle { position: fixed; left: 20px; top: 20px; width: 50px; height: 50px; background: var(--primary); border: none; border-radius: 15px; color: var(--white); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; z-index: 10000; box-shadow: 0 4px 15px var(--shadow); transition: all 0.3s; }
-        .menu-toggle:hover { transform: scale(1.05); background: var(--primary-dark); }
+        .menu-toggle:hover { transform: scale(1.05); }
         .theme-toggle { position: fixed; right: 20px; top: 20px; width: 50px; height: 50px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 15px; color: var(--primary); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; z-index: 10000; transition: all 0.3s; }
         .theme-toggle:hover { transform: rotate(20deg) scale(1.1); }
         
@@ -85,7 +95,7 @@
         .overlay.active { opacity: 1; visibility: visible; }
 
         /* --- CONTENIDO PRINCIPAL --- */
-        .main-content { flex: 1; padding: 90px 30px 40px; max-width: 1400px; margin: 0 auto; width: 100%; }
+        .main-content { flex: 1; padding: 90px 30px 40px; max-width: 1400px; margin: 0 auto; width: 100%; transition: margin-left 0.3s; }
         .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; flex-wrap: wrap; gap: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; }
         .page-title { font-family: 'Playfair Display', serif; font-size: 2.2rem; color: var(--primary-dark); }
         
@@ -95,8 +105,9 @@
         .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 6px 15px var(--shadow-hover); }
         .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
         .btn-secondary:hover { background: var(--border-color); }
-        .btn-success { background: var(--success); color: white; box-shadow: 0 4px 12px rgba(39, 174, 96, 0.2); }
+        .btn-success { background: var(--success); color: white; }
         .btn-danger { background: transparent; color: var(--danger); border: 1px solid var(--danger); }
+        .btn-warning { background: var(--warning); color: white; }
         .btn-sm { padding: 8px 14px; font-size: 0.85rem; }
         .btn-icon { width: 38px; height: 38px; padding: 0; justify-content: center; border-radius: 10px; }
 
@@ -105,6 +116,8 @@
         .form-group { margin-bottom: 22px; }
         .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-secondary); font-size: 0.9rem; }
         .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .inline-add { display: flex; gap: 10px; align-items: center; margin-top: 5px; }
+        .inline-add input { flex: 1; }
 
         /* --- FILTROS AVANZADOS --- */
         .filters-card { background: var(--bg-secondary); padding: 25px; border-radius: 20px; margin-bottom: 30px; box-shadow: 0 4px 15px var(--shadow); border: 1px solid var(--border-color); }
@@ -116,7 +129,7 @@
         .view-tab { padding: 10px 25px; background: transparent; border: none; border-radius: 12px; cursor: pointer; font-size: 0.95rem; font-weight: 500; transition: all 0.2s; color: var(--text-secondary); }
         .view-tab.active { background: var(--primary); color: white; box-shadow: 0 2px 8px var(--shadow); }
 
-        /* Agenda Item Detallado y Estético */
+        /* Agenda Card */
         .agenda-card { background: var(--bg-secondary); border-radius: 20px; margin-bottom: 20px; box-shadow: 0 4px 10px var(--shadow); overflow: hidden; border-left: 6px solid transparent; transition: all 0.3s; position: relative; }
         .agenda-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px var(--shadow-hover); }
         .agenda-main { padding: 25px; display: flex; gap: 25px; cursor: pointer; }
@@ -138,7 +151,6 @@
 
         .agenda-actions { display: flex; flex-direction: column; gap: 8px; justify-content: center; padding-left: 10px; }
         
-        /* Expandible */
         .agenda-preview { background: var(--bg-tertiary); padding: 25px; border-top: 1px solid var(--border-color); display: none; animation: slideDown 0.3s ease; }
         .agenda-preview.active { display: block; }
 
@@ -172,6 +184,7 @@
         .pomo-screen.active { display: flex; animation: fadeIn 0.3s ease; }
         .pomo-clock { font-size: 10rem; font-weight: 700; color: var(--primary); font-family: 'Playfair Display', serif; line-height: 1; text-shadow: 0 10px 30px var(--shadow); }
         .pomo-task-label { color: var(--text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; font-size: 0.9rem; }
+        .pomo-cycle-info { margin-top: 10px; font-size: 0.9rem; color: var(--text-secondary); font-weight: 500; }
         .pomo-controls { margin-top: 50px; display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
 
         /* Empty State */
@@ -190,6 +203,13 @@
         /* Animations */
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content { padding: 80px 15px 20px; }
+            .pomo-clock { font-size: 5rem; }
+            .agenda-details-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
@@ -200,27 +220,38 @@
             <h2 class="sidebar-logo">Thynka</h2>
         </div>
         <div class="sidebar-menu">
-            <a href="dashboard.html" class="menu-item"><i class="fas fa-home"></i> Inicio</a>
+            <div class="menu-section-title">Navegación</div>
+            <a href="dashboard.html" class="menu-item"><i class="fas fa-home"></i> Cuenta</a>
             <a href="tareas.html" class="menu-item active"><i class="fas fa-tasks"></i> Tareas</a>
             <a href="horario.html" class="menu-item"><i class="fas fa-calendar-alt"></i> Horario</a>
             <a href="examen.html" class="menu-item"><i class="fas fa-file-alt"></i> Exámenes</a>
+            
+            <div class="menu-section-title">Herramientas</div>
+            <a href="asistente.html" class="menu-item"><i class="fas fa-robot"></i> Asistente IA</a>
+            <a href="recomendaciones.html" class="menu-item"><i class="fas fa-graduation-cap"></i> Aprende</a>
+            <a href="cuestionarios.html" class="menu-item"><i class="fas fa-question-circle"></i> Cuestionarios</a>
+            <a href="patron.html" class="menu-item"><i class="fas fa-chart-line"></i> Análisis</a>
+            
+            <div class="menu-section-title">Ayuda</div>
+            <a href="tutorial.html" class="menu-item"><i class="fas fa-book-open"></i> Tutorial</a>
         </div>
         <div class="sidebar-subjects">
-            <h4>Asignaturas</h4>
+            <h4>Materias Registradas</h4>
             <ul class="subject-list" id="subjectSidebarList"></ul>
         </div>
     </nav>
 
-    <!-- PANEL DERECHO: HORARIO CLASES Y TRABAJO -->
+    <!-- PANEL CONFIGURACION HORARIOS -->
     <div class="schedule-panel" id="schedulePanel">
         <div class="panel-header">
-            <h3><i class="fas fa-clock"></i> Configuración Temporal</h3>
+            <h3><i class="fas fa-cog"></i> Configuración de Tiempo</h3>
             <button class="btn btn-icon btn-secondary" onclick="togglePanel('schedulePanel')"><i class="fas fa-times"></i></button>
         </div>
         <div class="panel-body">
-            <div style="margin-bottom: 30px;">
-                <h4 style="color: var(--primary); margin-bottom: 15px; font-size: 1rem;"><i class="fas fa-university"></i> Horario de Clases</h4>
-                <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:15px;">Días que tienes clases. El sistema evitará agendarte tareas en estos bloques.</p>
+            <!-- Clases -->
+            <div class="config-section">
+                <h4><i class="fas fa-university"></i> Horario de Clases</h4>
+                <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:15px;">Indica tus días y horas de clase. El sistema evitará recomendarte tareas en estos rangos (más 1 hora de transporte).</p>
                 <div class="days-selector" id="classDaysSelector">
                     <div class="day-circle" data-day="L">L</div>
                     <div class="day-circle" data-day="M">M</div>
@@ -232,18 +263,19 @@
                 </div>
                 <div id="classTimeInputs"></div>
             </div>
-            
-            <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border-color);">
-                <h4 style="color: var(--primary); margin-bottom: 15px; font-size: 1rem;"><i class="fas fa-briefcase"></i> Horario de Trabajo</h4>
+
+            <!-- Trabajo -->
+            <div class="config-section" style="border-bottom: none;">
+                <h4><i class="fas fa-briefcase"></i> Horario de Trabajo</h4>
                 <div class="form-group">
                     <label style="font-weight: 600;">¿Trabajas actualmente?</label>
                     <select id="worksToggle" onchange="toggleWorkInputs(this.value)">
-                        <option value="no">No</option>
-                        <option value="si">Sí</option>
+                        <option value="no">No trabajo</option>
+                        <option value="si">Sí, trabajo</option>
                     </select>
                 </div>
                 <div id="workScheduleInputs" style="display: none;">
-                    <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:15px;">Ingresa tus turnos de trabajo.</p>
+                    <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:15px;">Indica tus turnos. Se respetará 1 hora antes y después.</p>
                     <div class="days-selector" id="workDaysSelector">
                         <div class="day-circle" data-day="L">L</div>
                         <div class="day-circle" data-day="M">M</div>
@@ -257,8 +289,8 @@
                 </div>
             </div>
 
-            <button class="btn btn-primary" style="width:100%; margin-top:30px;" onclick="saveAllSchedules()">
-                <i class="fas fa-save"></i> Guardar Configuración
+            <button class="btn btn-primary" style="width:100%; margin-top:20px;" onclick="saveAllSchedules()">
+                <i class="fas fa-save"></i> Guardar en la Nube
             </button>
         </div>
     </div>
@@ -270,23 +302,24 @@
     <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
     <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
 
-    <!-- MODAL: FORMULARIO COMPLETO TAREA -->
+    <!-- MODAL: FORMULARIO TAREA -->
     <div class="modal" id="taskModal">
         <div class="modal-box">
             <div class="modal-head">
-                <h3 class="modal-title">Registrar Nueva Tarea</h3>
+                <h3 class="modal-title" id="modalTitle">Nueva Tarea</h3>
                 <button class="modal-close" onclick="closeModal('taskModal')">&times;</button>
             </div>
             <div class="modal-body">
                 <form id="taskForm">
+                    <input type="hidden" id="taskId">
                     <div class="form-row">
                         <div class="form-group" style="flex: 2;">
                             <label>Título *</label>
-                            <input type="text" id="taskTitle" required placeholder="Ej: Ensayo final de historia">
+                            <input type="text" id="taskTitle" required placeholder="Ej: Ensayo final">
                         </div>
                         <div class="form-group">
                             <label>Valor (%)</label>
-                            <input type="number" id="taskGrade" placeholder="Ej: 20" min="0" max="100">
+                            <input type="number" id="taskGrade" placeholder="0-100" min="0" max="100">
                             <label style="font-size:0.8rem; font-weight:400; margin-top:5px; display:flex; align-items:center; gap:5px; cursor:pointer;">
                                 <input type="checkbox" id="taskGradeUnk"> No sé
                             </label>
@@ -295,15 +328,27 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>Asignatura</label>
-                            <select id="taskSubject"></select>
+                            <div class="inline-add">
+                                <select id="taskSubject" style="flex:2;"></select>
+                                <button type="button" class="btn btn-sm btn-secondary" onclick="addSubjectPrompt()"><i class="fas fa-plus"></i></button>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label>Tipo de Actividad</label>
                             <select id="taskType">
-                                <option>Tarea</option><option>Proyecto</option><option>Ensayo</option>
-                                <option>Presentación</option><option>Laboratorio</option><option>Lectura</option>
-                                <option>Investigación</option><option>Estudio</option><option>Ejercicios</option>
-                                <option>Hacer video</option><option>Apuntes</option><option>Preparación exposicion</option><option>Curso</option><option>Otro</option>
+                                <option value="Tarea">Tarea</option>
+                                <option value="Proyecto">Proyecto</option>
+                                <option value="Ensayo">Ensayo</option>
+                                <option value="Presentación">Presentación</option>
+                                <option value="Laboratorio">Laboratorio</option>
+                                <option value="Lectura">Lectura</option>
+                                <option value="Investigación">Investigación</option>
+                                <option value="Estudio">Estudio</option>
+                                <option value="Ejercicios">Ejercicios</option>
+                                <option value="Hacer video">Hacer video</option>
+                                <option value="Apuntes">Apuntes</option>
+                                <option value="Preparación exposicion">Prep. Exposición</option>
+                                <option value="Curso">Curso</option>
                             </select>
                         </div>
                     </div>
@@ -343,11 +388,11 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>Instrucciones / Descripción</label>
-                        <textarea id="taskDesc" rows="2" placeholder="Pega aquí las instrucciones..."></textarea>
+                        <label>Instrucciones</label>
+                        <textarea id="taskDesc" rows="2" placeholder="Descripción..."></textarea>
                     </div>
                     <div class="form-group">
-                        <label>Pasos de la Actividad <span style="font-weight:400; color:var(--text-secondary);">(Para estimar duración)</span></label>
+                        <label>Pasos de la Actividad <span style="font-weight:400; color:var(--text-secondary);">(Afecta la duración estimada)</span></label>
                         <div id="stepsContainer"></div>
                         <button type="button" class="btn btn-sm btn-secondary" onclick="addStep()" style="margin-top:10px;"><i class="fas fa-plus"></i> Agregar Paso</button>
                     </div>
@@ -355,29 +400,29 @@
             </div>
             <div class="modal-foot">
                 <button class="btn btn-secondary" onclick="closeModal('taskModal')">Cancelar</button>
-                <button class="btn btn-primary" onclick="processTask()"><i class="fas fa-magic"></i> Generar Recomendación</button>
+                <button class="btn btn-primary" onclick="processTask()"><i class="fas fa-magic"></i> Generar Plan</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL: RESULTADO Y CONFIRMACIÓN -->
+    <!-- MODAL: RESULTADO RECOMENDACIÓN -->
     <div class="modal" id="resultModal">
         <div class="modal-box" style="max-width: 600px;">
             <div class="modal-head">
-                <h3 class="modal-title">Plan de Acción</h3>
+                <h3 class="modal-title">Plan de Acción Recomendado</h3>
                 <button class="modal-close" onclick="closeModal('resultModal')">&times;</button>
             </div>
             <div class="modal-body">
                 <div id="recViewInd" class="rec-container">
                     <div class="rec-icon"><i class="fas fa-lightbulb"></i></div>
-                    <p style="font-size:0.95rem; color:var(--text-secondary); font-weight: 500;">Tu sistema inteligente sugiere empezar el:</p>
+                    <p style="font-size:0.95rem; color:var(--text-secondary); font-weight: 500;">Para terminar a tiempo, te sugerimos empezar el:</p>
                     <div class="rec-date" id="recDateText">--</div>
                     <div class="rec-reason" id="recReasonText">Calculando...</div>
-                    <div class="rec-alert" id="recAlert"><i class="fas fa-exclamation-circle"></i> ¡Alerta! Se detectaron conflictos de horario. Se ha ajustado la hora.</div>
+                    <div class="rec-alert" id="recAlert"><i class="fas fa-exclamation-circle"></i> ¡Alerta! Tiempo justo. Se recomienda empezar ya.</div>
                 </div>
 
                 <div id="recViewGroup" style="display:none; padding:30px 0;">
-                    <p style="margin-bottom:20px; text-align:center;">Es una tarea grupal. Coordina con tu equipo y selecciona el horario:</p>
+                    <p style="margin-bottom:20px; text-align:center;">Tarea grupal. Coordina con tu equipo:</p>
                     <div class="form-row">
                         <div class="form-group"><label>Fecha de Inicio</label><input type="date" id="manualStartDate"></div>
                         <div class="form-group"><label>Hora de Inicio</label><input type="time" id="manualStartTime"></div>
@@ -393,10 +438,12 @@
 
     <!-- POMODORO SCREEN -->
     <div class="pomo-screen" id="pomoScreen">
-        <div style="max-width: 600px;">
+        <div style="max-width: 800px; width: 100%;">
             <div class="pomo-task-label">Enfocándose en:</div>
             <h2 style="color: var(--primary-dark); margin-bottom: 20px; font-size: 1.5rem;" id="pomoTaskName">Tarea</h2>
             <div class="pomo-clock" id="pomoClock">25:00</div>
+            <div class="pomo-cycle-info" id="pomoCycleInfo">Ciclo 1 de 3</div>
+            
             <div class="pomo-controls">
                 <button class="btn btn-success btn-lg" id="pomoPlay" onclick="togglePomo()"><i class="fas fa-play"></i> Iniciar</button>
                 <button class="btn btn-secondary btn-lg" onclick="resetPomo()"><i class="fas fa-redo"></i> Reset</button>
@@ -410,10 +457,10 @@
         <div class="page-header">
             <div>
                 <h1 class="page-title">Gestión de Tareas</h1>
-                <p style="color:var(--text-secondary); font-size:0.95rem; margin-top:5px;">Organiza, prioriza y cumple tus metas inteligentemente</p>
+                <p style="color:var(--text-secondary); font-size:0.95rem; margin-top:5px;">Planificación inteligente basada en tu tiempo real</p>
             </div>
             <div style="display:flex; gap:15px;">
-                <button class="btn btn-secondary" onclick="togglePanel('schedulePanel')"><i class="fas fa-cog"></i> Configuración</button>
+                <button class="btn btn-secondary" onclick="togglePanel('schedulePanel')"><i class="fas fa-cog"></i> Configurar Horarios</button>
                 <button class="btn btn-primary" onclick="openModal('taskModal')"><i class="fas fa-plus"></i> Nueva Tarea</button>
             </div>
         </div>
@@ -421,13 +468,13 @@
         <!-- FILTROS -->
         <div class="filters-card">
             <div class="filters-header">
-                <h4 style="color: var(--primary-dark); font-size: 1.1rem;"><i class="fas fa-filter"></i> Filtros y Ordenamiento</h4>
+                <h4 style="color: var(--primary-dark); font-size: 1.1rem;"><i class="fas fa-filter"></i> Filtros</h4>
             </div>
             <div class="filter-grid">
                 <div>
                     <label class="detail-label">Ordenar por</label>
                     <select id="filterSort" onchange="renderView()">
-                        <option value="dueDate">Fecha Vencimiento</option>
+                        <option value="dueDate">Vencimiento</option>
                         <option value="priority">Prioridad</option>
                         <option value="difficulty">Dificultad</option>
                     </select>
@@ -460,9 +507,10 @@
     </main>
 
     <script type="module">
+        // --- 1. CONFIGURACIÓN E INICIALIZACIÓN ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getDatabase, ref, set, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, set, push, onValue, remove, update, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const config = {
             apiKey: "AIzaSyBH42jsEEaEOFa02LhD59aDkwFfo_RVVB4",
@@ -481,11 +529,23 @@
         let uid = null;
         let DB = { tasks: {}, subjects: {}, settings: {}, classSchedule: {}, workSchedule: {} };
         let tempTaskData = null;
-        let pomoInterval = null;
-        let pomoTime = 25 * 60;
-        let isPomoPaused = true;
+        
+        // Pomodoro State
+        let pomoState = {
+            interval: null,
+            timeLeft: 0,
+            totalDuration: 0,
+            cycles: 0,
+            currentCycle: 0,
+            isBreak: false,
+            taskId: null,
+            endTime: null
+        };
 
-        // --- INICIALIZACIÓN Y SINCRONIZACIÓN ---
+        // DOM Helper
+        const $ = id => document.getElementById(id);
+
+        // --- 2. AUTENTICACIÓN Y SINCRONIZACIÓN ---
         onAuthStateChanged(auth, user => {
             if (user) {
                 uid = user.uid;
@@ -496,6 +556,7 @@
                 onValue(ref(db, `users/${uid}`), snap => {
                     if(snap.exists()) DB.settings = snap.val();
                     renderSidebarSubjects();
+                    loadScheduleUI(); // Cargar config en el panel
                 });
             } else { window.location.href = 'index.html'; }
         });
@@ -509,9 +570,7 @@
             });
         }
 
-        const $ = id => document.getElementById(id);
-        
-        // Theme & Menu
+        // --- 3. INTERFAZ GENERAL (THEME, MENUS) ---
         $('themeToggle').onclick = () => {
             const t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', t);
@@ -533,7 +592,7 @@
         window.openModal = id => { $(id).classList.add('active'); };
         window.closeModal = id => { $(id).classList.remove('active'); };
 
-        // --- MATERIAS (SUBJECTS) ---
+        // --- 4. GESTIÓN DE MATERIAS ---
         function populateSubjects() {
             const sel = $('taskSubject');
             const current = sel.value;
@@ -541,6 +600,7 @@
                 `<option value="${id}">${s.name}</option>`
             ).join('');
             if(DB.subjects[current]) sel.value = current;
+            else if(Object.keys(DB.subjects).length > 0) sel.value = Object.keys(DB.subjects)[0];
         }
 
         function renderSidebarSubjects() {
@@ -564,7 +624,7 @@
         }
 
         window.addSubjectPrompt = () => {
-            const n = prompt("Nombre de la materia:");
+            const n = prompt("Nombre de la nueva materia:");
             if(n) {
                 const color = `hsl(${Math.random()*360}, 60%, 65%)`;
                 const newRef = push(ref(db, `subjects/${uid}`));
@@ -573,12 +633,14 @@
             }
         };
 
-        // --- HORARIOS (CLASES Y TRABAJO) ---
-        // Lógica para manejar dos tipos de horarios
+        // --- 5. GESTIÓN DE HORARIOS (CLASES/TRABAJO) EN FIREBASE ---
+        // Este código gestiona la UI del panel lateral y guarda los datos en Firebase
+        
         function setupDaySelector(containerId, inputContainerId, dataKey) {
             const container = $(containerId);
             if(!container) return;
             
+            // Marcar días seleccionados
             container.querySelectorAll('.day-circle').forEach(btn => {
                 const day = btn.dataset.day;
                 if(DB[dataKey] && DB[dataKey][day]) btn.classList.add('selected');
@@ -607,20 +669,25 @@
             `).join('');
         }
 
-        function loadScheduleUI() {
-            setupDaySelector('classDaysSelector', 'classTimeInputs', 'classSchedule');
-            // Work Schedule
-            if(DB.settings.works === 'si') {
-                $('worksToggle').value = 'si';
-                $('workScheduleInputs').style.display = 'block';
-                setupDaySelector('workDaysSelector', 'workTimeInputs', 'workSchedule');
-            }
-        }
-
         window.toggleWorkInputs = (val) => {
             $('workScheduleInputs').style.display = val === 'si' ? 'block' : 'none';
             if(val === 'si') setupDaySelector('workDaysSelector', 'workTimeInputs', 'workSchedule');
         };
+
+        function loadScheduleUI() {
+            // Cargar Clases
+            setupDaySelector('classDaysSelector', 'classTimeInputs', 'classSchedule');
+            
+            // Cargar Trabajo
+            if(DB.settings.works === 'si') {
+                $('worksToggle').value = 'si';
+                $('workScheduleInputs').style.display = 'block';
+                setupDaySelector('workDaysSelector', 'workTimeInputs', 'workSchedule');
+            } else {
+                $('worksToggle').value = 'no';
+                $('workScheduleInputs').style.display = 'none';
+            }
+        }
 
         window.saveAllSchedules = () => {
             // 1. Guardar Preferencia de Trabajo
@@ -630,7 +697,9 @@
             const classData = {};
             document.querySelectorAll('#classDaysSelector .day-circle.selected').forEach(btn => {
                 const d = btn.dataset.day;
-                classData[d] = { start: $(`classSchedule_${d}S`).value, end: $(`classSchedule_${d}E`).value };
+                const startIn = $(`classSchedule_${d}S`);
+                const endIn = $(`classSchedule_${d}E`);
+                if(startIn && endIn) classData[d] = { start: startIn.value, end: endIn.value };
             });
             set(ref(db, `classSchedule/${uid}`), classData);
 
@@ -639,15 +708,17 @@
             if($('worksToggle').value === 'si') {
                 document.querySelectorAll('#workDaysSelector .day-circle.selected').forEach(btn => {
                     const d = btn.dataset.day;
-                    workData[d] = { start: $(`workSchedule_${d}S`).value, end: $(`workSchedule_${d}E`).value };
+                    const startIn = $(`workSchedule_${d}S`);
+                    const endIn = $(`workSchedule_${d}E`);
+                    if(startIn && endIn) workData[d] = { start: startIn.value, end: endIn.value };
                 });
             }
             set(ref(db, `workSchedule/${uid}`), workData);
             
-            alert("Configuración guardada exitosamente.");
+            alert("Configuración guardada en la nube correctamente.");
         };
 
-        // --- FORMULARIO DE TAREA ---
+        // --- 6. LÓGICA DE TAREAS Y PASOS ---
         window.addStep = (val='') => {
             const div = document.createElement('div');
             div.className = 'step-row';
@@ -656,15 +727,15 @@
             $('stepsContainer').appendChild(div);
         };
 
-        // --- MOTOR DE RECOMENDACIÓN (ALGORITMO COMPLETO) ---
+        // --- 7. MOTOR DE RECOMENDACIÓN (CORE) ---
         
-        // 1. Estimación de Tiempo Detallada
-        function estimateDuration(task) {
+        // 7.1 Estimación de Tiempo
+        function calculateEstimatedDuration(task) {
             const stepsCount = task.steps ? task.steps.length : 0;
             let baseMinutes = 60; // Default
             let minPerStep = 15, maxPerStep = 45;
 
-            // Configuración por Tipo
+            // Configuración por Tipo (Minutos)
             const typeConfig = {
                 'Tarea': { min: 15, max: 45 },
                 'Proyecto': { min: 25, max: 60 },
@@ -686,32 +757,166 @@
                 maxPerStep = typeConfig[task.type].max;
             }
 
-            // Cálculo base con pasos
+            // Cálculo base
             if (stepsCount > 0) {
                 baseMinutes = 0;
                 for(let i=0; i<stepsCount; i++) {
+                    // Aleatorio entre min y max por paso
                     baseMinutes += minPerStep + Math.random() * (maxPerStep - minPerStep);
                 }
             } else {
-                baseMinutes = minPerStep * 2; // Estimación mínima si no hay pasos
+                // Si no hay pasos, estimación base aleatoria del tipo
+                baseMinutes = minPerStep * 2 + Math.random() * (maxPerStep - minPerStep);
             }
 
             // Modificador Dificultad
-            if (task.difficulty === 'media') baseMinutes *= 1.3; // +30%
-            if (task.difficulty === 'alta') baseMinutes *= 1.6;  // +60%
+            // Fácil: -0%, Media: +30%, Alta: +60%
+            if (task.difficulty === 'media') baseMinutes *= 1.3;
+            if (task.difficulty === 'alta') baseMinutes *= 1.6;
 
             return Math.round(baseMinutes);
         }
 
-        // 2. Algoritmo de Fecha Óptima
+        // 7.2 Verificador de Conflictos
+        function isTimeSlotValid(start, end) {
+            const startMins = start.getHours() * 60 + start.getMinutes();
+            const endMins = end.getHours() * 60 + end.getMinutes();
+            const dayMap = ['D', 'L', 'M', 'X', 'J', 'V', 'S'];
+            const dayLetter = dayMap[start.getDay()];
+
+            // 1. Sueño (23:00 - 06:00)
+            if (startMins >= 23*60 || startMins < 6*60 || endMins > 23*60) return false;
+
+            // 2. Clases (Buffer 1 hora antes y después)
+            if (DB.classSchedule[dayLetter]) {
+                const sch = DB.classSchedule[dayLetter];
+                const sSch = parseInt(sch.start.split(':')[0])*60 + parseInt(sch.start.split(':')[1]);
+                const eSch = parseInt(sch.end.split(':')[0])*60 + parseInt(sch.end.split(':')[1]);
+                // Si inicia dentro de la clase+buffer o termina dentro de la clase+buffer
+                if (startMins < (eSch + 60) && endMins > (sSch - 60)) return false;
+            }
+
+            // 3. Trabajo (Buffer 1 hora antes y después)
+            if (DB.settings.works === 'si' && DB.workSchedule[dayLetter]) {
+                const wrk = DB.workSchedule[dayLetter];
+                const sWrk = parseInt(wrk.start.split(':')[0])*60 + parseInt(wrk.start.split(':')[1]);
+                const eWrk = parseInt(wrk.end.split(':')[0])*60 + parseInt(wrk.end.split(':')[1]);
+                if (startMins < (eWrk + 60) && endMins > (sWrk - 60)) return false;
+            }
+
+            // 4. Otras Tareas
+            // Convertir a timestamp para comparación cruzada de días
+            const startTS = start.getTime();
+            const endTS = end.getTime();
+            
+            for (let id in DB.tasks) {
+                const t = DB.tasks[id];
+                if (t.recommendedStart && t.recommendedEnd) {
+                    const tStart = new Date(t.recommendedStart).getTime();
+                    const tEnd = new Date(t.recommendedEnd).getTime();
+                    
+                    // Si empieza antes de que termine la otra Y termina después de que empieza la otra
+                    if (startTS < tEnd && endTS > tStart) {
+                        return false; // Conflicto
+                    }
+                }
+            }
+
+            return true; // Todo bien
+        }
+
+        // 7.3 Algoritmo Principal
+        function generateRecommendation(task) {
+            const now = new Date();
+            const due = new Date(task.dueDate + 'T' + task.dueTime);
+            const duration = task.estimatedDuration;
+
+            // A. Factores
+            const pFactor = task.priority === 'alta' ? 0.6 : (task.priority === 'media' ? 0.7 : 0.9);
+            const dFactor = task.difficulty === 'alta' ? 0.6 : (task.difficulty === 'media' ? 0.7 : 0.9);
+            
+            // Nota: Si es 10% nota -> 0.9. Si no se -> 1.
+            let gFactor = 1;
+            if (task.gradeValue !== 'unknown' && task.gradeValue > 0) {
+                gFactor = 1 - (task.gradeValue / 100);
+                if(gFactor < 0.1) gFactor = 0.1;
+            }
+
+            // B. Cálculo Límite (Fórmula exacta)
+            const totalMinsRemaining = (due - now) / (1000 * 60);
+            let limitOffset = totalMinsRemaining * pFactor * dFactor * gFactor;
+            
+            // Fecha Límite para empezar
+            const limitDate = new Date(now.getTime() + limitOffset * 60000);
+
+            // C. Búsqueda de Hueco Aleatorio
+            // Intentaremos encontrar un hueco entre AHORA y el LÍMITE
+            // Si no hay espacio antes del límite, extendemos búsqueda hasta la fecha de entrega (pero alertando)
+            
+            let searchCurrent = now;
+            let foundSlot = null;
+            let attempts = 0;
+            const maxAttempts = 100; // Limitar intentos para evitar bucles infinitos
+
+            // Ventana de búsqueda: Desde ahora hasta el límite calculado (o un poco antes si hay holgura)
+            // Vamos a iterar por intervalos aleatorios
+            while(attempts < maxAttempts) {
+                // Generar un inicio aleatorio entre Now y LimitDate
+                const window = limitDate.getTime() - searchCurrent.getTime();
+                if (window <= 0) break; // Sin tiempo
+
+                const randomOffset = Math.random() * window;
+                const proposedStart = new Date(searchCurrent.getTime() + randomOffset);
+                const proposedEnd = new Date(proposedStart.getTime() + duration * 60000);
+
+                // Redondear a minutos exactos (quitar segundos)
+                proposedStart.setSeconds(0);
+                proposedEnd.setSeconds(0);
+
+                // Verificar validez
+                if (proposedEnd < due && isTimeSlotValid(proposedStart, proposedEnd)) {
+                    foundSlot = { start: proposedStart, end: proposedEnd };
+                    break;
+                }
+                
+                // Si choca, intentar mover 15 mins adelante desde el punto de choque (optimización simple)
+                // O simplemente reintentar aleatorio. El aleatorio puro puede ser lento si no hay huecos.
+                // Optimización: Iterar por bloques de 30 mins.
+                searchCurrent = new Date(proposedStart.getTime() + 30 * 60000); 
+                attempts++;
+            }
+
+            if (foundSlot) {
+                return {
+                    start: foundSlot.start,
+                    end: foundSlot.end,
+                    duration: duration,
+                    limitUsed: limitOffset
+                };
+            } else {
+                // Fallback: No encontró hueco antes del límite. Poner alerta y asignar lo antes posible.
+                // Buscar el primer hueco disponible después del límite pero antes de la entrega.
+                // (Implementación simplificada: devuelve el límite mismo con alerta)
+                return {
+                    start: limitDate,
+                    end: new Date(limitDate.getTime() + duration * 60000),
+                    duration: duration,
+                    limitUsed: limitOffset,
+                    alert: "¡Urgente! No se encontraron huecos óptimos. Se recomienda ajustar horarios."
+                };
+            }
+        }
+
+        // 7.4 Procesamiento del Formulario
         window.processTask = () => {
+            const id = $('taskId').value;
             const title = $('taskTitle').value;
-            if(!title) return alert("Por favor ingresa un título.");
+            if(!title) return alert("Ingresa un título.");
 
             const steps = [];
             document.querySelectorAll('#stepsContainer input').forEach(i => { if(i.value) steps.push(i.value); });
 
-            tempTaskData = {
+            const taskObj = {
                 title: title,
                 subjectId: $('taskSubject').value,
                 type: $('taskType').value,
@@ -727,10 +932,11 @@
                 createdAt: Date.now()
             };
 
-            // Pre-calcular duración
-            tempTaskData.estimatedDuration = estimateDuration(tempTaskData);
+            // Calcular Duración
+            taskObj.estimatedDuration = calculateEstimatedDuration(taskObj);
+            tempTaskData = taskObj;
 
-            if(tempTaskData.mode === 'grupo') {
+            if(taskObj.mode === 'grupo') {
                 $('recViewInd').style.display = 'none';
                 $('recViewGroup').style.display = 'block';
                 $('btnRecalc').style.display = 'none';
@@ -741,156 +947,61 @@
                 $('recViewInd').style.display = 'block';
                 $('recViewGroup').style.display = 'none';
                 $('btnRecalc').style.display = 'inline-flex';
-                calculateRecommendation();
+                performCalculation();
             }
 
             closeModal('taskModal');
             openModal('resultModal');
         };
 
-        function calculateRecommendation() {
-            const task = tempTaskData;
-            const now = new Date();
-            const due = new Date(task.dueDate + 'T' + task.dueTime);
+        function performCalculation() {
+            const rec = generateRecommendation(tempTaskData);
             
-            // A. Factores
-            // Prioridad: Alta 0.6, Media 0.7, Baja 0.9
-            const pFactor = task.priority === 'alta' ? 0.6 : (task.priority === 'media' ? 0.7 : 0.9);
+            tempTaskData.recommendedStart = rec.start.toISOString();
+            tempTaskData.recommendedEnd = rec.end.toISOString();
+            tempTaskData.duration = rec.duration;
+
+            $('recDateText').innerText = rec.start.toLocaleString('es-ES', { weekday:'long', day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
             
-            // Dificultad: Alta 0.6, Media 0.7, Baja 0.9 (Mismo esquema de urgencia)
-            const dFactor = task.difficulty === 'alta' ? 0.6 : (task.difficulty === 'media' ? 0.7 : 0.9);
-
-            // Nota: Si es 10%, multiplica por 0.9. Si no sabe, por 1.
-            // Interpretación: A menor nota, menor urgencia (factor más alto, empieza después).
-            // Factor = 1 - (Porcentaje/100)
-            let gFactor = 1; 
-            if (task.gradeValue !== 'unknown' && task.gradeValue > 0) {
-                gFactor = 1 - (task.gradeValue / 100);
-                // Limitadores
-                if(gFactor < 0.1) gFactor = 0.1; 
-                if(gFactor > 0.95) gFactor = 0.95;
-            }
-
-            // B. Cálculo Minutos Restantes
-            const totalMinutesRemaining = (due - now) / (1000 * 60);
-
-            // Fórmula: MinRestantes * P * D * G
-            let startOffsetMinutes = totalMinutesRemaining * pFactor * dFactor * gFactor;
+            let reason = `Tiempo límite calculado: ${Math.round(rec.limitUsed/60)} horas. `;
+            reason += `Duración estimada: ${rec.duration} mins. `;
+            reason += `Finalizarás: ${rec.end.toLocaleTimeString('es', {hour:'2-digit', minute:'2-digit'})}.`;
             
-            let proposedStart = new Date(now.getTime() + startOffsetMinutes * 60000);
-            const duration = task.estimatedDuration;
-
-            // C. Bucle de Conflictos
-            let attempts = 0;
-            let isConflict = true;
-            let reasonText = `Min restantes: ${Math.round(totalMinutesRemaining)}. Factores: P(${pFactor}) x D(${dFactor}) x Nota(${gFactor.toFixed(2)}).`;
-            
-            while(attempts < 20 && isConflict) {
-                isConflict = false;
-                const proposedEnd = new Date(proposedStart.getTime() + duration * 60000);
-
-                // 1. Sueño (23:00 - 06:00)
-                const hS = proposedStart.getHours();
-                if ((hS >= 23) || hS < 6) {
-                    isConflict = true;
-                    reasonText += " Conflicto: Sueño.";
-                }
-
-                // 2. Clases
-                if (!isConflict) {
-                    if (checkScheduleConflict(proposedStart, proposedEnd, DB.classSchedule)) {
-                        isConflict = true;
-                        reasonText += " Conflicto: Clases.";
-                    }
-                }
-
-                // 3. Trabajo
-                if (!isConflict && DB.settings.works === 'si') {
-                    if (checkScheduleConflict(proposedStart, proposedEnd, DB.workSchedule)) {
-                        isConflict = true;
-                        reasonText += " Conflicto: Trabajo.";
-                    }
-                }
-
-                // 4. Otras Tareas
-                if (!isConflict) {
-                    Object.values(DB.tasks).forEach(t => {
-                        if (t.suggestedStart && t.suggestedStart !== task.suggestedStart) {
-                            const tStart = new Date(t.suggestedStart);
-                            const tDur = t.estimatedDuration || 60;
-                            const tEnd = new Date(tStart.getTime() + tDur * 60000);
-                            if (proposedStart < tEnd && proposedEnd > tStart) {
-                                isConflict = true;
-                                reasonText += " Conflicto: Otra tarea.";
-                            }
-                        }
-                    });
-                }
-
-                if (isConflict) {
-                    // Mover 30 minutos adelante
-                    proposedStart = new Date(proposedStart.getTime() + 30 * 60000);
-                }
-                attempts++;
-            }
-
-            $('recDateText').innerText = proposedStart.toLocaleString('es-ES', { weekday:'long', day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
-            $('recReasonText').innerText = reasonText + ` Duración estimada: ${duration} min.`;
-            $('recAlert').style.display = attempts > 1 ? 'block' : 'none';
-            
-            tempTaskData.suggestedStart = proposedStart.toISOString();
+            $('recReasonText').innerText = reason;
+            $('recAlert').style.display = rec.alert ? 'block' : 'none';
+            if(rec.alert) $('recAlert').innerText = rec.alert;
         }
 
-        // Helper para conflictos de horario
-        function checkScheduleConflict(start, end, schedule) {
-            const dayMap = ['D', 'L', 'M', 'X', 'J', 'V', 'S'];
-            const dayLetter = dayMap[start.getDay()];
-            
-            if (schedule && schedule[dayLetter]) {
-                const block = schedule[dayLetter];
-                const bStartH = parseInt(block.start.split(':')[0]);
-                const bStartM = parseInt(block.start.split(':')[1]);
-                const bEndH = parseInt(block.end.split(':')[0]);
-                const bEndM = parseInt(block.end.split(':')[1]);
-
-                // Convertir a minutos del día para comparar fácil
-                const startMins = start.getHours() * 60 + start.getMinutes();
-                const endMins = end.getHours() * 60 + end.getMinutes();
-                const blockStartMins = bStartH * 60 + bStartM;
-                const blockEndMins = bEndH * 60 + bEndM;
-
-                // Chequeo superposición
-                if (startMins < blockEndMins && endMins > blockStartMins) {
-                    return true; // Hay conflicto
-                }
-            }
-            return false;
-        }
-
-        window.recalculate = () => {
-            const current = new Date(tempTaskData.suggestedStart);
-            const newDate = new Date(current.getTime() + (2 * 3600000)); // +2 horas
-            tempTaskData.suggestedStart = newDate.toISOString();
-            $('recDateText').innerText = newDate.toLocaleString('es-ES', { weekday:'long', day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
-            $('recReasonText').innerText = "Opción alternativa generada manualmente.";
-            $('recAlert').style.display = 'none';
-        };
+        window.recalculate = () => performCalculation();
 
         window.confirmSave = async () => {
             if(tempTaskData.mode === 'grupo') {
-                tempTaskData.suggestedStart = $('manualStartDate').value + 'T' + $('manualStartTime').value;
+                const manualStart = new Date($('manualStartDate').value + 'T' + $('manualStartTime').value);
+                tempTaskData.recommendedStart = manualStart.toISOString();
+                tempTaskData.recommendedEnd = new Date(manualStart.getTime() + tempTaskData.estimatedDuration * 60000).toISOString();
             }
             
             try {
-                await push(ref(db, `tasks/${uid}`), tempTaskData);
+                const id = $('taskId').value;
+                if(id) {
+                    await update(ref(db, `tasks/${uid}/${id}`), tempTaskData);
+                } else {
+                    await push(ref(db, `tasks/${uid}`), tempTaskData);
+                }
                 closeModal('resultModal');
-                $('taskForm').reset();
-                $('stepsContainer').innerHTML = '';
+                resetForm();
                 tempTaskData = null;
             } catch(e) { alert("Error guardando: " + e.message); }
         };
 
-        // --- VISTAS Y FILTROS ---
+        function resetForm() {
+            $('taskForm').reset();
+            $('taskId').value = '';
+            $('stepsContainer').innerHTML = '';
+            $('modalTitle').innerText = "Nueva Tarea";
+        }
+
+        // --- 8. VISTAS Y VISUALIZACIÓN ---
         window.setView = type => {
             document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
             event.target.classList.add('active');
@@ -900,8 +1011,6 @@
 
         window.renderView = () => {
             let list = Object.entries(DB.tasks);
-            
-            // Filters
             const sort = $('filterSort').value;
             const subjF = $('filterSubject').value;
             const timeF = $('filterTime').value;
@@ -912,24 +1021,24 @@
             else if(sort === 'priority') list.sort((a,b) => rankP(a[1].priority) - rankP(b[1].priority));
             else if(sort === 'difficulty') list.sort((a,b) => rankD(a[1].difficulty) - rankD(b[1].difficulty));
 
+            // Filter
             list = list.filter(([id, t]) => {
                 const due = new Date(t.dueDate);
                 const diffDays = Math.ceil((due - now) / (1000*60*60*24));
-                
                 if(timeF === '3days' && diffDays > 3) return false;
                 if(timeF === 'week' && diffDays > 7) return false;
                 if(subjF !== 'all' && t.subjectId !== subjF) return false;
                 return true;
             });
 
-            // Agenda HTML
-            $('agendaContainer').innerHTML = list.length === 0 ? '<div class="empty-state"><i class="fas fa-inbox"></i><p>No hay tareas con estos filtros.</p></div>' :
+            // Agenda Render
+            $('agendaContainer').innerHTML = list.length === 0 ? '<div class="empty-state"><i class="fas fa-inbox"></i><p>No hay tareas.</p></div>' :
             list.map(([id, t]) => {
                 const subj = DB.subjects[t.subjectId] || {name:'General', color:'#888'};
                 const dueDate = new Date(t.dueDate + 'T' + t.dueTime);
-                const recDate = t.suggestedStart ? new Date(t.suggestedStart) : null;
+                const recDate = t.recommendedStart ? new Date(t.recommendedStart) : null;
+                const recEnd = t.recommendedEnd ? new Date(t.recommendedEnd) : null;
                 
-                // Cálculos
                 const diffTime = dueDate - now;
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                 const daysText = diffDays < 0 ? 'Vencida' : (diffDays === 0 ? 'Hoy' : `${diffDays} días`);
@@ -955,15 +1064,15 @@
                             
                             <div class="agenda-details-grid">
                                 <div class="detail-item">
-                                    <span class="detail-label">Inicio Recomendado</span>
-                                    <span class="detail-value"><i class="fas fa-play-circle"></i> ${recDate ? recDate.toLocaleTimeString('es', {hour:'2-digit', minute:'2-digit'}) + ', ' + recDate.toLocaleDateString('es', {day:'2-digit', month:'short'}) : 'N/A'}</span>
+                                    <span class="detail-label">Inicio</span>
+                                    <span class="detail-value"><i class="fas fa-play-circle"></i> ${recDate ? recDate.toLocaleTimeString('es', {hour:'2-digit', minute:'2-digit'}) : 'N/A'}</span>
                                 </div>
                                 <div class="detail-item">
-                                    <span class="detail-label">Fecha Fin</span>
-                                    <span class="detail-value"><i class="fas fa-flag-checkered"></i> ${dueDate.toLocaleTimeString('es', {hour:'2-digit', minute:'2-digit'})}</span>
+                                    <span class="detail-label">Fin</span>
+                                    <span class="detail-value"><i class="fas fa-flag-checkered"></i> ${recEnd ? recEnd.toLocaleTimeString('es', {hour:'2-digit', minute:'2-digit'}) : 'N/A'}</span>
                                 </div>
                                 <div class="detail-item">
-                                    <span class="detail-label">Tiempo Restante</span>
+                                    <span class="detail-label">Vencimiento</span>
                                     <span class="detail-value" style="color: ${diffDays <= 2 ? 'var(--danger)' : 'inherit'}"><i class="fas fa-hourglass-half"></i> ${daysText}</span>
                                 </div>
                                 <div class="detail-item">
@@ -974,6 +1083,7 @@
                         </div>
                         <div class="agenda-actions" onclick="event.stopPropagation()">
                             <button class="btn btn-icon btn-success" onclick="startPomo('${id}')"><i class="fas fa-play"></i></button>
+                            <button class="btn btn-icon btn-warning" onclick="editTask('${id}')"><i class="fas fa-edit"></i></button>
                             <button class="btn btn-icon btn-danger" onclick="deleteTask('${id}')"><i class="fas fa-trash"></i></button>
                         </div>
                     </div>
@@ -981,41 +1091,36 @@
                         <div style="margin-bottom: 10px;">
                             <p style="font-size: 0.9rem; color: var(--text-secondary);">${t.instructions || 'Sin instrucciones.'}</p>
                         </div>
-                        ${t.steps && t.steps.length > 0 ? `
-                        <div style="margin-top: 10px;">
-                            <h5 style="font-size:0.85rem; color:var(--primary); margin-bottom:5px;"><i class="fas fa-list-ol"></i> Pasos</h5>
-                            <ul style="list-style:none; font-size:0.9rem;">
-                                ${t.steps.map(s => `<li style="margin-bottom:4px;"><i class="fas fa-check" style="color:var(--success); margin-right:8px; font-size:0.8rem;"></i>${s}</li>`).join('')}
-                            </ul>
-                        </div>` : ''}
-                        <div style="text-align:right; margin-top:15px; padding-top:15px; border-top:1px solid var(--border-color);">
+                         <div style="text-align:right; margin-top:15px; padding-top:15px; border-top:1px solid var(--border-color);">
                              <button class="btn btn-sm btn-secondary" onclick="completeTask('${id}')"><i class="fas fa-check"></i> Marcar Completada</button>
                         </div>
                     </div>
                 </div>`;
             }).join('');
 
-            // Table HTML
+            // Table Render
             $('tableContainer').innerHTML = `<table class="data-table">
                 <thead><tr>
-                    <th>Tarea</th><th>Materia</th><th>Inicio Rec.</th><th>Fecha Fin</th><th>Días Rest.</th><th>Prioridad</th><th>Dificultad</th><th>Acciones</th>
+                    <th>Tarea</th><th>Materia</th><th>Inicio</th><th>Fin</th><th>Vencimiento</th><th>Prioridad</th><th>Dificultad</th><th>Acciones</th>
                 </tr></thead>
                 <tbody>${
                 list.map(([id, t]) => {
                     const subj = DB.subjects[t.subjectId] || {name:'General', color:'#888'};
                     const dueDate = new Date(t.dueDate + 'T' + t.dueTime);
-                    const recDate = t.suggestedStart ? new Date(t.suggestedStart) : null;
+                    const recDate = t.recommendedStart ? new Date(t.recommendedStart) : null;
+                    const recEnd = t.recommendedEnd ? new Date(t.recommendedEnd) : null;
                     const diffDays = Math.ceil((dueDate - new Date()) / (1000 * 60 * 60 * 24));
                     return `<tr>
                         <td><strong>${t.title}</strong></td>
                         <td style="color:${subj.color}; font-weight:600;">${subj.name}</td>
-                        <td>${recDate ? recDate.toLocaleString('es', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'}) : '-'}</td>
-                        <td>${dueDate.toLocaleString('es', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'})}</td>
+                        <td>${recDate ? recDate.toLocaleTimeString('es', {hour:'2-digit', minute:'2-digit'}) : '-'}</td>
+                        <td>${recEnd ? recEnd.toLocaleTimeString('es', {hour:'2-digit', minute:'2-digit'}) : '-'}</td>
                         <td style="font-weight:700; color:${diffDays <=2 ? 'var(--danger)' : 'inherit'}">${diffDays < 0 ? 'Vencida' : diffDays}</td>
                         <td><span class="badge badge-p${t.priority==='alta'?1:t.priority==='media'?2:3}">${t.priority}</span></td>
                         <td><span class="badge badge-d${t.difficulty==='alta'?1:t.difficulty==='media'?2:3}">${t.difficulty}</span></td>
                         <td>
                             <button class="btn btn-sm btn-icon btn-success" onclick="startPomo('${id}')"><i class="fas fa-play"></i></button>
+                            <button class="btn btn-sm btn-icon btn-warning" onclick="editTask('${id}')"><i class="fas fa-edit"></i></button>
                             <button class="btn btn-sm btn-icon btn-danger" onclick="deleteTask('${id}')"><i class="fas fa-trash"></i></button>
                         </td>
                     </tr>`;
@@ -1035,61 +1140,169 @@
             if(confirm("¿Eliminar esta tarea?")) await remove(ref(db, `tasks/${uid}/${id}`));
         };
 
+        window.editTask = (id) => {
+            const t = DB.tasks[id];
+            if(!t) return;
+            resetForm();
+            $('taskId').value = id;
+            $('taskTitle').value = t.title;
+            $('taskSubject').value = t.subjectId;
+            $('taskType').value = t.type;
+            $('taskDueDate').value = t.dueDate;
+            $('taskDueTime').value = t.dueTime;
+            $('taskMode').value = t.mode;
+            $('taskPriority').value = t.priority;
+            $('taskDifficulty').value = t.difficulty;
+            if(t.gradeValue === 'unknown') {
+                $('taskGradeUnk').checked = true;
+                $('taskGrade').value = '';
+            } else {
+                $('taskGrade').value = t.gradeValue;
+            }
+            $('taskDesc').value = t.instructions || '';
+            if(t.steps) t.steps.forEach(s => addStep(s));
+            
+            $('modalTitle').innerText = "Editar Tarea";
+            openModal('taskModal');
+        };
+
         window.completeTask = async (id) => {
             await update(ref(db, `tasks/${uid}/${id}`), { completed: true });
         };
 
-        // --- POMODORO LOGIC ---
+        // --- 9. POMODORO INTELIGENTE ---
         window.startPomo = (id) => {
             const t = DB.tasks[id];
-            if(!t) return;
+            if(!t || !t.recommendedStart) return alert("Primero genera una recomendación para esta tarea.");
             
+            const now = new Date();
+            const start = new Date(t.recommendedStart);
+            const end = new Date(t.recommendedEnd);
+            
+            // Validar si es momento de empezar
+            // Permitimos margen de 5 mins antes
+            if(now < new Date(start.getTime() - 5*60000)) {
+                return alert(`Aún no es hora. Empieza a las ${start.toLocaleTimeString('es', {hour:'2-digit', minute:'2-digit'})}`);
+            }
+            
+            pomoState.taskId = id;
+            pomoState.totalDuration = t.duration || 60; // minutos
+            pomoState.endTime = end;
+            pomoState.currentCycle = 0;
+            pomoState.isBreak = false;
+
             $('pomoTaskName').innerText = t.title;
-            pomoTime = 25 * 60;
+            
+            // Calcular ciclos
+            // Si es < 30 mins, sesion única. Si no, bloques de 25/5
+            if(pomoState.totalDuration <= 30) {
+                pomoState.cycles = 1;
+                pomoState.timeLeft = pomoState.totalDuration * 60;
+            } else {
+                // Ej: 90 mins -> 3 ciclos de 30 mins (25 trabajo + 5 descanso)
+                // Pero el último ciclo no tiene descanso forzado si termina la tarea
+                pomoState.cycles = Math.ceil(pomoState.totalDuration / 25);
+                pomoState.timeLeft = 25 * 60;
+            }
+
             updatePomoUI();
             $('pomoScreen').classList.add('active');
-            isPomoPaused = true;
-            $('pomoPlay').innerHTML = '<i class="fas fa-play"></i> Iniciar';
         };
 
         window.togglePomo = () => {
             const btn = $('pomoPlay');
-            if(isPomoPaused) {
-                isPomoPaused = false;
-                btn.innerHTML = '<i class="fas fa-pause"></i> Pausar';
-                pomoInterval = setInterval(() => {
-                    pomoTime--;
-                    updatePomoUI();
-                    if(pomoTime <= 0) {
-                        clearInterval(pomoInterval);
-                        $('pomoClock').innerText = "¡TIEMPO!";
-                        btn.innerHTML = '<i class="fas fa-coffee"></i> Fin';
-                        btn.disabled = true;
-                    }
-                }, 1000);
-            } else {
-                isPomoPaused = true;
-                clearInterval(pomoInterval);
+            if(pomoState.interval) {
+                clearInterval(pomoState.interval);
+                pomoState.interval = null;
                 btn.innerHTML = '<i class="fas fa-play"></i> Continuar';
+            } else {
+                btn.innerHTML = '<i class="fas fa-pause"></i> Pausar';
+                pomoState.interval = setInterval(() => {
+                    pomoState.timeLeft--;
+                    
+                    // Chequear fin de tiempo real
+                    if(new Date() >= pomoState.endTime) {
+                        clearInterval(pomoState.interval);
+                        pomoState.interval = null;
+                        checkCompletion();
+                        return;
+                    }
+
+                    // Chequear fin de ciclo
+                    if(pomoState.timeLeft <= 0) {
+                        handleCycleEnd();
+                    }
+                    
+                    updatePomoUI();
+                }, 1000);
             }
         };
 
+        function handleCycleEnd() {
+            if(pomoState.isBreak) {
+                // Terminó descanso
+                pomoState.isBreak = false;
+                pomoState.currentCycle++;
+                if(pomoState.currentCycle < pomoState.cycles) {
+                    pomoState.timeLeft = 25 * 60;
+                    // Sonido o notificación
+                } else {
+                    checkCompletion();
+                }
+            } else {
+                // Terminó trabajo
+                pomoState.isBreak = true;
+                pomoState.timeLeft = 5 * 60;
+                // Sonido
+            }
+        }
+
+        function checkCompletion() {
+            const t = DB.tasks[pomoState.taskId];
+            const resp = confirm(`¡Tiempo finalizado para "${t.title}"!\n¿Completaste la tarea?`);
+            if(resp) {
+                completeTask(pomoState.taskId);
+                closePomo();
+            } else {
+                // Recalcular tiempo restante
+                alert("Recalculando horario para terminar la tarea...");
+                // Lógica de arrastre: crear una nueva recomendación para el resto
+                // Simplificación: volvemos a abrir el modal de resultado con el tiempo restante
+                const remainingMins = Math.round((new Date(t.dueDate + 'T' + t.dueTime) - new Date()) / 60000);
+                tempTaskData = { ...t };
+                tempTaskData.estimatedDuration = Math.max(30, remainingMins * 0.5); // Estimar la mitad del tiempo restante restante
+                tempTaskData.title = "(Arrastre) " + t.title;
+                
+                performCalculation(); // Buscar nuevo hueco
+                openModal('resultModal');
+                closePomo();
+            }
+        }
+
         window.resetPomo = () => {
-            clearInterval(pomoInterval);
-            startPomo(Object.keys(DB.tasks).find(k => DB.tasks[k].title === $('pomoTaskName').innerText));
+            clearInterval(pomoState.interval);
+            pomoState.interval = null;
+            startPomo(pomoState.taskId);
         };
 
         window.closePomo = () => {
-            clearInterval(pomoInterval);
+            clearInterval(pomoState.interval);
+            pomoState.interval = null;
             $('pomoScreen').classList.remove('active');
         };
 
         function updatePomoUI() {
-            const m = Math.floor(pomoTime/60);
-            const s = pomoTime%60;
+            const m = Math.floor(pomoState.timeLeft/60);
+            const s = pomoState.timeLeft%60;
             $('pomoClock').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-            $('pomoPlay').disabled = false;
+            
+            let statusText = pomoState.isBreak ? "Descanso" : "Enfoque";
+            $('pomoCycleInfo').innerText = `Ciclo ${pomoState.currentCycle + 1} de ${pomoState.cycles} - ${statusText}`;
+            
+            // Cambiar color si es descanso
+            $('pomoClock').style.color = pomoState.isBreak ? 'var(--success)' : 'var(--primary)';
         }
+
     </script>
 </body>
 </html>
