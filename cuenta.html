@@ -43,7 +43,7 @@
             z-index: 0;
         }
 
-        /* Splash - Optimizado para carga rápida */
+        /* Splash - Optimizado */
         .splash {
             position: fixed;
             inset: 0;
@@ -52,7 +52,6 @@
             align-items: center;
             justify-content: center;
             z-index: 1000;
-            /* Transición rápida de 0.3s en lugar de 0.8s */
             transition: opacity 0.3s ease, visibility 0.3s ease; 
         }
 
@@ -152,7 +151,7 @@
             display: none;
             opacity: 0;
             transform: translateX(30px);
-            transition: opacity 0.3s ease, transform 0.3s ease; /* Ligeramente más rápido */
+            transition: opacity 0.3s ease, transform 0.3s ease;
         }
 
         .question-card.active {
@@ -840,13 +839,16 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+        // CAMBIO: Importamos Realtime Database en lugar de Firestore
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBH42jsEEaEOFa02LhD59aDkwFfo_RVVB4",
             authDomain: "thynka-1dd68.firebaseapp.com",
+            // CAMBIO: Agregamos la URL de tu base de datos Realtime Database
+            databaseURL: "https://thynka-1dd68-default-rtdb.firebaseio.com",
             projectId: "thynka-1dd68",
             storageBucket: "thynka-1dd68.firebasestorage.app",
             messagingSenderId: "704622327906",
@@ -856,7 +858,8 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getFirestore(app);
+        // CAMBIO: Inicializamos Realtime Database
+        const db = getDatabase(app);
 
         // DOM
         const splash = document.getElementById('splash');
@@ -902,22 +905,22 @@
             const currentUserId = user.uid;
 
             try {
-                const userDoc = await getDoc(doc(db, 'users', currentUserId));
+                // CAMBIO: Usamos 'ref' y 'get' para Realtime Database
+                const userRef = ref(db, 'users/' + currentUserId);
+                const snapshot = await get(userRef);
                 
-                // CAMBIO 1: Carga rápida. Eliminamos el setTimeout de 2s.
-                // Iniciamos el fade out inmediatamente.
                 splash.classList.add('fade-out');
                 
-                // Esperamos solo lo necesario para la transición CSS (ahora 300ms)
                 setTimeout(() => {
-                    if (userDoc.exists()) {
+                    // CAMBIO: Usamos snapshot.exists() para verificar
+                    if (snapshot.exists()) {
                         window.location.href = 'dashboard.html';
                     } else {
                         mainContainer.style.display = 'block';
                         setupEventListeners(currentUserId);
                         updateProgress();
                     }
-                }, 300); // Tiempo reducido drásticamente
+                }, 300);
                 
             } catch (error) {
                 console.error('Error:', error);
@@ -1122,11 +1125,9 @@
             userData.createdAt = new Date().toISOString();
             
             try {
-                // Guardar en Firebase
-                await setDoc(doc(db, 'users', userId), userData);
+                // CAMBIO: Guardar en Realtime Database usando 'ref' y 'set'
+                await set(ref(db, 'users/' + userId), userData);
                 
-                // CAMBIO 2: Redirección directa y rápida.
-                // Eliminamos el showStatus y el setTimeout de 1.5s.
                 window.location.href = 'dashboard.html';
                 
             } catch (error) {
