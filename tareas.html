@@ -3,467 +3,1132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thynka - Gestión Completa de Tareas</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <title>Thynka - Sistema Inteligente de Gestión de Tareas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- ESTILOS COMPLETOS Y DETALLADOS (CSS EXTENSO) -->
     <style>
-        /* --- VARIABLES Y RESET --- */
+        /* --- 1. VARIABLES Y CONFIGURACIÓN GLOBAL --- */
         :root {
-            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
-            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
-            --gray: #9a9a9a; --white: #ffffff;
-            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.15);
-            --text-primary: #5a4032; --text-secondary: #9a9a9a;
-            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
-            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
-            --danger: #e74c3c; --success: #27ae60; --warning: #f39c12; --info: #3498db;
-            --overlay-bg: rgba(0, 0, 0, 0.7);
+            /* Paleta de colores principal */
+            --primary: #8b6b47;
+            --primary-light: #a3846c;
+            --primary-dark: #6b5538;
+            --primary-gradient: linear-gradient(135deg, #a3846c 0%, #8b6b47 100%);
+            
+            /* Colores de fondo */
+            --bg-primary: #f8f5f2;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc;
+            --bg-overlay: rgba(107, 85, 56, 0.4);
+            
+            /* Colores de texto */
+            --text-primary: #5a4032;
+            --text-secondary: #9a9a9a;
+            --text-muted: #c4b6a6;
+            --text-white: #ffffff;
+            
+            /* Colores de estado */
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --info: #3498db;
+            
+            /* Bordes y sombras */
+            --border-color: #f0e6dc;
+            --shadow-sm: 0 2px 4px rgba(90, 64, 50, 0.05);
+            --shadow-md: 0 4px 12px rgba(90, 64, 50, 0.08);
+            --shadow-lg: 0 10px 30px rgba(90, 64, 50, 0.12);
+            --shadow-hover: 0 15px 40px rgba(90, 64, 50, 0.15);
+            
+            /* Transiciones */
+            --transition-fast: 0.15s ease;
+            --transition-normal: 0.25s ease;
+            --transition-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Dimensiones */
+            --sidebar-width: 300px;
+            --panel-width: 400px;
+            --header-height: 70px;
+            --border-radius: 16px;
+            --border-radius-sm: 8px;
+            --border-radius-lg: 24px;
         }
+
+        /* Dark Mode Variables */
         [data-theme="dark"] {
-            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
-            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
-            --gray: #a89b8b; --white: #1a1815;
-            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
-            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
-            --bg-primary: #1a1815; --bg-secondary: #2a2520;
-            --bg-tertiary: #3a342e; --border-color: #3a342e;
-            --overlay-bg: rgba(0, 0, 0, 0.85);
+            --primary: #a3846c;
+            --primary-light: #c0a686;
+            --primary-dark: #8b6b47;
+            
+            --bg-primary: #1a1815;
+            --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e;
+            --bg-overlay: rgba(0, 0, 0, 0.7);
+            
+            --text-primary: #e0d5c7;
+            --text-secondary: #a89b8b;
+            --text-muted: #6b6156;
+            
+            --border-color: #3a342e;
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.2);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.4);
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; display: flex; overflow-x: hidden; }
 
-        /* --- LAYOUT PRINCIPAL --- */
+        /* --- 2. RESET Y ESTILOS BASE --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            overflow-x: hidden;
+            line-height: 1.6;
+            transition: background-color var(--transition-normal), color var(--transition-normal);
+        }
+
+        /* Scrollbar Personalizado */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-light);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
+        /* --- 3. LAYOUT PRINCIPAL --- */
+        .app-container {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        /* 3.1 Sidebar (Menú Lateral) */
         .sidebar {
-            position: fixed; left: 0; top: 0; height: 100vh; width: 280px;
-            background: var(--bg-secondary); box-shadow: 2px 0 10px var(--shadow);
-            transform: translateX(-100%); transition: transform 0.3s ease; z-index: 9999;
-            display: flex; flex-direction: column;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            width: var(--sidebar-width);
+            background-color: var(--bg-secondary);
+            box-shadow: 4px 0 20px rgba(0,0,0,0.05);
+            transform: translateX(-100%);
+            transition: transform var(--transition-slow);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border-color);
         }
-        .sidebar.active { transform: translateX(0); }
-        .sidebar-header { padding: 25px 20px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 15px; }
-        .sidebar-logo { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--primary-dark); }
-        .sidebar-menu { flex: 1; padding: 20px 0; overflow-y: auto; }
-        .menu-item { display: block; padding: 15px 25px; color: var(--text-primary); text-decoration: none; transition: all 0.2s; border-left: 3px solid transparent; display: flex; align-items: center; gap: 15px; }
-        .menu-item:hover, .menu-item.active { background: var(--bg-tertiary); border-left-color: var(--primary); }
-        .menu-item i { width: 20px; text-align: center; opacity: 0.7; }
-        .menu-item.active i { opacity: 1; }
 
-        /* Sección de Asignaturas en Sidebar */
-        .sidebar-subjects { padding: 20px; border-top: 1px solid var(--border-color); margin-top: auto; background: var(--bg-tertiary); }
-        .sidebar-subjects h4 { color: var(--text-secondary); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 15px; padding-left: 5px; letter-spacing: 1px; }
-        .subject-list { list-style: none; max-height: 200px; overflow-y: auto; }
-        .subject-list-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; margin-bottom: 5px; font-size: 0.9rem; cursor: pointer; transition: background 0.2s; }
-        .subject-list-item:hover { background: var(--bg-secondary); }
-        .subject-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
-
-        /* --- PANEL HORARIO CLASES (DESLIZABLE DERECHA) --- */
-        .schedule-panel {
-            position: fixed; right: 0; top: 0; height: 100vh; width: 350px;
-            background: var(--bg-secondary); box-shadow: -2px 0 15px var(--shadow);
-            transform: translateX(100%); transition: transform 0.3s; z-index: 9999;
-            display: flex; flex-direction: column;
+        .sidebar.active {
+            transform: translateX(0);
         }
-        .schedule-panel.active { transform: translateX(0); }
-        .panel-header { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--bg-tertiary); }
-        .panel-body { flex: 1; overflow-y: auto; padding: 20px; }
+
+        .sidebar-header {
+            padding: 30px 25px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: var(--bg-tertiary);
+        }
+
+        .sidebar-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            letter-spacing: -0.5px;
+        }
+
+        .sidebar-logo span {
+            color: var(--primary);
+        }
+
+        .sidebar-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            overflow-y: auto;
+            padding: 25px 0;
+        }
+
+        .menu-section-title {
+            padding: 10px 25px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-top: 15px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 25px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all var(--transition-normal);
+            border-left: 4px solid transparent;
+            font-weight: 500;
+            margin: 2px 0;
+        }
+
+        .menu-item:hover {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            border-left-color: var(--primary-light);
+        }
+
+        .menu-item.active {
+            background-color: var(--bg-tertiary);
+            color: var(--primary-dark);
+            border-left-color: var(--primary);
+            font-weight: 600;
+        }
+
+        .menu-item i {
+            width: 24px;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        /* 3.2 Panel Derecho (Horarios) */
+        .right-panel {
+            position: fixed;
+            right: 0;
+            top: 0;
+            height: 100vh;
+            width: var(--panel-width);
+            background-color: var(--bg-secondary);
+            box-shadow: -4px 0 20px rgba(0,0,0,0.05);
+            transform: translateX(100%);
+            transition: transform var(--transition-slow);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid var(--border-color);
+        }
+
+        .right-panel.active {
+            transform: translateX(0);
+        }
+
+        .panel-header {
+            padding: 25px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-secondary);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .panel-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 25px;
+        }
+
+        /* 3.3 Main Content */
+        .main-content {
+            flex: 1;
+            padding: 90px 40px 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            transition: padding var(--transition-normal);
+        }
+
+        /* --- 4. COMPONENTES UI --- */
+        /* 4.1 Botones */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px 24px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border: none;
+            border-radius: var(--border-radius-sm);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: var(--text-white);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .btn-primary:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: var(--text-white);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: var(--text-white);
+        }
+
+        .btn-icon {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            border-radius: 12px;
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+        }
+
+        .btn-lg {
+            padding: 16px 32px;
+            font-size: 1.1rem;
+            border-radius: var(--border-radius);
+        }
+
+        /* 4.2 Inputs y Formularios */
+        .form-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 18px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            color: var(--text-primary);
+            background-color: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            transition: all var(--transition-fast);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            background-color: var(--bg-secondary);
+            box-shadow: 0 0 0 4px rgba(139, 107, 71, 0.1);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-muted);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        select.form-control {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%239a9a9a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 16px;
+            padding-right: 45px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .input-with-btn {
+            display: flex;
+            gap: 10px;
+        }
+        .input-with-btn .form-control {
+            flex: 1;
+        }
+
+        /* 4.3 Cards */
+        .card {
+            background-color: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-tertiary);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        /* --- 5. COMPONENTES ESPECÍFICOS --- */
+        /* 5.1 Header Controls (Toggle Menu & Theme) */
+        .control-btn {
+            position: fixed;
+            width: 50px;
+            height: 50px;
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 14px;
+            color: var(--text-white);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            z-index: 10000;
+            box-shadow: var(--shadow-md);
+            transition: all var(--transition-normal);
+        }
+
+        .control-btn:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .menu-btn {
+            left: 25px;
+            top: 25px;
+        }
         
-        .days-selector { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+        .menu-btn.active {
+            left: calc(var(--sidebar-width) + 25px);
+            background: var(--bg-secondary);
+            color: var(--primary);
+        }
+
+        .panel-btn {
+            right: 25px;
+            top: 25px;
+        }
+        
+        .panel-btn.active {
+            right: calc(var(--panel-width) + 25px);
+            background: var(--bg-secondary);
+            color: var(--primary);
+        }
+
+        .theme-btn {
+            right: 85px; /* Separado del panel btn */
+            top: 25px;
+        }
+
+        /* 5.2 Overlay */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background-color: var(--bg-overlay);
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-slow);
+            z-index: 9998;
+            backdrop-filter: blur(4px);
+        }
+
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* 5.3 Page Header */
+        .page-header {
+            margin-bottom: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .page-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        /* 5.4 Agenda View (Lista de Tareas) */
+        .agenda-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .agenda-item {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            transition: all var(--transition-normal);
+            border-left: 6px solid transparent; /* Color dinámico */
+        }
+
+        .agenda-item:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .agenda-item-content {
+            display: flex;
+            padding: 20px;
+            gap: 20px;
+            align-items: stretch;
+        }
+
+        .agenda-date-badge {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-width: 80px;
+            padding: 10px;
+            background: var(--bg-tertiary);
+            border-radius: var(--border-radius-sm);
+            text-align: center;
+        }
+
+        .agenda-day-num {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1;
+        }
+
+        .agenda-month {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .agenda-time {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-top: 6px;
+        }
+
+        .agenda-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .agenda-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .agenda-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .agenda-meta-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .meta-item i {
+            font-size: 0.9rem;
+            color: var(--primary-light);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-subject {
+            color: white; /* Dynamic background */
+        }
+
+        .badge-priority-high { background-color: rgba(231, 76, 60, 0.15); color: var(--danger); }
+        .badge-priority-med { background-color: rgba(243, 156, 18, 0.15); color: var(--warning); }
+        .badge-priority-low { background-color: rgba(39, 174, 96, 0.15); color: var(--success); }
+
+        .agenda-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-left: auto;
+        }
+
+        /* 5.5 Modals */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 10001;
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-slow);
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background-color: var(--bg-secondary);
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: scale(0.9) translateY(20px);
+            transition: transform var(--transition-slow);
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            padding: 25px 30px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-tertiary);
+        }
+
+        .modal-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            color: var(--primary-dark);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: color var(--transition-fast);
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: var(--danger);
+        }
+
+        .modal-body {
+            padding: 30px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .modal-footer {
+            padding: 20px 30px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            background: var(--bg-secondary);
+        }
+
+        /* 5.6 Recommendation Result UI */
+        .rec-result-container {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .rec-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        .rec-datetime {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        .rec-details {
+            background: var(--bg-tertiary);
+            padding: 20px;
+            border-radius: var(--border-radius-sm);
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .rec-detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .rec-alert {
+            background: rgba(231, 76, 60, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 15px;
+            border-radius: var(--border-radius-sm);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            margin-top: 20px;
+            display: none; /* Se muestra con JS */
+        }
+
+        /* 5.7 Steps Input */
+        .step-input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .step-input-group input {
+            flex: 1;
+        }
+
+        /* 5.8 Schedule Selector */
+        .days-grid {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
         .day-circle {
-            width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--border-color);
-            background: var(--bg-tertiary); display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: all 0.2s; font-weight: 600; color: var(--text-secondary);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+            background: var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all var(--transition-fast);
         }
-        .day-circle.selected { background: var(--primary); color: white; border-color: var(--primary); transform: scale(1.05); }
 
-        /* --- CONTROLES GLOBALES --- */
-        .menu-toggle { position: fixed; left: 20px; top: 20px; width: 45px; height: 45px; background: var(--primary); border: none; border-radius: 12px; color: var(--white); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; z-index: 10000; box-shadow: 0 4px 12px var(--shadow); transition: all 0.3s; }
-        .menu-toggle.active { left: 300px; background: var(--bg-secondary); color: var(--primary); }
-        .theme-toggle { position: fixed; right: 20px; top: 20px; width: 45px; height: 45px; background: var(--primary); border: none; border-radius: 12px; color: var(--white); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; z-index: 10000; box-shadow: 0 4px 12px var(--shadow); transition: transform 0.2s; }
-        .theme-toggle:hover { transform: rotate(20deg); }
-        
-        .overlay { position: fixed; inset: 0; background: var(--overlay-bg); opacity: 0; visibility: hidden; transition: all 0.3s; z-index: 9998; }
-        .overlay.active { opacity: 1; visibility: visible; }
+        .day-circle:hover {
+            border-color: var(--primary-light);
+            color: var(--primary-dark);
+        }
 
-        /* --- CONTENIDO PRINCIPAL --- */
-        .main-content { flex: 1; padding: 80px 20px 40px; max-width: 1400px; margin: 0 auto; width: 100%; }
-        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 20px; }
-        .page-title { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--primary-dark); }
-        
-        /* --- COMPONENTES UI --- */
-        .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; font-size: 0.9rem; font-family: inherit; }
-        .btn-primary { background: var(--primary); color: var(--white); box-shadow: 0 4px 10px var(--shadow); }
-        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); }
-        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
-        .btn-success { background: var(--success); color: white; }
-        .btn-danger { background: var(--danger); color: white; }
-        .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+        .day-circle.selected {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            transform: scale(1.1);
+        }
 
-        input, select, textarea { width: 100%; background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 15px; color: var(--text-primary); font-family: inherit; font-size: 0.95rem; }
-        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(139, 107, 71, 0.2); }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-secondary); }
-        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        /* 5.9 Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+        .empty-state p {
+            font-size: 1.1rem;
+        }
 
-        /* --- FILTROS AVANZADOS --- */
-        .filters-card { background: var(--bg-secondary); padding: 20px; border-radius: 15px; margin-bottom: 25px; box-shadow: 0 2px 10px var(--shadow); border: 1px solid var(--border-color); }
-        .filters-header { display: flex; justify-content: space-between; margin-bottom: 15px; align-items: center; }
-        .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; align-items: flex-end; }
-        .filter-label { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 5px; display: block; }
-
-        /* --- VISTAS (AGENDA/TABLA) --- */
-        .view-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-        .view-tab { padding: 10px 20px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 20px; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; }
-        .view-tab.active { background: var(--primary); color: white; border-color: var(--primary); font-weight: 500; box-shadow: 0 2px 8px var(--shadow); }
-
-        /* Agenda Item Detallado */
-        .agenda-card { background: var(--bg-secondary); border-radius: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px var(--shadow); overflow: hidden; border-left: 5px solid transparent; transition: transform 0.2s; }
-        .agenda-card:hover { transform: translateY(-2px); box-shadow: 0 5px 15px var(--shadow-hover); }
-        .agenda-main { padding: 20px; display: flex; gap: 20px; cursor: pointer; }
-        .agenda-date-box { min-width: 60px; text-align: center; border-right: 1px solid var(--border-color); padding-right: 15px; display: flex; flex-direction: column; justify-content: center; }
-        .agenda-day-num { font-size: 2.2rem; font-weight: 700; color: var(--primary); line-height: 1; }
-        .agenda-month { font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; margin-top: 5px; }
-        .agenda-info { flex: 1; }
-        .agenda-title { font-weight: 600; font-size: 1.1rem; margin-bottom: 8px; }
-        .agenda-meta { display: flex; gap: 15px; font-size: 0.85rem; color: var(--text-secondary); flex-wrap: wrap; }
-        .agenda-actions { display: flex; flex-direction: column; gap: 5px; justify-content: center; }
-        
-        /* Vista Previa Expandible */
-        .agenda-preview { background: var(--bg-tertiary); padding: 20px; border-top: 1px solid var(--border-color); display: none; animation: fadeIn 0.3s ease; }
-        .agenda-preview.active { display: block; }
-        .preview-section { margin-bottom: 15px; }
-        .preview-section h5 { font-size: 0.8rem; color: var(--primary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .preview-steps { list-style: none; }
-        .preview-steps li { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-primary); }
-        .preview-steps li i { color: var(--success); font-size: 0.8rem; }
-
-        /* Tabla */
-        .data-table { width: 100%; border-collapse: collapse; background: var(--bg-secondary); border-radius: 10px; overflow: hidden; }
-        .data-table th, .data-table td { padding: 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
-        .data-table th { background: var(--bg-tertiary); color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase; font-weight: 600; }
-        .data-table tr:hover td { background: var(--bg-tertiary); }
-
-        /* --- MODALES --- */
-        .modal { position: fixed; inset: 0; background: var(--overlay-bg); display: flex; justify-content: center; align-items: flex-start; z-index: 10001; opacity: 0; visibility: hidden; transition: all 0.3s; padding: 30px 10px; overflow-y: auto; }
-        .modal.active { opacity: 1; visibility: visible; }
-        .modal-box { background: var(--bg-secondary); width: 100%; max-width: 800px; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); margin: auto; position: relative; }
-        .modal-head { padding: 25px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--bg-secondary); position: sticky; top: 0; z-index: 5; border-radius: 20px 20px 0 0; }
-        .modal-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--primary-dark); }
-        .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-secondary); transition: color 0.2s; }
-        .modal-close:hover { color: var(--danger); }
-        .modal-body { padding: 25px; }
-        .modal-foot { padding: 20px 25px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 10px; background: var(--bg-tertiary); border-radius: 0 0 20px 20px; }
-
-        /* Modal Recomendación */
-        .rec-container { text-align: center; padding: 30px 10px; }
-        .rec-date { font-size: 2.5rem; font-weight: 700; color: var(--primary); margin: 20px 0; line-height: 1.2; }
-        .rec-reason { font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 25px; background: var(--bg-primary); padding: 15px; border-radius: 10px; }
-        .rec-alert { background: rgba(231, 76, 60, 0.1); color: var(--danger); padding: 15px; border-radius: 8px; margin-bottom: 25px; border: 1px solid var(--danger); display: none; font-weight: 500; }
-        .rec-alert i { margin-right: 10px; }
-
-        /* --- POMODORO SCREEN --- */
-        .pomo-screen { position: fixed; inset: 0; background: var(--bg-primary); z-index: 10005; display: none; flex-direction: column; justify-content: center; align-items: center; padding: 20px; text-align: center; }
-        .pomo-screen.active { display: flex; }
-        .pomo-clock { font-size: 8rem; font-weight: 700; color: var(--primary); font-family: 'Playfair Display', serif; line-height: 1; text-shadow: 0 10px 20px var(--shadow); }
-        .pomo-msg { font-style: italic; color: var(--text-secondary); margin-top: 20px; max-width: 400px; font-size: 1.1rem; }
-        .pomo-task-label { color: var(--primary-dark); font-weight: 600; margin-bottom: 10px; }
-        .pomo-controls { margin-top: 40px; display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
-
-        /* Empty State */
-        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); background: var(--bg-secondary); border-radius: 15px; border: 2px dashed var(--border-color); }
-        .empty-state i { font-size: 4rem; margin-bottom: 20px; opacity: 0.3; }
-
-        /* --- ANIMACIONES --- */
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        /* 5.10 Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 90px 15px 30px;
+            }
+            .page-title {
+                font-size: 1.8rem;
+            }
+            .sidebar, .right-panel {
+                width: 100%;
+            }
+            .agenda-item-content {
+                flex-direction: column;
+            }
+            .agenda-date-badge {
+                flex-direction: row;
+                width: 100%;
+                justify-content: flex-start;
+                gap: 15px;
+            }
+            .control-btn {
+                width: 45px;
+                height: 45px;
+                top: 15px;
+            }
+            .menu-btn { left: 15px; }
+            .panel-btn { right: 15px; }
+            .theme-btn { right: 70px; }
+        }
     </style>
 </head>
 <body>
 
-    <!-- SIDEBAR -->
+    <!-- OVERLAY -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- SIDEBAR (MENÚ IZQUIERDO) -->
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <h2 class="sidebar-logo">Thynka</h2>
+            <h1 class="sidebar-logo">Thynka</h1>
         </div>
-        <div class="sidebar-menu">
-            <a href="dashboard.html" class="menu-item"><i class="fas fa-home"></i> Inicio</a>
-            <a href="tareas.html" class="menu-item active"><i class="fas fa-tasks"></i> Tareas</a>
-            <a href="horario.html" class="menu-item"><i class="fas fa-calendar-alt"></i> Horario</a>
-            <a href="examen.html" class="menu-item"><i class="fas fa-file-alt"></i> Exámenes</a>
-            <a href="asistente.html" class="menu-item"><i class="fas fa-robot"></i> Asistente IA</a>
-            <a href="recomendaciones.html" class="menu-item"><i class="fas fa-graduation-cap"></i> Aprende</a>
-            <a href="cuestionarios.html" class="menu-item"><i class="fas fa-question-circle"></i> Cuestionarios</a>
-            <a href="patron.html" class="menu-item"><i class="fas fa-chart-line"></i> Análisis</a>
-        </div>
-        <div class="sidebar-subjects">
-            <h4>Asignaturas</h4>
-            <ul class="subject-list" id="subjectSidebarList">
-                <!-- Se llena dinámicamente -->
-            </ul>
+        <div class="sidebar-content">
+            <div class="sidebar-menu">
+                <div class="menu-section-title">Principal</div>
+                <a href="dashboard.html" class="menu-item"><i class="fas fa-home"></i><span>Inicio</span></a>
+                <a href="tareas.html" class="menu-item active"><i class="fas fa-tasks"></i><span>Tareas</span></a>
+                <a href="horario.html" class="menu-item"><i class="fas fa-calendar-alt"></i><span>Horario</span></a>
+                
+                <div class="menu-section-title">Herramientas</div>
+                <a href="examen.html" class="menu-item"><i class="fas fa-file-alt"></i><span>Exámenes</span></a>
+                <a href="asistente.html" class="menu-item"><i class="fas fa-robot"></i><span>Asistente IA</span></a>
+            </div>
         </div>
     </nav>
 
-    <!-- PANEL DERECHO: HORARIO CLASES -->
-    <div class="schedule-panel" id="schedulePanel">
+    <!-- PANEL DERECHO (HORARIOS) -->
+    <aside class="right-panel" id="rightPanel">
         <div class="panel-header">
-            <h3><i class="fas fa-university"></i> Horario de Clases</h3>
-            <button class="btn btn-sm btn-secondary" onclick="togglePanel('schedulePanel')"><i class="fas fa-times"></i></button>
+            <div class="panel-title"><i class="fas fa-school"></i> Horario de Clases</div>
+            <button class="btn btn-secondary btn-icon" onclick="togglePanel('rightPanel')"><i class="fas fa-times"></i></button>
         </div>
         <div class="panel-body">
-            <p style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:20px;">Registra tus clases. El sistema no agendará tareas en estos rangos (más 1h de transporte).</p>
+            <p style="margin-bottom: 20px; color: var(--text-secondary); font-size: 0.9rem;">
+                Registra tus clases para que el sistema no asigne tareas en esos rangos (incluyendo 1 hora de transporte).
+            </p>
             
-            <label style="font-weight:600; margin-bottom:10px; display:block;">Días de Clase</label>
-            <div class="days-selector" id="classDaysSelector">
-                <div class="day-circle" data-day="L">L</div>
-                <div class="day-circle" data-day="M">M</div>
-                <div class="day-circle" data-day="X">X</div>
-                <div class="day-circle" data-day="J">J</div>
-                <div class="day-circle" data-day="V">V</div>
-                <div class="day-circle" data-day="S">S</div>
-                <div class="day-circle" data-day="D">D</div>
+            <div class="form-group">
+                <label>Días de Clase</label>
+                <div class="days-grid" id="classDaysGrid">
+                    <div class="day-circle" data-day="L">L</div>
+                    <div class="day-circle" data-day="M">M</div>
+                    <div class="day-circle" data-day="X">X</div>
+                    <div class="day-circle" data-day="J">J</div>
+                    <div class="day-circle" data-day="V">V</div>
+                    <div class="day-circle" data-day="S">S</div>
+                    <div class="day-circle" data-day="D">D</div>
+                </div>
             </div>
             
-            <div id="classTimeInputs"></div>
+            <div id="classTimeInputsContainer"></div>
             
-            <button class="btn btn-primary" style="width:100%; margin-top:25px;" onclick="saveClassSchedule()">
+            <button class="btn btn-primary" style="width: 100%; margin-top: 20px;" onclick="saveClassSchedule()">
                 <i class="fas fa-save"></i> Guardar Horario
             </button>
         </div>
-    </div>
+    </aside>
 
-    <!-- OVERLAY GENERAL -->
-    <div class="overlay" id="overlay"></div>
+    <!-- BOTONES DE CONTROL FLOTANTES -->
+    <button class="control-btn menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button>
+    <button class="control-btn theme-btn" id="themeBtn"><i class="fas fa-moon"></i></button>
+    <button class="control-btn panel-btn" id="panelBtn"><i class="fas fa-calendar-week"></i></button>
 
-    <!-- CONTROLES -->
-    <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
-    <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
-
-    <!-- MODAL: FORMULARIO COMPLETO TAREA -->
+    <!-- MODAL: FORMULARIO DE TAREA -->
     <div class="modal" id="taskModal">
-        <div class="modal-box">
-            <div class="modal-head">
+        <div class="modal-content">
+            <div class="modal-header">
                 <h3 class="modal-title">Registrar Nueva Tarea</h3>
                 <button class="modal-close" onclick="closeModal('taskModal')">&times;</button>
             </div>
             <div class="modal-body">
                 <form id="taskForm">
                     <div class="form-group">
-                        <label>Título *</label>
-                        <input type="text" id="taskTitle" required placeholder="Ej: Ensayo final de historia">
+                        <label>Título de la Tarea</label>
+                        <input type="text" class="form-control" id="taskTitle" required placeholder="Ej: Ensayo final de historia">
                     </div>
+
                     <div class="form-row">
                         <div class="form-group">
                             <label>Asignatura</label>
-                            <div style="display:flex; gap:10px;">
-                                <select id="taskSubject" style="flex:1"></select>
-                                <button type="button" class="btn btn-secondary" onclick="addSubjectPrompt()"><i class="fas fa-plus"></i></button>
+                            <div class="input-with-btn">
+                                <select class="form-control" id="taskSubject"></select>
+                                <button type="button" class="btn btn-secondary btn-icon" onclick="addSubjectPrompt()"><i class="fas fa-plus"></i></button>
                             </div>
                         </div>
                         <div class="form-group">
                             <label>Tipo de Actividad</label>
-                            <select id="taskType">
-                                <option>Tarea</option><option>Proyecto</option><option>Ensayo</option>
-                                <option>Presentación</option><option>Laboratorio</option><option>Lectura</option>
-                                <option>Investigación</option><option>Estudio</option><option>Ejercicios</option><option>Otro</option>
+                            <select class="form-control" id="taskType" onchange="updateDurationPreview()">
+                                <option value="tarea">Tarea (15-45m/paso)</option>
+                                <option value="proyecto">Proyecto (25-60m/paso)</option>
+                                <option value="ensayo">Ensayo (30-120m/paso)</option>
+                                <option value="presentacion">Presentación (30-120m/paso)</option>
+                                <option value="laboratorio">Laboratorio (25-60m/paso)</option>
+                                <option value="lectura">Lectura (15-60m/paso)</option>
+                                <option value="investigacion">Investigación (30-120m/paso)</option>
+                                <option value="estudio">Estudio (15-45m/paso)</option>
+                                <option value="ejercicio">Ejercicio (3-40m/paso)</option>
+                                <option value="video">Hacer Video (1-3h)</option>
+                                <option value="apuntes">Apuntes (20-60m/paso)</option>
+                                <option value="exposicion">Prep. Exposición (30-90m/paso)</option>
+                                <option value="curso">Curso (1-3h)</option>
                             </select>
                         </div>
                     </div>
+
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Fecha Entrega *</label>
-                            <input type="date" id="taskDueDate" required>
+                            <label>Fecha de Entrega</label>
+                            <input type="date" class="form-control" id="taskDueDate" required>
                         </div>
                         <div class="form-group">
                             <label>Hora Límite</label>
-                            <input type="time" id="taskDueTime" value="23:59">
+                            <input type="time" class="form-control" id="taskDueTime" value="23:59">
                         </div>
                     </div>
+
                     <div class="form-row">
-                        <div class="form-group">
-                            <label>Modalidad</label>
-                            <select id="taskMode" onchange="handleModeChange()">
-                                <option value="individual">Individual</option>
-                                <option value="grupo">Grupal</option>
-                            </select>
-                        </div>
                         <div class="form-group">
                             <label>Prioridad</label>
-                            <select id="taskPriority">
+                            <select class="form-control" id="taskPriority" onchange="updateDurationPreview()">
                                 <option value="alta">Alta</option>
                                 <option value="media">Media</option>
                                 <option value="baja">Baja</option>
                             </select>
                         </div>
-                    </div>
-                    <div class="form-row">
                         <div class="form-group">
                             <label>Dificultad</label>
-                            <select id="taskDifficulty">
+                            <select class="form-control" id="taskDifficulty" onchange="updateDurationPreview()">
                                 <option value="alta">Alta</option>
                                 <option value="media">Media</option>
                                 <option value="baja">Baja</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label>Valor (%)</label>
-                            <input type="number" id="taskGrade" placeholder="Ej: 20" min="0" max="100">
-                            <label style="font-size:0.8rem; font-weight:400; margin-top:5px; display:flex; align-items:center; gap:5px; cursor:pointer;">
-                                <input type="checkbox" id="taskGradeUnk"> No sé
-                            </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Valor (%)</label>
+                        <input type="number" class="form-control" id="taskGrade" placeholder="Ej: 20" oninput="updateDurationPreview()">
+                        <div style="margin-top: 8px; display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" id="taskGradeUnknown" onchange="updateDurationPreview()">
+                            <label for="taskGradeUnknown" style="margin:0; font-size: 0.9rem; cursor: pointer;">No sé / No aplica</label>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label>Formato de Entrega</label>
-                        <input type="text" id="taskFormat" placeholder="PDF, Físico, Enlace...">
-                    </div>
-                    <div class="form-group">
-                        <label>Instrucciones / Enlaces</label>
-                        <textarea id="taskDesc" rows="3" placeholder="Pega aquí las instrucciones..."></textarea>
-                    </div>
+
                     <div class="form-group">
                         <label>Pasos de la Actividad</label>
                         <div id="stepsContainer"></div>
-                        <button type="button" class="btn btn-sm btn-secondary" onclick="addStep()" style="margin-top:10px;"><i class="fas fa-plus"></i> Agregar Paso</button>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="addStepInput()" style="margin-top: 10px;">
+                            <i class="fas fa-plus"></i> Agregar Paso
+                        </button>
+                        <div style="text-align: right; color: var(--primary); font-weight: 600; font-size: 0.9rem; margin-top: 10px;">
+                            Duración Estimada: <span id="durationPreviewText">1h 0m</span>
+                        </div>
                     </div>
                 </form>
             </div>
-            <div class="modal-foot">
+            <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="closeModal('taskModal')">Cancelar</button>
-                <button class="btn btn-primary" onclick="processTask()"><i class="fas fa-magic"></i> Generar Plan</button>
+                <button class="btn btn-primary" onclick="processTaskLogic()">
+                    <i class="fas fa-calculator"></i> Calcular y Asignar
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL: RESULTADO Y CONFIRMACIÓN -->
+    <!-- MODAL: RESULTADO DE RECOMENDACIÓN -->
     <div class="modal" id="resultModal">
-        <div class="modal-box" style="max-width: 550px;">
-            <div class="modal-head">
-                <h3 class="modal-title">Plan de Acción</h3>
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Plan de Acción Asignado</h3>
                 <button class="modal-close" onclick="closeModal('resultModal')">&times;</button>
             </div>
             <div class="modal-body">
-                <div id="recViewInd" class="rec-container">
-                    <p style="font-size:0.9rem; color:var(--text-secondary);">Tu sistema inteligente sugiere empezar el:</p>
-                    <div class="rec-date" id="recDateText">--</div>
-                    <div class="rec-reason" id="recReasonText">Calculando...</div>
-                    <div class="rec-alert" id="recAlert"><i class="fas fa-exclamation-circle"></i> ¡Alerta! Has aplazado demasiado. Riesgo alto de no entregar.</div>
-                </div>
-
-                <div id="recViewGroup" style="display:none; padding:30px 0;">
-                    <p style="margin-bottom:20px;">Es una tarea grupal. Coordina con tu equipo y selecciona el horario:</p>
-                    <div class="form-group">
-                        <label>Fecha de Inicio</label>
-                        <input type="date" id="manualStartDate">
+                <div class="rec-result-container">
+                    <div class="rec-label">Fecha de Inicio Óptima</div>
+                    <div class="rec-datetime" id="recDateText">Calculando...</div>
+                    
+                    <div class="rec-details">
+                        <div class="rec-detail-row">
+                            <span>Duración:</span>
+                            <strong id="recDurationText">--</strong>
+                        </div>
+                        <div class="rec-detail-row">
+                            <span>Límite Máximo:</span>
+                            <strong id="recLimitText">--</strong>
+                        </div>
+                        <div class="rec-detail-row">
+                            <span>Vencimiento:</span>
+                            <strong id="recDueText">--</strong>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>Hora de Inicio</label>
-                        <input type="time" id="manualStartTime">
+
+                    <div class="rec-alert" id="recAlertBox">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div>
+                            <strong>¡Espacio Aplazado!</strong><br>
+                            No hubo espacio antes del límite ideal. Se asignó lo más pronto posible.
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="modal-foot" style="justify-content: center; flex-wrap: wrap; gap: 10px;">
-                <button class="btn btn-secondary" id="btnRecalc" onclick="recalculate()"><i class="fas fa-sync"></i> Generar Otra</button>
-                <button class="btn btn-secondary" onclick="openModal('taskModal')"><i class="fas fa-edit"></i> Editar</button>
-                <button class="btn btn-danger" onclick="discardTask()"><i class="fas fa-trash"></i> Eliminar</button>
-                <button class="btn btn-success" onclick="confirmSave()"><i class="fas fa-check"></i> Confirmar y Guardar</button>
+            <div class="modal-footer" style="justify-content: center;">
+                <button class="btn btn-secondary" onclick="recalculateLogic()"><i class="fas fa-sync"></i> Otra Opción</button>
+                <button class="btn btn-success" onclick="confirmSaveLogic()"><i class="fas fa-check"></i> Confirmar</button>
             </div>
         </div>
     </div>
 
-    <!-- POMODORO SCREEN -->
-    <div class="pomo-screen" id="pomoScreen">
-        <div style="max-width: 600px;">
-            <div class="pomo-task-label" id="pomoTaskLabel">Enfocándose en:</div>
-            <h2 style="color: var(--primary-dark); margin-bottom: 10px;" id="pomoTaskName">Tarea</h2>
-            <div class="pomo-clock" id="pomoClock">25:00</div>
-            <div class="pomo-msg" id="pomoMsg">¡Tú puedes! Un paso a la vez.</div>
-            
-            <div id="flexibleConfig" style="display:none; margin-top: 20px; background: var(--bg-secondary); padding: 20px; border-radius: 15px; border: 1px solid var(--border-color);">
-                <label style="font-size: 0.9rem; display:block; margin-bottom:10px;">Configura tu tiempo (minutos):</label>
-                <input type="number" id="customPomoTime" value="25" min="5" max="120" style="width: 100px; margin: 0 auto; display:block; text-align:center; font-size:1.5rem;">
-                <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="applyCustomPomo()">Aplicar</button>
-            </div>
-
-            <div class="pomo-controls">
-                <button class="btn btn-success btn-lg" id="pomoPlay" onclick="togglePomo()"><i class="fas fa-play"></i> Iniciar</button>
-                <button class="btn btn-secondary btn-lg" onclick="resetPomo()"><i class="fas fa-redo"></i> Reset</button>
-                <button class="btn btn-danger btn-lg" onclick="closePomo()"><i class="fas fa-times"></i> Salir</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- CONTENIDO PRINCIPAL -->
+    <!-- MAIN CONTENT -->
     <main class="main-content">
         <div class="page-header">
             <div>
-                <h1 class="page-title">Gestión de Tareas</h1>
-                <p style="color:var(--text-secondary); font-size:0.9rem;">Organiza, prioriza y cumple tus metas inteligentemente</p>
+                <h1 class="page-title">Mi Agenda Inteligente</h1>
+                <p class="page-subtitle">Organizada por fecha de inicio recomendada para evitar agobios.</p>
             </div>
-            <div style="display:flex; gap:10px;">
-                <button class="btn btn-secondary" onclick="togglePanel('schedulePanel')"><i class="fas fa-university"></i> Mis Clases</button>
-                <button class="btn btn-primary" onclick="openModal('taskModal')"><i class="fas fa-plus"></i> Nueva Tarea</button>
-            </div>
-        </div>
-
-        <!-- FILTROS AVANZADOS -->
-        <div class="filters-card">
-            <div class="filters-header">
-                <h4 style="color: var(--primary-dark);"><i class="fas fa-filter"></i> Filtros</h4>
-                <button class="btn btn-sm btn-secondary" onclick="resetFilters()">Limpiar</button>
-            </div>
-            <div class="filter-grid">
-                <div>
-                    <span class="filter-label">Ordenar por</span>
-                    <select id="filterSort" onchange="renderView()">
-                        <option value="dueDate">Vencimiento</option>
-                        <option value="priority">Prioridad</option>
-                        <option value="difficulty">Dificultad</option>
-                    </select>
-                </div>
-                <div>
-                    <span class="filter-label">Materia</span>
-                    <select id="filterSubject" onchange="renderView()">
-                        <option value="all">Todas</option>
-                    </select>
-                </div>
-                <div>
-                    <span class="filter-label">Tiempo</span>
-                    <select id="filterTime" onchange="renderView()">
-                        <option value="all">Todas</option>
-                        <option value="3days">Vencen en 3 días</option>
-                        <option value="week">Esta semana</option>
-                        <option value="2weeks">En 2 semanas</option>
-                        <option value="month">En 1 mes</option>
-                        <option value="more">Más de 1 mes</option>
-                    </select>
-                </div>
-                <div>
-                    <span class="filter-label">Prioridad</span>
-                    <select id="filterPriority" onchange="renderView()">
-                        <option value="all">Todas</option>
-                        <option value="alta">Alta</option>
-                        <option value="media">Media</option>
-                        <option value="baja">Baja</option>
-                    </select>
-                </div>
+            <div>
+                <button class="btn btn-primary btn-lg" onclick="openModal('taskModal')">
+                    <i class="fas fa-plus"></i> Nueva Tarea
+                </button>
             </div>
         </div>
 
-        <!-- VISTAS -->
-        <div class="view-tabs">
-            <div class="view-tab active" onclick="setView('agenda')">Vista Agenda</div>
-            <div class="view-tab" onclick="setView('table')">Vista Tabla</div>
+        <div class="agenda-list" id="agendaContainer">
+            <!-- Las tareas se renderizarán aquí -->
         </div>
-
-        <div id="agendaContainer"></div>
-        <div id="tableContainer" style="display:none; overflow-x:auto;"></div>
     </main>
 
+    <!-- LÓGICA JAVASCRIPT EXTENSA Y DETALLADA -->
     <script type="module">
+        // Importaciones de Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getDatabase, ref, set, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, set, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        const config = {
+        // Configuración de Firebase
+        const firebaseConfig = {
             apiKey: "AIzaSyBH42jsEEaEOFa02LhD59aDkwFfo_RVVB4",
             authDomain: "thynka-1dd68.firebaseapp.com",
             databaseURL: "https://thynka-1dd68-default-rtdb.firebaseio.com",
@@ -473,517 +1138,512 @@
             appId: "1:704622327906:web:57c4efb9da7b935b80f93b"
         };
 
-        const app = initializeApp(config);
+        // Inicialización
+        const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        let uid = null;
-        let DB = { tasks: {}, subjects: {}, settings: {}, classSchedule: {} };
-        let tempTaskData = null;
-        let pomoInterval = null;
-        let pomoTime = 25 * 60;
-        let isPomoPaused = true;
+        // Variables Globales de Estado
+        let currentUserID = null;
+        let DB_DATA = { 
+            tasks: {}, 
+            subjects: {}, 
+            settings: {}, 
+            classSchedule: {} 
+        };
+        let tempTaskObject = null;
 
-        // --- INICIALIZACIÓN Y SINCRONIZACIÓN ---
-        onAuthStateChanged(auth, user => {
+        // --- 1. AUTENTICACIÓN Y SINCRONIZACIÓN ---
+        onAuthStateChanged(auth, (user) => {
             if (user) {
-                uid = user.uid;
-                listen('tasks');
-                listen('subjects');
-                listen('classSchedule');
-                onValue(ref(db, `users/${uid}`), snap => {
-                    if(snap.exists()) DB.settings = snap.val();
-                    renderSidebarSubjects();
-                });
+                currentUserID = user.uid;
+                initListeners();
             } else {
-                window.location.href = 'index.html';
+                window.location.href = 'index.html'; // Redirigir si no hay usuario
             }
         });
 
-        function listen(path) {
-            onValue(ref(db, `${path}/${uid}`), snap => {
-                DB[path] = snap.val() || {};
-                if(path === 'subjects') { populateSubjects(); renderSidebarSubjects(); }
-                if(path === 'tasks') renderView();
-                if(path === 'classSchedule') loadScheduleUI();
+        function initListeners() {
+            // Escuchar cambios en Tareas
+            onValue(ref(db, `tasks/${currentUserID}`), (snapshot) => {
+                DB_DATA.tasks = snapshot.val() || {};
+                renderAgendaView(); // Actualizar vista
+            });
+
+            // Escuchar cambios en Materias
+            onValue(ref(db, `subjects/${currentUserID}`), (snapshot) => {
+                DB_DATA.subjects = snapshot.val() || {};
+                populateSubjectDropdown();
+            });
+
+            // Escuchar cambios en Horarios de Clase
+            onValue(ref(db, `classSchedule/${currentUserID}`), (snapshot) => {
+                DB_DATA.classSchedule = snapshot.val() || {};
+                loadClassScheduleUI();
+            });
+
+            // Escuchar configuración del usuario (trabajo, etc.)
+            onValue(ref(db, `users/${currentUserID}`), (snapshot) => {
+                if(snapshot.exists()) DB_DATA.settings = snapshot.val();
             });
         }
 
-        // --- UI HELPERS ---
-        const $ = id => document.getElementById(id);
+        // --- 2. MANEJO DE UI (INTERFAZ) ---
+        const $ = (id) => document.getElementById(id);
+
+        // 2.1 Navegación y Temas
+        $('menuBtn').addEventListener('click', () => {
+            $('sidebar').classList.toggle('active');
+            $('overlay').classList.toggle('active');
+        });
+
+        $('panelBtn').addEventListener('click', () => {
+            $('rightPanel').classList.toggle('active');
+            $('overlay').classList.toggle('active');
+        });
+
+        $('themeBtn').addEventListener('click', () => {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            localStorage.setItem('theme', isDark ? 'light' : 'dark');
+            $('themeBtn').innerHTML = isDark ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+        });
         
-        // Theme & Menu
-        $('themeToggle').onclick = () => {
-            const t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', t);
-            localStorage.setItem('theme', t);
-            $('themeToggle').innerHTML = t === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-        };
+        // Aplicar tema guardado
         if(localStorage.getItem('theme') === 'dark') {
             document.documentElement.setAttribute('data-theme', 'dark');
-            $('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
-        }
-        
-        $('menuToggle').onclick = () => $('sidebar').classList.toggle('active');
-        $('overlay').onclick = () => {
-            ['sidebar', 'schedulePanel'].forEach(el => $(el).classList.remove('active'));
-            $('overlay').classList.remove('active');
-        };
-
-        window.togglePanel = id => {
-            $(id).classList.toggle('active');
-            $('overlay').classList.toggle('active');
-        };
-        window.openModal = id => { $(id).classList.add('active'); };
-        window.closeModal = id => { $(id).classList.remove('active'); };
-
-        // --- MATERIAS (SUBJECTS) ---
-        function populateSubjects() {
-            const sel = $('taskSubject');
-            const current = sel.value;
-            sel.innerHTML = Object.entries(DB.subjects).map(([id, s]) => 
-                `<option value="${id}">${s.name}</option>`
-            ).join('');
-            if(DB.subjects[current]) sel.value = current;
+            $('themeBtn').innerHTML = '<i class="fas fa-sun"></i>';
         }
 
-        function renderSidebarSubjects() {
-            $('subjectSidebarList').innerHTML = Object.entries(DB.subjects).map(([id, s]) => `
-                <li class="subject-list-item" onclick="filterBySubject('${id}')">
-                    <div class="subject-dot" style="background:${s.color}"></div>
-                    <span>${s.name}</span>
-                </li>
-            `).join('');
-            
-            const filterSubj = $('filterSubject');
-            filterSubj.innerHTML = `<option value="all">Todas</option>` + Object.entries(DB.subjects).map(([id, s]) => 
-                `<option value="${id}">${s.name}</option>`
-            ).join('');
-        }
-
-        window.filterBySubject = (id) => {
-            $('filterSubject').value = id;
-            renderView();
+        $('overlay').addEventListener('click', () => {
             $('sidebar').classList.remove('active');
+            $('rightPanel').classList.remove('active');
+            $('overlay').classList.remove('active');
+        });
+
+        // 2.2 Modales
+        window.openModal = (id) => {
+            $(id).classList.add('active');
+            $('overlay').classList.add('active');
+        };
+
+        window.closeModal = (id) => {
+            $(id).classList.remove('active');
+            // No quitamos overlay si hay sidebar abierto
+            if(!$('sidebar').classList.contains('active') && !$('rightPanel').classList.contains('active')) {
+                $('overlay').classList.remove('active');
+            }
+        };
+
+        // --- 3. LÓGICA DE MATERIAS ---
+        function populateSubjectDropdown() {
+            const select = $('taskSubject');
+            select.innerHTML = Object.entries(DB_DATA.subjects).map(([id, data]) => 
+                `<option value="${id}">${data.name}</option>`
+            ).join('');
         }
 
         window.addSubjectPrompt = () => {
-            const n = prompt("Nombre de la materia:");
-            if(n) {
-                const color = `hsl(${Math.random()*360}, 60%, 65%)`;
-                const newRef = push(ref(db, `subjects/${uid}`));
-                set(newRef, { name: n, color: color });
-                // Forzar selección del nuevo elemento
-                setTimeout(() => {
-                    $('taskSubject').value = newRef.key;
-                }, 500);
+            const name = prompt("Nombre de la nueva materia:");
+            if (name && name.trim() !== "") {
+                const color = `hsl(${Math.floor(Math.random() * 360)}, 60%, 65%)`;
+                const newRef = push(ref(db, `subjects/${currentUserID}`));
+                set(newRef, { name: name.trim(), color: color });
+                
+                // Seleccionar automáticamente el nuevo elemento tras el refresh de Firebase
+                setTimeout(() => { $('taskSubject').value = newRef.key; }, 500);
             }
         };
 
-        // --- HORARIO DE CLASES ---
-        const classDaysSel = $('classDaysSelector');
+        // --- 4. LÓGICA DE HORARIOS DE CLASE (PANEL DERECHO) ---
+        const classDaysGrid = $('classDaysGrid');
         let selectedClassDays = [];
-        
-        classDaysSel.addEventListener('click', e => {
-            if(e.target.classList.contains('day-circle')) {
+
+        // Delegación de eventos para los días
+        classDaysGrid.addEventListener('click', (e) => {
+            if (e.target.classList.contains('day-circle')) {
                 e.target.classList.toggle('selected');
-                const d = e.target.dataset.day;
-                if(e.target.classList.contains('selected')) selectedClassDays.push(d);
-                else selectedClassDays = selectedClassDays.filter(x => x !== d);
-                renderClassInputs();
+                const dayLetter = e.target.dataset.day;
+                
+                if (e.target.classList.contains('selected')) {
+                    selectedClassDays.push(dayLetter);
+                } else {
+                    selectedClassDays = selectedClassDays.filter(d => d !== dayLetter);
+                }
+                renderClassTimeInputs();
             }
         });
 
-        function renderClassInputs() {
-            const names = {L:'Lunes', M:'Martes', X:'Miércoles', J:'Jueves', V:'Viernes', S:'Sábado', D:'Domingo'};
-            $('classTimeInputs').innerHTML = selectedClassDays.map(d => `
-                <div style="margin-top:15px; padding:15px; background:var(--bg-tertiary); border-radius:8px; border: 1px solid var(--border-color);">
-                    <label style="font-weight:600;">${names[d]}</label>
-                    <div style="display:flex; gap:10px; margin-top:8px;">
-                        <div style="flex:1"><input type="time" id="cs${d}S" value="08:00"></div>
-                        <div style="flex:1"><input type="time" id="cs${d}E" value="14:00"></div>
+        function renderClassTimeInputs() {
+            const container = $('classTimeInputsContainer');
+            const dayNames = { L: 'Lunes', M: 'Martes', X: 'Miércoles', J: 'Jueves', V: 'Viernes', S: 'Sábado', D: 'Domingo' };
+
+            container.innerHTML = selectedClassDays.map(day => `
+                <div style="margin-bottom: 15px; padding: 15px; background: var(--bg-tertiary); border-radius: var(--border-radius-sm);">
+                    <label style="font-weight: 600; display: block; margin-bottom: 8px;">${dayNames[day]}</label>
+                    <div style="display: flex; gap: 10px;">
+                        <div style="flex: 1;">
+                            <label style="font-size: 0.8rem; color: var(--text-muted);">Entrada</label>
+                            <input type="time" class="form-control" id="cs_start_${day}" value="08:00">
+                        </div>
+                        <div style="flex: 1;">
+                            <label style="font-size: 0.8rem; color: var(--text-muted);">Salida</label>
+                            <input type="time" class="form-control" id="cs_end_${day}" value="14:00">
+                        </div>
                     </div>
                 </div>
             `).join('');
         }
 
-        function loadScheduleUI() {
-            selectedClassDays = Object.keys(DB.classSchedule);
-            document.querySelectorAll('#classDaysSelector .day-circle').forEach(btn => {
-                if(DB.classSchedule[btn.dataset.day]) btn.classList.add('selected');
+        function loadClassScheduleUI() {
+            selectedClassDays = Object.keys(DB_DATA.classSchedule);
+            
+            // Actualizar UI de círculos
+            document.querySelectorAll('#classDaysGrid .day-circle').forEach(btn => {
+                if (DB_DATA.classSchedule[btn.dataset.day]) {
+                    btn.classList.add('selected');
+                } else {
+                    btn.classList.remove('selected');
+                }
             });
-            renderClassInputs();
+            
+            renderClassTimeInputs();
+
+            // Poner valores
             setTimeout(() => {
-                Object.entries(DB.classSchedule).forEach(([d, val]) => {
-                    if($(`cs${d}S`)) $(`cs${d}S`).value = val.start;
-                    if($(`cs${d}E`)) $(`cs${d}E`).value = val.end;
+                Object.entries(DB_DATA.classSchedule).forEach(([day, times]) => {
+                    if ($(`cs_start_${day}`)) $(`cs_start_${day}`).value = times.start;
+                    if ($(`cs_end_${day}`)) $(`cs_end_${day}`).value = times.end;
                 });
             }, 100);
         }
 
         window.saveClassSchedule = () => {
-            const data = {};
-            selectedClassDays.forEach(d => {
-                data[d] = { start: $(`cs${d}S`).value, end: $(`cs${d}E`).value };
+            const dataToSave = {};
+            selectedClassDays.forEach(day => {
+                dataToSave[day] = {
+                    start: $(`cs_start_${day}`).value,
+                    end: $(`cs_end_${day}`).value
+                };
             });
-            set(ref(db, `classSchedule/${uid}`), data);
-            alert("Horario de clases guardado.");
+
+            set(ref(db, `classSchedule/${currentUserID}`), dataToSave)
+                .then(() => alert("Horario de clases guardado correctamente."))
+                .catch(err => console.error("Error guardando horario:", err));
         };
 
-        // --- FORMULARIO DE TAREA ---
-        window.addStep = (val='') => {
+        // --- 5. LÓGICA DE PASOS Y DURACIÓN ---
+        // Rangos de duración por tipo (minutos)
+        const durationRanges = {
+            'tarea': [15, 45],
+            'proyecto': [25, 60],
+            'ensayo': [30, 120],
+            'presentacion': [30, 120],
+            'laboratorio': [25, 60],
+            'lectura': [15, 60],
+            'investigacion': [30, 120],
+            'estudio': [15, 45],
+            'ejercicio': [3, 40],
+            'video': [60, 180],
+            'apuntes': [20, 60],
+            'exposicion': [30, 90],
+            'curso': [60, 180]
+        };
+
+        window.addStepInput = () => {
+            const container = $('stepsContainer');
             const div = document.createElement('div');
-            div.className = 'step-row';
-            div.style.cssText = "display:flex; gap:10px; margin-bottom:10px; align-items:center;";
-            div.innerHTML = `<input type="text" value="${val}" placeholder="Describe un paso..." style="flex:1"><button type="button" class="btn btn-sm btn-secondary" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>`;
-            $('stepsContainer').appendChild(div);
+            div.className = 'step-input-group';
+            div.innerHTML = `
+                <input type="text" class="form-control" placeholder="Describe el paso..." oninput="updateDurationPreview()">
+                <button type="button" class="btn btn-secondary btn-icon" onclick="removeStep(this)"><i class="fas fa-times"></i></button>
+            `;
+            container.appendChild(div);
+            updateDurationPreview();
         };
 
-        window.handleModeChange = () => {
-            // Lógica visual si es necesaria
+        window.removeStep = (btn) => {
+            btn.parentElement.remove();
+            updateDurationPreview();
         };
 
-        // --- MOTOR DE RECOMENDACIÓN (ALGORITMO COMPLETO) ---
-        window.processTask = () => {
+        window.updateDurationPreview = () => {
+            const type = $('taskType').value;
+            const difficulty = $('taskDifficulty').value;
+            const stepsCount = document.querySelectorAll('#stepsContainer input').length;
+            
+            const range = durationRanges[type] || [15, 45];
+            let totalMinutes = 60; // Default 1h si no hay pasos
+
+            if (stepsCount > 0) {
+                totalMinutes = 0;
+                for (let i = 0; i < stepsCount; i++) {
+                    const randomMins = Math.floor(Math.random() * (range[1] - range[0] + 1)) + range[0];
+                    totalMinutes += randomMins;
+                }
+            }
+
+            // Modificadores de dificultad
+            if (difficulty === 'media') totalMinutes *= 1.3;
+            if (difficulty === 'alta') totalMinutes *= 1.6;
+
+            const hours = Math.floor(totalMinutes / 60);
+            const mins = Math.round(totalMinutes % 60);
+
+            $('durationPreviewText').innerText = `${hours}h ${mins}m`;
+            return Math.round(totalMinutes);
+        };
+
+        // --- 6. MOTOR DE RECOMENDACIÓN PRINCIPAL ---
+        window.processTaskLogic = () => {
             const title = $('taskTitle').value;
-            if(!title) return alert("Por favor ingresa un título.");
+            if (!title) return alert("Ingresa un título para la tarea.");
 
-            const steps = [];
-            document.querySelectorAll('#stepsContainer input').forEach(i => { if(i.value) steps.push(i.value); });
+            // 1. Captura de datos
+            const dueDate = new Date($('taskDueDate').value + 'T' + $('taskDueTime').value);
+            const now = new Date();
+            const durationMins = window.updateDurationPreview(); // Calcula duración
 
-            tempTaskData = {
+            tempTaskObject = {
                 title: title,
                 subjectId: $('taskSubject').value,
                 type: $('taskType').value,
                 dueDate: $('taskDueDate').value,
                 dueTime: $('taskDueTime').value,
-                mode: $('taskMode').value,
                 priority: $('taskPriority').value,
                 difficulty: $('taskDifficulty').value,
-                gradeValue: $('taskGradeUnk').checked ? 'unknown' : Number($('taskGrade').value || 0),
-                format: $('taskFormat').value,
-                instructions: $('taskDesc').value,
-                steps: steps,
-                completed: false,
+                grade: $('taskGradeUnknown').checked ? -1 : Number($('taskGrade').value || 0),
+                steps: Array.from(document.querySelectorAll('#stepsContainer input')).map(i => i.value).filter(v => v.trim() !== ""),
+                duration: durationMins,
                 createdAt: Date.now()
             };
 
-            if(tempTaskData.mode === 'grupo') {
-                $('recViewInd').style.display = 'none';
-                $('recViewGroup').style.display = 'block';
-                $('btnRecalc').style.display = 'none';
-                const now = new Date(Date.now() + 3600000);
-                $('manualStartDate').value = now.toISOString().split('T')[0];
-                $('manualStartTime').value = now.toTimeString().substring(0,5);
-            } else {
-                $('recViewInd').style.display = 'block';
-                $('recViewGroup').style.display = 'none';
-                $('btnRecalc').style.display = 'inline-flex';
-                calculateRecommendation();
+            // 2. Cálculo del Límite Máximo (Tu fórmula)
+            const minsRemaining = (dueDate - now) / (1000 * 60);
+            if (minsRemaining <= 0) return alert("La fecha de entrega ya pasó.");
+
+            // Factores: Alta(0.6), Media(0.7), Baja(0.9)
+            const pFactor = tempTaskObject.priority === 'alta' ? 0.6 : (tempTaskObject.priority === 'media' ? 0.7 : 0.9);
+            
+            // Nota: <=10% (0.9), Desconocida (1.0)
+            let gFactor = 1.0;
+            if (tempTaskObject.grade === -1) gFactor = 1.0;
+            else if (tempTaskObject.grade > 0 && tempTaskObject.grade <= 10) gFactor = 0.9;
+            
+            // Dificultad: Alta(0.6), Media(0.7), Baja(0.9) para límite
+            const dFactor = tempTaskObject.difficulty === 'alta' ? 0.6 : (tempTaskObject.difficulty === 'media' ? 0.7 : 0.9);
+
+            // Cálculo límite
+            const limitMins = minsRemaining * pFactor * gFactor * dFactor;
+            const limitDate = new Date(now.getTime() + limitMins * 60000);
+
+            // 3. Búsqueda de Espacio (Slot Finding Algorithm)
+            // Buscamos hueco entre AHORA y el LÍMITE
+            let slotFound = findValidSlot(now, limitDate, durationMins);
+
+            let isDelayed = false;
+            if (!slotFound) {
+                // Si no hay espacio antes del límite, buscamos después (Aplazamiento)
+                isDelayed = true;
+                slotFound = findValidSlot(limitDate, new Date(dueDate.getTime() - durationMins * 60000), durationMins);
             }
 
-            closeModal('taskModal');
+            if (!slotFound) {
+                return alert("No hay espacio disponible antes de la fecha de entrega. Libera tu agenda.");
+            }
+
+            // 4. Guardar en objeto temporal
+            tempTaskObject.suggestedStart = slotFound.toISOString();
+            tempTaskObject.suggestedEnd = new Date(slotFound.getTime() + durationMins * 60000).toISOString();
+            tempTaskObject.limitDate = limitDate.toISOString();
+
+            // 5. Mostrar Resultado
+            $('recDateText').innerText = slotFound.toLocaleString('es-ES', { weekday: 'long', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+            $('recDurationText').innerText = `${Math.floor(durationMins/60)}h ${durationMins%60}m`;
+            $('recLimitText').innerText = limitDate.toLocaleString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit' });
+            $('recDueText').innerText = dueDate.toLocaleString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit' });
+            $('recAlertBox').style.display = isDelayed ? 'flex' : 'none';
+
             openModal('resultModal');
         };
 
-        function calculateRecommendation() {
-            const task = tempTaskData;
-            const now = new Date();
-            const due = new Date(task.dueDate + 'T' + task.dueTime);
-            
-            // 1. Factores Base
-            let pFactor = task.priority === 'alta' ? 0.2 : (task.priority === 'media' ? 0.35 : 0.45);
-            let dFactor = task.difficulty === 'alta' ? 1.3 : (task.difficulty === 'media' ? 1 : 0.8);
-            let gFactor = 1;
-            if(task.gradeValue !== 'unknown' && task.gradeValue > 0) {
-                if(task.gradeValue > 15) gFactor = 1.2; // Nota alta -> más urgencia
-            }
+        // Algoritmo de búsqueda de hueco
+        function findValidSlot(startSearch, endSearch, duration) {
+            let current = new Date(startSearch);
+            // Redondear a siguientes 15 minutos
+            current.setMinutes(Math.ceil(current.getMinutes() / 15) * 15);
+            current.setSeconds(0);
 
-            // Cálculo de tiempo ideal
-            let totalHours = (due - now) / (1000*60*60);
-            let offsetHours = totalHours * pFactor * dFactor * gFactor;
-            
-            let recDate = new Date(now.getTime() + offsetHours * 3600000);
-            
-            // 2. Verificación de Restricciones (Sueño, Clase, Trabajo)
-            // Bucle para encontrar un hueco válido
-            let attempts = 0;
-            let isSafe = false;
-            
-            while(attempts < 100) {
-                if(!isInvalidTime(recDate)) {
-                    isSafe = true;
-                    break;
+            while (current < endSearch) {
+                if (isSlotValid(current, duration)) {
+                    return current;
                 }
-                recDate = new Date(recDate.getTime() + 3600000); // Mover 1 hora
-                attempts++;
+                current = new Date(current.getTime() + 15 * 60000); // Saltos de 15 min
             }
-
-            let isDelayed = (recDate > new Date(due.getTime() - (totalHours * 0.1 * 3600000))); // Si está muy cerca del 10% final
-            
-            $('recDateText').innerText = recDate.toLocaleString('es-ES', { weekday:'long', day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
-            $('recReasonText').innerText = `Prioridad ${task.priority} (${pFactor}), Dificultad (${dFactor}). Tiempo estimado: ${Math.round(offsetHours)} horas.`;
-            $('recAlert').style.display = isDelayed ? 'block' : 'none';
-            
-            tempTaskData.suggestedStart = recDate.toISOString();
+            return null;
         }
 
-        // Función robusta para validar tiempos
-        function isInvalidTime(date) {
-            const h = date.getHours();
-            const m = date.getMinutes();
-            const dayIndex = date.getDay(); // 0=Dom, 1=Lun...
+        // Validador de Espacio (Lógica compleja de cruce)
+        function isSlotValid(start, duration) {
+            const end = new Date(start.getTime() + duration * 60000);
+            const dayIndex = start.getDay();
             const dayMap = ['D', 'L', 'M', 'X', 'J', 'V', 'S'];
             const dayLetter = dayMap[dayIndex];
-            const timeStr = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`;
 
-            // 1. Sueño (22:30 - 06:00)
-            if(h >= 22 && m >= 30) return true;
-            if(h < 6) return true;
+            // 1. Validar Sueño (22:30 - 06:00)
+            if ((start.getHours() >= 22 && start.getMinutes() >= 30) || start.getHours() < 6) return false;
+            if (end.getHours() > 22 || (end.getHours() === 22 && end.getMinutes() > 30)) return false;
+            if (end.getHours() < 6) return false;
 
-            // 2. Clases (Usando DB.classSchedule)
-            if(DB.classSchedule[dayLetter]) {
-                const cs = DB.classSchedule[dayLetter];
-                // Buffer de 1 hora transporte
-                if(timeStr >= addHours(cs.start, -1) && timeStr <= addHours(cs.end, 1)) return true;
+            // 2. Validar Clases (+1h transporte)
+            if (DB_DATA.classSchedule[dayLetter]) {
+                const cs = DB_DATA.classSchedule[dayLetter];
+                // Convertir a minutos absolutos para comparar fácil
+                const sMins = start.getHours() * 60 + start.getMinutes();
+                const eMins = end.getHours() * 60 + end.getMinutes();
+                const cStartMins = toMinutes(cs.start) - 60; // 1h antes
+                const cEndMins = toMinutes(cs.end) + 60; // 1h después
+                
+                // Si el rango [start, end] se cruza con [classStart-1h, classEnd+1h]
+                if (sMins < cEndMins && eMins > cStartMins) return false;
             }
 
-            // 3. Trabajo (Usando DB.settings.workSchedule)
-            if(DB.settings.works === 'si' && DB.settings.workSchedule && DB.settings.workSchedule[dayLetter]) {
-                const ws = DB.settings.workSchedule[dayLetter];
-                 if(timeStr >= addHours(ws.start, -1) && timeStr <= addHours(ws.end, 1)) return true;
+            // 3. Validar Trabajo (+1h transporte)
+            if (DB_DATA.settings.works === 'si' && DB_DATA.settings.workSchedule && DB_DATA.settings.workSchedule[dayLetter]) {
+                const ws = DB_DATA.settings.workSchedule[dayLetter];
+                const sMins = start.getHours() * 60 + start.getMinutes();
+                const eMins = end.getHours() * 60 + end.getMinutes();
+                const wStartMins = toMinutes(ws.start) - 60;
+                const wEndMins = toMinutes(ws.end) + 60;
+                
+                if (sMins < wEndMins && eMins > wStartMins) return false;
             }
 
-            return false;
+            // 4. Validar Cruce con Otras Tareas
+            const existingTasks = Object.values(DB_DATA.tasks);
+            for (let t of existingTasks) {
+                if (!t.suggestedStart || !t.suggestedEnd) continue;
+                
+                const tStart = new Date(t.suggestedStart);
+                const tEnd = new Date(t.suggestedEnd);
+                
+                // Overlap logic: (StartA < EndB) and (EndA > StartB)
+                if (start < tEnd && end > tStart) {
+                    return false; // Choca con tarea existente
+                }
+            }
+
+            return true; // Espacio válido
         }
 
-        function addHours(timeStr, hours) {
-            let [h, m] = timeStr.split(':').map(Number);
-            h += hours;
-            if(h < 0) h = 0;
-            if(h > 23) h = 23;
-            return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`;
+        function toMinutes(timeStr) {
+            const [h, m] = timeStr.split(':').map(Number);
+            return h * 60 + m;
         }
 
-        window.recalculate = () => {
-            // Forzar mover 4 horas adelante para generar otra opción
-            if(tempTaskData.suggestedStart) {
-                const newDate = new Date(new Date(tempTaskData.suggestedStart).getTime() + (4 * 3600000));
-                tempTaskData.suggestedStart = newDate.toISOString();
-                $('recDateText').innerText = newDate.toLocaleString('es-ES', { weekday:'long', day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
-                $('recReasonText').innerText = "Opción alternativa generada.";
+        window.recalculateLogic = () => {
+            // Forzar búsqueda a partir de la sugerencia actual + 1 hora
+            const newStart = new Date(new Date(tempTaskObject.suggestedStart).getTime() + 60 * 60000);
+            const newSlot = findValidSlot(newStart, new Date(tempTaskObject.dueDate), tempTaskObject.duration);
+            
+            if (newSlot) {
+                tempTaskObject.suggestedStart = newSlot.toISOString();
+                $('recDateText').innerText = newSlot.toLocaleString('es-ES', { weekday: 'long', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+            } else {
+                alert("No se encontraron más espacios disponibles.");
             }
         };
 
-        window.confirmSave = async () => {
-            if(tempTaskData.mode === 'grupo') {
-                tempTaskData.suggestedStart = $('manualStartDate').value + 'T' + $('manualStartTime').value;
-            }
-            
+        window.confirmSaveLogic = async () => {
             try {
-                await push(ref(db, `tasks/${uid}`), tempTaskData);
+                await push(ref(db, `tasks/${currentUserID}`), tempTaskObject);
                 closeModal('resultModal');
                 $('taskForm').reset();
                 $('stepsContainer').innerHTML = '';
-                tempTaskData = null;
-            } catch(e) {
-                alert("Error guardando: " + e.message);
+                window.updateDurationPreview(); // Reset preview
+            } catch (e) {
+                alert("Error al guardar: " + e.message);
             }
         };
 
-        window.discardTask = () => {
-            if(confirm("¿Cancelar esta tarea?")) {
-                closeModal('resultModal');
-                tempTaskData = null;
+        // --- 7. RENDERIZADO DE AGENDA (ORDENADO POR RECOMENDACIÓN) ---
+        function renderAgendaView() {
+            const container = $('agendaContainer');
+            let list = Object.entries(DB_DATA.tasks);
+
+            if (list.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-clipboard-list"></i>
+                        <p>No tienes tareas asignadas.<br>¡Agrega una para comenzar!</p>
+                    </div>
+                `;
+                return;
             }
-        };
 
-        // --- VISTAS Y FILTROS ---
-        window.setView = type => {
-            document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
-            $('agendaContainer').style.display = type === 'agenda' ? 'block' : 'none';
-            $('tableContainer').style.display = type === 'table' ? 'block' : 'none';
-        };
-
-        window.resetFilters = () => {
-            $('filterSort').value = 'dueDate';
-            $('filterSubject').value = 'all';
-            $('filterTime').value = 'all';
-            $('filterPriority').value = 'all';
-            renderView();
-        };
-
-        window.renderView = () => {
-            let list = Object.entries(DB.tasks);
-            
-            // Sort
-            const sort = $('filterSort').value;
-            if(sort === 'dueDate') list.sort((a,b) => new Date(a[1].dueDate) - new Date(b[1].dueDate));
-            else if(sort === 'priority') list.sort((a,b) => rankP(a[1].priority) - rankP(b[1].priority));
-            else if(sort === 'difficulty') list.sort((a,b) => rankD(a[1].difficulty) - rankD(b[1].difficulty));
-
-            // Filters
-            const timeF = $('filterTime').value;
-            const subjF = $('filterSubject').value;
-            const prioF = $('filterPriority').value;
-            const now = new Date();
-
-            list = list.filter(([id, t]) => {
-                const due = new Date(t.dueDate);
-                const diffDays = Math.ceil((due - now) / (1000*60*60*24));
-                
-                if(timeF === '3days' && diffDays > 3) return false;
-                if(timeF === 'week' && diffDays > 7) return false;
-                if(timeF === '2weeks' && diffDays > 14) return false;
-                if(timeF === 'month' && diffDays > 30) return false;
-                if(timeF === 'more' && diffDays <= 30) return false;
-
-                if(subjF !== 'all' && t.subjectId !== subjF) return false;
-                if(prioF !== 'all' && t.priority !== prioF) return false;
-
-                return true;
+            // Ordenar por Fecha de Inicio (suggestedStart)
+            list.sort((a, b) => {
+                const dA = a[1].suggestedStart ? new Date(a[1].suggestedStart) : new Date(0);
+                const dB = b[1].suggestedStart ? new Date(b[1].suggestedStart) : new Date(0);
+                return dA - dB;
             });
 
-            // Agenda HTML
-            $('agendaContainer').innerHTML = list.length === 0 ? '<div class="empty-state"><i class="fas fa-inbox"></i><p>No hay tareas con estos filtros.</p></div>' :
-            list.map(([id, t]) => {
-                const subj = DB.subjects[t.subjectId] || {name:'General', color:'#888'};
-                const date = new Date(t.dueDate + 'T' + t.dueTime);
-                const isCompleted = t.completed ? 'opacity: 0.6; text-decoration: line-through;' : '';
-                
+            container.innerHTML = list.map(([id, t]) => {
+                const subj = DB_DATA.subjects[t.subjectId] || { name: 'General', color: '#888' };
+                const recDate = t.suggestedStart ? new Date(t.suggestedStart) : null;
+                const dueDate = new Date(t.dueDate + 'T' + t.dueTime);
+                const now = new Date();
+
+                // Cálculos visuales
+                const daysLeft = Math.ceil((dueDate - now) / (1000*60*60*24));
+                const durH = Math.floor(t.duration / 60);
+                const durM = t.duration % 60;
+                const isCompleted = t.completed;
+
+                if (!recDate) return ''; // No mostrar si no tiene fecha asignada
+
+                const priorityClass = t.priority === 'alta' ? 'badge-priority-high' : (t.priority === 'media' ? 'badge-priority-med' : 'badge-priority-low');
+
                 return `
-                <div class="agenda-card" style="border-left-color: ${subj.color}; ${isCompleted}">
-                    <div class="agenda-main" onclick="togglePreview('${id}')">
-                        <div class="agenda-date-box">
-                            <div class="agenda-day-num">${date.getDate()}</div>
-                            <div class="agenda-month">${date.toLocaleString('es', {month:'short'})}</div>
-                        </div>
-                        <div class="agenda-info">
-                            <div class="agenda-title">${t.title}</div>
-                            <div class="agenda-meta">
-                                <span style="background:${subj.color}; padding:3px 10px; border-radius:10px; font-size:0.7rem; color:white; font-weight:600;">${subj.name}</span>
-                                <span><i class="fas fa-clock"></i> ${date.toLocaleTimeString('es', {hour:'2-digit', minute:'2-digit'})}</span>
-                                <span class="badge badge-p${t.priority==='alta'?1:t.priority==='media'?2:3}">${t.priority}</span>
+                    <div class="agenda-item" style="border-left-color: ${subj.color}; ${isCompleted ? 'opacity: 0.6;' : ''}">
+                        <div class="agenda-item-content">
+                            <div class="agenda-date-badge">
+                                <div class="agenda-day-num">${recDate.getDate()}</div>
+                                <div class="agenda-month">${recDate.toLocaleString('es', {month: 'short'})}</div>
+                                <div class="agenda-time">${recDate.toLocaleTimeString('es', {hour: '2-digit', minute: '2-digit'})}</div>
+                            </div>
+                            
+                            <div class="agenda-body">
+                                <div class="agenda-header-row">
+                                    <div class="agenda-title">${t.title}</div>
+                                    <span class="badge badge-subject" style="background-color: ${subj.color}">${subj.name}</span>
+                                </div>
+                                
+                                <div class="agenda-meta-row">
+                                    <div class="meta-item"><i class="fas fa-hourglass-half"></i> ${durH}h ${durM}m</div>
+                                    <div class="meta-item"><i class="fas fa-flag"></i> <span class="badge ${priorityClass}">${t.priority}</span></div>
+                                    <div class="meta-item"><i class="fas fa-brain"></i> ${t.difficulty}</div>
+                                </div>
+
+                                <div class="agenda-meta-row" style="margin-top: 5px; font-size: 0.85rem;">
+                                    <i class="fas fa-calendar-times"></i> Vence: ${dueDate.toLocaleDateString('es')} (${daysLeft} días) a las ${dueDate.toLocaleTimeString('es', {hour:'2-digit', minute:'2-digit'})}
+                                </div>
+                            </div>
+
+                            <div class="agenda-actions">
+                                <button class="btn btn-danger btn-icon" onclick="deleteTaskAction('${id}')"><i class="fas fa-trash"></i></button>
                             </div>
                         </div>
-                        <div class="agenda-actions" onclick="event.stopPropagation()">
-                            <button class="btn btn-sm btn-success" onclick="startPomo('${id}')"><i class="fas fa-play"></i></button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteTask('${id}')"><i class="fas fa-trash"></i></button>
-                        </div>
                     </div>
-                    <div class="agenda-preview" id="preview-${id}">
-                        <div class="preview-section">
-                            <h5><i class="fas fa-info-circle"></i> Instrucciones</h5>
-                            <p style="font-size:0.9rem; white-space: pre-wrap; color:var(--text-primary);">${t.instructions || 'Sin instrucciones.'}</p>
-                        </div>
-                        ${t.steps && t.steps.length > 0 ? `
-                        <div class="preview-section" style="margin-top:15px;">
-                            <h5><i class="fas fa-list-ol"></i> Pasos</h5>
-                            <ul class="preview-steps">
-                                ${t.steps.map(s => `<li><i class="fas fa-check"></i> ${s}</li>`).join('')}
-                            </ul>
-                        </div>` : ''}
-                        <div style="text-align:right; margin-top:20px; padding-top:15px; border-top:1px solid var(--border-color);">
-                             <button class="btn btn-sm btn-secondary" onclick="completeTask('${id}')"><i class="fas fa-check"></i> Marcar Completada</button>
-                        </div>
-                    </div>
-                </div>`;
+                `;
             }).join('');
+        }
 
-            // Table HTML
-            $('tableContainer').innerHTML = `<table class="data-table"><thead><tr><th>Tarea</th><th>Materia</th><th>Fecha</th><th>Prioridad</th><th>Acciones</th></tr></thead><tbody>${
-                list.map(([id, t]) => {
-                    const subj = DB.subjects[t.subjectId] || {name:'General', color:'#888'};
-                    return `<tr><td><strong>${t.title}</strong></td><td style="color:${subj.color}">${subj.name}</td><td>${t.dueDate}</td><td>${t.priority}</td><td><button class="btn btn-sm btn-success" onclick="startPomo('${id}')"><i class="fas fa-play"></i></button> <button class="btn btn-sm btn-danger" onclick="deleteTask('${id}')"><i class="fas fa-trash"></i></button></td></tr>`;
-                }).join('')
-            }</tbody></table>`;
-        };
-
-        function rankP(p) { return p === 'alta' ? 1 : (p === 'media' ? 2 : 3); }
-        function rankD(d) { return d === 'alta' ? 1 : (d === 'media' ? 2 : 3); }
-
-        window.togglePreview = id => {
-            const el = $(`preview-${id}`);
-            if(el) el.classList.toggle('active');
-        };
-
-        window.deleteTask = async (id) => {
-            if(confirm("¿Eliminar esta tarea?")) await remove(ref(db, `tasks/${uid}/${id}`));
-        };
-
-        window.completeTask = async (id) => {
-            await update(ref(db, `tasks/${uid}/${id}`), { completed: true });
-        };
-
-        // --- POMODORO LOGIC ---
-        window.startPomo = (id) => {
-            const t = DB.tasks[id];
-            if(!t) return;
-            
-            $('pomoTaskName').innerText = t.title;
-            
-            const setting = DB.settings.sessionType;
-            $('flexibleConfig').style.display = setting === 'flexible' ? 'block' : 'none';
-            
-            if(setting === 'medio') pomoTime = 50*60;
-            else if(setting === 'largo') pomoTime = 90*60;
-            else if(setting === 'pomodoro') pomoTime = 25*60;
-            else pomoTime = 25*60; // Default
-            
-            updatePomoUI();
-            $('pomoScreen').classList.add('active');
-            isPomoPaused = true;
-            $('pomoPlay').innerHTML = '<i class="fas fa-play"></i> Iniciar';
-        };
-
-        window.applyCustomPomo = () => {
-            const val = Number($('customPomoTime').value);
-            if(val > 0) pomoTime = val * 60;
-            updatePomoUI();
-            $('flexibleConfig').style.display = 'none';
-        };
-
-        window.togglePomo = () => {
-            const btn = $('pomoPlay');
-            if(isPomoPaused) {
-                isPomoPaused = false;
-                btn.innerHTML = '<i class="fas fa-pause"></i> Pausar';
-                pomoInterval = setInterval(() => {
-                    pomoTime--;
-                    updatePomoUI();
-                    if(pomoTime <= 0) {
-                        clearInterval(pomoInterval);
-                        $('pomoMsg').innerText = "¡Tiempo! Descansa un poco.";
-                        btn.innerHTML = '<i class="fas fa-coffee"></i> Fin';
-                        btn.disabled = true;
-                    }
-                }, 1000);
-            } else {
-                isPomoPaused = true;
-                clearInterval(pomoInterval);
-                btn.innerHTML = '<i class="fas fa-play"></i> Continuar';
+        window.deleteTaskAction = async (id) => {
+            if (confirm("¿Eliminar esta tarea?")) {
+                await remove(ref(db, `tasks/${currentUserID}/${id}`));
             }
         };
-
-        window.resetPomo = () => {
-            clearInterval(pomoInterval);
-            startPomo(Object.keys(DB.tasks).find(k => DB.tasks[k].title === $('pomoTaskName').innerText));
-        };
-
-        window.closePomo = () => {
-            clearInterval(pomoInterval);
-            $('pomoScreen').classList.remove('active');
-        };
-
-        function updatePomoUI() {
-            const m = Math.floor(pomoTime/60);
-            const s = pomoTime%60;
-            $('pomoClock').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-            const msgs = ["¡Tú puedes!", "Mantén el enfoque.", "Casi lo logras.", "¡Excelente trabajo!"];
-            $('pomoMsg').innerText = msgs[Math.floor(Math.random()*msgs.length)];
-            $('pomoPlay').disabled = false;
-        }
 
     </script>
 </body>
