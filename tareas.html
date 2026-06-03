@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thynka - Gestión de Tareas</title>
+    <title>Thynka - Gestión Completa de Tareas</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* --- VARIABLES Y ESTILOS BASE --- */
+        /* --- VARIABLES Y RESET --- */
         :root {
             --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
             --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
@@ -17,245 +17,171 @@
             --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
             --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
             --danger: #e74c3c; --success: #27ae60; --warning: #f39c12; --info: #3498db;
-            --overlay-bg: rgba(0, 0, 0, 0.6);
+            --overlay-bg: rgba(0, 0, 0, 0.7);
         }
-
         [data-theme="dark"] {
             --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
             --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
             --gray: #a89b8b; --white: #1a1815;
-            --shadow: rgba(0, 0, 0, 0.3); --shadow-hover: rgba(0, 0, 0, 0.4);
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
             --text-primary: #e0d5c7; --text-secondary: #a89b8b;
             --bg-primary: #1a1815; --bg-secondary: #2a2520;
             --bg-tertiary: #3a342e; --border-color: #3a342e;
-            --overlay-bg: rgba(0, 0, 0, 0.8);
+            --overlay-bg: rgba(0, 0, 0, 0.85);
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; display: flex; overflow-x: hidden; }
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-            min-height: 100vh;
-            display: flex;
-            overflow-x: hidden;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
-        /* --- SIDEBAR (Mantenida del Dashboard) --- */
+        /* --- LAYOUT PRINCIPAL --- */
         .sidebar {
             position: fixed; left: 0; top: 0; height: 100vh; width: 280px;
-            background-color: var(--bg-secondary);
-            box-shadow: 2px 0 15px var(--shadow);
-            transform: translateX(-100%);
-            transition: transform 0.3s ease;
-            z-index: 9999;
+            background: var(--bg-secondary); box-shadow: 2px 0 10px var(--shadow);
+            transform: translateX(-100%); transition: transform 0.3s ease; z-index: 9999;
             display: flex; flex-direction: column;
         }
         .sidebar.active { transform: translateX(0); }
-        
-        .sidebar-header {
-            padding: 30px 20px; border-bottom: 1px solid var(--border-color);
-            display: flex; align-items: center; gap: 15px;
-        }
+        .sidebar-header { padding: 25px 20px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 15px; }
         .sidebar-logo { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--primary-dark); }
-        .sidebar-menu { flex: 1; overflow-y: auto; padding: 20px 0; }
-        .menu-item {
-            display: block; padding: 15px 25px; color: var(--text-primary);
-            text-decoration: none; transition: all 0.3s ease; border-left: 3px solid transparent;
-            display: flex; align-items: center; gap: 15px;
-        }
-        .menu-item:hover { background-color: var(--bg-tertiary); border-left-color: var(--primary); }
-        .menu-item.active { background-color: var(--bg-tertiary); border-left-color: var(--primary); font-weight: 600; }
-        .menu-item i { width: 20px; text-align: center; }
+        .sidebar-menu { flex: 1; padding: 20px 0; overflow-y: auto; }
+        .menu-item { display: block; padding: 15px 25px; color: var(--text-primary); text-decoration: none; transition: all 0.2s; border-left: 3px solid transparent; display: flex; align-items: center; gap: 15px; }
+        .menu-item:hover, .menu-item.active { background: var(--bg-tertiary); border-left-color: var(--primary); }
+        .menu-item i { width: 20px; text-align: center; opacity: 0.7; }
+        .menu-item.active i { opacity: 1; }
 
-        /* --- CONTROLES SUPERIORES --- */
-        .menu-toggle {
-            position: fixed; left: 20px; top: 20px; width: 45px; height: 45px;
-            background-color: var(--primary); border: none; border-radius: 12px;
-            color: var(--white); cursor: pointer; display: flex; align-items: center; justify-content: center;
-            font-size: 1.2rem; transition: all 0.3s ease; z-index: 10000; box-shadow: 0 4px 12px var(--shadow);
+        /* Sección de Asignaturas en Sidebar */
+        .sidebar-subjects { padding: 20px; border-top: 1px solid var(--border-color); margin-top: auto; background: var(--bg-tertiary); }
+        .sidebar-subjects h4 { color: var(--text-secondary); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 15px; padding-left: 5px; letter-spacing: 1px; }
+        .subject-list { list-style: none; max-height: 200px; overflow-y: auto; }
+        .subject-list-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; margin-bottom: 5px; font-size: 0.9rem; cursor: pointer; transition: background 0.2s; }
+        .subject-list-item:hover { background: var(--bg-secondary); }
+        .subject-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+
+        /* --- PANEL HORARIO CLASES (DESLIZABLE DERECHA) --- */
+        .schedule-panel {
+            position: fixed; right: 0; top: 0; height: 100vh; width: 350px;
+            background: var(--bg-secondary); box-shadow: -2px 0 15px var(--shadow);
+            transform: translateX(100%); transition: transform 0.3s; z-index: 9999;
+            display: flex; flex-direction: column;
         }
-        .menu-toggle.active { left: 300px; background-color: var(--bg-secondary); color: var(--primary); }
+        .schedule-panel.active { transform: translateX(0); }
+        .panel-header { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--bg-tertiary); }
+        .panel-body { flex: 1; overflow-y: auto; padding: 20px; }
         
-        .theme-toggle {
-            position: fixed; right: 20px; top: 20px; width: 45px; height: 45px;
-            background-color: var(--primary); border: none; border-radius: 12px;
-            color: var(--white); cursor: pointer; display: flex; align-items: center; justify-content: center;
-            font-size: 1.2rem; z-index: 10000; box-shadow: 0 4px 12px var(--shadow);
+        .days-selector { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+        .day-circle {
+            width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--border-color);
+            background: var(--bg-tertiary); display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.2s; font-weight: 600; color: var(--text-secondary);
         }
+        .day-circle.selected { background: var(--primary); color: white; border-color: var(--primary); transform: scale(1.05); }
 
-        .overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: var(--overlay-bg); opacity: 0; visibility: hidden;
-            transition: all 0.3s ease; z-index: 9998;
-        }
+        /* --- CONTROLES GLOBALES --- */
+        .menu-toggle { position: fixed; left: 20px; top: 20px; width: 45px; height: 45px; background: var(--primary); border: none; border-radius: 12px; color: var(--white); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; z-index: 10000; box-shadow: 0 4px 12px var(--shadow); transition: all 0.3s; }
+        .menu-toggle.active { left: 300px; background: var(--bg-secondary); color: var(--primary); }
+        .theme-toggle { position: fixed; right: 20px; top: 20px; width: 45px; height: 45px; background: var(--primary); border: none; border-radius: 12px; color: var(--white); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; z-index: 10000; box-shadow: 0 4px 12px var(--shadow); transition: transform 0.2s; }
+        .theme-toggle:hover { transform: rotate(20deg); }
+        
+        .overlay { position: fixed; inset: 0; background: var(--overlay-bg); opacity: 0; visibility: hidden; transition: all 0.3s; z-index: 9998; }
         .overlay.active { opacity: 1; visibility: visible; }
 
         /* --- CONTENIDO PRINCIPAL --- */
-        .main-content {
-            flex: 1; padding: 80px 20px 40px; max-width: 1400px;
-            margin: 0 auto; width: 100%;
-        }
-
-        .page-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 30px; flex-wrap: wrap; gap: 20px;
-        }
-        .page-title {
-            font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--primary-dark);
-        }
-        .page-subtitle { color: var(--text-secondary); font-size: 0.9rem; margin-top: 5px; display: block; }
-
-        /* --- TARJETAS Y CONTENEDORES --- */
-        .card {
-            background-color: var(--bg-secondary); border-radius: 15px;
-            box-shadow: 0 4px 15px var(--shadow); overflow: hidden; margin-bottom: 20px;
-        }
-        .card-header {
-            padding: 20px; border-bottom: 1px solid var(--border-color);
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .card-title { font-weight: 600; color: var(--primary-dark); display: flex; align-items: center; gap: 10px; }
-        .card-body { padding: 20px; }
-
-        /* --- FORMULARIOS Y BOTONES --- */
-        .btn {
-            padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer;
-            font-weight: 500; transition: all 0.2s; display: inline-flex;
-            align-items: center; gap: 8px; font-size: 0.9rem; font-family: inherit;
-        }
-        .btn-primary { background-color: var(--primary); color: var(--white); }
-        .btn-primary:hover { background-color: var(--primary-dark); transform: translateY(-2px); }
-        .btn-secondary { background-color: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
-        .btn-secondary:hover { background-color: var(--border-color); }
-        .btn-success { background-color: var(--success); color: white; }
-        .btn-danger { background-color: var(--danger); color: white; }
+        .main-content { flex: 1; padding: 80px 20px 40px; max-width: 1400px; margin: 0 auto; width: 100%; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 20px; }
+        .page-title { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--primary-dark); }
+        
+        /* --- COMPONENTES UI --- */
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; font-size: 0.9rem; font-family: inherit; }
+        .btn-primary { background: var(--primary); color: var(--white); box-shadow: 0 4px 10px var(--shadow); }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
         .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
-        
-        input[type="text"], input[type="date"], input[type="time"], input[type="number"],
-        select, textarea {
-            width: 100%; background: var(--bg-tertiary); border: 1px solid var(--border-color);
-            border-radius: 8px; padding: 10px 15px; color: var(--text-primary);
-            font-family: inherit; font-size: 0.95rem; transition: border-color 0.2s;
-        }
-        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); }
-        
+
+        input, select, textarea { width: 100%; background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 15px; color: var(--text-primary); font-family: inherit; font-size: 0.95rem; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(139, 107, 71, 0.2); }
         .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-primary); }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-secondary); }
         .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+
+        /* --- FILTROS AVANZADOS --- */
+        .filters-card { background: var(--bg-secondary); padding: 20px; border-radius: 15px; margin-bottom: 25px; box-shadow: 0 2px 10px var(--shadow); border: 1px solid var(--border-color); }
+        .filters-header { display: flex; justify-content: space-between; margin-bottom: 15px; align-items: center; }
+        .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; align-items: flex-end; }
+        .filter-label { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 5px; display: block; }
+
+        /* --- VISTAS (AGENDA/TABLA) --- */
+        .view-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .view-tab { padding: 10px 20px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 20px; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; }
+        .view-tab.active { background: var(--primary); color: white; border-color: var(--primary); font-weight: 500; box-shadow: 0 2px 8px var(--shadow); }
+
+        /* Agenda Item Detallado */
+        .agenda-card { background: var(--bg-secondary); border-radius: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px var(--shadow); overflow: hidden; border-left: 5px solid transparent; transition: transform 0.2s; }
+        .agenda-card:hover { transform: translateY(-2px); box-shadow: 0 5px 15px var(--shadow-hover); }
+        .agenda-main { padding: 20px; display: flex; gap: 20px; cursor: pointer; }
+        .agenda-date-box { min-width: 60px; text-align: center; border-right: 1px solid var(--border-color); padding-right: 15px; display: flex; flex-direction: column; justify-content: center; }
+        .agenda-day-num { font-size: 2.2rem; font-weight: 700; color: var(--primary); line-height: 1; }
+        .agenda-month { font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; margin-top: 5px; }
+        .agenda-info { flex: 1; }
+        .agenda-title { font-weight: 600; font-size: 1.1rem; margin-bottom: 8px; }
+        .agenda-meta { display: flex; gap: 15px; font-size: 0.85rem; color: var(--text-secondary); flex-wrap: wrap; }
+        .agenda-actions { display: flex; flex-direction: column; gap: 5px; justify-content: center; }
         
-        .checkbox-group { display: flex; align-items: center; gap: 10px; cursor: pointer; }
-        input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary); }
+        /* Vista Previa Expandible */
+        .agenda-preview { background: var(--bg-tertiary); padding: 20px; border-top: 1px solid var(--border-color); display: none; animation: fadeIn 0.3s ease; }
+        .agenda-preview.active { display: block; }
+        .preview-section { margin-bottom: 15px; }
+        .preview-section h5 { font-size: 0.8rem; color: var(--primary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .preview-steps { list-style: none; }
+        .preview-steps li { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-primary); }
+        .preview-steps li i { color: var(--success); font-size: 0.8rem; }
+
+        /* Tabla */
+        .data-table { width: 100%; border-collapse: collapse; background: var(--bg-secondary); border-radius: 10px; overflow: hidden; }
+        .data-table th, .data-table td { padding: 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        .data-table th { background: var(--bg-tertiary); color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase; font-weight: 600; }
+        .data-table tr:hover td { background: var(--bg-tertiary); }
 
         /* --- MODALES --- */
-        .modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--overlay-bg); display: flex; justify-content: center;
-            align-items: center; z-index: 10001; opacity: 0; visibility: hidden;
-            transition: all 0.3s; padding: 20px;
-        }
+        .modal { position: fixed; inset: 0; background: var(--overlay-bg); display: flex; justify-content: center; align-items: flex-start; z-index: 10001; opacity: 0; visibility: hidden; transition: all 0.3s; padding: 30px 10px; overflow-y: auto; }
         .modal.active { opacity: 1; visibility: visible; }
-        .modal-content {
-            background: var(--bg-secondary); width: 100%; max-width: 700px;
-            max-height: 90vh; overflow-y: auto; border-radius: 20px;
-            position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.3); animation: slideUp 0.3s ease;
-        }
-        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        
-        .modal-header {
-            padding: 20px 25px; border-bottom: 1px solid var(--border-color);
-            display: flex; justify-content: space-between; align-items: center; position: sticky;
-            top: 0; background: var(--bg-secondary); z-index: 10;
-        }
+        .modal-box { background: var(--bg-secondary); width: 100%; max-width: 800px; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); margin: auto; position: relative; }
+        .modal-head { padding: 25px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--bg-secondary); position: sticky; top: 0; z-index: 5; border-radius: 20px 20px 0 0; }
         .modal-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--primary-dark); }
         .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-secondary); transition: color 0.2s; }
         .modal-close:hover { color: var(--danger); }
         .modal-body { padding: 25px; }
-        .modal-footer { padding: 20px 25px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 10px; }
+        .modal-foot { padding: 20px 25px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 10px; background: var(--bg-tertiary); border-radius: 0 0 20px 20px; }
 
-        /* --- TABLAS Y LISTAS --- */
-        .data-table { width: 100%; border-collapse: collapse; }
-        .data-table th, .data-table td { padding: 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
-        .data-table th { background: var(--bg-tertiary); color: var(--text-secondary); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; }
-        .data-table tr:hover td { background: var(--bg-tertiary); }
-        
-        .badge {
-            display: inline-block; padding: 4px 10px; border-radius: 20px;
-            font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
-        }
-        .badge-subject { color: white; }
-        .badge-priority-alta { background-color: var(--danger); color: white; }
-        .badge-priority-media { background-color: var(--warning); color: var(--bg-dark); }
-        .badge-priority-baja { background-color: var(--success); color: white; }
+        /* Modal Recomendación */
+        .rec-container { text-align: center; padding: 30px 10px; }
+        .rec-date { font-size: 2.5rem; font-weight: 700; color: var(--primary); margin: 20px 0; line-height: 1.2; }
+        .rec-reason { font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 25px; background: var(--bg-primary); padding: 15px; border-radius: 10px; }
+        .rec-alert { background: rgba(231, 76, 60, 0.1); color: var(--danger); padding: 15px; border-radius: 8px; margin-bottom: 25px; border: 1px solid var(--danger); display: none; font-weight: 500; }
+        .rec-alert i { margin-right: 10px; }
 
-        /* --- VISTA AGENDA --- */
-        .agenda-item {
-            display: flex; gap: 20px; padding: 20px; border-bottom: 1px solid var(--border-color);
-            transition: background 0.2s; align-items: center;
-        }
-        .agenda-item:hover { background: var(--bg-tertiary); }
-        .agenda-date {
-            min-width: 60px; text-align: center; padding: 10px;
-            background: var(--bg-tertiary); border-radius: 10px;
-        }
-        .agenda-day { font-size: 1.8rem; font-weight: 700; color: var(--primary-dark); line-height: 1; }
-        .agenda-month { font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; }
-        .agenda-content { flex: 1; }
-        .agenda-title { font-weight: 600; margin-bottom: 5px; font-size: 1.1rem; }
-        .agenda-meta { display: flex; gap: 15px; font-size: 0.85rem; color: var(--text-secondary); flex-wrap: wrap; }
-        .agenda-actions { display: flex; gap: 10px; }
+        /* --- POMODORO SCREEN --- */
+        .pomo-screen { position: fixed; inset: 0; background: var(--bg-primary); z-index: 10005; display: none; flex-direction: column; justify-content: center; align-items: center; padding: 20px; text-align: center; }
+        .pomo-screen.active { display: flex; }
+        .pomo-clock { font-size: 8rem; font-weight: 700; color: var(--primary); font-family: 'Playfair Display', serif; line-height: 1; text-shadow: 0 10px 20px var(--shadow); }
+        .pomo-msg { font-style: italic; color: var(--text-secondary); margin-top: 20px; max-width: 400px; font-size: 1.1rem; }
+        .pomo-task-label { color: var(--primary-dark); font-weight: 600; margin-bottom: 10px; }
+        .pomo-controls { margin-top: 40px; display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
 
-        /* --- PASOS (STEPS) --- */
-        .steps-list { margin-top: 10px; }
-        .step-item { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
-        .step-item input { flex: 1; }
-
-        /* --- POMODORO OVERLAY --- */
-        .pomo-overlay {
-            position: fixed; inset: 0; background: var(--bg-primary);
-            z-index: 10005; display: none; flex-direction: column;
-            justify-content: center; align-items: center; text-align: center;
-            padding: 20px;
-        }
-        .pomo-overlay.active { display: flex; }
-        .pomo-timer { font-size: 8rem; font-weight: 700; color: var(--primary); line-height: 1; }
-        .pomo-task-name { font-size: 1.5rem; margin: 20px 0 40px; }
-        .pomo-controls { display: flex; gap: 20px; }
-        .pomo-message { margin-top: 40px; font-style: italic; color: var(--text-secondary); font-size: 1.1rem; }
-
-        /* --- REGISTRO DE HORARIOS (SIDEBAR DERECHO) --- */
-        .schedule-register {
-            position: fixed; right: 0; top: 0; height: 100vh; width: 350px;
-            background: var(--bg-secondary); box-shadow: -2px 0 15px var(--shadow);
-            transform: translateX(100%); transition: transform 0.3s ease; z-index: 9999;
-            display: flex; flex-direction: column;
-        }
-        .schedule-register.active { transform: translateX(0); }
-        .schedule-header { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-        .schedule-body { flex: 1; overflow-y: auto; padding: 20px; }
-        
-        /* --- EMPTY STATE --- */
-        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
+        /* Empty State */
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); background: var(--bg-secondary); border-radius: 15px; border: 2px dashed var(--border-color); }
         .empty-state i { font-size: 4rem; margin-bottom: 20px; opacity: 0.3; }
 
-        /* --- RESPONSIVE --- */
-        @media (max-width: 768px) {
-            .page-title { font-size: 1.5rem; }
-            .agenda-item { flex-direction: column; align-items: flex-start; gap: 10px; }
-            .agenda-date { display: none; }
-            .modal-content { max-width: 100%; height: 100%; max-height: 100%; border-radius: 0; }
-            .schedule-register { width: 100%; }
-        }
+        /* --- ANIMACIONES --- */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
 
-    <!-- SIDEBAR IZQUIERDA -->
+    <!-- SIDEBAR -->
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <div style="width:40px;height:40px;background:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;">T</div>
             <h2 class="sidebar-logo">Thynka</h2>
         </div>
         <div class="sidebar-menu">
@@ -268,38 +194,39 @@
             <a href="cuestionarios.html" class="menu-item"><i class="fas fa-question-circle"></i> Cuestionarios</a>
             <a href="patron.html" class="menu-item"><i class="fas fa-chart-line"></i> Análisis</a>
         </div>
+        <div class="sidebar-subjects">
+            <h4>Asignaturas</h4>
+            <ul class="subject-list" id="subjectSidebarList">
+                <!-- Se llena dinámicamente -->
+            </ul>
+        </div>
     </nav>
 
-    <!-- PANEL DERECHO: REGISTRO DE HORARIOS -->
-    <div class="schedule-register" id="schedulePanel">
-        <div class="schedule-header">
-            <h3 style="color:var(--primary-dark)">Mi Horario</h3>
-            <button class="btn btn-secondary btn-sm" onclick="toggleSchedulePanel()"><i class="fas fa-times"></i></button>
+    <!-- PANEL DERECHO: HORARIO CLASES -->
+    <div class="schedule-panel" id="schedulePanel">
+        <div class="panel-header">
+            <h3><i class="fas fa-university"></i> Horario de Clases</h3>
+            <button class="btn btn-sm btn-secondary" onclick="togglePanel('schedulePanel')"><i class="fas fa-times"></i></button>
         </div>
-        <div class="schedule-body">
-            <p style="margin-bottom:15px; font-size:0.9rem; color:var(--text-secondary);">Registra tus clases de universidad o institución para que Thynka no te asigne tareas en esas horas.</p>
+        <div class="panel-body">
+            <p style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:20px;">Registra tus clases. El sistema no agendará tareas en estos rangos (más 1h de transporte).</p>
             
-            <div class="form-group">
-                <label>Días de Clase</label>
-                <div class="days-grid" id="classDaysGrid">
-                    <button type="button" class="day-btn" data-day="L">L</button>
-                    <button type="button" class="day-btn" data-day="M">M</button>
-                    <button type="button" class="day-btn" data-day="X">X</button>
-                    <button type="button" class="day-btn" data-day="J">J</button>
-                    <button type="button" class="day-btn" data-day="V">V</button>
-                    <button type="button" class="day-btn" data-day="S">S</button>
-                    <button type="button" class="day-btn" data-day="D">D</button>
-                </div>
+            <label style="font-weight:600; margin-bottom:10px; display:block;">Días de Clase</label>
+            <div class="days-selector" id="classDaysSelector">
+                <div class="day-circle" data-day="L">L</div>
+                <div class="day-circle" data-day="M">M</div>
+                <div class="day-circle" data-day="X">X</div>
+                <div class="day-circle" data-day="J">J</div>
+                <div class="day-circle" data-day="V">V</div>
+                <div class="day-circle" data-day="S">S</div>
+                <div class="day-circle" data-day="D">D</div>
             </div>
-
-            <div id="classTimeInputs">
-                <!-- Se generan dinámicamente -->
-            </div>
-
-            <button class="btn btn-primary" style="width:100%; margin-top:20px;" onclick="saveClassSchedule()">
+            
+            <div id="classTimeInputs"></div>
+            
+            <button class="btn btn-primary" style="width:100%; margin-top:25px;" onclick="saveClassSchedule()">
                 <i class="fas fa-save"></i> Guardar Horario
             </button>
-            <div id="scheduleMsg" style="margin-top:10px; text-align:center; font-size:0.9rem;"></div>
         </div>
     </div>
 
@@ -310,48 +237,39 @@
     <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
     <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
 
-    <!-- MODAL: FORMULARIO DE TAREA -->
+    <!-- MODAL: FORMULARIO COMPLETO TAREA -->
     <div class="modal" id="taskModal">
-        <div class="modal-content">
-            <div class="modal-header">
+        <div class="modal-box">
+            <div class="modal-head">
                 <h3 class="modal-title">Registrar Nueva Tarea</h3>
                 <button class="modal-close" onclick="closeModal('taskModal')">&times;</button>
             </div>
             <div class="modal-body">
                 <form id="taskForm">
                     <div class="form-group">
-                        <label>Título de la Tarea *</label>
-                        <input type="text" id="taskTitle" required placeholder="Ej: Ensayo de Historia">
+                        <label>Título *</label>
+                        <input type="text" id="taskTitle" required placeholder="Ej: Ensayo final de historia">
                     </div>
-
                     <div class="form-row">
                         <div class="form-group">
                             <label>Asignatura</label>
                             <div style="display:flex; gap:10px;">
                                 <select id="taskSubject" style="flex:1"></select>
-                                <button type="button" class="btn btn-secondary" onclick="addNewSubject()" title="Agregar Materia"><i class="fas fa-plus"></i></button>
+                                <button type="button" class="btn btn-secondary" onclick="addSubjectPrompt()"><i class="fas fa-plus"></i></button>
                             </div>
                         </div>
                         <div class="form-group">
                             <label>Tipo de Actividad</label>
                             <select id="taskType">
-                                <option value="Tarea">Tarea</option>
-                                <option value="Proyecto">Proyecto</option>
-                                <option value="Ensayo">Ensayo</option>
-                                <option value="Presentación">Presentación</option>
-                                <option value="Laboratorio">Laboratorio</option>
-                                <option value="Lectura">Lectura</option>
-                                <option value="Investigación">Investigación</option>
-                                <option value="Estudio">Estudio</option>
-                                <option value="Ejercicios">Ejercicios</option>
-                                <option value="Otro">Otro</option>
+                                <option>Tarea</option><option>Proyecto</option><option>Ensayo</option>
+                                <option>Presentación</option><option>Laboratorio</option><option>Lectura</option>
+                                <option>Investigación</option><option>Estudio</option><option>Ejercicios</option><option>Otro</option>
                             </select>
                         </div>
                     </div>
-
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Fecha de Entrega *</label>
+                            <label>Fecha Entrega *</label>
                             <input type="date" id="taskDueDate" required>
                         </div>
                         <div class="form-group">
@@ -359,11 +277,10 @@
                             <input type="time" id="taskDueTime" value="23:59">
                         </div>
                     </div>
-
                     <div class="form-row">
                         <div class="form-group">
                             <label>Modalidad</label>
-                            <select id="taskMode">
+                            <select id="taskMode" onchange="handleModeChange()">
                                 <option value="individual">Individual</option>
                                 <option value="grupo">Grupal</option>
                             </select>
@@ -377,7 +294,6 @@
                             </select>
                         </div>
                     </div>
-
                     <div class="form-row">
                         <div class="form-group">
                             <label>Dificultad</label>
@@ -389,75 +305,89 @@
                         </div>
                         <div class="form-group">
                             <label>Valor (%)</label>
-                            <input type="number" id="taskGradeValue" placeholder="Ej: 10" min="0" max="100">
-                            <div class="checkbox-group" style="margin-top:5px;">
-                                <input type="checkbox" id="taskGradeUnknown">
-                                <label for="taskGradeUnknown" style="font-size:0.8rem; font-weight:400;">No sé / No aplica</label>
-                            </div>
+                            <input type="number" id="taskGrade" placeholder="Ej: 20" min="0" max="100">
+                            <label style="font-size:0.8rem; font-weight:400; margin-top:5px; display:flex; align-items:center; gap:5px; cursor:pointer;">
+                                <input type="checkbox" id="taskGradeUnk"> No sé
+                            </label>
                         </div>
                     </div>
-
                     <div class="form-group">
                         <label>Formato de Entrega</label>
-                        <input type="text" id="taskFormat" placeholder="Ej: PDF, Físico, Enlace">
+                        <input type="text" id="taskFormat" placeholder="PDF, Físico, Enlace...">
                     </div>
-
                     <div class="form-group">
                         <label>Instrucciones / Enlaces</label>
-                        <textarea id="taskInstructions" rows="3" placeholder="Pega aquí las instrucciones o enlaces..."></textarea>
+                        <textarea id="taskDesc" rows="3" placeholder="Pega aquí las instrucciones..."></textarea>
                     </div>
-
                     <div class="form-group">
                         <label>Pasos de la Actividad</label>
-                        <div class="steps-list" id="stepsContainer">
-                            <!-- Pasos dinámicos -->
-                        </div>
-                        <button type="button" class="btn btn-secondary btn-sm" onclick="addStepInput()" style="margin-top:10px;">
-                            <i class="fas fa-plus"></i> Agregar Paso
-                        </button>
+                        <div id="stepsContainer"></div>
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="addStep()" style="margin-top:10px;"><i class="fas fa-plus"></i> Agregar Paso</button>
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
+            <div class="modal-foot">
                 <button class="btn btn-secondary" onclick="closeModal('taskModal')">Cancelar</button>
-                <button class="btn btn-primary" id="saveTaskBtn" onclick="saveTask()">
-                    <i class="fas fa-save"></i> Guardar y Recomendar
-                </button>
+                <button class="btn btn-primary" onclick="processTask()"><i class="fas fa-magic"></i> Generar Plan</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL: ALERTA DE RECOMENDACIÓN -->
-    <div class="modal" id="recommendModal">
-        <div class="modal-content" style="max-width: 500px;">
-            <div class="modal-header">
-                <h3 class="modal-title"><i class="fas fa-magic" style="color:var(--primary)"></i> Recomendación Generada</h3>
-                <button class="modal-close" onclick="closeModal('recommendModal')">&times;</button>
+    <!-- MODAL: RESULTADO Y CONFIRMACIÓN -->
+    <div class="modal" id="resultModal">
+        <div class="modal-box" style="max-width: 550px;">
+            <div class="modal-head">
+                <h3 class="modal-title">Plan de Acción</h3>
+                <button class="modal-close" onclick="closeModal('resultModal')">&times;</button>
             </div>
-            <div class="modal-body" style="text-align: center;">
-                <p style="margin-bottom: 20px;">Basado en tu prioridad, dificultad y tiempo disponible, te sugerimos empezar:</p>
-                <div style="font-size: 2rem; font-weight: 700; color: var(--primary); margin: 20px 0;" id="recDateDisplay">--</div>
-                <p style="font-size: 0.9rem; color: var(--text-secondary);" id="recReasonDisplay">Razón del cálculo...</p>
-                <div id="alertHighDelay" style="display:none; margin-top:20px; padding:10px; background:rgba(231, 76, 60, 0.1); border-radius:8px; color:var(--danger);">
-                    <strong>¡Atención!</strong> La fecha sugerida está muy cerca de la entrega (360% de capacidad). ¡Empieza ya!
+            <div class="modal-body">
+                <div id="recViewInd" class="rec-container">
+                    <p style="font-size:0.9rem; color:var(--text-secondary);">Tu sistema inteligente sugiere empezar el:</p>
+                    <div class="rec-date" id="recDateText">--</div>
+                    <div class="rec-reason" id="recReasonText">Calculando...</div>
+                    <div class="rec-alert" id="recAlert"><i class="fas fa-exclamation-circle"></i> ¡Alerta! Has aplazado demasiado. Riesgo alto de no entregar.</div>
+                </div>
+
+                <div id="recViewGroup" style="display:none; padding:30px 0;">
+                    <p style="margin-bottom:20px;">Es una tarea grupal. Coordina con tu equipo y selecciona el horario:</p>
+                    <div class="form-group">
+                        <label>Fecha de Inicio</label>
+                        <input type="date" id="manualStartDate">
+                    </div>
+                    <div class="form-group">
+                        <label>Hora de Inicio</label>
+                        <input type="time" id="manualStartTime">
+                    </div>
                 </div>
             </div>
-            <div class="modal-footer" style="justify-content: center;">
-                <button class="btn btn-primary" onclick="confirmRecommendation()">Confirmar y Guardar</button>
-                <button class="btn btn-secondary" onclick="closeModal('recommendModal')">Editar</button>
+            <div class="modal-foot" style="justify-content: center; flex-wrap: wrap; gap: 10px;">
+                <button class="btn btn-secondary" id="btnRecalc" onclick="recalculate()"><i class="fas fa-sync"></i> Generar Otra</button>
+                <button class="btn btn-secondary" onclick="openModal('taskModal')"><i class="fas fa-edit"></i> Editar</button>
+                <button class="btn btn-danger" onclick="discardTask()"><i class="fas fa-trash"></i> Eliminar</button>
+                <button class="btn btn-success" onclick="confirmSave()"><i class="fas fa-check"></i> Confirmar y Guardar</button>
             </div>
         </div>
     </div>
 
-    <!-- POMODORO OVERLAY -->
-    <div class="pomo-overlay" id="pomoOverlay">
-        <div class="pomo-task-name" id="pomoTaskName">Nombre de la tarea</div>
-        <div class="pomo-timer" id="pomoTimer">25:00</div>
-        <div class="pomo-message" id="pomoMessage">¡Tú puedes! Un paso a la vez.</div>
-        <div class="pomo-controls">
-            <button class="btn btn-success btn-lg" id="pomoStartBtn" onclick="toggleTimer()"><i class="fas fa-play"></i> Iniciar</button>
-            <button class="btn btn-secondary btn-lg" onclick="resetTimer()"><i class="fas fa-redo"></i> Reset</button>
-            <button class="btn btn-danger btn-lg" onclick="closePomodoro()"><i class="fas fa-times"></i> Salir</button>
+    <!-- POMODORO SCREEN -->
+    <div class="pomo-screen" id="pomoScreen">
+        <div style="max-width: 600px;">
+            <div class="pomo-task-label" id="pomoTaskLabel">Enfocándose en:</div>
+            <h2 style="color: var(--primary-dark); margin-bottom: 10px;" id="pomoTaskName">Tarea</h2>
+            <div class="pomo-clock" id="pomoClock">25:00</div>
+            <div class="pomo-msg" id="pomoMsg">¡Tú puedes! Un paso a la vez.</div>
+            
+            <div id="flexibleConfig" style="display:none; margin-top: 20px; background: var(--bg-secondary); padding: 20px; border-radius: 15px; border: 1px solid var(--border-color);">
+                <label style="font-size: 0.9rem; display:block; margin-bottom:10px;">Configura tu tiempo (minutos):</label>
+                <input type="number" id="customPomoTime" value="25" min="5" max="120" style="width: 100px; margin: 0 auto; display:block; text-align:center; font-size:1.5rem;">
+                <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="applyCustomPomo()">Aplicar</button>
+            </div>
+
+            <div class="pomo-controls">
+                <button class="btn btn-success btn-lg" id="pomoPlay" onclick="togglePomo()"><i class="fas fa-play"></i> Iniciar</button>
+                <button class="btn btn-secondary btn-lg" onclick="resetPomo()"><i class="fas fa-redo"></i> Reset</button>
+                <button class="btn btn-danger btn-lg" onclick="closePomo()"><i class="fas fa-times"></i> Salir</button>
+            </div>
         </div>
     </div>
 
@@ -466,61 +396,66 @@
         <div class="page-header">
             <div>
                 <h1 class="page-title">Gestión de Tareas</h1>
-                <span class="page-subtitle">Organiza, prioriza y cumple tus metas</span>
+                <p style="color:var(--text-secondary); font-size:0.9rem;">Organiza, prioriza y cumple tus metas inteligentemente</p>
             </div>
             <div style="display:flex; gap:10px;">
-                <button class="btn btn-secondary" onclick="toggleSchedulePanel()"><i class="fas fa-school"></i> Mi Horario</button>
+                <button class="btn btn-secondary" onclick="togglePanel('schedulePanel')"><i class="fas fa-university"></i> Mis Clases</button>
                 <button class="btn btn-primary" onclick="openModal('taskModal')"><i class="fas fa-plus"></i> Nueva Tarea</button>
             </div>
         </div>
 
-        <!-- FILTROS -->
-        <div class="card" style="margin-bottom:20px; background:var(--bg-secondary);">
-            <div class="card-body" style="padding: 15px 20px;">
-                <div style="display:flex; gap:15px; flex-wrap:wrap; align-items:center;">
-                    <div class="form-group" style="margin-bottom:0; flex:1; min-width:150px;">
-                        <select id="filterMain" onchange="renderTasks()">
-                            <option value="dueDate">Ordenar por Vencimiento</option>
-                            <option value="priority">Ordenar por Prioridad</option>
-                            <option value="difficulty">Ordenar por Dificultad</option>
-                        </select>
-                    </div>
-                    <div class="form-group" style="margin-bottom:0; flex:1; min-width:150px;">
-                        <select id="filterTime" onchange="renderTasks()">
-                            <option value="all">Todas</option>
-                            <option value="3days">Vencen en 3 días</option>
-                            <option value="week">Esta semana</option>
-                            <option value="month">Este mes</option>
-                        </select>
-                    </div>
-                    <div class="form-group" style="margin-bottom:0; flex:1; min-width:150px;">
-                        <select id="filterSubject" onchange="renderTasks()">
-                            <option value="all">Todas las materias</option>
-                        </select>
-                    </div>
+        <!-- FILTROS AVANZADOS -->
+        <div class="filters-card">
+            <div class="filters-header">
+                <h4 style="color: var(--primary-dark);"><i class="fas fa-filter"></i> Filtros</h4>
+                <button class="btn btn-sm btn-secondary" onclick="resetFilters()">Limpiar</button>
+            </div>
+            <div class="filter-grid">
+                <div>
+                    <span class="filter-label">Ordenar por</span>
+                    <select id="filterSort" onchange="renderView()">
+                        <option value="dueDate">Vencimiento</option>
+                        <option value="priority">Prioridad</option>
+                        <option value="difficulty">Dificultad</option>
+                    </select>
+                </div>
+                <div>
+                    <span class="filter-label">Materia</span>
+                    <select id="filterSubject" onchange="renderView()">
+                        <option value="all">Todas</option>
+                    </select>
+                </div>
+                <div>
+                    <span class="filter-label">Tiempo</span>
+                    <select id="filterTime" onchange="renderView()">
+                        <option value="all">Todas</option>
+                        <option value="3days">Vencen en 3 días</option>
+                        <option value="week">Esta semana</option>
+                        <option value="2weeks">En 2 semanas</option>
+                        <option value="month">En 1 mes</option>
+                        <option value="more">Más de 1 mes</option>
+                    </select>
+                </div>
+                <div>
+                    <span class="filter-label">Prioridad</span>
+                    <select id="filterPriority" onchange="renderView()">
+                        <option value="all">Todas</option>
+                        <option value="alta">Alta</option>
+                        <option value="media">Media</option>
+                        <option value="baja">Baja</option>
+                    </select>
                 </div>
             </div>
         </div>
 
-        <!-- LISTA DE TAREAS -->
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title"><i class="fas fa-list"></i> Listado de Tareas</h3>
-                <div style="display:flex; gap:5px;">
-                    <button class="btn btn-sm btn-secondary active" onclick="switchView('agenda')"><i class="fas fa-th-list"></i></button>
-                    <button class="btn btnsm btn-secondary" onclick="switchView('table')"><i class="fas fa-table"></i></button>
-                </div>
-            </div>
-            <div id="agendaView" style="padding:0;">
-                <!-- Tareas aquí -->
-            </div>
-            <div id="tableView" style="display:none; overflow-x:auto;">
-                <table class="data-table">
-                    <thead><tr><th>Tarea</th><th>Materia</th><th>Entrega</th><th>Prioridad</th><th>Acciones</th></tr></thead>
-                    <tbody id="tableBody"></tbody>
-                </table>
-            </div>
+        <!-- VISTAS -->
+        <div class="view-tabs">
+            <div class="view-tab active" onclick="setView('agenda')">Vista Agenda</div>
+            <div class="view-tab" onclick="setView('table')">Vista Tabla</div>
         </div>
+
+        <div id="agendaContainer"></div>
+        <div id="tableContainer" style="display:none; overflow-x:auto;"></div>
     </main>
 
     <script type="module">
@@ -528,7 +463,7 @@
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDatabase, ref, set, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        const firebaseConfig = {
+        const config = {
             apiKey: "AIzaSyBH42jsEEaEOFa02LhD59aDkwFfo_RVVB4",
             authDomain: "thynka-1dd68.firebaseapp.com",
             databaseURL: "https://thynka-1dd68-default-rtdb.firebaseio.com",
@@ -538,402 +473,516 @@
             appId: "1:704622327906:web:57c4efb9da7b935b80f93b"
         };
 
-        const app = initializeApp(firebaseConfig);
+        const app = initializeApp(config);
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        let currentUser = null;
-        let userData = { settings: {}, subjects: {}, tasks: {}, classSchedule: {} };
-        let selectedTaskForPomo = null;
-        let timerInterval = null;
-        let timeLeft = 25 * 60;
-        let selectedClassDays = [];
+        let uid = null;
+        let DB = { tasks: {}, subjects: {}, settings: {}, classSchedule: {} };
+        let tempTaskData = null;
+        let pomoInterval = null;
+        let pomoTime = 25 * 60;
+        let isPomoPaused = true;
 
-        // --- INICIALIZACIÓN ---
+        // --- INICIALIZACIÓN Y SINCRONIZACIÓN ---
         onAuthStateChanged(auth, user => {
             if (user) {
-                currentUser = user;
-                loadAllData();
+                uid = user.uid;
+                listen('tasks');
+                listen('subjects');
+                listen('classSchedule');
+                onValue(ref(db, `users/${uid}`), snap => {
+                    if(snap.exists()) DB.settings = snap.val();
+                    renderSidebarSubjects();
+                });
             } else {
                 window.location.href = 'index.html';
             }
         });
 
-        function loadAllData() {
-            onValue(ref(db, `users/${currentUser.uid}`), snap => {
-                userData.settings = snap.val() || {};
-            });
-            
-            onValue(ref(db, `subjects/${currentUser.uid}`), snap => {
-                userData.subjects = snap.val() || {};
-                renderSubjectOptions();
-                renderSubjectFilters();
-            });
-
-            onValue(ref(db, `tasks/${currentUser.uid}`), snap => {
-                userData.tasks = snap.val() || {};
-                renderTasks();
-            });
-
-            onValue(ref(db, `classSchedule/${currentUser.uid}`), snap => {
-                userData.classSchedule = snap.val() || {};
-                if(snap.exists()) loadClassScheduleUI(snap.val());
+        function listen(path) {
+            onValue(ref(db, `${path}/${uid}`), snap => {
+                DB[path] = snap.val() || {};
+                if(path === 'subjects') { populateSubjects(); renderSidebarSubjects(); }
+                if(path === 'tasks') renderView();
+                if(path === 'classSchedule') loadScheduleUI();
             });
         }
 
-        // --- UI: SIDEBAR & THEME ---
-        document.getElementById('menuToggle').addEventListener('click', () => {
-            document.getElementById('sidebar').classList.toggle('active');
-            document.getElementById('overlay').classList.toggle('active');
-        });
-        document.getElementById('overlay').addEventListener('click', () => {
-            document.getElementById('sidebar').classList.remove('active');
-            document.getElementById('schedulePanel').classList.remove('active');
-            document.getElementById('overlay').classList.remove('active');
-        });
-
-        // Theme
-        const theme = localStorage.getItem('theme') || 'light';
-        document.documentElement.setAttribute('data-theme', theme);
-        document.getElementById('themeToggle').innerHTML = theme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-        document.getElementById('themeToggle').addEventListener('click', () => {
-            const curr = document.documentElement.getAttribute('data-theme');
-            const next = curr === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', next);
-            localStorage.setItem('theme', next);
-            document.getElementById('themeToggle').innerHTML = next === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-        });
-
-        // --- UI: MODALS ---
-        window.openModal = (id) => { document.getElementById(id).classList.add('active'); };
-        window.closeModal = (id) => { document.getElementById(id).classList.remove('active'); };
-
-        // --- UI: SCHEDULE PANEL ---
-        window.toggleSchedulePanel = () => {
-            const panel = document.getElementById('schedulePanel');
-            panel.classList.toggle('active');
-            document.getElementById('overlay').classList.toggle('active');
+        // --- UI HELPERS ---
+        const $ = id => document.getElementById(id);
+        
+        // Theme & Menu
+        $('themeToggle').onclick = () => {
+            const t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', t);
+            localStorage.setItem('theme', t);
+            $('themeToggle').innerHTML = t === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        };
+        if(localStorage.getItem('theme') === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            $('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+        }
+        
+        $('menuToggle').onclick = () => $('sidebar').classList.toggle('active');
+        $('overlay').onclick = () => {
+            ['sidebar', 'schedulePanel'].forEach(el => $(el).classList.remove('active'));
+            $('overlay').classList.remove('active');
         };
 
-        // --- LÓGICA: MATERIAS ---
-        window.addNewSubject = () => {
-            const name = prompt("Nombre de la nueva materia:");
-            if (name && name.trim()) {
+        window.togglePanel = id => {
+            $(id).classList.toggle('active');
+            $('overlay').classList.toggle('active');
+        };
+        window.openModal = id => { $(id).classList.add('active'); };
+        window.closeModal = id => { $(id).classList.remove('active'); };
+
+        // --- MATERIAS (SUBJECTS) ---
+        function populateSubjects() {
+            const sel = $('taskSubject');
+            const current = sel.value;
+            sel.innerHTML = Object.entries(DB.subjects).map(([id, s]) => 
+                `<option value="${id}">${s.name}</option>`
+            ).join('');
+            if(DB.subjects[current]) sel.value = current;
+        }
+
+        function renderSidebarSubjects() {
+            $('subjectSidebarList').innerHTML = Object.entries(DB.subjects).map(([id, s]) => `
+                <li class="subject-list-item" onclick="filterBySubject('${id}')">
+                    <div class="subject-dot" style="background:${s.color}"></div>
+                    <span>${s.name}</span>
+                </li>
+            `).join('');
+            
+            const filterSubj = $('filterSubject');
+            filterSubj.innerHTML = `<option value="all">Todas</option>` + Object.entries(DB.subjects).map(([id, s]) => 
+                `<option value="${id}">${s.name}</option>`
+            ).join('');
+        }
+
+        window.filterBySubject = (id) => {
+            $('filterSubject').value = id;
+            renderView();
+            $('sidebar').classList.remove('active');
+        }
+
+        window.addSubjectPrompt = () => {
+            const n = prompt("Nombre de la materia:");
+            if(n) {
                 const color = `hsl(${Math.random()*360}, 60%, 65%)`;
-                push(ref(db, `subjects/${currentUser.uid}`), { name: name.trim(), color: color, icon: 'book' });
+                const newRef = push(ref(db, `subjects/${uid}`));
+                set(newRef, { name: n, color: color });
+                // Forzar selección del nuevo elemento
+                setTimeout(() => {
+                    $('taskSubject').value = newRef.key;
+                }, 500);
             }
         };
 
-        function renderSubjectOptions() {
-            const sel = document.getElementById('taskSubject');
-            sel.innerHTML = Object.entries(userData.subjects).map(([id, s]) => 
-                `<option value="${id}">${s.name}</option>`
-            ).join('');
-        }
-
-        function renderSubjectFilters() {
-            const sel = document.getElementById('filterSubject');
-            sel.innerHTML = `<option value="all">Todas las materias</option>` + 
-            Object.entries(userData.subjects).map(([id, s]) => 
-                `<option value="${id}">${s.name}</option>`
-            ).join('');
-        }
-
-        // --- LÓGICA: PASOS ---
-        window.addStepInput = (val = '') => {
-            const container = document.getElementById('stepsContainer');
-            const div = document.createElement('div');
-            div.className = 'step-item';
-            div.innerHTML = `
-                <input type="text" class="step-input" value="${val}" placeholder="Describe un paso...">
-                <button type="button" class="btn btn-sm btn-secondary" onclick="this.parentElement.remove()"><i class="fas fa-trash"></i></button>
-            `;
-            container.appendChild(div);
-        };
-
-        // --- LÓGICA: HORARIOS DE CLASE ---
-        document.querySelectorAll('#classDaysGrid .day-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                btn.classList.toggle('active');
-                const d = btn.dataset.day;
-                if(btn.classList.contains('active')) selectedClassDays.push(d);
+        // --- HORARIO DE CLASES ---
+        const classDaysSel = $('classDaysSelector');
+        let selectedClassDays = [];
+        
+        classDaysSel.addEventListener('click', e => {
+            if(e.target.classList.contains('day-circle')) {
+                e.target.classList.toggle('selected');
+                const d = e.target.dataset.day;
+                if(e.target.classList.contains('selected')) selectedClassDays.push(d);
                 else selectedClassDays = selectedClassDays.filter(x => x !== d);
-                renderClassTimeInputs();
-            });
+                renderClassInputs();
+            }
         });
 
-        function renderClassTimeInputs() {
-            const container = document.getElementById('classTimeInputs');
-            const dayNames = {L:'Lunes', M:'Martes', X:'Miércoles', J:'Jueves', V:'Viernes', S:'Sábado', D:'Domingo'};
-            container.innerHTML = selectedClassDays.map(d => `
-                <div style="margin-bottom:15px; padding:10px; background:var(--bg-tertiary); border-radius:8px;">
-                    <label style="font-size:0.9rem; font-weight:600; margin-bottom:5px; display:block;">${dayNames[d]}</label>
-                    <div style="display:flex; gap:10px;">
-                        <input type="time" id="classStart${d}" value="08:00" style="flex:1">
-                        <input type="time" id="classEnd${d}" value="14:00" style="flex:1">
+        function renderClassInputs() {
+            const names = {L:'Lunes', M:'Martes', X:'Miércoles', J:'Jueves', V:'Viernes', S:'Sábado', D:'Domingo'};
+            $('classTimeInputs').innerHTML = selectedClassDays.map(d => `
+                <div style="margin-top:15px; padding:15px; background:var(--bg-tertiary); border-radius:8px; border: 1px solid var(--border-color);">
+                    <label style="font-weight:600;">${names[d]}</label>
+                    <div style="display:flex; gap:10px; margin-top:8px;">
+                        <div style="flex:1"><input type="time" id="cs${d}S" value="08:00"></div>
+                        <div style="flex:1"><input type="time" id="cs${d}E" value="14:00"></div>
                     </div>
                 </div>
             `).join('');
         }
 
-        function loadClassScheduleUI(data) {
-            selectedClassDays = Object.keys(data);
-            selectedClassDays.forEach(d => {
-                document.querySelector(`#classDaysGrid .day-btn[data-day="${d}"]`).classList.add('active');
+        function loadScheduleUI() {
+            selectedClassDays = Object.keys(DB.classSchedule);
+            document.querySelectorAll('#classDaysSelector .day-circle').forEach(btn => {
+                if(DB.classSchedule[btn.dataset.day]) btn.classList.add('selected');
             });
-            renderClassTimeInputs();
-            
-            // Set values
+            renderClassInputs();
             setTimeout(() => {
-                Object.entries(data).forEach(([day, times]) => {
-                    const startInp = document.getElementById(`classStart${day}`);
-                    const endInp = document.getElementById(`classEnd${day}`);
-                    if(startInp) startInp.value = times.start;
-                    if(endInp) endInp.value = times.end;
+                Object.entries(DB.classSchedule).forEach(([d, val]) => {
+                    if($(`cs${d}S`)) $(`cs${d}S`).value = val.start;
+                    if($(`cs${d}E`)) $(`cs${d}E`).value = val.end;
                 });
             }, 100);
         }
 
-        window.saveClassSchedule = async () => {
-            const scheduleData = {};
+        window.saveClassSchedule = () => {
+            const data = {};
             selectedClassDays.forEach(d => {
-                const start = document.getElementById(`classStart${d}`).value;
-                const end = document.getElementById(`classEnd${d}`).value;
-                scheduleData[d] = { start, end };
+                data[d] = { start: $(`cs${d}S`).value, end: $(`cs${d}E`).value };
             });
-
-            try {
-                await set(ref(db, `classSchedule/${currentUser.uid}`), scheduleData);
-                document.getElementById('scheduleMsg').innerHTML = `<span style="color:var(--success)">¡Horario guardado!</span>`;
-                setTimeout(() => document.getElementById('scheduleMsg').innerHTML = '', 2000);
-            } catch(e) {
-                alert("Error al guardar horario: " + e.message);
-            }
+            set(ref(db, `classSchedule/${uid}`), data);
+            alert("Horario de clases guardado.");
         };
 
-        // --- LÓGICA: GUARDAR TAREA ---
-        window.saveTask = async () => {
-            const title = document.getElementById('taskTitle').value;
-            if(!title) return alert("Pon un título");
+        // --- FORMULARIO DE TAREA ---
+        window.addStep = (val='') => {
+            const div = document.createElement('div');
+            div.className = 'step-row';
+            div.style.cssText = "display:flex; gap:10px; margin-bottom:10px; align-items:center;";
+            div.innerHTML = `<input type="text" value="${val}" placeholder="Describe un paso..." style="flex:1"><button type="button" class="btn btn-sm btn-secondary" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>`;
+            $('stepsContainer').appendChild(div);
+        };
+
+        window.handleModeChange = () => {
+            // Lógica visual si es necesaria
+        };
+
+        // --- MOTOR DE RECOMENDACIÓN (ALGORITMO COMPLETO) ---
+        window.processTask = () => {
+            const title = $('taskTitle').value;
+            if(!title) return alert("Por favor ingresa un título.");
 
             const steps = [];
-            document.querySelectorAll('.step-input').forEach(inp => { if(inp.value.trim()) steps.push(inp.value.trim()); });
+            document.querySelectorAll('#stepsContainer input').forEach(i => { if(i.value) steps.push(i.value); });
 
-            const taskData = {
-                title, 
-                subjectId: document.getElementById('taskSubject').value,
-                type: document.getElementById('taskType').value,
-                dueDate: document.getElementById('taskDueDate').value,
-                dueTime: document.getElementById('taskDueTime').value,
-                mode: document.getElementById('taskMode').value,
-                priority: document.getElementById('taskPriority').value,
-                difficulty: document.getElementById('taskDifficulty').value,
-                gradeValue: document.getElementById('taskGradeUnknown').checked ? 'unknown' : Number(document.getElementById('taskGradeValue').value || 0),
-                format: document.getElementById('taskFormat').value,
-                instructions: document.getElementById('taskInstructions').value,
+            tempTaskData = {
+                title: title,
+                subjectId: $('taskSubject').value,
+                type: $('taskType').value,
+                dueDate: $('taskDueDate').value,
+                dueTime: $('taskDueTime').value,
+                mode: $('taskMode').value,
+                priority: $('taskPriority').value,
+                difficulty: $('taskDifficulty').value,
+                gradeValue: $('taskGradeUnk').checked ? 'unknown' : Number($('taskGrade').value || 0),
+                format: $('taskFormat').value,
+                instructions: $('taskDesc').value,
                 steps: steps,
                 completed: false,
                 createdAt: Date.now()
             };
 
-            // Generar Recomendación ANTES de guardar para mostrar en modal
-            const rec = generateRecommendation(taskData);
-            
-            // Mostrar modal de recomendación
-            document.getElementById('recDateDisplay').innerText = rec.dateString;
-            document.getElementById('recReasonDisplay').innerText = rec.reason;
-            document.getElementById('alertHighDelay').style.display = rec.isDelayed ? 'block' : 'none';
-            
-            // Guardar temporalmente para confirmar
-            window.tempTaskData = taskData;
-            openModal('recommendModal');
+            if(tempTaskData.mode === 'grupo') {
+                $('recViewInd').style.display = 'none';
+                $('recViewGroup').style.display = 'block';
+                $('btnRecalc').style.display = 'none';
+                const now = new Date(Date.now() + 3600000);
+                $('manualStartDate').value = now.toISOString().split('T')[0];
+                $('manualStartTime').value = now.toTimeString().substring(0,5);
+            } else {
+                $('recViewInd').style.display = 'block';
+                $('recViewGroup').style.display = 'none';
+                $('btnRecalc').style.display = 'inline-flex';
+                calculateRecommendation();
+            }
+
+            closeModal('taskModal');
+            openModal('resultModal');
         };
 
-        window.confirmRecommendation = async () => {
-            if(!window.tempTaskData) return;
+        function calculateRecommendation() {
+            const task = tempTaskData;
+            const now = new Date();
+            const due = new Date(task.dueDate + 'T' + task.dueTime);
+            
+            // 1. Factores Base
+            let pFactor = task.priority === 'alta' ? 0.2 : (task.priority === 'media' ? 0.35 : 0.45);
+            let dFactor = task.difficulty === 'alta' ? 1.3 : (task.difficulty === 'media' ? 1 : 0.8);
+            let gFactor = 1;
+            if(task.gradeValue !== 'unknown' && task.gradeValue > 0) {
+                if(task.gradeValue > 15) gFactor = 1.2; // Nota alta -> más urgencia
+            }
+
+            // Cálculo de tiempo ideal
+            let totalHours = (due - now) / (1000*60*60);
+            let offsetHours = totalHours * pFactor * dFactor * gFactor;
+            
+            let recDate = new Date(now.getTime() + offsetHours * 3600000);
+            
+            // 2. Verificación de Restricciones (Sueño, Clase, Trabajo)
+            // Bucle para encontrar un hueco válido
+            let attempts = 0;
+            let isSafe = false;
+            
+            while(attempts < 100) {
+                if(!isInvalidTime(recDate)) {
+                    isSafe = true;
+                    break;
+                }
+                recDate = new Date(recDate.getTime() + 3600000); // Mover 1 hora
+                attempts++;
+            }
+
+            let isDelayed = (recDate > new Date(due.getTime() - (totalHours * 0.1 * 3600000))); // Si está muy cerca del 10% final
+            
+            $('recDateText').innerText = recDate.toLocaleString('es-ES', { weekday:'long', day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+            $('recReasonText').innerText = `Prioridad ${task.priority} (${pFactor}), Dificultad (${dFactor}). Tiempo estimado: ${Math.round(offsetHours)} horas.`;
+            $('recAlert').style.display = isDelayed ? 'block' : 'none';
+            
+            tempTaskData.suggestedStart = recDate.toISOString();
+        }
+
+        // Función robusta para validar tiempos
+        function isInvalidTime(date) {
+            const h = date.getHours();
+            const m = date.getMinutes();
+            const dayIndex = date.getDay(); // 0=Dom, 1=Lun...
+            const dayMap = ['D', 'L', 'M', 'X', 'J', 'V', 'S'];
+            const dayLetter = dayMap[dayIndex];
+            const timeStr = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`;
+
+            // 1. Sueño (22:30 - 06:00)
+            if(h >= 22 && m >= 30) return true;
+            if(h < 6) return true;
+
+            // 2. Clases (Usando DB.classSchedule)
+            if(DB.classSchedule[dayLetter]) {
+                const cs = DB.classSchedule[dayLetter];
+                // Buffer de 1 hora transporte
+                if(timeStr >= addHours(cs.start, -1) && timeStr <= addHours(cs.end, 1)) return true;
+            }
+
+            // 3. Trabajo (Usando DB.settings.workSchedule)
+            if(DB.settings.works === 'si' && DB.settings.workSchedule && DB.settings.workSchedule[dayLetter]) {
+                const ws = DB.settings.workSchedule[dayLetter];
+                 if(timeStr >= addHours(ws.start, -1) && timeStr <= addHours(ws.end, 1)) return true;
+            }
+
+            return false;
+        }
+
+        function addHours(timeStr, hours) {
+            let [h, m] = timeStr.split(':').map(Number);
+            h += hours;
+            if(h < 0) h = 0;
+            if(h > 23) h = 23;
+            return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`;
+        }
+
+        window.recalculate = () => {
+            // Forzar mover 4 horas adelante para generar otra opción
+            if(tempTaskData.suggestedStart) {
+                const newDate = new Date(new Date(tempTaskData.suggestedStart).getTime() + (4 * 3600000));
+                tempTaskData.suggestedStart = newDate.toISOString();
+                $('recDateText').innerText = newDate.toLocaleString('es-ES', { weekday:'long', day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+                $('recReasonText').innerText = "Opción alternativa generada.";
+            }
+        };
+
+        window.confirmSave = async () => {
+            if(tempTaskData.mode === 'grupo') {
+                tempTaskData.suggestedStart = $('manualStartDate').value + 'T' + $('manualStartTime').value;
+            }
+            
             try {
-                await push(ref(db, `tasks/${currentUser.uid}`), window.tempTaskData);
-                closeModal('recommendModal');
-                closeModal('taskModal');
-                document.getElementById('taskForm').reset();
-                document.getElementById('stepsContainer').innerHTML = '';
+                await push(ref(db, `tasks/${uid}`), tempTaskData);
+                closeModal('resultModal');
+                $('taskForm').reset();
+                $('stepsContainer').innerHTML = '';
+                tempTaskData = null;
             } catch(e) {
                 alert("Error guardando: " + e.message);
             }
         };
 
-        // --- ALGORITMO DE RECOMENDACIÓN ---
-        function generateRecommendation(task) {
-            const now = new Date();
-            const due = new Date(task.dueDate + 'T' + task.dueTime);
-            const totalHours = (due - now) / (1000 * 60 * 60);
-            
-            if(totalHours < 0) return { dateString: "¡Vencida!", reason: "Esta tarea ya venció.", isDelayed: true };
-
-            // Factores
-            let pFactor = task.priority === 'alta' ? 0.2 : (task.priority === 'media' ? 0.35 : 0.45);
-            let dFactor = task.difficulty === 'alta' ? 1.2 : (task.difficulty === 'media' ? 1.0 : 0.8);
-            
-            // Cálculo simple de "Horas recomendadas de trabajo"
-            let hoursNeeded = totalHours * pFactor * dFactor;
-            
-            // Buscar slot disponible simulado (simplificado para demo)
-            // En una app real, iteraríamos sobre los horarios guardados
-            let recDate = new Date(now.getTime() + (hoursNeeded * 1000 * 60 * 60));
-            
-            // Validar cruces (Simulación simple)
-            // Si está muy cerca del límite
-            let isDelayed = false;
-            if(recDate > new Date(due.getTime() - (2*60*60*1000))) {
-                isDelayed = true;
-                recDate = new Date(now.getTime() + (1 * 60 * 60 * 1000)); // Sugiere empezar ya
+        window.discardTask = () => {
+            if(confirm("¿Cancelar esta tarea?")) {
+                closeModal('resultModal');
+                tempTaskData = null;
             }
+        };
 
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute:'2-digit' };
-            return {
-                dateString: recDate.toLocaleDateString('es-ES', options),
-                reason: `Basado en prioridad ${task.priority} y dificultad ${task.difficulty}. Tiempo estimado: ${Math.round(hoursNeeded)} horas.`,
-                isDelayed: isDelayed
-            };
-        }
+        // --- VISTAS Y FILTROS ---
+        window.setView = type => {
+            document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            $('agendaContainer').style.display = type === 'agenda' ? 'block' : 'none';
+            $('tableContainer').style.display = type === 'table' ? 'block' : 'none';
+        };
 
-        // --- RENDERIZAR TAREAS ---
-        window.renderTasks = () => {
-            const view = document.getElementById('agendaView');
-            const table = document.getElementById('tableBody');
-            let tasksArr = Object.entries(userData.tasks);
+        window.resetFilters = () => {
+            $('filterSort').value = 'dueDate';
+            $('filterSubject').value = 'all';
+            $('filterTime').value = 'all';
+            $('filterPriority').value = 'all';
+            renderView();
+        };
 
-            // Filters
-            const timeF = document.getElementById('filterTime').value;
-            const subjF = document.getElementById('filterSubject').value;
-            
-            if(subjF !== 'all') tasksArr = tasksArr.filter(([id, t]) => t.subjectId === subjF);
+        window.renderView = () => {
+            let list = Object.entries(DB.tasks);
             
             // Sort
-            const mainF = document.getElementById('filterMain').value;
-            if(mainF === 'dueDate') tasksArr.sort((a,b) => new Date(a[1].dueDate) - new Date(b[1].dueDate));
-            if(mainF === 'priority') {
-                const order = {'alta':1, 'media':2, 'baja':3};
-                tasksArr.sort((a,b) => order[a[1].priority] - order[b[1].priority]);
-            }
+            const sort = $('filterSort').value;
+            if(sort === 'dueDate') list.sort((a,b) => new Date(a[1].dueDate) - new Date(b[1].dueDate));
+            else if(sort === 'priority') list.sort((a,b) => rankP(a[1].priority) - rankP(b[1].priority));
+            else if(sort === 'difficulty') list.sort((a,b) => rankD(a[1].difficulty) - rankD(b[1].difficulty));
 
-            if(tasksArr.length === 0) {
-                view.innerHTML = `<div class="empty-state"><i class="fas fa-coffee"></i><p>No hay tareas para mostrar.</p></div>`;
-                table.innerHTML = '<tr><td colspan="5" style="text-align:center">No hay datos</td></tr>';
-                return;
-            }
+            // Filters
+            const timeF = $('filterTime').value;
+            const subjF = $('filterSubject').value;
+            const prioF = $('filterPriority').value;
+            const now = new Date();
 
-            view.innerHTML = tasksArr.map(([id, t]) => {
-                const subj = userData.subjects[t.subjectId] || {name:'General', color:'#888'};
+            list = list.filter(([id, t]) => {
+                const due = new Date(t.dueDate);
+                const diffDays = Math.ceil((due - now) / (1000*60*60*24));
+                
+                if(timeF === '3days' && diffDays > 3) return false;
+                if(timeF === 'week' && diffDays > 7) return false;
+                if(timeF === '2weeks' && diffDays > 14) return false;
+                if(timeF === 'month' && diffDays > 30) return false;
+                if(timeF === 'more' && diffDays <= 30) return false;
+
+                if(subjF !== 'all' && t.subjectId !== subjF) return false;
+                if(prioF !== 'all' && t.priority !== prioF) return false;
+
+                return true;
+            });
+
+            // Agenda HTML
+            $('agendaContainer').innerHTML = list.length === 0 ? '<div class="empty-state"><i class="fas fa-inbox"></i><p>No hay tareas con estos filtros.</p></div>' :
+            list.map(([id, t]) => {
+                const subj = DB.subjects[t.subjectId] || {name:'General', color:'#888'};
                 const date = new Date(t.dueDate + 'T' + t.dueTime);
+                const isCompleted = t.completed ? 'opacity: 0.6; text-decoration: line-through;' : '';
+                
                 return `
-                <div class="agenda-item">
-                    <div class="agenda-date">
-                        <div class="agenda-day">${date.getDate()}</div>
-                        <div class="agenda-month">${date.toLocaleString('es', {month:'short'})}</div>
-                    </div>
-                    <div class="agenda-content">
-                        <div class="agenda-title">${t.title}</div>
-                        <div class="agenda-meta">
-                            <span class="badge badge-subject" style="background:${subj.color}">${subj.name}</span>
-                            <span><i class="fas fa-clock"></i> ${date.toLocaleTimeString('es', {hour:'2-digit', minute:'2-digit'})}</span>
-                            <span class="badge badge-priority-${t.priority}">${t.priority}</span>
+                <div class="agenda-card" style="border-left-color: ${subj.color}; ${isCompleted}">
+                    <div class="agenda-main" onclick="togglePreview('${id}')">
+                        <div class="agenda-date-box">
+                            <div class="agenda-day-num">${date.getDate()}</div>
+                            <div class="agenda-month">${date.toLocaleString('es', {month:'short'})}</div>
+                        </div>
+                        <div class="agenda-info">
+                            <div class="agenda-title">${t.title}</div>
+                            <div class="agenda-meta">
+                                <span style="background:${subj.color}; padding:3px 10px; border-radius:10px; font-size:0.7rem; color:white; font-weight:600;">${subj.name}</span>
+                                <span><i class="fas fa-clock"></i> ${date.toLocaleTimeString('es', {hour:'2-digit', minute:'2-digit'})}</span>
+                                <span class="badge badge-p${t.priority==='alta'?1:t.priority==='media'?2:3}">${t.priority}</span>
+                            </div>
+                        </div>
+                        <div class="agenda-actions" onclick="event.stopPropagation()">
+                            <button class="btn btn-sm btn-success" onclick="startPomo('${id}')"><i class="fas fa-play"></i></button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteTask('${id}')"><i class="fas fa-trash"></i></button>
                         </div>
                     </div>
-                    <div class="agenda-actions">
-                        <button class="btn btn-sm btn-success" onclick="startPomodoro('${id}')"><i class="fas fa-play"></i></button>
-                        <button class="btn btn-sm btn-danger" onclick="deleteTask('${id}')"><i class="fas fa-trash"></i></button>
+                    <div class="agenda-preview" id="preview-${id}">
+                        <div class="preview-section">
+                            <h5><i class="fas fa-info-circle"></i> Instrucciones</h5>
+                            <p style="font-size:0.9rem; white-space: pre-wrap; color:var(--text-primary);">${t.instructions || 'Sin instrucciones.'}</p>
+                        </div>
+                        ${t.steps && t.steps.length > 0 ? `
+                        <div class="preview-section" style="margin-top:15px;">
+                            <h5><i class="fas fa-list-ol"></i> Pasos</h5>
+                            <ul class="preview-steps">
+                                ${t.steps.map(s => `<li><i class="fas fa-check"></i> ${s}</li>`).join('')}
+                            </ul>
+                        </div>` : ''}
+                        <div style="text-align:right; margin-top:20px; padding-top:15px; border-top:1px solid var(--border-color);">
+                             <button class="btn btn-sm btn-secondary" onclick="completeTask('${id}')"><i class="fas fa-check"></i> Marcar Completada</button>
+                        </div>
                     </div>
                 </div>`;
             }).join('');
 
-            table.innerHTML = tasksArr.map(([id, t]) => {
-                const subj = userData.subjects[t.subjectId] || {name:'General', color:'#888'};
-                return `
-                <tr>
-                    <td>${t.title}</td>
-                    <td><span class="badge badge-subject" style="background:${subj.color}">${subj.name}</span></td>
-                    <td>${t.dueDate}</td>
-                    <td><span class="badge badge-priority-${t.priority}">${t.priority}</span></td>
-                    <td>
-                        <button class="btn btn-sm btn-success" onclick="startPomodoro('${id}')"><i class="fas fa-play"></i></button>
-                        <button class="btn btn-sm btn-danger" onclick="deleteTask('${id}')"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>`;
-            }).join('');
+            // Table HTML
+            $('tableContainer').innerHTML = `<table class="data-table"><thead><tr><th>Tarea</th><th>Materia</th><th>Fecha</th><th>Prioridad</th><th>Acciones</th></tr></thead><tbody>${
+                list.map(([id, t]) => {
+                    const subj = DB.subjects[t.subjectId] || {name:'General', color:'#888'};
+                    return `<tr><td><strong>${t.title}</strong></td><td style="color:${subj.color}">${subj.name}</td><td>${t.dueDate}</td><td>${t.priority}</td><td><button class="btn btn-sm btn-success" onclick="startPomo('${id}')"><i class="fas fa-play"></i></button> <button class="btn btn-sm btn-danger" onclick="deleteTask('${id}')"><i class="fas fa-trash"></i></button></td></tr>`;
+                }).join('')
+            }</tbody></table>`;
         };
 
-        window.switchView = (type) => {
-            if(type === 'agenda') {
-                document.getElementById('agendaView').style.display = 'block';
-                document.getElementById('tableView').style.display = 'none';
-            } else {
-                document.getElementById('agendaView').style.display = 'none';
-                document.getElementById('tableView').style.display = 'block';
-            }
+        function rankP(p) { return p === 'alta' ? 1 : (p === 'media' ? 2 : 3); }
+        function rankD(d) { return d === 'alta' ? 1 : (d === 'media' ? 2 : 3); }
+
+        window.togglePreview = id => {
+            const el = $(`preview-${id}`);
+            if(el) el.classList.toggle('active');
         };
 
         window.deleteTask = async (id) => {
-            if(confirm("¿Eliminar esta tarea?")) {
-                await remove(ref(db, `tasks/${currentUser.uid}/${id}`));
-            }
+            if(confirm("¿Eliminar esta tarea?")) await remove(ref(db, `tasks/${uid}/${id}`));
         };
 
-        // --- POMODORO ---
-        window.startPomodoro = (id) => {
-            const task = userData.tasks[id];
-            if(!task) return;
-            selectedTaskForPomo = task;
-            document.getElementById('pomoTaskName').innerText = task.title;
+        window.completeTask = async (id) => {
+            await update(ref(db, `tasks/${uid}/${id}`), { completed: true });
+        };
+
+        // --- POMODORO LOGIC ---
+        window.startPomo = (id) => {
+            const t = DB.tasks[id];
+            if(!t) return;
             
-            let mins = 25;
-            if(userData.settings.sessionType === 'medio') mins = 50;
-            if(userData.settings.sessionType === 'largo') mins = 90;
+            $('pomoTaskName').innerText = t.title;
             
-            timeLeft = mins * 60;
-            updatePomoDisplay();
-            document.getElementById('pomoOverlay').classList.add('active');
+            const setting = DB.settings.sessionType;
+            $('flexibleConfig').style.display = setting === 'flexible' ? 'block' : 'none';
+            
+            if(setting === 'medio') pomoTime = 50*60;
+            else if(setting === 'largo') pomoTime = 90*60;
+            else if(setting === 'pomodoro') pomoTime = 25*60;
+            else pomoTime = 25*60; // Default
+            
+            updatePomoUI();
+            $('pomoScreen').classList.add('active');
+            isPomoPaused = true;
+            $('pomoPlay').innerHTML = '<i class="fas fa-play"></i> Iniciar';
         };
 
-        window.closePomodoro = () => {
-            clearInterval(timerInterval);
-            document.getElementById('pomoOverlay').classList.remove('active');
+        window.applyCustomPomo = () => {
+            const val = Number($('customPomoTime').value);
+            if(val > 0) pomoTime = val * 60;
+            updatePomoUI();
+            $('flexibleConfig').style.display = 'none';
         };
 
-        window.toggleTimer = () => {
-            const btn = document.getElementById('pomoStartBtn');
-            if(timerInterval) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-                btn.innerHTML = '<i class="fas fa-play"></i> Iniciar';
-            } else {
-                timerInterval = setInterval(() => {
-                    timeLeft--;
-                    updatePomoDisplay();
-                    if(timeLeft <= 0) {
-                        clearInterval(timerInterval);
-                        alert("¡Tiempo terminado!");
+        window.togglePomo = () => {
+            const btn = $('pomoPlay');
+            if(isPomoPaused) {
+                isPomoPaused = false;
+                btn.innerHTML = '<i class="fas fa-pause"></i> Pausar';
+                pomoInterval = setInterval(() => {
+                    pomoTime--;
+                    updatePomoUI();
+                    if(pomoTime <= 0) {
+                        clearInterval(pomoInterval);
+                        $('pomoMsg').innerText = "¡Tiempo! Descansa un poco.";
+                        btn.innerHTML = '<i class="fas fa-coffee"></i> Fin';
+                        btn.disabled = true;
                     }
                 }, 1000);
-                btn.innerHTML = '<i class="fas fa-pause"></i> Pausar';
+            } else {
+                isPomoPaused = true;
+                clearInterval(pomoInterval);
+                btn.innerHTML = '<i class="fas fa-play"></i> Continuar';
             }
         };
 
-        window.resetTimer = () => {
-            clearInterval(timerInterval);
-            timerInterval = null;
-            let mins = 25;
-            if(userData.settings.sessionType === 'medio') mins = 50;
-            if(userData.settings.sessionType === 'largo') mins = 90;
-            timeLeft = mins * 60;
-            updatePomoDisplay();
-            document.getElementById('pomoStartBtn').innerHTML = '<i class="fas fa-play"></i> Iniciar';
+        window.resetPomo = () => {
+            clearInterval(pomoInterval);
+            startPomo(Object.keys(DB.tasks).find(k => DB.tasks[k].title === $('pomoTaskName').innerText));
         };
 
-        function updatePomoDisplay() {
-            const m = Math.floor(timeLeft / 60);
-            const s = timeLeft % 60;
-            document.getElementById('pomoTimer').innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        window.closePomo = () => {
+            clearInterval(pomoInterval);
+            $('pomoScreen').classList.remove('active');
+        };
+
+        function updatePomoUI() {
+            const m = Math.floor(pomoTime/60);
+            const s = pomoTime%60;
+            $('pomoClock').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+            const msgs = ["¡Tú puedes!", "Mantén el enfoque.", "Casi lo logras.", "¡Excelente trabajo!"];
+            $('pomoMsg').innerText = msgs[Math.floor(Math.random()*msgs.length)];
+            $('pomoPlay').disabled = false;
         }
 
     </script>
