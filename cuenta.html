@@ -839,9 +839,10 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+        // Se usan las versiones 12.5.0 consistentes con tu index.html
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBH42jsEEaEOFa02LhD59aDkwFfo_RVVB4",
@@ -891,10 +892,10 @@
         let selectedWorkDays = [];
         let selectedRestDays = [];
 
-        // Observador de estado de autenticación
+        // --- LOGICA PRINCIPAL ---
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
-                // Si no hay usuario, redirigir al login (index)
+                // Si no hay usuario logueado, mandar a login
                 window.location.href = 'index.html';
                 return;
             }
@@ -909,10 +910,10 @@
                     
                     setTimeout(() => {
                         if (userDoc.exists()) {
-                            // SI TIENE DATOS: SALTA DIRECTO AL DASHBOARD
+                            // YA TIENE DATOS: REDIRIGIR AL DASHBOARD
                             window.location.href = 'dashboard.html';
                         } else {
-                            // NO TIENE DATOS: MUESTRA EL FORMULARIO
+                            // NO TIENE DATOS: MOSTRAR PREGUNTAS
                             mainContainer.style.display = 'block';
                             setupEventListeners(currentUserId);
                             updateProgress();
@@ -931,7 +932,7 @@
         });
 
         function setupEventListeners(userId) {
-            // Q1, Q2, Q5, Q6 - Standard options
+            // Q1, Q2, Q5, Q6
             [1, 2, 5, 6].forEach(qNum => {
                 const card = document.getElementById(`q${qNum}`);
                 const options = card.querySelectorAll('.option');
@@ -1127,7 +1128,7 @@
                 showStatus('Perfil guardado correctamente', 'success');
                 
                 setTimeout(() => {
-                    // REDIRIGE AL DASHBOARD
+                    // REDIRIGIR AL DASHBOARD
                     window.location.href = 'dashboard.html';
                 }, 1500);
                 
