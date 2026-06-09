@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thynka - Horario Inteligente</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* --- VARIABLES Y RESET --- */
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --danger: #e74c3c; --success: #27ae60; --warning: #f39c12; --info: #3498db;
+            --overlay-bg: rgba(0, 0, 0, 0.7);
+            --class-color: #3498db; --work-color: #9b59b6;
+            --density-low: #27ae60; --density-med: #f39c12; --density-high: #e74c3c;
+        }
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+            --overlay-bg: rgba(0, 0, 0, 0.85);
+            --class-color: #5dade2; --work-color: #af7ac5;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; display: flex; overflow-x: hidden; }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            position: fixed; left: 0; top: 0; height: 100vh; width: 280px;
+            background: var(--bg-secondary); box-shadow: 2px 0 15px var(--shadow);
+            transform: translateX(-100%); transition: transform 0.3s ease; z-index: 9999;
+            display: flex; flex-direction: column;
+        }
+        .sidebar.active { transform: translateX(0); }
+        .sidebar-header { padding: 30px 20px; border-bottom: 1px solid var(--border-color); background: var(--bg-tertiary); }
+        .sidebar-logo { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--primary-dark); letter-spacing: 1px; }
+        
+        .sidebar-menu { flex: 1; padding: 20px 0; overflow-y: auto; }
+        .menu-section-title { padding: 10px 25px; font-size: 0.75rem; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 1px; font-weight: 700; }
+        .menu-item { display: block; padding: 14px 25px; color: var(--text-primary); text-decoration: none; transition: all 0.2s; border-left: 3px solid transparent; display: flex; align-items: center; gap: 15px; font-weight: 500; }
+        .menu-item:hover, .menu-item.active { background: var(--bg-tertiary); border-left-color: var(--primary); }
+        .menu-item i { width: 20px; text-align: center; opacity: 0.7; font-size: 1.1rem; }
+        
+        /* --- CONTROLES --- */
+        .menu-toggle { position: fixed; left: 20px; top: 20px; width: 50px; height: 50px; background: var(--primary); border: none; border-radius: 15px; color: var(--white); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; z-index: 10000; box-shadow: 0 4px 15px var(--shadow); transition: all 0.3s; }
+        .theme-toggle { position: fixed; right: 20px; top: 20px; width: 50px; height: 50px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 15px; color: var(--primary); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; z-index: 10000; transition: all 0.3s; }
+        .overlay { position: fixed; inset: 0; background: var(--overlay-bg); opacity: 0; visibility: hidden; transition: all 0.3s; z-index: 9998; backdrop-filter: blur(5px); }
+        .overlay.active { opacity: 1; visibility: visible; }
+
+        /* --- LAYOUT PRINCIPAL --- */
+        .main-layout { display: flex; width: 100%; padding-top: 80px; transition: all 0.3s; height: 100vh; }
+        
+        /* Panel Izquierdo (Calendario/Stats) */
+        .left-panel { flex: 0 0 320px; padding: 20px; display: flex; flex-direction: column; gap: 20px; border-right: 1px solid var(--border-color); background: var(--bg-secondary); overflow-y: auto; }
+        
+        /* Centro (Vista Principal) */
+        .center-content { flex: 1; padding: 20px 30px; overflow-y: auto; position: relative; }
+        
+        /* --- COMPONENTES UI --- */
+        .card { background: var(--bg-secondary); border-radius: 20px; padding: 20px; box-shadow: 0 4px 15px var(--shadow); border: 1px solid var(--border-color); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        .card-title { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--primary-dark); display: flex; align-items: center; gap: 10px; }
+        
+        .btn { padding: 10px 20px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; font-size: 0.9rem; font-family: inherit; }
+        .btn-primary { background: var(--primary); color: var(--white); box-shadow: 0 4px 12px var(--shadow); }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+        .btn-icon { width: 36px; height: 36px; padding: 0; justify-content: center; border-radius: 10px; }
+
+        /* --- VISTA SEMANAL --- */
+        .week-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
+        .week-nav { display: flex; align-items: center; gap: 15px; }
+        .week-nav h2 { font-size: 1.4rem; color: var(--primary-dark); font-family: 'Playfair Display', serif; }
+        
+        .view-switcher { display: flex; gap: 5px; background: var(--bg-tertiary); padding: 5px; border-radius: 12px; }
+        .view-btn { padding: 8px 20px; border: none; background: transparent; color: var(--text-secondary); border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+        .view-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 8px var(--shadow); }
+
+        .calendar-grid { display: grid; grid-template-columns: 60px repeat(7, 1fr); gap: 1px; background: var(--border-color); border-radius: 15px; overflow: hidden; border: 1px solid var(--border-color); }
+        .grid-header { background: var(--bg-tertiary); padding: 15px 5px; text-align: center; font-weight: 700; font-size: 0.85rem; color: var(--text-secondary); text-transform: uppercase; }
+        .grid-header.today { background: var(--primary); color: white; border-radius: 0; }
+        
+        .time-col { background: var(--bg-secondary); border-right: 1px solid var(--border-color); position: relative; }
+        .time-label { height: 60px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: var(--text-secondary); font-weight: 600; position: relative; top: -30px; }
+        
+        .day-col { background: var(--bg-secondary); min-height: 1200px; position: relative; border-right: 1px solid var(--border-color); }
+        .day-col:nth-child(8) { border-right: none; }
+        
+        .grid-hour { height: 60px; border-bottom: 1px solid var(--border-color); width: 100%; position: absolute; left: 0; }
+        
+        /* Eventos Bloques */
+        .event-block { position: absolute; left: 4px; right: 4px; border-radius: 6px; padding: 5px 8px; overflow: hidden; cursor: pointer; transition: all 0.2s; border-left: 3px solid rgba(0,0,0,0.2); font-size: 0.8rem; z-index: 10; }
+        .event-block:hover { transform: scale(1.02); z-index: 15; box-shadow: 0 4px 10px var(--shadow-hover); }
+        .event-block.task { background: var(--beige); border-left-color: var(--primary); }
+        .event-block.class { background: rgba(52, 152, 219, 0.2); border-left-color: var(--class-color); color: var(--class-color); }
+        .event-block.work { background: rgba(155, 89, 182, 0.2); border-left-color: var(--work-color); color: var(--work-color); }
+        .event-block.exam { background: rgba(231, 76, 60, 0.2); border-left-color: var(--danger); color: var(--danger); }
+        
+        /* Efecto Pulso (Urgente) */
+        .event-block.urgent { animation: pulse-border 2s infinite; }
+        @keyframes pulse-border { 0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); } 100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); } }
+
+        /* Línea de Tiempo Actual */
+        .time-line { position: absolute; left: 0; right: 0; height: 2px; background: var(--danger); z-index: 20; pointer-events: none; }
+        .time-line::before { content: ''; position: absolute; left: -5px; top: -4px; width: 10px; height: 10px; background: var(--danger); border-radius: 50%; }
+        .time-line-label { position: absolute; left: 5px; top: -18px; background: var(--danger); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; }
+
+        /* --- VISTA MENSUAL --- */
+        .month-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+        .month-day { min-height: 120px; background: var(--bg-secondary); border-radius: 10px; padding: 8px; border: 1px solid var(--border-color); transition: all 0.2s; position: relative; }
+        .month-day:hover { border-color: var(--primary); }
+        .month-day.other-month { opacity: 0.4; background: var(--bg-primary); }
+        .month-day.today { border: 2px solid var(--primary); }
+        .day-number { font-weight: 700; font-size: 0.9rem; margin-bottom: 5px; color: var(--text-secondary); }
+        .month-day.today .day-number { color: var(--primary); background: var(--beige); width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+
+        .density-bar { position: absolute; bottom: 5px; left: 5px; right: 5px; height: 4px; background: var(--border-color); border-radius: 2px; overflow: hidden; }
+        .density-fill { height: 100%; transition: width 0.3s; }
+        
+        .month-event-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; margin-right: 2px; }
+
+        /* --- PANEL DERECHO (TOOLTIP/SIDE PANEL) --- */
+        .detail-panel { position: fixed; right: -400px; top: 0; height: 100vh; width: 380px; background: var(--bg-secondary); box-shadow: -5px 0 20px var(--shadow); z-index: 10006; transition: right 0.3s ease; display: flex; flex-direction: column; }
+        .detail-panel.active { right: 0; }
+        .detail-header { padding: 30px; background: var(--bg-tertiary); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: flex-start; }
+        .detail-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark); margin-bottom: 5px; }
+        .detail-subtitle { font-size: 0.9rem; color: var(--text-secondary); display: flex; align-items: center; gap: 5px; }
+        .detail-body { padding: 25px; flex: 1; overflow-y: auto; }
+        .detail-countdown { background: var(--bg-primary); padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center; border: 1px solid var(--border-color); }
+        .countdown-time { font-size: 1.5rem; font-weight: 700; color: var(--warning); }
+        .countdown-label { font-size: 0.8rem; color: var(--text-secondary); }
+        
+        .info-row { display: flex; justify-content: space-between; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed var(--border-color); }
+        .info-label { font-size: 0.85rem; color: var(--text-secondary); }
+        .info-value { font-weight: 600; font-size: 0.9rem; }
+
+        /* --- MINI CALENDARIO Y EXAMENES (Left Panel) --- */
+        .mini-cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .mini-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; font-size: 0.75rem; }
+        .mini-cal-day { padding: 5px; border-radius: 4px; cursor: pointer; }
+        .mini-cal-day:hover { background: var(--bg-tertiary); }
+        .mini-cal-day.active { background: var(--primary); color: white; }
+        
+        .exam-list { display: flex; flex-direction: column; gap: 10px; max-height: 300px; overflow-y: auto; }
+        .exam-item { display: flex; align-items: center; gap: 10px; padding: 10px; background: var(--bg-primary); border-radius: 10px; border-left: 3px solid var(--danger); cursor: pointer; transition: all 0.2s; }
+        .exam-item:hover { background: var(--bg-tertiary); }
+        .exam-emoji { font-size: 1.2rem; }
+        .exam-info h5 { font-size: 0.9rem; margin-bottom: 2px; }
+        .exam-info span { font-size: 0.75rem; color: var(--text-secondary); }
+
+        /* --- MODAL EXAMEN --- */
+        .modal { position: fixed; inset: 0; background: var(--overlay-bg); display: flex; justify-content: center; align-items: center; z-index: 10010; opacity: 0; visibility: hidden; transition: all 0.3s; backdrop-filter: blur(5px); }
+        .modal.active { opacity: 1; visibility: visible; }
+        .modal-box { background: var(--bg-secondary); width: 100%; max-width: 500px; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); overflow: hidden; }
+        .modal-head { padding: 20px; background: var(--bg-tertiary); display: flex; justify-content: space-between; align-items: center; }
+        .modal-body { padding: 20px; }
+        .modal-foot { padding: 15px 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 10px; }
+        
+        input, select, textarea { width: 100%; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; color: var(--text-primary); font-family: inherit; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 1100px) {
+            .left-panel { display: none; }
+            .main-layout { padding-left: 0; }
+        }
+        @media (max-width: 768px) {
+            .calendar-grid { display: block; overflow-x: auto; }
+            .center-content { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header"><h2 class="sidebar-logo">Thynka</h2></div>
+        <div class="sidebar-menu">
+            <div class="menu-section-title">Navegación</div>
+            <a href="dashboard.html" class="menu-item"><i class="fas fa-home"></i> Cuenta</a>
+            <a href="tareas.html" class="menu-item"><i class="fas fa-tasks"></i> Tareas</a>
+            <a href="horario.html" class="menu-item active"><i class="fas fa-calendar-alt"></i> Horario</a>
+            <a href="examen.html" class="menu-item"><i class="fas fa-file-alt"></i> Exámenes</a>
+            <div class="menu-section-title">Herramientas</div>
+            <a href="asistente.html" class="menu-item"><i class="fas fa-robot"></i> Asistente IA</a>
+            <a href="recomendaciones.html" class="menu-item"><i class="fas fa-graduation-cap"></i> Aprende</a>
+            <a href="cuestionarios.html" class="menu-item"><i class="fas fa-question-circle"></i> Cuestionarios</a>
+            <a href="patron.html" class="menu-item"><i class="fas fa-chart-line"></i> Análisis</a>
+            <div class="menu-section-title">Ayuda</div>
+            <a href="tutorial.html" class="menu-item"><i class="fas fa-book-open"></i> Tutorial</a>
+        </div>
+    </nav>
+
+    <!-- CONTROLES -->
+    <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+    <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+    <div class="overlay" id="overlay"></div>
+
+    <!-- LAYOUT PRINCIPAL -->
+    <div class="main-layout">
+        
+        <!-- Panel Izquierdo -->
+        <aside class="left-panel">
+            <!-- Mini Calendario -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title" id="miniCalMonth">Enero 2024</h3>
+                </div>
+                <div class="mini-cal-header">
+                    <span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span>
+                </div>
+                <div class="mini-cal-grid" id="miniCalGrid"></div>
+            </div>
+
+            <!-- Próximos Exámenes -->
+            <div class="card" style="flex: 1;">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-file-alt"></i> Próximos Exámenes</h3>
+                    <button class="btn btn-sm btn-secondary" onclick="openExamModal()"><i class="fas fa-plus"></i></button>
+                </div>
+                <div class="exam-list" id="examList">
+                    <!-- Se llena con JS -->
+                </div>
+            </div>
+
+            <!-- Densidad Semanal -->
+            <div class="card">
+                <div class="card-header"><h3 class="card-title"><i class="fas fa-chart-pie"></i> Carga Semanal</h3></div>
+                <div id="densityLegend" style="font-size: 0.8rem; color: var(--text-secondary);">
+                    Cargando análisis...
+                </div>
+            </div>
+        </aside>
+
+        <!-- Contenido Central -->
+        <main class="center-content">
+            
+            <div class="week-controls">
+                <div class="week-nav">
+                    <button class="btn btn-icon btn-secondary" onclick="changeWeek(-1)"><i class="fas fa-chevron-left"></i></button>
+                    <h2 id="currentWeekTitle">Cargando...</h2>
+                    <button class="btn btn-icon btn-secondary" onclick="changeWeek(1)"><i class="fas fa-chevron-right"></i></button>
+                    <button class="btn btn-sm btn-secondary" onclick="goToToday()">Hoy</button>
+                </div>
+                
+                <div style="display:flex; gap:10px;">
+                    <button class="btn btn-warning" id="focusModeBtn" onclick="toggleFocusMode()"><i class="fas fa-bullseye"></i> Modo Foco</button>
+                    <button class="btn btn-primary" onclick="rescheduleWeek()"><i class="fas fa-magic"></i> Reprogramar Semana</button>
+                </div>
+                
+                <div class="view-switcher">
+                    <button class="view-btn active" onclick="setView('week')">Semana</button>
+                    <button class="view-btn" onclick="setView('month')">Mes</button>
+                </div>
+            </div>
+
+            <!-- Vista Semanal -->
+            <div id="weekView" class="calendar-grid"></div>
+
+            <!-- Vista Mensual -->
+            <div id="monthView" class="month-grid" style="display:none;"></div>
+
+        </main>
+    </div>
+
+    <!-- PANEL DETALLE (Side Panel) -->
+    <div class="detail-panel" id="detailPanel">
+        <div class="detail-header">
+            <div>
+                <div class="detail-title" id="detailTitle">Título del Evento</div>
+                <div class="detail-subtitle"><i class="fas fa-book"></i> <span id="detailSubject">Materia</span></div>
+            </div>
+            <button class="btn btn-icon btn-secondary" onclick="closeDetailPanel()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="detail-body">
+            <div class="detail-countdown">
+                <div class="countdown-time" id="countdownTime">2d 4h</div>
+                <div class="countdown-label">Tiempo restante</div>
+            </div>
+            
+            <div class="info-row">
+                <span class="info-label"><i class="fas fa-clock"></i> Inicio</span>
+                <span class="info-value" id="detailStart">--</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label"><i class="fas fa-hourglass-half"></i> Duración</span>
+                <span class="info-value" id="detailDuration">--</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label"><i class="fas fa-flag"></i> Vencimiento</span>
+                <span class="info-value" id="detailDue">--</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label"><i class="fas fa-signal"></i> Prioridad</span>
+                <span class="info-value" id="detailPriority">--</span>
+            </div>
+
+            <div style="margin-top: 20px; display:flex; gap:10px;">
+                <button class="btn btn-success" style="flex:1" onclick="completeTaskFromPanel()"><i class="fas fa-check"></i> Completar</button>
+                <button class="btn btn-secondary" onclick="editTaskFromPanel()"><i class="fas fa-edit"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL NUEVO EXAMEN -->
+    <div class="modal" id="examModal">
+        <div class="modal-box">
+            <div class="modal-head">
+                <h3><i class="fas fa-file-alt"></i> Nuevo Examen</h3>
+                <button class="btn btn-icon btn-secondary" onclick="closeModal('examModal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Materia / Título</label>
+                    <input type="text" id="examTitle" placeholder="Ej: Final de Cálculo">
+                </div>
+                <div class="form-row" style="display:flex; gap:10px;">
+                    <div class="form-group" style="flex:1">
+                        <label>Fecha</label>
+                        <input type="date" id="examDate">
+                    </div>
+                    <div class="form-group" style="flex:1">
+                        <label>Hora</label>
+                        <input type="time" id="examTime" value="09:00">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Emoji representativo</label>
+                    <select id="examEmoji">
+                        <option value="📝">📝 Escrito</option>
+                        <option value="💻">💻 Virtual</option>
+                        <option value="🗣️">🗣️ Oral</option>
+                        <option value="🔬">🔬 Laboratorio</option>
+                        <option value="📊">📊 Proyecto</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-foot">
+                <button class="btn btn-secondary" onclick="closeModal('examModal')">Cancelar</button>
+                <button class="btn btn-primary" onclick="saveExam()"><i class="fas fa-save"></i> Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase, ref, set, push, onValue, remove, update, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const config = {
+            apiKey: "AIzaSyBH42jsEEaEOFa02LhD59aDkwFfo_RVVB4",
+            authDomain: "thynka-1dd68.firebaseapp.com",
+            databaseURL: "https://thynka-1dd68-default-rtdb.firebaseio.com",
+            projectId: "thynka-1dd68",
+            storageBucket: "thynka-1dd68.appspot.com",
+            messagingSenderId: "704622327906",
+            appId: "1:704622327906:web:57c4efb9da7b935b80f93b"
+        };
+
+        const app = initializeApp(config);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        let uid = null;
+        let DB = { tasks: {}, subjects: {}, settings: {}, classSchedule: {}, workSchedule: {}, exams: {} };
+        
+        let currentDate = new Date();
+        let currentView = 'week';
+        let focusMode = false;
+        let selectedEvent = null;
+
+        const $ = id => document.getElementById(id);
+
+        // --- 1. AUTH & SYNC ---
+        onAuthStateChanged(auth, user => {
+            if (user) {
+                uid = user.uid;
+                listen('tasks');
+                listen('subjects');
+                listen('classSchedule');
+                listen('workSchedule');
+                listen('exams');
+                onValue(ref(db, `users/${uid}`), snap => {
+                    if(snap.exists()) DB.settings = snap.val();
+                    renderAll();
+                });
+            } else { window.location.href = 'index.html'; }
+        });
+
+        function listen(path) {
+            onValue(ref(db, `${path}/${uid}`), snap => {
+                DB[path] = snap.val() || {};
+                renderAll();
+            });
+        }
+
+        // --- 2. UI & THEME ---
+        $('themeToggle').onclick = () => {
+            const t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', t);
+            localStorage.setItem('theme', t);
+            $('themeToggle').innerHTML = t === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        };
+        if(localStorage.getItem('theme') === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            $('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+        }
+
+        $('menuToggle').onclick = () => $('sidebar').classList.toggle('active');
+        $('overlay').onclick = () => $('sidebar').classList.remove('active');
+
+        window.openModal = id => $(id).classList.add('active');
+        window.closeModal = id => $(id).classList.remove('active');
+
+        // --- 3. RENDER LOGIC ---
+        function renderAll() {
+            renderMiniCalendar();
+            renderExams();
+            renderDensity();
+            if(currentView === 'week') renderWeekView();
+            else renderMonthView();
+            updateTimeline(); // Initial call
+        }
+
+        // --- 4. WEEK VIEW ---
+        window.renderWeekView = () => {
+            const startOfWeek = getStartOfWeek(currentDate);
+            const endOfWeek = new Date(startOfWeek); endOfWeek.setDate(endOfWeek.getDate() + 6);
+            
+            // Title
+            const opts = { month: 'long', year: 'numeric' };
+            $('currentWeekTitle').innerText = `${startOfWeek.getDate()} - ${endOfWeek.getDate()} de ${startOfWeek.toLocaleDateString('es-ES', opts)}`;
+
+            // Build Grid
+            const days = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+            let html = '<div class="grid-header"></div>'; // Empty corner
+
+            // Headers
+            const today = new Date(); today.setHours(0,0,0,0);
+            for(let i=0; i<7; i++) {
+                const d = new Date(startOfWeek); d.setDate(d.getDate() + i);
+                const isToday = d.getTime() === today.getTime();
+                html += `<div class="grid-header ${isToday ? 'today' : ''}">${days[i]} ${d.getDate()}</div>`;
+            }
+
+            // Time Column
+            html += '<div class="time-col">';
+            for(let h=6; h<=23; h++) {
+                html += `<div class="time-label">${h}:00</div>`;
+            }
+            html += '</div>';
+
+            // Day Columns
+            for(let i=0; i<7; i++) {
+                const dayDate = new Date(startOfWeek); dayDate.setDate(dayDate.getDate() + i);
+                html += `<div class="day-col" data-date="${dayDate.toISOString().split('T')[0]}">`;
+                
+                // Hour lines
+                for(let h=6; h<=23; h++) {
+                    html += `<div class="grid-hour" style="top:${(h-6)*60}px"></div>`;
+                }
+
+                // Render Blocks
+                if(focusMode) {
+                    // Solo mostrar si es hoy y dentro de 12 horas
+                    if(isSameDay(dayDate, new Date())) {
+                         html += renderBlocks(dayDate, true);
+                    }
+                } else {
+                    html += renderBlocks(dayDate, false);
+                }
+
+                html += '</div>';
+            }
+
+            $('weekView').innerHTML = html;
+            
+            // Draw Timeline
+            updateTimeline();
+        };
+
+        function renderBlocks(date, filterFocus) {
+            const dateStr = date.toISOString().split('T')[0];
+            const dayLetter = ['D', 'L', 'M', 'X', 'J', 'V', 'S'][date.getDay()];
+            let blocks = '';
+            const now = new Date();
+            const limit = new Date(now.getTime() + 12 * 60 * 60 * 1000); // +12 hours
+
+            // Classes
+            if(DB.classSchedule[dayLetter]) {
+                const sch = DB.classSchedule[dayLetter];
+                const startMins = timeToMins(sch.start);
+                const endMins = timeToMins(sch.end);
+                const top = (startMins/60 - 6) * 60;
+                const height = ((endMins - startMins)/60) * 60;
+                blocks += `<div class="event-block class" style="top:${top}px; height:${height}px;">
+                    <strong>Clases</strong><br>${sch.start} - ${sch.end}
+                </div>`;
+            }
+
+            // Work
+            if(DB.settings.works === 'si' && DB.workSchedule[dayLetter]) {
+                const wrk = DB.workSchedule[dayLetter];
+                const startMins = timeToMins(wrk.start);
+                const endMins = timeToMins(wrk.end);
+                const top = (startMins/60 - 6) * 60;
+                const height = ((endMins - startMins)/60) * 60;
+                blocks += `<div class="event-block work" style="top:${top}px; height:${height}px;">
+                    <strong>Trabajo</strong><br>${wrk.start} - ${wrk.end}
+                </div>`;
+            }
+
+            // Tasks
+            Object.entries(DB.tasks).forEach(([id, t]) => {
+                if(t.completed) return;
+                if(!t.recommendedStart) return;
+                
+                const taskDate = new Date(t.recommendedStart);
+                if(!isSameDay(taskDate, date)) return;
+
+                if(filterFocus && taskDate > limit) return;
+
+                const startMins = taskDate.getHours()*60 + taskDate.getMinutes();
+                const duration = t.duration || 60;
+                const top = (startMins/60 - 6) * 60;
+                const height = (duration/60) * 60;
+
+                const subj = DB.subjects[t.subjectId] || {name:'General', color:'#888'};
+                const isUrgent = new Date(t.dueDate + 'T' + t.dueTime) < new Date(Date.now() + 24*60*60*1000);
+
+                blocks += `<div class="event-block task ${isUrgent ? 'urgent' : ''}" 
+                    style="top:${top}px; height:${height}px; background-color: ${subj.color}22; border-left-color: ${subj.color};"
+                    onclick="openDetail('task', '${id}')">
+                    <strong style="color:${subj.color}">${t.title}</strong>
+                    <div style="font-size:0.7rem; opacity:0.8">${duration} min</div>
+                </div>`;
+            });
+
+            // Exams
+            Object.entries(DB.exams).forEach(([id, e]) => {
+                if(e.date !== dateStr) return;
+                const startMins = timeToMins(e.time);
+                const top = (startMins/60 - 6) * 60;
+                blocks += `<div class="event-block exam" style="top:${top}px; height:30px;" onclick="openDetail('exam', '${id}')">
+                    <strong>${e.emoji} ${e.title}</strong>
+                </div>`;
+            });
+
+            return blocks;
+        }
+
+        function updateTimeline() {
+            if(currentView !== 'week') return;
+            
+            // Remove old
+            const oldLine = document.querySelector('.time-line');
+            if(oldLine) oldLine.remove();
+
+            const now = new Date();
+            const startOfWeek = getStartOfWeek(currentDate);
+            const dayIndex = (now.getDay() + 6) % 7; // Lunes=0
+            
+            const todayCol = document.querySelector(`.day-col[data-date="${now.toISOString().split('T')[0]}"]`);
+            if(!todayCol) return;
+
+            const mins = now.getHours()*60 + now.getMinutes();
+            const top = (mins/60 - 6) * 60; // -6 because grid starts at 6am
+
+            if(top >= 0) {
+                const line = document.createElement('div');
+                line.className = 'time-line';
+                line.style.top = `${top}px`;
+                line.innerHTML = `<span class="time-line-label">${now.toLocaleTimeString('es', {hour:'2-digit', minute:'2-digit'})}</span>`;
+                todayCol.appendChild(line);
+            }
+        }
+
+        // --- 5. MONTH VIEW ---
+        window.renderMonthView = () => {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            $('currentWeekTitle').innerText = currentDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+            
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const startPadding = (firstDay.getDay() + 6) % 7; // Ajuste para empezar en Lunes
+            
+            let html = '';
+            const today = new Date();
+
+            // Padding inicial
+            for(let i=0; i<startPadding; i++) {
+                const prevDay = new Date(year, month, -startPadding + i + 1);
+                html += `<div class="month-day other-month"><span class="day-number">${prevDay.getDate()}</span></div>`;
+            }
+
+            // Dias del mes
+            for(let d=1; d<=lastDay.getDate(); d++) {
+                const date = new Date(year, month, d);
+                const dateStr = date.toISOString().split('T')[0];
+                const isToday = d === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+                
+                // Calculate density
+                const density = calculateDayDensity(dateStr);
+                const densityColor = density > 6 ? 'var(--density-high)' : (density > 3 ? 'var(--density-med)' : 'var(--density-low)');
+                
+                html += `<div class="month-day ${isToday ? 'today' : ''}" onclick="selectDay('${dateStr}')">
+                    <span class="day-number">${d}</span>
+                    <div class="month-events">
+                        ${renderMonthEvents(dateStr)}
+                    </div>
+                    <div class="density-bar"><div class="density-fill" style="width:${Math.min(density*10, 100)}%; background:${densityColor}"></div></div>
+                </div>`;
+            }
+
+            $('monthView').innerHTML = html;
+        };
+
+        function renderMonthEvents(dateStr) {
+            let html = '';
+            // Tasks
+            Object.entries(DB.tasks).forEach(([id, t]) => {
+                if(t.completed) return;
+                if(!t.recommendedStart) return;
+                const d = new Date(t.recommendedStart).toISOString().split('T')[0];
+                if(d === dateStr) {
+                    const subj = DB.subjects[t.subjectId] || {color:'#888'};
+                    html += `<span class="month-event-dot" style="background:${subj.color}" title="${t.title}"></span>`;
+                }
+            });
+            // Exams
+            Object.entries(DB.exams).forEach(([id, e]) => {
+                if(e.date === dateStr) {
+                    html += `<span style="font-size:0.8rem">${e.emoji}</span>`;
+                }
+            });
+            return html;
+        }
+
+        function calculateDayDensity(dateStr) {
+            let count = 0;
+            Object.values(DB.tasks).forEach(t => {
+                if(t.completed) return;
+                if(!t.recommendedStart) return;
+                if(new Date(t.recommendedStart).toISOString().split('T')[0] === dateStr) count++;
+            });
+            return count;
+        }
+
+        // --- 6. PANEL DETALLE & INTERACTION ---
+        window.openDetail = (type, id) => {
+            selectedEvent = { type, id };
+            const data = type === 'task' ? DB.tasks[id] : DB.exams[id];
+            if(!data) return;
+
+            $('detailTitle').innerText = data.title;
+            
+            if(type === 'task') {
+                const subj = DB.subjects[data.subjectId] || {name:'General'};
+                $('detailSubject').innerText = subj.name;
+                $('detailDuration').innerText = (data.duration || 60) + ' min';
+                $('detailPriority').innerText = data.priority;
+                $('detailStart').innerText = data.recommendedStart ? new Date(data.recommendedStart).toLocaleString('es') : 'N/A';
+                $('detailDue').innerText = new Date(data.dueDate + 'T' + data.dueTime).toLocaleString('es');
+                
+                // Countdown
+                updateCountdown(data.dueDate + 'T' + data.dueTime);
+            } else {
+                $('detailSubject').innerText = "Examen";
+                $('detailDuration').innerText = "-";
+                $('detailPriority').innerText = "Alta";
+                $('detailStart').innerText = data.time;
+                $('detailDue').innerText = new Date(data.date + 'T' + data.time).toLocaleString('es');
+                updateCountdown(data.date + 'T' + data.time);
+            }
+
+            $('detailPanel').classList.add('active');
+        };
+
+        window.closeDetailPanel = () => $('detailPanel').classList.remove('active');
+
+        function updateCountdown(dateStr) {
+            const diff = new Date(dateStr) - new Date();
+            if(diff < 0) { $('countdownTime').innerText = "Vencido"; return; }
+            
+            const d = Math.floor(diff / (1000*60*60*24));
+            const h = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+            const m = Math.floor((diff % (1000*60*60)) / (1000*60));
+            
+            $('countdownTime').innerText = `${d}d ${h}h ${m}m`;
+        }
+
+        window.completeTaskFromPanel = async () => {
+            if(!selectedEvent || selectedEvent.type !== 'task') return;
+            await update(ref(db, `tasks/${uid}/${selectedEvent.id}`), { completed: true });
+            closeDetailPanel();
+        };
+
+        window.editTaskFromPanel = () => {
+            if(!selectedEvent || selectedEvent.type !== 'task') return;
+            window.location.href = `tareas.html?edit=${selectedEvent.id}`;
+        };
+
+        // --- 7. LOGICA AVANZADA: REPROGRAMAR SEMANA ---
+        window.rescheduleWeek = async () => {
+            if(!confirm("¿Reprogramar automáticamente las tareas de esta semana para balancear la carga?")) return;
+
+            // 1. Recolectar tareas pendientes de la semana
+            let tasksToReschedule = [];
+            const now = new Date();
+            const weekEnd = new Date(currentDate); weekEnd.setDate(weekEnd.getDate() + 7);
+
+            Object.entries(DB.tasks).forEach(([id, t]) => {
+                if(t.completed) return;
+                // Si es anterior a hoy o dentro de la semana
+                const due = new Date(t.dueDate);
+                if(due <= weekEnd) {
+                    tasksToReschedule.push({ id, ...t });
+                }
+            });
+
+            // 2. Ordenar
+            // Prioridad: Alta(1), Media(2), Baja(3)
+            // Dificultad: Alta(1), Media(2), Baja(3)
+            // Logica especial: Dentro de misma prioridad, intercalar: Sencilla -> Dificil -> Media
+            
+            tasksToReschedule.sort((a,b) => {
+                // Prioridad primero
+                const pA = a.priority === 'alta' ? 1 : (a.priority === 'media' ? 2 : 3);
+                const pB = b.priority === 'alta' ? 1 : (b.priority === 'media' ? 2 : 3);
+                if(pA !== pB) return pA - pB;
+
+                // Si misma prioridad, aplicar logica de dificultad intercalada
+                // Orden deseado: Baja(3), Alta(1), Media(2). 
+                // Asignemos valores para este orden: Baja->1, Alta->2, Media->3
+                const diffOrder = { 'baja': 1, 'alta': 2, 'media': 3 };
+                const dA = diffOrder[a.difficulty] || 2;
+                const dB = diffOrder[b.difficulty] || 2;
+                
+                return dA - dB;
+            });
+
+            // 3. Encontrar huecos libres (Simple implementation)
+            // Buscamos huecos de 1 hora en la semana actual
+            const slots = [];
+            let scanDate = new Date(now); scanDate.setHours(6,0,0,0);
+            
+            // Escanear proximos 7 dias
+            for(let d=0; d<7; d++) {
+                // Saltar si es domingo? (Opcional)
+                const dayLetter = ['D', 'L', 'M', 'X', 'J', 'V', 'S'][scanDate.getDay()];
+                
+                for(let h=6; h<22; h++) { // 6am a 10pm
+                    const slotStart = new Date(scanDate); slotStart.setHours(h, 0, 0, 0);
+                    const slotEnd = new Date(scanDate); slotEnd.setHours(h+1, 0, 0, 0);
+                    
+                    // Check availability
+                    if(isSlotFree(slotStart, slotEnd, dayLetter)) {
+                        slots.push(slotStart);
+                    }
+                }
+                scanDate.setDate(scanDate.getDate() + 1);
+            }
+
+            // 4. Asignar
+            let updates = {};
+            tasksToReschedule.forEach((task, index) => {
+                if(slots[index]) {
+                    const newStart = slots[index];
+                    const newEnd = new Date(newStart.getTime() + (task.duration || 60) * 60000);
+                    updates[`tasks/${uid}/${task.id}/recommendedStart`] = newStart.toISOString();
+                    updates[`tasks/${uid}/${task.id}/recommendedEnd`] = newEnd.toISOString();
+                }
+            });
+
+            await update(ref(db), updates);
+            alert("Semana reprogramada exitosamente.");
+        };
+
+        function isSlotFree(start, end, dayLetter) {
+            const startMins = start.getHours()*60;
+            const endMins = end.getHours()*60;
+
+            // Check Sleep
+            if(startMins < 6*60 || endMins > 23*60) return false;
+
+            // Check Class
+            if(DB.classSchedule[dayLetter]) {
+                const sch = DB.classSchedule[dayLetter];
+                const sM = timeToMins(sch.start);
+                const eM = timeToMins(sch.end);
+                if(startMins < eM+60 && endMins > sM-60) return false;
+            }
+
+            // Check Work
+            if(DB.settings.works === 'si' && DB.workSchedule[dayLetter]) {
+                const wrk = DB.workSchedule[dayLetter];
+                const sM = timeToMins(wrk.start);
+                const eM = timeToMins(wrk.end);
+                if(startMins < eM+60 && endMins > sM-60) return false;
+            }
+
+            return true;
+        }
+
+        // --- 8. HELPERS & MINOR VIEWS ---
+        function renderMiniCalendar() {
+            // Implementación simple del mini calendario del mes actual
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month+1, 0);
+            const startPadding = (firstDay.getDay() + 6) % 7;
+            
+            $('miniCalMonth').innerText = currentDate.toLocaleDateString('es-ES', {month:'long', year:'numeric'});
+            let html = '';
+            
+            // Padding
+            for(let i=0; i<startPadding; i++) html += `<div class="mini-cal-day"></div>`;
+            
+            // Days
+            const today = new Date();
+            for(let d=1; d<=lastDay.getDate(); d++) {
+                const isToday = d === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+                html += `<div class="mini-cal-day ${isToday ? 'active' : ''}">${d}</div>`;
+            }
+            $('miniCalGrid').innerHTML = html;
+        }
+
+        function renderExams() {
+            const now = new Date();
+            const list = Object.entries(DB.exams)
+                .map(([id, e]) => ({id, ...e}))
+                .filter(e => new Date(e.date) >= now)
+                .sort((a,b) => new Date(a.date) - new Date(b.date))
+                .slice(0, 5);
+
+            $('examList').innerHTML = list.map(e => `
+                <div class="exam-item" onclick="openDetail('exam', '${e.id}')">
+                    <div class="exam-emoji">${e.emoji}</div>
+                    <div class="exam-info">
+                        <h5>${e.title}</h5>
+                        <span>${new Date(e.date).toLocaleDateString('es')} - ${e.time}</span>
+                    </div>
+                </div>
+            `).join('') || '<p style="text-align:center; color:var(--text-secondary); font-size:0.9rem">No hay exámenes próximos</p>';
+        }
+
+        function renderDensity() {
+            // Simple analysis
+            const today = new Date();
+            let redDays = 0;
+            for(let i=0; i<7; i++) {
+                const d = new Date(today);
+                d.setDate(d.getDate() + i);
+                if(calculateDayDensity(d.toISOString().split('T')[0]) > 6) redDays++;
+            }
+            
+            let msg = "Tu semana parece manejable.";
+            if(redDays > 2) msg = `<span style="color:var(--danger)"><i class="fas fa-exclamation-triangle"></i> ¡Sobrecarga detectada! Considera usar "Reprogramar Semana".</span>`;
+            
+            $('densityLegend').innerHTML = msg;
+        }
+
+        window.openExamModal = () => openModal('examModal');
+        window.saveExam = async () => {
+            const title = $('examTitle').value;
+            const date = $('examDate').value;
+            const time = $('examTime').value;
+            const emoji = $('examEmoji').value;
+            if(!title || !date) return alert("Faltan datos");
+            
+            await push(ref(db, `exams/${uid}`), { title, date, time, emoji });
+            closeModal('examModal');
+        };
+
+        // --- GLOBAL HELPERS ---
+        function timeToMins(t) { if(!t) return 0; const p = t.split(':'); return parseInt(p[0])*60 + parseInt(p[1]); }
+        function isSameDay(d1, d2) { return d1.getFullYear() === d2.getFullYear() && d1.getMonth() === d2.getMonth() && d1.getDate() === d2.getDate(); }
+        function getStartOfWeek(d) {
+            const date = new Date(d);
+            const day = date.getDay(); // 0 (domingo) to 6 (sabado)
+            const diff = date.getDate() - day + (day === 0 ? -6 : 1); // Ajuste para Lunes
+            return new Date(date.setDate(diff));
+        }
+
+        window.changeWeek = (n) => { currentDate.setDate(currentDate.getDate() + n*7); renderAll(); };
+        window.goToToday = () => { currentDate = new Date(); renderAll(); };
+        window.setView = (v) => {
+            currentView = v;
+            document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            $('weekView').style.display = v === 'week' ? 'grid' : 'none';
+            $('monthView').style.display = v === 'month' ? 'grid' : 'none';
+            renderAll();
+        };
+        window.toggleFocusMode = () => {
+            focusMode = !focusMode;
+            $('focusModeBtn').classList.toggle('btn-warning', focusMode);
+            $('focusModeBtn').classList.toggle('btn-secondary', !focusMode);
+            renderAll();
+        };
+        window.selectDay = (dateStr) => {
+            currentDate = new Date(dateStr + 'T12:00:00');
+            window.setView('week');
+        };
+
+        // Realtime timeline update
+        setInterval(updateTimeline, 60000);
+    </script>
+</body>
+</html>
