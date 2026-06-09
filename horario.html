@@ -896,7 +896,7 @@
             classSchedule: {},
             workSchedule: {},
             exams: {},
-            studyBlocks: {} // Añadido para bloques de estudio
+            studyBlocks: {}
         };
         
         // Estado de UI
@@ -928,7 +928,7 @@
             listenTo('classSchedule');
             listenTo('workSchedule');
             listenTo('exams');
-            listenTo('studyBlocks'); // Nuevo listener
+            listenTo('studyBlocks');
             onValue(ref(db, `users/${currentUser.uid}`), snap => {
                 if(snap.exists()) appData.settings = snap.val();
                 renderAllViews();
@@ -1047,13 +1047,8 @@
                     html += `<div class="hour-line" style="top: ${(h-6)*60}px"></div>`;
                 }
 
-                if(uiState.focusMode) {
-                    if(isSameDay(dayDate, new Date())) {
-                        html += generateEventBlocks(dayDate);
-                    }
-                } else {
-                    html += generateEventBlocks(dayDate);
-                }
+                // Renderizar Eventos
+                html += generateEventBlocks(dayDate);
                 
                 html += '</div>';
             }
@@ -1062,50 +1057,57 @@
             drawTimeLine();
         }
 
-              function generateEventBlocks(dayDate) {
+        function generateEventBlocks(dayDate) {
             let html = '';
             const dateStr = dayDate.toISOString().split('T')[0];
             const dayLetter = ['D', 'L', 'M', 'X', 'J', 'V', 'S'][dayDate.getDay()];
-            const now = new Date();
-            const limitFocus = new Date(now.getTime() + 12 * 60 * 60 * 1000);
+            
+            // CHECK MODO FOCO AL PRINCIPIO
+            // Si modo foco está activo y no es hoy, retornar vacío
+            if(uiState.focusMode) {
+                const today = new Date();
+                today.setHours(0,0,0,0);
+                if(dayDate.getTime() !== today.getTime()) {
+                    return ''; 
+                }
+            }
 
-            // 1. Clases (Igual)
+            // 1. Clases
             if(appData.classSchedule && appData.classSchedule[dayLetter]) {
                 const sch = appData.classSchedule[dayLetter];
                 const sMins = timeToMins(sch.start);
                 const eMins = timeToMins(sch.end);
                 const top = (sMins/60 - 6) * 60;
                 const height = ((eMins - sMins)/60) * 60;
-                
-                if(uiState.focusMode && dayDate > limitFocus) return '';
-                html += `<div class="event-block class" style="top:${top}px; height:${height}px;"><div class="title"><i class="fas fa-graduation-cap"></i> Clases</div><div style="opacity:0.7">${sch.start} - ${sch.end}</div></div>`;
+
+                html += `<div class="event-block class" style="top:${top}px; height:${height}px;">
+                    <div class="title"><i class="fas fa-graduation-cap"></i> Clases</div>
+                    <div style="opacity:0.7">${sch.start} - ${sch.end}</div>
+                </div>`;
             }
 
-            // 2. Trabajo (Igual)
+            // 2. Trabajo
             if(appData.settings.works === 'si' && appData.workSchedule && appData.workSchedule[dayLetter]) {
                 const wrk = appData.workSchedule[dayLetter];
                 const sMins = timeToMins(wrk.start);
                 const eMins = timeToMins(wrk.end);
                 const top = (sMins/60 - 6) * 60;
                 const height = ((eMins - sMins)/60) * 60;
-                if(uiState.focusMode && dayDate > limitFocus) return '';
-                html += `<div class="event-block work" style="top:${top}px; height:${height}px;"><div class="title"><i class="fas fa-briefcase"></i> Trabajo</div><div style="opacity:0.7">${wrk.start} - ${wrk.end}</div></div>`;
+
+                html += `<div class="event-block work" style="top:${top}px; height:${height}px;">
+                    <div class="title"><i class="fas fa-briefcase"></i> Trabajo</div>
+                    <div style="opacity:0.7">${wrk.start} - ${wrk.end}</div>
+                </div>`;
             }
 
-            // 3. Tareas (CORREGIDO: Filtrar completed)
+            // 3. Tareas (FILTRADO COMPLETADOS)
             if(appData.tasks) {
                 Object.entries(appData.tasks).forEach(([id, t]) => {
-                    // FILTRO: Si está completada, no mostrar
-                    if(t.completed) return; 
+                    if(t.completed) return; // NO MOSTRAR SI ESTÁ COMPLETADO
                     if(!t.recommendedStart) return;
 
                     const taskDate = new Date(t.recommendedStart);
                     if(!isSameDay(taskDate, dayDate)) return;
-
-                    if(uiState.focusMode) {
-                        if(!isSameDay(dayDate, new Date())) return;
-                        if(taskDate > limitFocus) return;
-                    }
 
                     const sMins = taskDate.getHours()*60 + taskDate.getMinutes();
                     const duration = t.duration || 60;
@@ -1125,14 +1127,11 @@
                 });
             }
 
-            // 4. Exámenes (CORREGIDO: Filtrar completed)
+            // 4. Exámenes (FILTRADO COMPLETADOS)
             if(appData.exams) {
                 Object.entries(appData.exams).forEach(([id, e]) => {
-                    // FILTRO: Si está completado, no mostrar
-                    if(e.completed) return;
-
+                    if(e.completed) return; // NO MOSTRAR SI ESTÁ COMPLETADO
                     if(e.date !== dateStr) return;
-                    if(uiState.focusMode && !isSameDay(dayDate, new Date())) return;
 
                     const sMins = timeToMins(e.time);
                     const top = (sMins/60 - 6) * 60;
@@ -1144,7 +1143,7 @@
                 });
             }
 
-            // 5. Bloques de Estudio (Mostrar en horario)
+            // 5. Bloques de Estudio
             if(appData.studyBlocks) {
                 Object.entries(appData.studyBlocks).forEach(([id, block]) => {
                     if(block.date !== dateStr) return;
@@ -1235,19 +1234,22 @@
 
         function generateDots(dateStr) {
             let dots = '';
+            // Tareas
             Object.values(appData.tasks).forEach(t => {
-                if(t.completed || !t.recommendedStart) return;
+                if(t.completed || !t.recommendedStart) return; // FILTRO
                 if(new Date(t.recommendedStart).toISOString().split('T')[0] === dateStr) {
                     const c = (appData.subjects[t.subjectId] || {}).color || '#888';
                     dots += `<span class="dot" style="background:${c}"></span>`;
                 }
             });
+            // Examenes
             Object.values(appData.exams).forEach(e => {
+                if(e.completed) return; // FILTRO
                 if(e.date === dateStr) {
                     dots += `<span class="dot" style="background:var(--danger); border-radius:2px; width:6px;"></span>`;
                 }
             });
-            // Añadir dots para bloques de estudio
+            // Bloques de estudio
             Object.values(appData.studyBlocks).forEach(b => {
                 if(b.date === dateStr) {
                     dots += `<span class="dot" style="background:var(--success);"></span>`;
@@ -1264,7 +1266,6 @@
                     totalHours += (t.duration || 60) / 60;
                 }
             });
-            // Sumar horas de bloques de estudio
             Object.values(appData.studyBlocks).forEach(b => {
                 if(b.date === dateStr) {
                     const start = timeToMins(b.startHour);
@@ -1281,7 +1282,6 @@
             uiState.selectedEvent = { type, id };
             let data;
             
-            // Soporte para bloques de estudio
             if(type === 'study') {
                 data = appData.studyBlocks[id];
                 if(!data) return;
@@ -1296,9 +1296,8 @@
                 $('detailDesc').innerText = `Sesión de estudio programada para el examen de ${data.examTitle}.`;
                 $('sectionSteps').style.display = 'none';
                 $('sectionFile').style.display = 'none';
-                $('btnComplete').style.display = 'none'; // No se "completa" un bloque aquí, sino en la práctica.
+                $('btnComplete').style.display = 'none';
                 
-                // Countdown basado en la fecha del bloque
                 startCountdown(new Date(data.date + 'T' + data.startHour));
                 
             } else {
@@ -1417,7 +1416,6 @@
 
                     let isBusy = false;
                     
-                    // Ocupado por Clases
                     if(appData.classSchedule && appData.classSchedule[dayLetter]) {
                         const sch = appData.classSchedule[dayLetter];
                         const sMins = timeToMins(sch.start);
@@ -1426,7 +1424,6 @@
                         if(slotMins >= (sMins - 60) && slotMins < (eMins + 60)) isBusy = true;
                     }
                     
-                    // Ocupado por Trabajo
                     if(appData.settings.works === 'si' && appData.workSchedule && appData.workSchedule[dayLetter]) {
                         const wrk = appData.workSchedule[dayLetter];
                         const sMins = timeToMins(wrk.start);
@@ -1435,7 +1432,6 @@
                         if(slotMins >= (sMins - 60) && slotMins < (eMins + 60)) isBusy = true;
                     }
 
-                    // Ocupado por Bloques de Estudio (NUEVO)
                     const dateStrCheck = currentScan.toISOString().split('T')[0];
                     if(appData.studyBlocks) {
                         Object.values(appData.studyBlocks).forEach(b => {
@@ -1443,7 +1439,6 @@
                                 const sMins = timeToMins(b.startHour);
                                 const eMins = timeToMins(b.endHour);
                                 const slotMins = h*60;
-                                // Si el slot cae dentro del bloque de estudio
                                 if(slotMins >= sMins && slotMins < eMins) isBusy = true;
                             }
                         });
@@ -1536,12 +1531,15 @@
             $('miniCalGrid').innerHTML = html;
         }
 
-        // Examenes Sidebar
+        // Examenes Sidebar (FILTRADO COMPLETADOS)
         function renderExamList() {
             const now = new Date();
             const list = Object.entries(appData.exams || {})
                 .map(([id, e]) => ({id, ...e}))
-                .filter(e => new Date(e.date) >= now.setHours(0,0,0,0))
+                .filter(e => {
+                    if(e.completed) return false; // NO MOSTRAR SI ESTÁ COMPLETADO
+                    return new Date(e.date) >= now.setHours(0,0,0,0);
+                })
                 .sort((a,b) => new Date(a.date) - new Date(b.date))
                 .slice(0, 5);
 
