@@ -842,13 +842,13 @@
             <a href="dashboard.html" class="menu-item"><i class="fas fa-home"></i>Dashboard</a>
             <a href="tareas.html" class="menu-item"><i class="fas fa-check-circle"></i>Mis Tareas</a>
             <a href="horario.html" class="menu-item"><i class="fas fa-calendar-alt"></i>Horario</a>
-            <a href="examen.html" class="menu-item active"><i class="fas fa-file-alt"></i>Exámenes</a>
+            <a href="examen.html" class="menu-item active"><i class="fas fa-file-alt"></i>Examenes</a>
             
             <div class="menu-section-title">Herramientas</div>
             <a href="asistente.html" class="menu-item"><i class="fas fa-robot"></i>Asistente IA</a>
             <a href="recomendaciones.html" class="menu-item"><i class="fas fa-lightbulb"></i>Aprende</a>
             <a href="cuestionarios.html" class="menu-item"><i class="fas fa-question-circle"></i>Cuestionarios</a>
-            <a href="patron.html" class="menu-item"><i class="fas fa-chart-line"></i>Análisis</a>
+            <a href="patron.html" class="menu-item"><i class="fas fa-chart-line"></i>Analisis</a>
             
             <div class="menu-section-title">Cuenta</div>
             <a href="tutorial.html" class="menu-item"><i class="fas fa-book-open"></i>Tutorial</a>
@@ -992,11 +992,11 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label class="form-label">Titulo del Examen</label>
+                    <label class="form-label">Titulo del Examen *</label>
                     <input type="text" class="form-input" id="inputExamTitle" placeholder="Ej: Final de Matematicas">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Materia</label>
+                    <label class="form-label">Materia *</label>
                     <div style="display: flex; gap: 10px;">
                         <select class="form-input" id="inputExamSubject" style="flex: 1;"></select>
                         <button class="btn btn-secondary" onclick="addSubjectQuick()"><i class="fas fa-plus"></i></button>
@@ -1004,7 +1004,7 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label">Fecha</label>
+                        <label class="form-label">Fecha *</label>
                         <input type="date" class="form-input" id="inputExamDate">
                     </div>
                     <div class="form-group">
@@ -1207,6 +1207,7 @@
             $('inputExamImportant').checked = !$('inputExamImportant').checked;
         };
 
+        // --- CORRECCIÓN: FUNCIÓN SAVE EXAM MEJORADA ---
         window.saveExam = async function() {
             const title = $('inputExamTitle').value.trim();
             const subjectId = $('inputExamSubject').value;
@@ -1217,10 +1218,10 @@
             const duration = parseInt($('inputExamDuration').value) || 120;
             const important = $('inputExamImportant').checked;
 
-            if (!title || !date) {
-                alert('Por favor completa el titulo y la fecha');
-                return;
-            }
+            // Validación
+            if (!title) { alert('Por favor ingresa un titulo'); return; }
+            if (!date) { alert('Por favor selecciona una fecha'); return; }
+            if (!subjectId) { alert('Por favor selecciona una materia'); return; }
 
             const examData = {
                 title,
@@ -1236,19 +1237,30 @@
             };
 
             try {
+                let savedExamId = editingExamId;
+
+                // 1. Guardar Examen
                 if (editingExamId) {
+                    // Actualizar existente
                     await update(ref(db, `exams/${currentUser.uid}/${editingExamId}`), examData);
                 } else {
-                    await push(ref(db, `exams/${currentUser.uid}`), examData);
+                    // Crear nuevo y obtener ID
+                    const newRef = await push(ref(db, `exams/${currentUser.uid}`), examData);
+                    savedExamId = newRef.key; // Obtenemos el ID real de Firebase
                 }
+
+                // 2. Generar bloques de estudio si es importante
+                if (important && savedExamId) {
+                    // Pasamos el ID correcto a la función
+                    await generateStudyBlocksForExam(savedExamId, examData);
+                }
+
                 closeExamModal();
-                
-                if (important) {
-                    generateStudyBlocksForExam(examData);
-                }
+                alert('Examen guardado exitosamente');
+
             } catch (error) {
                 console.error('Error guardando examen:', error);
-                alert('Error al guardar el examen');
+                alert('Error al guardar el examen: ' + error.message);
             }
         };
 
@@ -1283,7 +1295,6 @@
 
             let filteredExams = exams.map(([id, exam]) => ({ id, ...exam }));
             
-            // Filtrar
             if (currentFilter === 'pending') {
                 filteredExams = filteredExams.filter(e => !e.completed);
             } else if (currentFilter === 'completed') {
@@ -1292,7 +1303,6 @@
                 filteredExams = filteredExams.filter(e => e.important && !e.completed);
             }
 
-            // Ordenar por fecha
             filteredExams.sort((a, b) => new Date(a.date) - new Date(b.date));
 
             container.innerHTML = filteredExams.map(exam => {
@@ -1361,7 +1371,6 @@
             renderExams();
         };
 
-        // Actualizar estadisticas
         function updateStats() {
             const now = new Date();
             now.setHours(0, 0, 0, 0);
@@ -1384,7 +1393,7 @@
             $('calmCount').textContent = calm;
         }
 
-        // Simulador de Promedio
+        // Simulador
         window.simulateGrade = function() {
             const expectedGrade = parseFloat($('simExpectedGrade').value) || 0;
             const weight = parseFloat($('simWeight').value) || 0;
@@ -1453,7 +1462,50 @@
             }).join('');
         }
 
-        // Bloques de Estudio
+        // --- CORRECCIÓN: GENERACIÓN DE BLOQUES ROBUSTA ---
+        async function generateStudyBlocksForExam(examId, exam) {
+            try {
+                const now = new Date();
+                const examDate = new Date(exam.date);
+                const daysUntil = Math.ceil((examDate - now) / (1000 * 60 * 60 * 24));
+                
+                if (daysUntil <= 0) return; // No generar si ya pasó
+
+                const blocksPerDay = Math.min(2, Math.ceil(daysUntil / 3));
+                let generatedCount = 0;
+
+                for (let d = 0; d < daysUntil; d++) {
+                    const blockDate = new Date(now);
+                    blockDate.setDate(blockDate.getDate() + d);
+                    
+                    const slots = findAvailableSlots(blockDate);
+                    
+                    for (let s = 0; s < Math.min(blocksPerDay, slots.length); s++) {
+                        const slot = slots[s];
+                        
+                        const blockData = {
+                            examId: examId, // Usamos el ID correcto pasado por parámetro
+                            examTitle: exam.title,
+                            subjectId: exam.subjectId,
+                            date: blockDate.toISOString().split('T')[0],
+                            startHour: slot.start,
+                            endHour: slot.end,
+                            duration: 120,
+                            createdAt: Date.now()
+                        };
+
+                        await push(ref(db, `studyBlocks/${currentUser.uid}`), blockData);
+                        generatedCount++;
+                    }
+                }
+                
+                console.log(`Generados ${generatedCount} bloques para ${exam.title}`);
+                
+            } catch (error) {
+                console.error("Error generando bloques:", error);
+            }
+        }
+
         window.generateStudyBlocks = async function() {
             const importantExams = Object.entries(appData.exams || {})
                 .filter(([id, e]) => e.important && !e.completed)
@@ -1464,31 +1516,30 @@
                 return;
             }
 
-            // Limpiar bloques existentes
+            // Limpiar bloques existentes (opcional, o podrías sumar)
             await set(ref(db, `studyBlocks/${currentUser.uid}`), {});
             
-            const blocks = [];
-            const now = new Date();
+            let totalBlocks = 0;
             
             for (const exam of importantExams) {
+                const now = new Date();
                 const examDate = new Date(exam.date);
                 const daysUntil = Math.ceil((examDate - now) / (1000 * 60 * 60 * 24));
                 
                 if (daysUntil <= 0) continue;
                 
-                // Generar bloques de 2 horas cada dia hasta el examen
                 const blocksPerDay = Math.min(2, Math.ceil(daysUntil / 3));
                 
                 for (let d = 0; d < daysUntil; d++) {
                     const blockDate = new Date(now);
                     blockDate.setDate(blockDate.getDate() + d);
                     
-                    // Buscar huecos disponibles
                     const slots = findAvailableSlots(blockDate);
                     
                     for (let s = 0; s < Math.min(blocksPerDay, slots.length); s++) {
                         const slot = slots[s];
-                        blocks.push({
+                        
+                        await push(ref(db, `studyBlocks/${currentUser.uid}`), {
                             examId: exam.id,
                             examTitle: exam.title,
                             subjectId: exam.subjectId,
@@ -1497,70 +1548,34 @@
                             endHour: slot.end,
                             duration: 120
                         });
+                        totalBlocks++;
                     }
                 }
             }
             
-            // Guardar bloques
-            for (const block of blocks) {
-                await push(ref(db, `studyBlocks/${currentUser.uid}`), block);
-            }
-            
-            alert(`Se generaron ${blocks.length} bloques de estudio`);
+            alert(`Se generaron ${totalBlocks} bloques de estudio`);
         };
-
-        async function generateStudyBlocksForExam(exam) {
-            const now = new Date();
-            const examDate = new Date(exam.date);
-            const daysUntil = Math.ceil((examDate - now) / (1000 * 60 * 60 * 24));
-            
-            if (daysUntil <= 0) return;
-            
-            const blocks = [];
-            const blocksPerDay = Math.min(2, Math.ceil(daysUntil / 3));
-            
-            for (let d = 0; d < daysUntil; d++) {
-                const blockDate = new Date(now);
-                blockDate.setDate(blockDate.getDate() + d);
-                
-                const slots = findAvailableSlots(blockDate);
-                
-                for (let s = 0; s < Math.min(blocksPerDay, slots.length); s++) {
-                    const slot = slots[s];
-                    blocks.push({
-                        examId: editingExamId || Date.now().toString(),
-                        examTitle: exam.title,
-                        subjectId: exam.subjectId,
-                        date: blockDate.toISOString().split('T')[0],
-                        startHour: slot.start,
-                        endHour: slot.end,
-                        duration: 120
-                    });
-                }
-            }
-            
-            for (const block of blocks) {
-                await push(ref(db, `studyBlocks/${currentUser.uid}`), block);
-            }
-        }
 
         function findAvailableSlots(date) {
             const slots = [];
             const dayLetter = ['D', 'L', 'M', 'X', 'J', 'V', 'S'][date.getDay()];
             
-            // Horarios ocupados
             const busySlots = [];
             
             // Clases
             if (appData.classSchedule && appData.classSchedule[dayLetter]) {
                 const sch = appData.classSchedule[dayLetter];
-                busySlots.push({ start: timeToMins(sch.start), end: timeToMins(sch.end) });
+                if(sch.start && sch.end) {
+                    busySlots.push({ start: timeToMins(sch.start), end: timeToMins(sch.end) });
+                }
             }
             
             // Trabajo
             if (appData.workSchedule && appData.workSchedule[dayLetter]) {
                 const wrk = appData.workSchedule[dayLetter];
-                busySlots.push({ start: timeToMins(wrk.start), end: timeToMins(wrk.end) });
+                if(wrk.start && wrk.end) {
+                    busySlots.push({ start: timeToMins(wrk.start), end: timeToMins(wrk.end) });
+                }
             }
             
             // Sueño: 22:30 - 06:00
@@ -1570,13 +1585,15 @@
             // Almuerzo: 12:00 - 13:00
             busySlots.push({ start: 720, end: 780 });
             
-            // Bloques de estudio existentes
+            // Bloques existentes
             Object.values(appData.studyBlocks || {}).forEach(block => {
                 if (block.date === date.toISOString().split('T')[0]) {
-                    busySlots.push({
-                        start: timeToMins(block.startHour),
-                        end: timeToMins(block.endHour)
-                    });
+                    if(block.startHour && block.endHour) {
+                        busySlots.push({
+                            start: timeToMins(block.startHour),
+                            end: timeToMins(block.endHour)
+                        });
+                    }
                 }
             });
             
@@ -1613,11 +1630,9 @@
                 return;
             }
             
-            // Ordenar por fecha
             const sortedBlocks = blocks.map(([id, b]) => ({ id, ...b }))
                 .sort((a, b) => new Date(a.date + 'T' + a.startHour) - new Date(b.date + 'T' + b.startHour));
             
-            // Encontrar proximo bloque
             const now = new Date();
             const nextBlock = sortedBlocks.find(b => new Date(b.date + 'T' + b.startHour) > now);
             
@@ -1698,7 +1713,6 @@
             $('simExamSelect').innerHTML = `<option value="">Seleccionar...</option>${options}`;
         }
 
-        // Cerrar modales con Escape
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeExamModal();
@@ -1706,7 +1720,6 @@
             }
         });
 
-        // Cerrar modales clickeando fuera
         $('examModal').addEventListener('click', (e) => {
             if (e.target === $('examModal')) closeExamModal();
         });
