@@ -1,0 +1,1723 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thynka - Gestión de Exámenes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47;
+            --primary-light: #a3846c;
+            --primary-dark: #6b5538;
+            --cream: #f8f5f2;
+            --beige: #f0e6dc;
+            --brown: #5a4032;
+            --gray: #9a9a9a;
+            --white: #ffffff;
+            --bg-primary: #f8f5f2;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc;
+            --border-color: #f0e6dc;
+            --text-primary: #5a4032;
+            --text-secondary: #9a9a9a;
+            --text-muted: #bfbfbf;
+            --danger: #dc2626;
+            --danger-light: #fef2f2;
+            --success: #16a34a;
+            --success-light: #f0fdf4;
+            --warning: #d97706;
+            --warning-light: #fffbeb;
+            --info: #2563eb;
+            --overlay-bg: rgba(0, 0, 0, 0.7);
+            --shadow-sm: 0 2px 5px rgba(107, 85, 56, 0.05);
+            --shadow-md: 0 4px 15px rgba(107, 85, 56, 0.1);
+            --shadow-lg: 0 10px 30px rgba(107, 85, 56, 0.15);
+            --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-med: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --sidebar-width: 280px;
+            --header-height: 80px;
+            --urgent-red: #ef4444;
+            --urgent-orange: #f97316;
+            --calm-green: #22c55e;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c;
+            --primary-light: #c0a686;
+            --primary-dark: #8b6b47;
+            --cream: #2a2520;
+            --beige: #3a342e;
+            --brown: #e0d5c7;
+            --gray: #a89b8b;
+            --white: #1a1815;
+            --text-primary: #e0d5c7;
+            --text-secondary: #a89b8b;
+            --bg-primary: #1a1815;
+            --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e;
+            --border-color: #3a342e;
+            --danger-light: rgba(220, 38, 38, 0.15);
+            --success-light: rgba(22, 163, 74, 0.15);
+            --warning-light: rgba(217, 119, 6, 0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        html, body {
+            height: 100%;
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        body { display: flex; }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-light); }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0; top: 0;
+            height: 100vh;
+            width: var(--sidebar-width);
+            background: var(--bg-secondary);
+            box-shadow: 2px 0 15px var(--shadow-md);
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            transition: transform var(--transition-med);
+            transform: translateX(-100%);
+        }
+
+        .sidebar.active { transform: translateX(0); }
+
+        .sidebar-header {
+            padding: 30px 25px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .sidebar-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            color: var(--primary-dark);
+            letter-spacing: 1px;
+            text-decoration: none;
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            padding: 20px 0;
+            overflow-y: auto;
+        }
+
+        .menu-section-title {
+            padding: 15px 30px 10px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 1.5px;
+            font-weight: 700;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 30px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all var(--transition-fast);
+            border-left: 3px solid transparent;
+            margin: 2px 0;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .menu-item i {
+            width: 24px;
+            font-size: 1.1rem;
+            margin-right: 15px;
+            opacity: 0.7;
+            transition: opacity var(--transition-fast);
+        }
+
+        .menu-item:hover {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .menu-item.active {
+            background: var(--bg-primary);
+            color: var(--primary-dark);
+            border-left-color: var(--primary);
+            font-weight: 600;
+        }
+
+        .menu-item.active i { opacity: 1; color: var(--primary); }
+
+        /* Controles */
+        .menu-toggle {
+            position: fixed;
+            left: 20px; top: 20px;
+            width: 50px; height: 50px;
+            background: var(--primary);
+            border: none;
+            border-radius: 15px;
+            color: var(--white);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            z-index: 1000;
+            box-shadow: var(--shadow-md);
+            transition: all var(--transition-fast);
+        }
+
+        .menu-toggle:hover { transform: scale(1.05); box-shadow: var(--shadow-lg); }
+
+        .theme-toggle {
+            position: fixed;
+            right: 20px; top: 20px;
+            width: 50px; height: 50px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            color: var(--primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            z-index: 1000;
+            transition: all var(--transition-fast);
+        }
+
+        .theme-toggle:hover { transform: rotate(20deg) scale(1.1); }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--overlay-bg);
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-med);
+            z-index: 998;
+            backdrop-filter: blur(4px);
+        }
+
+        .overlay.active { opacity: 1; visibility: visible; }
+
+        /* Layout Principal */
+        .main-container {
+            flex: 1;
+            margin-left: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-top: var(--header-height);
+        }
+
+        .main-header {
+            height: var(--header-height);
+            padding: 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+            z-index: 10;
+        }
+
+        .header-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: var(--primary-dark);
+            margin-left: 60px;
+        }
+
+        .header-actions { display: flex; gap: 15px; align-items: center; }
+
+        /* Contenido */
+        .content-wrapper {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 0;
+            overflow: hidden;
+        }
+
+        .main-content {
+            padding: 25px 30px;
+            overflow-y: auto;
+            background: var(--bg-primary);
+        }
+
+        .side-panel {
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        /* Cards y Componentes */
+        .card {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            transition: box-shadow var(--transition-fast);
+        }
+
+        .card:hover { box-shadow: var(--shadow-md); }
+
+        .card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-tertiary);
+        }
+
+        .card-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title i { font-size: 0.9rem; opacity: 0.7; }
+
+        .card-body { padding: 20px; }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            font-family: inherit;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--border-color); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-warning { background: var(--warning); color: white; }
+        .btn-icon { width: 36px; height: 36px; padding: 0; border-radius: 10px; }
+        .btn-sm { padding: 6px 12px; font-size: 0.75rem; }
+
+        /* Secciones */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            color: var(--primary-dark);
+        }
+
+        /* Lista de Exámenes */
+        .exam-list { display: flex; flex-direction: column; gap: 12px; }
+
+        .exam-card {
+            background: var(--bg-secondary);
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            padding: 18px 20px;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 16px;
+            align-items: center;
+            transition: all var(--transition-fast);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .exam-card::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 4px;
+            transition: all var(--transition-fast);
+        }
+
+        .exam-card.urgent::before { background: var(--urgent-red); }
+        .exam-card.warning::before { background: var(--urgent-orange); }
+        .exam-card.calm::before { background: var(--calm-green); }
+
+        .exam-card:hover { 
+            transform: translateX(5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .exam-card.completed {
+            opacity: 0.6;
+            background: var(--bg-primary);
+        }
+
+        .exam-checkbox {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            background: var(--bg-primary);
+        }
+
+        .exam-checkbox:hover { border-color: var(--primary); }
+        .exam-checkbox.checked { background: var(--success); border-color: var(--success); color: white; }
+
+        .exam-content h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .exam-content p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .exam-meta {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .exam-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .exam-meta-item i { font-size: 0.7rem; }
+
+        .exam-days-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .exam-days-badge.urgent {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+
+        .exam-days-badge.warning {
+            background: var(--warning-light);
+            color: var(--warning);
+        }
+
+        .exam-days-badge.calm {
+            background: var(--success-light);
+            color: var(--success);
+        }
+
+        .important-badge {
+            position: absolute;
+            top: 10px; right: 10px;
+            font-size: 0.65rem;
+            background: var(--danger);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: var(--overlay-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-med);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active { opacity: 1; visibility: visible; }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            width: 100%;
+            max-width: 520px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            transform: scale(0.9);
+            transition: transform var(--transition-med);
+        }
+
+        .modal.active .modal-content { transform: scale(1); }
+
+        .modal-header {
+            padding: 20px 25px;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title { font-weight: 700; font-size: 1.1rem; color: var(--primary-dark); }
+
+        .modal-body { padding: 25px; }
+
+        .modal-footer {
+            padding: 15px 25px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .form-group { margin-bottom: 18px; }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: border var(--transition-fast);
+            color: var(--text-primary);
+        }
+
+        .form-input:focus { outline: none; border-color: var(--primary); }
+
+        .form-row { display: flex; gap: 15px; }
+        .form-row > * { flex: 1; }
+
+        textarea.form-input { min-height: 80px; resize: vertical; }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: var(--bg-primary);
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+        }
+
+        /* Simulador de Promedio */
+        .simulator-card {
+            background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary));
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .simulator-title {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .simulator-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .simulator-result {
+            padding: 15px;
+            background: var(--bg-primary);
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .result-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            font-family: 'Playfair Display', serif;
+        }
+
+        .result-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Notas */
+        .notes-section {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .notes-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .note-item {
+            padding: 12px 15px;
+            background: var(--bg-primary);
+            border-radius: 10px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .note-item h5 {
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            margin-bottom: 3px;
+        }
+
+        .note-item p {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .note-item .note-grade {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+            float: right;
+        }
+
+        /* Bloques de Estudio */
+        .study-blocks-section {
+            padding: 20px;
+            flex: 1;
+        }
+
+        .next-study-block {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 14px;
+            padding: 20px;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .next-study-block h4 {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .next-study-block .time {
+            font-size: 1.4rem;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .next-study-block .subject {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .study-block-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .study-block-item {
+            padding: 12px 15px;
+            background: var(--bg-primary);
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .study-block-item .block-time {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .study-block-item .block-exam {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .delete-block {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .delete-block:hover { background: var(--danger-light); color: var(--danger); }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            background: var(--bg-primary);
+            padding: 4px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px 15px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: all var(--transition-fast);
+            font-family: inherit;
+        }
+
+        .tab-btn.active {
+            background: var(--bg-secondary);
+            color: var(--primary-dark);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            font-family: 'Playfair Display', serif;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card.urgent .stat-value { color: var(--urgent-red); }
+        .stat-card.warning .stat-value { color: var(--urgent-orange); }
+        .stat-card.calm .stat-value { color: var(--calm-green); }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        .empty-state h4 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state p { font-size: 0.85rem; }
+
+        /* Responsive */
+        @media (max-width: 1100px) {
+            .content-wrapper {
+                grid-template-columns: 1fr;
+            }
+            .side-panel {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .exam-card {
+                grid-template-columns: auto 1fr;
+            }
+            .exam-days-badge {
+                grid-column: 1 / -1;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="mainSidebar">
+        <div class="sidebar-header">
+            <a href="dashboard.html" class="sidebar-logo">Thynka</a>
+        </div>
+        <div class="sidebar-menu">
+            <div class="menu-section-title">Principal</div>
+            <a href="dashboard.html" class="menu-item"><i class="fas fa-home"></i>Dashboard</a>
+            <a href="tareas.html" class="menu-item"><i class="fas fa-check-circle"></i>Mis Tareas</a>
+            <a href="horario.html" class="menu-item"><i class="fas fa-calendar-alt"></i>Horario</a>
+            <a href="examen.html" class="menu-item active"><i class="fas fa-file-alt"></i>Exámenes</a>
+            
+            <div class="menu-section-title">Herramientas</div>
+            <a href="asistente.html" class="menu-item"><i class="fas fa-robot"></i>Asistente IA</a>
+            <a href="recomendaciones.html" class="menu-item"><i class="fas fa-lightbulb"></i>Aprende</a>
+            <a href="cuestionarios.html" class="menu-item"><i class="fas fa-question-circle"></i>Cuestionarios</a>
+            <a href="patron.html" class="menu-item"><i class="fas fa-chart-line"></i>Análisis</a>
+            
+            <div class="menu-section-title">Cuenta</div>
+            <a href="tutorial.html" class="menu-item"><i class="fas fa-book-open"></i>Tutorial</a>
+            <a href="#" class="menu-item" onclick="signOut()"><i class="fas fa-sign-out-alt"></i>Cerrar Sesion</a>
+        </div>
+    </nav>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlayPanel"></div>
+
+    <!-- Controles -->
+    <button class="menu-toggle" id="btnMenu"><i class="fas fa-bars"></i></button>
+    <button class="theme-toggle" id="btnTheme"><i class="fas fa-moon"></i></button>
+
+    <!-- Contenedor Principal -->
+    <div class="main-container">
+        <header class="main-header">
+            <h1 class="header-title">Gestion de Examenes</h1>
+            <div class="header-actions">
+                <button class="btn btn-primary" onclick="openExamModal()">
+                    <i class="fas fa-plus"></i> Nuevo Examen
+                </button>
+            </div>
+        </header>
+
+        <div class="content-wrapper">
+            <!-- Contenido Principal -->
+            <main class="main-content">
+                <!-- Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card urgent">
+                        <div class="stat-value" id="urgentCount">0</div>
+                        <div class="stat-label">Urgentes (menos de 3 dias)</div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-value" id="warningCount">0</div>
+                        <div class="stat-label">Proximos (1-2 semanas)</div>
+                    </div>
+                    <div class="stat-card calm">
+                        <div class="stat-value" id="calmCount">0</div>
+                        <div class="stat-label">Con tiempo (mas de 2 sem)</div>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="filterExams('all')">Todos</button>
+                    <button class="tab-btn" onclick="filterExams('pending')">Pendientes</button>
+                    <button class="tab-btn" onclick="filterExams('completed')">Completados</button>
+                    <button class="tab-btn" onclick="filterExams('important')">Importantes</button>
+                </div>
+
+                <!-- Lista de Examenes -->
+                <div class="exam-list" id="examList">
+                    <!-- Se llena dinamicamente -->
+                </div>
+            </main>
+
+            <!-- Panel Lateral -->
+            <aside class="side-panel">
+                <!-- Proximo Bloque de Estudio -->
+                <div class="study-blocks-section">
+                    <div class="next-study-block" id="nextStudyBlock">
+                        <h4><i class="fas fa-clock"></i> Tu proximo bloque de estudio</h4>
+                        <div class="time" id="nextBlockTime">Sin bloques programados</div>
+                        <div class="subject" id="nextBlockSubject"></div>
+                    </div>
+
+                    <div class="section-header" style="margin-bottom: 15px;">
+                        <h3 class="card-title" style="font-size: 0.9rem;"><i class="fas fa-book"></i> Bloques de Estudio</h3>
+                        <button class="btn btn-sm btn-secondary" onclick="generateStudyBlocks()">
+                            <i class="fas fa-magic"></i> Generar
+                        </button>
+                    </div>
+
+                    <div class="study-block-list" id="studyBlockList">
+                        <!-- Se llena dinamicamente -->
+                    </div>
+                </div>
+
+                <!-- Simulador de Promedio -->
+                <div class="notes-section">
+                    <div class="simulator-card">
+                        <div class="simulator-title">
+                            <i class="fas fa-calculator"></i> Simulador de Promedio
+                        </div>
+                        <div class="simulator-form">
+                            <div>
+                                <label class="form-label" style="font-size: 0.75rem;">Examen</label>
+                                <select class="form-input" id="simExamSelect" style="padding: 8px 12px; font-size: 0.8rem;">
+                                    <option value="">Seleccionar...</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label" style="font-size: 0.75rem;">Peso (%)</label>
+                                <input type="number" class="form-input" id="simWeight" placeholder="25" min="1" max="100" style="padding: 8px 12px; font-size: 0.8rem;">
+                            </div>
+                        </div>
+                        <div class="simulator-form">
+                            <div>
+                                <label class="form-label" style="font-size: 0.75rem;">Nota esperada</label>
+                                <input type="number" class="form-input" id="simExpectedGrade" placeholder="85" min="0" max="100" style="padding: 8px 12px; font-size: 0.8rem;">
+                            </div>
+                            <div>
+                                <label class="form-label" style="font-size: 0.75rem;">Promedio actual</label>
+                                <input type="number" class="form-input" id="simCurrentAvg" placeholder="75" min="0" max="100" style="padding: 8px 12px; font-size: 0.8rem;">
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" style="width: 100%; margin-bottom: 15px;" onclick="simulateGrade()">
+                            <i class="fas fa-chart-line"></i> Calcular
+                        </button>
+                        <div class="simulator-result">
+                            <div class="result-value" id="simResult">--</div>
+                            <div class="result-label">Tu nuevo promedio seria</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cuadro de Notas -->
+                <div class="notes-section" style="border-bottom: none;">
+                    <div class="section-header" style="margin-bottom: 15px;">
+                        <h3 class="card-title" style="font-size: 0.9rem;"><i class="fas fa-sticky-note"></i> Cuadro de Notas</h3>
+                        <button class="btn btn-sm btn-secondary" onclick="openNoteModal()">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="notes-list" id="notesList">
+                        <!-- Se llena dinamicamente -->
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- Modal Nuevo Examen -->
+    <div class="modal" id="examModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="examModalTitle">Registrar Examen</h3>
+                <button class="btn btn-icon btn-sm btn-secondary" onclick="closeExamModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Titulo del Examen</label>
+                    <input type="text" class="form-input" id="inputExamTitle" placeholder="Ej: Final de Matematicas">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Materia</label>
+                    <div style="display: flex; gap: 10px;">
+                        <select class="form-input" id="inputExamSubject" style="flex: 1;"></select>
+                        <button class="btn btn-secondary" onclick="addSubjectQuick()"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Fecha</label>
+                        <input type="date" class="form-input" id="inputExamDate">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Hora</label>
+                        <input type="time" class="form-input" id="inputExamTime" value="09:00">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Descripcion</label>
+                    <textarea class="form-input" id="inputExamDesc" placeholder="Temas a evaluar, material de estudio..."></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Peso del Examen (%)</label>
+                        <input type="number" class="form-input" id="inputExamWeight" placeholder="25" min="1" max="100">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Duracion estimada (min)</label>
+                        <input type="number" class="form-input" id="inputExamDuration" placeholder="120" min="30">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="checkbox-group" onclick="toggleImportant()">
+                        <input type="checkbox" id="inputExamImportant">
+                        <span style="font-size: 0.85rem;">Marcar como importante (genera bloques de estudio)</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeExamModal()">Cancelar</button>
+                <button class="btn btn-primary" onclick="saveExam()"><i class="fas fa-save"></i> Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nota -->
+    <div class="modal" id="noteModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Guardar Nota</h3>
+                <button class="btn btn-icon btn-sm btn-secondary" onclick="closeNoteModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Materia</label>
+                    <select class="form-input" id="inputNoteSubject"></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Nombre de evaluacion</label>
+                    <input type="text" class="form-input" id="inputNoteName" placeholder="Ej: Parcial 1">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Nota obtenida</label>
+                    <input type="number" class="form-input" id="inputNoteGrade" placeholder="85" min="0" max="100">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeNoteModal()">Cancelar</button>
+                <button class="btn btn-primary" onclick="saveNote()"><i class="fas fa-save"></i> Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase, ref, set, push, onValue, remove, update, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBH42jsEEaEOFa02LhD59aDkwFfo_RVVB4",
+            authDomain: "thynka-1dd68.firebaseapp.com",
+            databaseURL: "https://thynka-1dd68-default-rtdb.firebaseio.com",
+            projectId: "thynka-1dd68",
+            storageBucket: "thynka-1dd68.appspot.com",
+            messagingSenderId: "704622327906",
+            appId: "1:704622327906:web:57c4efb9da7b935b80f93b"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        let currentUser = null;
+        let appData = {
+            exams: {},
+            subjects: {},
+            notes: {},
+            studyBlocks: {},
+            classSchedule: {},
+            workSchedule: {},
+            settings: {}
+        };
+
+        let currentFilter = 'all';
+        let editingExamId = null;
+
+        const $ = (id) => document.getElementById(id);
+
+        // Autenticacion
+        onAuthStateChanged(auth, user => {
+            if (user) {
+                currentUser = user;
+                initListeners();
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        function initListeners() {
+            onValue(ref(db, `exams/${currentUser.uid}`), snap => {
+                appData.exams = snap.val() || {};
+                renderExams();
+                populateExamDropdowns();
+                updateStats();
+            });
+
+            onValue(ref(db, `subjects/${currentUser.uid}`), snap => {
+                appData.subjects = snap.val() || {};
+                populateSubjectDropdowns();
+            });
+
+            onValue(ref(db, `notes/${currentUser.uid}`), snap => {
+                appData.notes = snap.val() || {};
+                renderNotes();
+            });
+
+            onValue(ref(db, `studyBlocks/${currentUser.uid}`), snap => {
+                appData.studyBlocks = snap.val() || {};
+                renderStudyBlocks();
+            });
+
+            onValue(ref(db, `classSchedule/${currentUser.uid}`), snap => {
+                appData.classSchedule = snap.val() || {};
+            });
+
+            onValue(ref(db, `workSchedule/${currentUser.uid}`), snap => {
+                appData.workSchedule = snap.val() || {};
+            });
+
+            onValue(ref(db, `users/${currentUser.uid}`), snap => {
+                if (snap.exists()) appData.settings = snap.val();
+            });
+        }
+
+        // UI Controls
+        $('btnTheme').onclick = () => {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            localStorage.setItem('theme', isDark ? 'light' : 'dark');
+            $('btnTheme').innerHTML = isDark ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+        };
+
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            $('btnTheme').innerHTML = '<i class="fas fa-sun"></i>';
+        }
+
+        $('btnMenu').onclick = () => $('mainSidebar').classList.toggle('active');
+        $('overlayPanel').onclick = () => {
+            $('mainSidebar').classList.remove('active');
+            $('overlayPanel').classList.remove('active');
+        };
+
+        // Funciones de Examen
+        window.openExamModal = function(examId = null) {
+            editingExamId = examId;
+            populateSubjectDropdowns();
+            
+            if (examId && appData.exams[examId]) {
+                const exam = appData.exams[examId];
+                $('examModalTitle').textContent = 'Editar Examen';
+                $('inputExamTitle').value = exam.title || '';
+                $('inputExamSubject').value = exam.subjectId || '';
+                $('inputExamDate').value = exam.date || '';
+                $('inputExamTime').value = exam.time || '09:00';
+                $('inputExamDesc').value = exam.description || '';
+                $('inputExamWeight').value = exam.weight || '';
+                $('inputExamDuration').value = exam.duration || '';
+                $('inputExamImportant').checked = exam.important || false;
+            } else {
+                $('examModalTitle').textContent = 'Registrar Examen';
+                $('inputExamTitle').value = '';
+                $('inputExamDate').value = '';
+                $('inputExamDesc').value = '';
+                $('inputExamWeight').value = '';
+                $('inputExamDuration').value = '';
+                $('inputExamImportant').checked = false;
+            }
+            
+            $('examModal').classList.add('active');
+        };
+
+        window.closeExamModal = () => {
+            $('examModal').classList.remove('active');
+            editingExamId = null;
+        };
+
+        window.toggleImportant = () => {
+            $('inputExamImportant').checked = !$('inputExamImportant').checked;
+        };
+
+        window.saveExam = async function() {
+            const title = $('inputExamTitle').value.trim();
+            const subjectId = $('inputExamSubject').value;
+            const date = $('inputExamDate').value;
+            const time = $('inputExamTime').value;
+            const description = $('inputExamDesc').value.trim();
+            const weight = parseInt($('inputExamWeight').value) || 0;
+            const duration = parseInt($('inputExamDuration').value) || 120;
+            const important = $('inputExamImportant').checked;
+
+            if (!title || !date) {
+                alert('Por favor completa el titulo y la fecha');
+                return;
+            }
+
+            const examData = {
+                title,
+                subjectId,
+                date,
+                time,
+                description,
+                weight,
+                duration,
+                important,
+                completed: false,
+                createdAt: Date.now()
+            };
+
+            try {
+                if (editingExamId) {
+                    await update(ref(db, `exams/${currentUser.uid}/${editingExamId}`), examData);
+                } else {
+                    await push(ref(db, `exams/${currentUser.uid}`), examData);
+                }
+                closeExamModal();
+                
+                if (important) {
+                    generateStudyBlocksForExam(examData);
+                }
+            } catch (error) {
+                console.error('Error guardando examen:', error);
+                alert('Error al guardar el examen');
+            }
+        };
+
+        window.addSubjectQuick = async function() {
+            const name = prompt('Nombre de la nueva materia:');
+            if (!name) return;
+            
+            const color = `hsl(${Math.random() * 360}, 60%, 65%)`;
+            const icon = '📚';
+            
+            await push(ref(db, `subjects/${currentUser.uid}`), { name, color, icon });
+        };
+
+        // Renderizar Examenes
+        function renderExams() {
+            const container = $('examList');
+            const exams = Object.entries(appData.exams || {});
+            
+            if (exams.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-file-alt"></i>
+                        <h4>No hay examenes registrados</h4>
+                        <p>Crea tu primer examen para comenzar a organizar tus estudios</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const now = new Date();
+            now.setHours(0, 0, 0, 0);
+
+            let filteredExams = exams.map(([id, exam]) => ({ id, ...exam }));
+            
+            // Filtrar
+            if (currentFilter === 'pending') {
+                filteredExams = filteredExams.filter(e => !e.completed);
+            } else if (currentFilter === 'completed') {
+                filteredExams = filteredExams.filter(e => e.completed);
+            } else if (currentFilter === 'important') {
+                filteredExams = filteredExams.filter(e => e.important && !e.completed);
+            }
+
+            // Ordenar por fecha
+            filteredExams.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            container.innerHTML = filteredExams.map(exam => {
+                const subject = appData.subjects[exam.subjectId] || { name: 'Sin materia', color: '#9a9a9a', icon: '📝' };
+                const examDate = new Date(exam.date + 'T' + (exam.time || '00:00'));
+                const diffTime = examDate - new Date();
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                let urgencyClass = 'calm';
+                let badgeClass = 'calm';
+                let daysText = `${diffDays} dias`;
+                
+                if (diffDays <= 3) {
+                    urgencyClass = 'urgent';
+                    badgeClass = 'urgent';
+                    if (diffDays === 0) daysText = 'Hoy';
+                    else if (diffDays === 1) daysText = 'Manana';
+                    else if (diffDays < 0) daysText = 'Vencido';
+                } else if (diffDays <= 14) {
+                    urgencyClass = 'warning';
+                    badgeClass = 'warning';
+                }
+
+                return `
+                    <div class="exam-card ${urgencyClass} ${exam.completed ? 'completed' : ''}" onclick="openExamModal('${exam.id}')">
+                        ${exam.important ? '<span class="important-badge"><i class="fas fa-star"></i> Importante</span>' : ''}
+                        <div class="exam-checkbox ${exam.completed ? 'checked' : ''}" onclick="event.stopPropagation(); toggleExamComplete('${exam.id}')">
+                            ${exam.completed ? '<i class="fas fa-check"></i>' : ''}
+                        </div>
+                        <div class="exam-content">
+                            <h4>${exam.title}</h4>
+                            <p>${exam.description || 'Sin descripcion'}</p>
+                            <div class="exam-meta">
+                                <span class="exam-meta-item" style="color: ${subject.color}">
+                                    <i class="${subject.icon ? 'fas' : 'fas fa-book'}"></i>
+                                    ${subject.name}
+                                </span>
+                                <span class="exam-meta-item">
+                                    <i class="fas fa-calendar"></i>
+                                    ${formatDate(exam.date)}
+                                </span>
+                                ${exam.weight ? `<span class="exam-meta-item"><i class="fas fa-weight-hanging"></i> ${exam.weight}%</span>` : ''}
+                            </div>
+                        </div>
+                        <div class="exam-days-badge ${badgeClass}">
+                            ${daysText}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        window.toggleExamComplete = async function(examId) {
+            const exam = appData.exams[examId];
+            if (!exam) return;
+            
+            await update(ref(db, `exams/${currentUser.uid}/${examId}`), {
+                completed: !exam.completed
+            });
+        };
+
+        window.filterExams = function(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderExams();
+        };
+
+        // Actualizar estadisticas
+        function updateStats() {
+            const now = new Date();
+            now.setHours(0, 0, 0, 0);
+            
+            let urgent = 0, warning = 0, calm = 0;
+            
+            Object.values(appData.exams || {}).forEach(exam => {
+                if (exam.completed) return;
+                
+                const examDate = new Date(exam.date);
+                const diffDays = Math.ceil((examDate - now) / (1000 * 60 * 60 * 24));
+                
+                if (diffDays <= 3) urgent++;
+                else if (diffDays <= 14) warning++;
+                else calm++;
+            });
+            
+            $('urgentCount').textContent = urgent;
+            $('warningCount').textContent = warning;
+            $('calmCount').textContent = calm;
+        }
+
+        // Simulador de Promedio
+        window.simulateGrade = function() {
+            const expectedGrade = parseFloat($('simExpectedGrade').value) || 0;
+            const weight = parseFloat($('simWeight').value) || 0;
+            const currentAvg = parseFloat($('simCurrentAvg').value) || 0;
+            
+            if (weight <= 0 || weight > 100) {
+                alert('Ingresa un peso valido (1-100%)');
+                return;
+            }
+            
+            const weightDecimal = weight / 100;
+            const remainingWeight = 1 - weightDecimal;
+            const newAvg = (currentAvg * remainingWeight) + (expectedGrade * weightDecimal);
+            
+            $('simResult').textContent = newAvg.toFixed(1);
+        };
+
+        // Notas
+        window.openNoteModal = function() {
+            populateNoteSubjectDropdown();
+            $('noteModal').classList.add('active');
+        };
+
+        window.closeNoteModal = () => $('noteModal').classList.remove('active');
+
+        window.saveNote = async function() {
+            const subjectId = $('inputNoteSubject').value;
+            const name = $('inputNoteName').value.trim();
+            const grade = parseFloat($('inputNoteGrade').value);
+            
+            if (!name || isNaN(grade)) {
+                alert('Por favor completa todos los campos');
+                return;
+            }
+            
+            await push(ref(db, `notes/${currentUser.uid}`), {
+                subjectId,
+                name,
+                grade,
+                date: Date.now()
+            });
+            
+            closeNoteModal();
+            $('inputNoteName').value = '';
+            $('inputNoteGrade').value = '';
+        };
+
+        function renderNotes() {
+            const container = $('notesList');
+            const notes = Object.entries(appData.notes || {});
+            
+            if (notes.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--text-muted); font-size: 0.85rem;">Sin notas guardadas</p>';
+                return;
+            }
+            
+            container.innerHTML = notes.map(([id, note]) => {
+                const subject = appData.subjects[note.subjectId] || { name: 'General', color: '#9a9a9a' };
+                return `
+                    <div class="note-item" style="border-left-color: ${subject.color}">
+                        <span class="note-grade">${note.grade}</span>
+                        <h5>${note.name}</h5>
+                        <p>${subject.name}</p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Bloques de Estudio
+        window.generateStudyBlocks = async function() {
+            const importantExams = Object.entries(appData.exams || {})
+                .filter(([id, e]) => e.important && !e.completed)
+                .map(([id, e]) => ({ id, ...e }));
+            
+            if (importantExams.length === 0) {
+                alert('No hay examenes importantes para generar bloques de estudio');
+                return;
+            }
+
+            // Limpiar bloques existentes
+            await set(ref(db, `studyBlocks/${currentUser.uid}`), {});
+            
+            const blocks = [];
+            const now = new Date();
+            
+            for (const exam of importantExams) {
+                const examDate = new Date(exam.date);
+                const daysUntil = Math.ceil((examDate - now) / (1000 * 60 * 60 * 24));
+                
+                if (daysUntil <= 0) continue;
+                
+                // Generar bloques de 2 horas cada dia hasta el examen
+                const blocksPerDay = Math.min(2, Math.ceil(daysUntil / 3));
+                
+                for (let d = 0; d < daysUntil; d++) {
+                    const blockDate = new Date(now);
+                    blockDate.setDate(blockDate.getDate() + d);
+                    
+                    // Buscar huecos disponibles
+                    const slots = findAvailableSlots(blockDate);
+                    
+                    for (let s = 0; s < Math.min(blocksPerDay, slots.length); s++) {
+                        const slot = slots[s];
+                        blocks.push({
+                            examId: exam.id,
+                            examTitle: exam.title,
+                            subjectId: exam.subjectId,
+                            date: blockDate.toISOString().split('T')[0],
+                            startHour: slot.start,
+                            endHour: slot.end,
+                            duration: 120
+                        });
+                    }
+                }
+            }
+            
+            // Guardar bloques
+            for (const block of blocks) {
+                await push(ref(db, `studyBlocks/${currentUser.uid}`), block);
+            }
+            
+            alert(`Se generaron ${blocks.length} bloques de estudio`);
+        };
+
+        async function generateStudyBlocksForExam(exam) {
+            const now = new Date();
+            const examDate = new Date(exam.date);
+            const daysUntil = Math.ceil((examDate - now) / (1000 * 60 * 60 * 24));
+            
+            if (daysUntil <= 0) return;
+            
+            const blocks = [];
+            const blocksPerDay = Math.min(2, Math.ceil(daysUntil / 3));
+            
+            for (let d = 0; d < daysUntil; d++) {
+                const blockDate = new Date(now);
+                blockDate.setDate(blockDate.getDate() + d);
+                
+                const slots = findAvailableSlots(blockDate);
+                
+                for (let s = 0; s < Math.min(blocksPerDay, slots.length); s++) {
+                    const slot = slots[s];
+                    blocks.push({
+                        examId: editingExamId || Date.now().toString(),
+                        examTitle: exam.title,
+                        subjectId: exam.subjectId,
+                        date: blockDate.toISOString().split('T')[0],
+                        startHour: slot.start,
+                        endHour: slot.end,
+                        duration: 120
+                    });
+                }
+            }
+            
+            for (const block of blocks) {
+                await push(ref(db, `studyBlocks/${currentUser.uid}`), block);
+            }
+        }
+
+        function findAvailableSlots(date) {
+            const slots = [];
+            const dayLetter = ['D', 'L', 'M', 'X', 'J', 'V', 'S'][date.getDay()];
+            
+            // Horarios ocupados
+            const busySlots = [];
+            
+            // Clases
+            if (appData.classSchedule && appData.classSchedule[dayLetter]) {
+                const sch = appData.classSchedule[dayLetter];
+                busySlots.push({ start: timeToMins(sch.start), end: timeToMins(sch.end) });
+            }
+            
+            // Trabajo
+            if (appData.workSchedule && appData.workSchedule[dayLetter]) {
+                const wrk = appData.workSchedule[dayLetter];
+                busySlots.push({ start: timeToMins(wrk.start), end: timeToMins(wrk.end) });
+            }
+            
+            // Sueño: 22:30 - 06:00
+            busySlots.push({ start: 0, end: 360 }); // 00:00 - 06:00
+            busySlots.push({ start: 1350, end: 1440 }); // 22:30 - 24:00
+            
+            // Almuerzo: 12:00 - 13:00
+            busySlots.push({ start: 720, end: 780 });
+            
+            // Bloques de estudio existentes
+            Object.values(appData.studyBlocks || {}).forEach(block => {
+                if (block.date === date.toISOString().split('T')[0]) {
+                    busySlots.push({
+                        start: timeToMins(block.startHour),
+                        end: timeToMins(block.endHour)
+                    });
+                }
+            });
+            
+            // Buscar huecos de 2 horas (06:00 - 22:30)
+            for (let h = 6; h <= 20; h++) {
+                const slotStart = h * 60;
+                const slotEnd = slotStart + 120;
+                
+                const isBusy = busySlots.some(busy => 
+                    (slotStart >= busy.start && slotStart < busy.end) ||
+                    (slotEnd > busy.start && slotEnd <= busy.end) ||
+                    (slotStart <= busy.start && slotEnd >= busy.end)
+                );
+                
+                if (!isBusy && slotEnd <= 1350) {
+                    slots.push({
+                        start: `${h.toString().padStart(2, '0')}:00`,
+                        end: `${(h + 2).toString().padStart(2, '0')}:00`
+                    });
+                }
+            }
+            
+            return slots;
+        }
+
+        function renderStudyBlocks() {
+            const container = $('studyBlockList');
+            const blocks = Object.entries(appData.studyBlocks || {});
+            
+            if (blocks.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--text-muted); font-size: 0.85rem;">Sin bloques de estudio</p>';
+                $('nextBlockTime').textContent = 'Sin bloques programados';
+                $('nextBlockSubject').textContent = '';
+                return;
+            }
+            
+            // Ordenar por fecha
+            const sortedBlocks = blocks.map(([id, b]) => ({ id, ...b }))
+                .sort((a, b) => new Date(a.date + 'T' + a.startHour) - new Date(b.date + 'T' + b.startHour));
+            
+            // Encontrar proximo bloque
+            const now = new Date();
+            const nextBlock = sortedBlocks.find(b => new Date(b.date + 'T' + b.startHour) > now);
+            
+            if (nextBlock) {
+                const subject = appData.subjects[nextBlock.subjectId] || { name: 'Estudio', icon: '📚' };
+                const blockDate = new Date(nextBlock.date);
+                const options = { weekday: 'long', day: 'numeric', month: 'short' };
+                
+                $('nextBlockTime').textContent = `${blockDate.toLocaleDateString('es-ES', options)} de ${nextBlock.startHour} a ${nextBlock.endHour}`;
+                $('nextBlockSubject').textContent = `${subject.icon} ${nextBlock.examTitle}`;
+            } else {
+                $('nextBlockTime').textContent = 'Sin bloques proximos';
+                $('nextBlockSubject').textContent = '';
+            }
+            
+            container.innerHTML = sortedBlocks.slice(0, 5).map(block => {
+                const subject = appData.subjects[block.subjectId] || { name: 'Estudio', color: '#9a9a9a' };
+                const blockDate = new Date(block.date);
+                
+                return `
+                    <div class="study-block-item">
+                        <div>
+                            <div class="block-time">${blockDate.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric' })} - ${block.startHour} a ${block.endHour}</div>
+                            <div class="block-exam">${subject.icon || '📚'} ${block.examTitle}</div>
+                        </div>
+                        <button class="delete-block" onclick="event.stopPropagation(); deleteStudyBlock('${block.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        window.deleteStudyBlock = async function(blockId) {
+            if (confirm('Eliminar este bloque de estudio?')) {
+                await remove(ref(db, `studyBlocks/${currentUser.uid}/${blockId}`));
+            }
+        };
+
+        // Utilidades
+        function timeToMins(time) {
+            if (!time) return 0;
+            const [h, m] = time.split(':').map(Number);
+            return h * 60 + (m || 0);
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            const date = new Date(dateStr + 'T12:00:00');
+            return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+        }
+
+        function populateSubjectDropdowns() {
+            const subjects = appData.subjects || {};
+            const options = Object.entries(subjects)
+                .map(([id, s]) => `<option value="${id}">${s.name}</option>`)
+                .join('');
+            
+            $('inputExamSubject').innerHTML = `<option value="">Seleccionar materia</option>${options}`;
+        }
+
+        function populateNoteSubjectDropdown() {
+            const subjects = appData.subjects || {};
+            const options = Object.entries(subjects)
+                .map(([id, s]) => `<option value="${id}">${s.name}</option>`)
+                .join('');
+            
+            $('inputNoteSubject').innerHTML = `<option value="">Seleccionar materia</option>${options}`;
+        }
+
+        function populateExamDropdowns() {
+            const exams = appData.exams || {};
+            const options = Object.entries(exams)
+                .filter(([id, e]) => !e.completed)
+                .map(([id, e]) => `<option value="${id}">${e.title}</option>`)
+                .join('');
+            
+            $('simExamSelect').innerHTML = `<option value="">Seleccionar...</option>${options}`;
+        }
+
+        // Cerrar modales con Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeExamModal();
+                closeNoteModal();
+            }
+        });
+
+        // Cerrar modales clickeando fuera
+        $('examModal').addEventListener('click', (e) => {
+            if (e.target === $('examModal')) closeExamModal();
+        });
+        
+        $('noteModal').addEventListener('click', (e) => {
+            if (e.target === $('noteModal')) closeNoteModal();
+        });
+
+        window.signOut = () => {
+            auth.signOut();
+        };
+    </script>
+</body>
+</html>
