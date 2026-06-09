@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thynka - Asistente IA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff; --bg-tertiary: #f0e6dc;
+            --border-color: #f0e6dc;
+            --text-primary: #5a4032; --text-secondary: #9a9a9a; --text-muted: #bfbfbf;
+            --overlay-bg: rgba(0, 0, 0, 0.7);
+            --shadow-sm: 0 2px 5px rgba(107, 85, 56, 0.05);
+            --shadow-md: 0 4px 15px rgba(107, 85, 56, 0.1);
+            --shadow-lg: 0 10px 30px rgba(107, 85, 56, 0.2);
+            --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-med: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --sidebar-width: 280px;
+            --header-height: 80px;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520; --bg-tertiary: #3a342e;
+            --border-color: #3a342e;
+            --overlay-bg: rgba(0, 0, 0, 0.85);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        html, body {
+            height: 100%;
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            overflow: hidden;
+        }
+
+        body { display: flex; }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-light); }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            position: fixed;
+            left: 0; top: 0;
+            height: 100vh;
+            width: var(--sidebar-width);
+            background: var(--bg-secondary);
+            box-shadow: 2px 0 15px var(--shadow-md);
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            transition: transform var(--transition-med);
+            transform: translateX(-100%);
+        }
+
+        .sidebar.active { transform: translateX(0); }
+
+        .sidebar-header {
+            padding: 30px 25px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .sidebar-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            color: var(--primary-dark);
+            letter-spacing: 1px;
+            text-decoration: none;
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            padding: 20px 0;
+            overflow-y: auto;
+        }
+
+        .menu-section-title {
+            padding: 15px 30px 10px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 1.5px;
+            font-weight: 700;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 30px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all var(--transition-fast);
+            border-left: 3px solid transparent;
+            margin: 2px 0;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .menu-item i {
+            width: 24px;
+            font-size: 1.1rem;
+            margin-right: 15px;
+            opacity: 0.7;
+        }
+
+        .menu-item:hover {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .menu-item.active {
+            background: var(--bg-primary);
+            color: var(--primary-dark);
+            border-left-color: var(--primary);
+            font-weight: 600;
+        }
+
+        .menu-item.active i { opacity: 1; color: var(--primary); }
+
+        /* --- CONTROLES --- */
+        .menu-toggle {
+            position: fixed;
+            left: 20px; top: 20px;
+            width: 50px; height: 50px;
+            background: var(--primary);
+            border: none;
+            border-radius: 15px;
+            color: var(--white);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            z-index: 1000;
+            box-shadow: var(--shadow-md);
+            transition: all var(--transition-fast);
+        }
+
+        .menu-toggle:hover { transform: scale(1.05); box-shadow: var(--shadow-lg); }
+
+        .theme-toggle {
+            position: fixed;
+            right: 20px; top: 20px;
+            width: 50px; height: 50px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            color: var(--primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            z-index: 1000;
+            transition: all var(--transition-fast);
+        }
+
+        .theme-toggle:hover { transform: rotate(20deg) scale(1.1); }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--overlay-bg);
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-med);
+            z-index: 998;
+            backdrop-filter: blur(4px);
+        }
+
+        .overlay.active { opacity: 1; visibility: visible; }
+
+        /* --- LAYOUT PRINCIPAL --- */
+        .main-container {
+            flex: 1;
+            margin-left: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-top: var(--header-height);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* --- EFECTOS DE FONDO (ATMÓSFERA) --- */
+        .bg-effects {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: float 20s infinite alternate;
+        }
+
+        .blob-1 {
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, var(--primary-light), transparent);
+            top: -200px; left: -200px;
+        }
+
+        .blob-2 {
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, var(--beige), transparent);
+            bottom: -100px; right: -100px;
+            animation-delay: -5s;
+        }
+
+        .blob-3 {
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, var(--bg-tertiary), transparent);
+            top: 40%; left: 60%;
+            opacity: 0.3;
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(50px, 20px) scale(1.1); }
+        }
+
+        /* Grid Pattern Overlay */
+        .grid-pattern {
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(var(--border-color) 1px, transparent 1px);
+            background-size: 30px 30px;
+            opacity: 0.3;
+            z-index: 1;
+        }
+
+        /* --- HEADER --- */
+        .main-header {
+            height: var(--header-height);
+            padding: 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+            z-index: 10;
+        }
+
+        .header-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: var(--primary-dark);
+            margin-left: 60px;
+        }
+
+        .header-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-left: 15px;
+            font-weight: 400;
+        }
+
+        /* --- CONTENIDO DEL CHAT --- */
+        .chat-wrapper {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+            height: calc(100vh - var(--header-height));
+        }
+
+        .chat-container {
+            width: 100%;
+            height: 100%;
+            max-width: 1200px;
+            background: var(--bg-secondary);
+            border-radius: 24px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header-info {
+            padding: 18px 25px;
+            background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary));
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .ai-avatar {
+            width: 45px; height: 45px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 10px rgba(139, 107, 71, 0.3);
+        }
+
+        .ai-status h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .ai-status span {
+            font-size: 0.75rem;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .ai-status span::before {
+            content: '';
+            width: 8px; height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .iframe-container {
+            flex: 1;
+            position: relative;
+            background: var(--cream);
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-subtitle { display: none; }
+            .chat-wrapper { padding: 10px; }
+            .chat-container { border-radius: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar" id="mainSidebar">
+        <div class="sidebar-header">
+            <a href="dashboard.html" class="sidebar-logo">Thynka</a>
+        </div>
+        <div class="sidebar-menu">
+            <div class="menu-section-title">Principal</div>
+            <a href="dashboard.html" class="menu-item"><i class="fas fa-home"></i>Dashboard</a>
+            <a href="tareas.html" class="menu-item"><i class="fas fa-check-circle"></i>Mis Tareas</a>
+            <a href="horario.html" class="menu-item"><i class="fas fa-calendar-alt"></i>Horario</a>
+            <a href="examen.html" class="menu-item"><i class="fas fa-file-alt"></i>Exámenes</a>
+            
+            <div class="menu-section-title">Herramientas</div>
+            <a href="asistente.html" class="menu-item active"><i class="fas fa-robot"></i>Asistente IA</a>
+            <a href="recomendaciones.html" class="menu-item"><i class="fas fa-lightbulb"></i>Aprende</a>
+            <a href="cuestionarios.html" class="menu-item"><i class="fas fa-question-circle"></i>Cuestionarios</a>
+            <a href="patron.html" class="menu-item"><i class="fas fa-chart-line"></i>Análisis</a>
+            
+            <div class="menu-section-title">Cuenta</div>
+            <a href="tutorial.html" class="menu-item"><i class="fas fa-book-open"></i>Tutorial</a>
+            <a href="#" class="menu-item" onclick="signOut()"><i class="fas fa-sign-out-alt"></i>Cerrar Sesión</a>
+        </div>
+    </nav>
+
+    <!-- OVERLAY -->
+    <div class="overlay" id="overlayPanel"></div>
+
+    <!-- CONTROLES -->
+    <button class="menu-toggle" id="btnMenu"><i class="fas fa-bars"></i></button>
+    <button class="theme-toggle" id="btnTheme"><i class="fas fa-moon"></i></button>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <div class="main-container">
+        <!-- Efectos de Fondo -->
+        <div class="bg-effects">
+            <div class="blob blob-1"></div>
+            <div class="blob blob-2"></div>
+            <div class="blob blob-3"></div>
+            <div class="grid-pattern"></div>
+        </div>
+
+        <!-- Header -->
+        <header class="main-header">
+            <div style="display: flex; align-items: baseline;">
+                <h1 class="header-title">Asistente Inteligente</h1>
+                <span class="header-subtitle">Potenciado por IA</span>
+            </div>
+        </header>
+
+        <!-- Chat Wrapper -->
+        <div class="chat-wrapper">
+            <div class="chat-container">
+                <div class="chat-header-info">
+                    <div class="ai-avatar">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="ai-status">
+                        <h3>Thynka Bot</h3>
+                        <span>En línea y listo para ayudar</span>
+                    </div>
+                </div>
+                <div class="iframe-container">
+                    <iframe 
+                        src="https://udify.app/chatbot/uy4EpXZLTv8AYCiF" 
+                        allow="microphone"
+                        title="Asistente Thynka">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBH42jsEEaEOFa02LhD59aDkwFfo_RVVB4",
+            authDomain: "thynka-1dd68.firebaseapp.com",
+            databaseURL: "https://thynka-1dd68-default-rtdb.firebaseio.com",
+            projectId: "thynka-1dd68",
+            storageBucket: "thynka-1dd68.appspot.com",
+            messagingSenderId: "704622327906",
+            appId: "1:704622327906:web:57c4efb9da7b935b80f93b"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const $ = (id) => document.getElementById(id);
+
+        onAuthStateChanged(auth, user => {
+            if (!user) window.location.href = 'index.html';
+        });
+
+        // Theme Toggle
+        $('btnTheme').onclick = () => {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            localStorage.setItem('theme', isDark ? 'light' : 'dark');
+            $('btnTheme').innerHTML = isDark ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+        };
+        if(localStorage.getItem('theme') === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            $('btnTheme').innerHTML = '<i class="fas fa-sun"></i>';
+        }
+
+        // Sidebar Toggle
+        $('btnMenu').onclick = () => $('mainSidebar').classList.toggle('active');
+        $('overlayPanel').onclick = () => {
+            $('mainSidebar').classList.remove('active');
+            $('overlayPanel').classList.remove('active');
+        };
+
+        window.signOut = () => auth.signOut();
+    </script>
+</body>
+</html>
