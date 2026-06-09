@@ -514,8 +514,8 @@
             padding: 15px 25px;
             border-top: 1px solid var(--border-color);
             display: flex;
-            justify-content: flex-end;
-            gap: 10px;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .form-group { margin-bottom: 18px; }
@@ -920,7 +920,7 @@
                     <div class="section-header" style="margin-bottom: 15px;">
                         <h3 class="card-title" style="font-size: 0.9rem;"><i class="fas fa-book"></i> Bloques de Estudio</h3>
                         <button class="btn btn-sm btn-secondary" onclick="generateStudyBlocks()">
-                            <i class="fas fa-magic"></i> Generar
+                            <i class="fas fa-magic"></i> Regenerar
                         </button>
                     </div>
 
@@ -1029,13 +1029,20 @@
                 <div class="form-group">
                     <div class="checkbox-group" onclick="toggleImportant()">
                         <input type="checkbox" id="inputExamImportant">
-                        <span style="font-size: 0.85rem;">Marcar como importante (genera bloques de estudio)</span>
+                        <span style="font-size: 0.85rem;">Marcar como importante (genera bloques de estudio automaticos)</span>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeExamModal()">Cancelar</button>
-                <button class="btn btn-primary" onclick="saveExam()"><i class="fas fa-save"></i> Guardar</button>
+                <!-- BOTON ELIMINAR AGREGADO AQUI -->
+                <button class="btn btn-danger" id="btnDeleteExam" style="display:none;" onclick="deleteExam()">
+                    <i class="fas fa-trash"></i> Eliminar
+                </button>
+                
+                <div style="display:flex; gap:10px;">
+                    <button class="btn btn-secondary" onclick="closeExamModal()">Cancelar</button>
+                    <button class="btn btn-primary" onclick="saveExam()"><i class="fas fa-save"></i> Guardar</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1061,7 +1068,7 @@
                     <input type="number" class="form-input" id="inputNoteGrade" placeholder="85" min="0" max="100">
                 </div>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer" style="justify-content: flex-end;">
                 <button class="btn btn-secondary" onclick="closeNoteModal()">Cancelar</button>
                 <button class="btn btn-primary" onclick="saveNote()"><i class="fas fa-save"></i> Guardar</button>
             </div>
@@ -1096,6 +1103,7 @@
             studyBlocks: {},
             classSchedule: {},
             workSchedule: {},
+            tasks: {},
             settings: {}
         };
 
@@ -1115,6 +1123,7 @@
         });
 
         function initListeners() {
+            // Escuchar cambios en todas las rutas necesarias
             onValue(ref(db, `exams/${currentUser.uid}`), snap => {
                 appData.exams = snap.val() || {};
                 renderExams();
@@ -1143,6 +1152,10 @@
 
             onValue(ref(db, `workSchedule/${currentUser.uid}`), snap => {
                 appData.workSchedule = snap.val() || {};
+            });
+            
+            onValue(ref(db, `tasks/${currentUser.uid}`), snap => {
+                appData.tasks = snap.val() || {};
             });
 
             onValue(ref(db, `users/${currentUser.uid}`), snap => {
@@ -1173,6 +1186,7 @@
         window.openExamModal = function(examId = null) {
             editingExamId = examId;
             populateSubjectDropdowns();
+            const delBtn = $('btnDeleteExam');
             
             if (examId && appData.exams[examId]) {
                 const exam = appData.exams[examId];
@@ -1185,6 +1199,7 @@
                 $('inputExamWeight').value = exam.weight || '';
                 $('inputExamDuration').value = exam.duration || '';
                 $('inputExamImportant').checked = exam.important || false;
+                delBtn.style.display = 'block'; // Mostrar eliminar
             } else {
                 $('examModalTitle').textContent = 'Registrar Examen';
                 $('inputExamTitle').value = '';
@@ -1193,6 +1208,7 @@
                 $('inputExamWeight').value = '';
                 $('inputExamDuration').value = '';
                 $('inputExamImportant').checked = false;
+                delBtn.style.display = 'none'; // Ocultar eliminar
             }
             
             $('examModal').classList.add('active');
@@ -1207,7 +1223,7 @@
             $('inputExamImportant').checked = !$('inputExamImportant').checked;
         };
 
-        // --- CORRECCIÓN: FUNCIÓN SAVE EXAM MEJORADA ---
+        // --- GUARDAR EXAMEN (CORREGIDO) ---
         window.saveExam = async function() {
             const title = $('inputExamTitle').value.trim();
             const subjectId = $('inputExamSubject').value;
@@ -1218,7 +1234,6 @@
             const duration = parseInt($('inputExamDuration').value) || 120;
             const important = $('inputExamImportant').checked;
 
-            // Validación
             if (!title) { alert('Por favor ingresa un titulo'); return; }
             if (!date) { alert('Por favor selecciona una fecha'); return; }
             if (!subjectId) { alert('Por favor selecciona una materia'); return; }
@@ -1241,40 +1256,218 @@
 
                 // 1. Guardar Examen
                 if (editingExamId) {
-                    // Actualizar existente
                     await update(ref(db, `exams/${currentUser.uid}/${editingExamId}`), examData);
                 } else {
-                    // Crear nuevo y obtener ID
                     const newRef = await push(ref(db, `exams/${currentUser.uid}`), examData);
-                    savedExamId = newRef.key; // Obtenemos el ID real de Firebase
+                    savedExamId = newRef.key;
                 }
 
                 // 2. Generar bloques de estudio si es importante
                 if (important && savedExamId) {
-                    // Pasamos el ID correcto a la función
-                    await generateStudyBlocksForExam(savedExamId, examData);
+                    await clearBlocksForExam(savedExamId);
+                    await generateSmartStudyBlocks(savedExamId, examData);
                 }
 
                 closeExamModal();
-                alert('Examen guardado exitosamente');
+                // Mensaje de éxito más amigable
+                const msg = important ? 'Examen guardado y bloques de estudio generados.' : 'Examen guardado correctamente.';
+                alert(msg);
 
             } catch (error) {
                 console.error('Error guardando examen:', error);
                 alert('Error al guardar el examen: ' + error.message);
             }
         };
-
-        window.addSubjectQuick = async function() {
-            const name = prompt('Nombre de la nueva materia:');
-            if (!name) return;
+        
+        // --- ELIMINAR EXAMEN ---
+        window.deleteExam = async function() {
+            if (!editingExamId) return;
+            if (!confirm("¿Eliminar este examen y sus bloques de estudio asociados?")) return;
             
-            const color = `hsl(${Math.random() * 360}, 60%, 65%)`;
-            const icon = '📚';
-            
-            await push(ref(db, `subjects/${currentUser.uid}`), { name, color, icon });
+            try {
+                await remove(ref(db, `exams/${currentUser.uid}/${editingExamId}`));
+                await clearBlocksForExam(editingExamId);
+                closeExamModal();
+                alert("Examen eliminado.");
+            } catch(e) {
+                alert("Error al eliminar: " + e.message);
+            }
         };
 
-        // Renderizar Examenes
+        // --- MOTOR INTELIGENTE DE BLOQUES ---
+        
+        // Función auxiliar para limpiar bloques viejos
+        async function clearBlocksForExam(examId) {
+            const blocks = appData.studyBlocks || {};
+            const updates = {};
+            for (const [id, block] of Object.entries(blocks)) {
+                if (block.examId === examId) {
+                    updates[`studyBlocks/${currentUser.uid}/${id}`] = null;
+                }
+            }
+            if (Object.keys(updates).length > 0) {
+                await update(ref(db), updates);
+            }
+        }
+
+        // Generador principal
+        async function generateSmartStudyBlocks(examId, exam) {
+            const now = new Date();
+            const examDate = new Date(exam.date + 'T23:59');
+            const totalDays = Math.ceil((examDate - now) / (1000 * 60 * 60 * 24));
+
+            if (totalDays <= 0) return;
+
+            const maxBlocks = 6; // Límite para no saturar
+            const blocksToGenerate = [];
+
+            // Paso: cada cuántos días debería haber un bloque
+            // Ejemplo: Si faltan 30 días y max es 6, step = 5 días.
+            const step = Math.max(2, Math.floor(totalDays / (maxBlocks + 1)));
+            
+            // Memoria local para evitar choques en la misma generación
+            let localBusySlots = []; 
+
+            // Iterar días
+            for (let d = 1; d <= totalDays; d++) {
+                if (blocksToGenerate.length >= maxBlocks) break;
+
+                // Lógica intercalada: solo agregar si el día coincide con el paso
+                if (d % step !== 0 && blocksToGenerate.length > 0) continue;
+
+                const blockDate = new Date(now);
+                blockDate.setDate(blockDate.getDate() + d);
+                const dateStr = blockDate.toISOString().split('T')[0];
+
+                // Buscar hueco
+                const slot = findBestSlot(dateStr, localBusySlots);
+                
+                if (slot) {
+                    const blockData = {
+                        examId: examId,
+                        examTitle: exam.title,
+                        subjectId: exam.subjectId,
+                        date: dateStr,
+                        startHour: slot.start,
+                        endHour: slot.end,
+                        duration: 120
+                    };
+                    blocksToGenerate.push(blockData);
+                    // Agregar a memoria local para no chocar con el siguiente
+                    localBusySlots.push({ date: dateStr, start: slot.start, end: slot.end });
+                }
+            }
+
+            // Guardar en Firebase
+            for (const block of blocksToGenerate) {
+                await push(ref(db, `studyBlocks/${currentUser.uid}`), block);
+            }
+        }
+
+        // Buscador de huecos libres
+        function findBestSlot(dateStr, localBusySlots) {
+            const dayLetter = ['D', 'L', 'M', 'X', 'J', 'V', 'S'][new Date(dateStr).getDay()];
+            
+            // 1. Recolectar minutos ocupados
+            let occupiedMinutes = [];
+
+            const addRange = (start, end) => {
+                for(let i=start; i<end; i++) occupiedMinutes.push(i);
+            };
+
+            // Sueño: 00:00 - 07:00 (Respetamos despertar y desayunar)
+            addRange(0, 420); 
+            // Sueño: 22:30 - 24:00
+            addRange(1350, 1440);
+            // Almuerzo: 12:00 - 13:00
+            addRange(720, 780);
+
+            // Clases
+            if(appData.classSchedule && appData.classSchedule[dayLetter]) {
+                const c = appData.classSchedule[dayLetter];
+                if(c.start && c.end) addRange(timeToMins(c.start), timeToMins(c.end));
+            }
+            // Trabajo
+            if(appData.workSchedule && appData.workSchedule[dayLetter]) {
+                const w = appData.workSchedule[dayLetter];
+                if(w.start && w.end) addRange(timeToMins(w.start), timeToMins(w.end));
+            }
+            // Tareas
+            Object.values(appData.tasks).forEach(t => {
+                if(t.recommendedStart && t.recommendedStart.startsWith(dateStr)) {
+                    const h = new Date(t.recommendedStart).getHours();
+                    const duration = t.duration || 60;
+                    addRange(h*60, h*60 + duration);
+                }
+            });
+            // Bloques existentes en DB
+            Object.values(appData.studyBlocks).forEach(b => {
+                if(b.date === dateStr) addRange(timeToMins(b.startHour), timeToMins(b.endHour));
+            });
+            // Bloques generados en esta sesión
+            localBusySlots.forEach(b => {
+                if(b.date === dateStr) addRange(timeToMins(b.start), timeToMins(b.end));
+            });
+
+            // 2. Buscar hueco de 2 horas (120 mins)
+            // Rangos: Mañana (7-12), Tarde (13-18), Noche (18-22:30)
+            const ranges = [
+                [420, 720],  // Mañana
+                [780, 1080], // Tarde
+                [1080, 1290] // Noche
+            ];
+            
+            // Aleatorizar orden para variedad
+            ranges.sort(() => Math.random() - 0.5);
+
+            for (let range of ranges) {
+                for (let m = range[0]; m < range[1]; m += 30) {
+                    let end = m + 120;
+                    let isFree = true;
+                    for (let k = m; k < end; k++) {
+                        if (occupiedMinutes.includes(k)) {
+                            isFree = false;
+                            break;
+                        }
+                    }
+                    if (isFree) {
+                        return { start: minsToTime(m), end: minsToTime(end) };
+                    }
+                }
+            }
+            return null;
+        }
+
+        // Helpers
+        function timeToMins(t) { if(!t) return 0; const p=t.split(':'); return parseInt(p[0])*60+parseInt(p[1]); }
+        function minsToTime(m) { const h=Math.floor(m/60); const min=m%60; return `${h.toString().padStart(2,'0')}:${min.toString().padStart(2,'0')}`; }
+
+        // Generación manual global
+        window.generateStudyBlocks = async function() {
+            if(!confirm("Esto regenerará los bloques para todos los exámenes importantes. ¿Continuar?")) return;
+            
+            const importantExams = Object.entries(appData.exams).filter(([id,e]) => e.important && !e.completed);
+            if(importantExams.length === 0) return alert("No hay exámenes importantes.");
+
+            // Limpiar todo
+            await set(ref(db, `studyBlocks/${currentUser.uid}`), {});
+            appData.studyBlocks = {};
+
+            for(const [id, exam] of importantExams) {
+                await generateSmartStudyBlocks(id, exam);
+            }
+            alert("Bloques regenerados inteligentemente.");
+        };
+
+        // --- RENDERIZADOS ---
+        
+        window.filterExams = function(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderExams();
+        };
+
         function renderExams() {
             const container = $('examList');
             const exams = Object.entries(appData.exams || {});
@@ -1362,13 +1555,6 @@
             await update(ref(db, `exams/${currentUser.uid}/${examId}`), {
                 completed: !exam.completed
             });
-        };
-
-        window.filterExams = function(filter) {
-            currentFilter = filter;
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            renderExams();
         };
 
         function updateStats() {
@@ -1462,163 +1648,6 @@
             }).join('');
         }
 
-        // --- CORRECCIÓN: GENERACIÓN DE BLOQUES ROBUSTA ---
-        async function generateStudyBlocksForExam(examId, exam) {
-            try {
-                const now = new Date();
-                const examDate = new Date(exam.date);
-                const daysUntil = Math.ceil((examDate - now) / (1000 * 60 * 60 * 24));
-                
-                if (daysUntil <= 0) return; // No generar si ya pasó
-
-                const blocksPerDay = Math.min(2, Math.ceil(daysUntil / 3));
-                let generatedCount = 0;
-
-                for (let d = 0; d < daysUntil; d++) {
-                    const blockDate = new Date(now);
-                    blockDate.setDate(blockDate.getDate() + d);
-                    
-                    const slots = findAvailableSlots(blockDate);
-                    
-                    for (let s = 0; s < Math.min(blocksPerDay, slots.length); s++) {
-                        const slot = slots[s];
-                        
-                        const blockData = {
-                            examId: examId, // Usamos el ID correcto pasado por parámetro
-                            examTitle: exam.title,
-                            subjectId: exam.subjectId,
-                            date: blockDate.toISOString().split('T')[0],
-                            startHour: slot.start,
-                            endHour: slot.end,
-                            duration: 120,
-                            createdAt: Date.now()
-                        };
-
-                        await push(ref(db, `studyBlocks/${currentUser.uid}`), blockData);
-                        generatedCount++;
-                    }
-                }
-                
-                console.log(`Generados ${generatedCount} bloques para ${exam.title}`);
-                
-            } catch (error) {
-                console.error("Error generando bloques:", error);
-            }
-        }
-
-        window.generateStudyBlocks = async function() {
-            const importantExams = Object.entries(appData.exams || {})
-                .filter(([id, e]) => e.important && !e.completed)
-                .map(([id, e]) => ({ id, ...e }));
-            
-            if (importantExams.length === 0) {
-                alert('No hay examenes importantes para generar bloques de estudio');
-                return;
-            }
-
-            // Limpiar bloques existentes (opcional, o podrías sumar)
-            await set(ref(db, `studyBlocks/${currentUser.uid}`), {});
-            
-            let totalBlocks = 0;
-            
-            for (const exam of importantExams) {
-                const now = new Date();
-                const examDate = new Date(exam.date);
-                const daysUntil = Math.ceil((examDate - now) / (1000 * 60 * 60 * 24));
-                
-                if (daysUntil <= 0) continue;
-                
-                const blocksPerDay = Math.min(2, Math.ceil(daysUntil / 3));
-                
-                for (let d = 0; d < daysUntil; d++) {
-                    const blockDate = new Date(now);
-                    blockDate.setDate(blockDate.getDate() + d);
-                    
-                    const slots = findAvailableSlots(blockDate);
-                    
-                    for (let s = 0; s < Math.min(blocksPerDay, slots.length); s++) {
-                        const slot = slots[s];
-                        
-                        await push(ref(db, `studyBlocks/${currentUser.uid}`), {
-                            examId: exam.id,
-                            examTitle: exam.title,
-                            subjectId: exam.subjectId,
-                            date: blockDate.toISOString().split('T')[0],
-                            startHour: slot.start,
-                            endHour: slot.end,
-                            duration: 120
-                        });
-                        totalBlocks++;
-                    }
-                }
-            }
-            
-            alert(`Se generaron ${totalBlocks} bloques de estudio`);
-        };
-
-        function findAvailableSlots(date) {
-            const slots = [];
-            const dayLetter = ['D', 'L', 'M', 'X', 'J', 'V', 'S'][date.getDay()];
-            
-            const busySlots = [];
-            
-            // Clases
-            if (appData.classSchedule && appData.classSchedule[dayLetter]) {
-                const sch = appData.classSchedule[dayLetter];
-                if(sch.start && sch.end) {
-                    busySlots.push({ start: timeToMins(sch.start), end: timeToMins(sch.end) });
-                }
-            }
-            
-            // Trabajo
-            if (appData.workSchedule && appData.workSchedule[dayLetter]) {
-                const wrk = appData.workSchedule[dayLetter];
-                if(wrk.start && wrk.end) {
-                    busySlots.push({ start: timeToMins(wrk.start), end: timeToMins(wrk.end) });
-                }
-            }
-            
-            // Sueño: 22:30 - 06:00
-            busySlots.push({ start: 0, end: 360 }); // 00:00 - 06:00
-            busySlots.push({ start: 1350, end: 1440 }); // 22:30 - 24:00
-            
-            // Almuerzo: 12:00 - 13:00
-            busySlots.push({ start: 720, end: 780 });
-            
-            // Bloques existentes
-            Object.values(appData.studyBlocks || {}).forEach(block => {
-                if (block.date === date.toISOString().split('T')[0]) {
-                    if(block.startHour && block.endHour) {
-                        busySlots.push({
-                            start: timeToMins(block.startHour),
-                            end: timeToMins(block.endHour)
-                        });
-                    }
-                }
-            });
-            
-            // Buscar huecos de 2 horas (06:00 - 22:30)
-            for (let h = 6; h <= 20; h++) {
-                const slotStart = h * 60;
-                const slotEnd = slotStart + 120;
-                
-                const isBusy = busySlots.some(busy => 
-                    (slotStart >= busy.start && slotStart < busy.end) ||
-                    (slotEnd > busy.start && slotEnd <= busy.end) ||
-                    (slotStart <= busy.start && slotEnd >= busy.end)
-                );
-                
-                if (!isBusy && slotEnd <= 1350) {
-                    slots.push({
-                        start: `${h.toString().padStart(2, '0')}:00`,
-                        end: `${(h + 2).toString().padStart(2, '0')}:00`
-                    });
-                }
-            }
-            
-            return slots;
-        }
-
         function renderStudyBlocks() {
             const container = $('studyBlockList');
             const blocks = Object.entries(appData.studyBlocks || {});
@@ -1673,12 +1702,6 @@
         };
 
         // Utilidades
-        function timeToMins(time) {
-            if (!time) return 0;
-            const [h, m] = time.split(':').map(Number);
-            return h * 60 + (m || 0);
-        }
-
         function formatDate(dateStr) {
             if (!dateStr) return '';
             const date = new Date(dateStr + 'T12:00:00');
