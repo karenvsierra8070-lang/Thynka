@@ -71,12 +71,10 @@
             background: var(--bg-primary);
             color: var(--text-primary);
             line-height: 1.5;
-            overflow: hidden; /* Previene scroll doble */
+            overflow: hidden;
         }
 
-        body {
-            display: flex;
-        }
+        body { display: flex; }
 
         /* Scrollbar Personalizado */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -96,7 +94,7 @@
             display: flex;
             flex-direction: column;
             transition: transform var(--transition-med);
-            transform: translateX(-100%); /* Oculto por defecto en móvil */
+            transform: translateX(-100%);
         }
 
         .sidebar.active { transform: translateX(0); }
@@ -224,7 +222,7 @@
         /* --- 5. LAYOUT PRINCIPAL (DASHBOARD) --- */
         .main-container {
             flex: 1;
-            margin-left: 0; /* Se ajusta con JS si sidebar visible en desktop */
+            margin-left: 0;
             height: 100vh;
             display: flex;
             flex-direction: column;
@@ -248,7 +246,7 @@
             font-family: 'Playfair Display', serif;
             font-size: 1.8rem;
             color: var(--primary-dark);
-            margin-left: 60px; /* Espacio para botón menú */
+            margin-left: 60px;
         }
 
         .header-actions {
@@ -445,6 +443,17 @@
 
         .event-block.exam { background: rgba(231, 76, 60, 0.15); border-left-color: var(--danger); }
         .event-block.exam .title { color: var(--danger); font-weight: 700; }
+
+        /* Nuevo: Bloque de Estudio */
+        .event-block.study {
+            background: rgba(39, 174, 96, 0.1); 
+            border-left-style: dashed;
+            border-left-width: 3px;
+        }
+        .event-block.study .title { 
+            color: var(--success); 
+            font-weight: 600;
+        }
 
         /* Efectos Visuales Avanzados */
         .event-block.urgent {
@@ -656,7 +665,7 @@
             .left-rail { width: 280px; }
         }
         @media (max-width: 900px) {
-            .left-rail { display: none; } /* Ocultar sidebar izquierda en móvil */
+            .left-rail { display: none; }
             .content-wrapper { flex-direction: column; }
         }
     </style>
@@ -886,7 +895,8 @@
             settings: {},
             classSchedule: {},
             workSchedule: {},
-            exams: {}
+            exams: {},
+            studyBlocks: {} // Añadido para bloques de estudio
         };
         
         // Estado de UI
@@ -918,6 +928,7 @@
             listenTo('classSchedule');
             listenTo('workSchedule');
             listenTo('exams');
+            listenTo('studyBlocks'); // Nuevo listener
             onValue(ref(db, `users/${currentUser.uid}`), snap => {
                 if(snap.exists()) appData.settings = snap.val();
                 renderAllViews();
@@ -927,7 +938,7 @@
         function listenTo(path) {
             onValue(ref(db, `${path}/${currentUser.uid}`), snap => {
                 appData[path] = snap.val() || {};
-                if(path === 'subjects') populateExamDropdown(); // Actualizar dropdown si cambian materias
+                if(path === 'subjects') populateExamDropdown();
                 renderAllViews();
             });
         }
@@ -965,7 +976,6 @@
             if(!sel) return;
             const subjects = appData.subjects || {};
             sel.innerHTML = Object.entries(subjects).map(([id, s]) => `<option value="${id}">${s.name}</option>`).join('');
-            // Si no hay materias, poner opción default
             if(Object.keys(subjects).length === 0) sel.innerHTML = '<option value="">Crea una materia primero</option>';
         }
 
@@ -975,7 +985,6 @@
                 const color = `hsl(${Math.random()*360}, 60%, 65%)`;
                 const newRef = push(ref(db, `subjects/${currentUser.uid}`));
                 set(newRef, { name: n, color: color });
-                // El listener de Firebase actualizará el dropdown automáticamente
             }
         };
 
@@ -1006,15 +1015,12 @@
             const startOfWeek = getStartOfWeek(uiState.currentDate);
             const endOfWeek = new Date(startOfWeek); endOfWeek.setDate(endOfWeek.getDate() + 6);
             
-            // Título
             const opts = { month: 'long', year: 'numeric' };
             $('weekTitleDisplay').innerText = `${startOfWeek.getDate()} - ${endOfWeek.getDate()} de ${startOfWeek.toLocaleDateString('es-ES', opts)}`;
 
-            // Construcción del Grid
             const days = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
-            let html = '<div class="grid-corner"></div>'; // Esquina vacía
+            let html = '<div class="grid-corner"></div>';
 
-            // Headers
             const today = new Date(); today.setHours(0,0,0,0);
             for(let i=0; i<7; i++) {
                 const d = new Date(startOfWeek); d.setDate(d.getDate() + i);
@@ -1025,26 +1031,22 @@
                 </div>`;
             }
 
-            // Columna de Tiempo
             html += '<div class="time-col">';
             for(let h=6; h<=21; h++) {
                 html += `<div class="time-label" style="top: ${((h-6)*60)+20}px">${h}:00</div>`;
             }
             html += '</div>';
 
-            // Días
             for(let i=0; i<7; i++) {
                 const dayDate = new Date(startOfWeek); dayDate.setDate(dayDate.getDate() + i);
                 const dateStr = dayDate.toISOString().split('T')[0];
                 
                 html += `<div class="day-col" data-date="${dateStr}">`;
                 
-                // Líneas de hora
                 for(let h=6; h<=21; h++) {
                     html += `<div class="hour-line" style="top: ${(h-6)*60}px"></div>`;
                 }
 
-                // Renderizar Eventos
                 if(uiState.focusMode) {
                     if(isSameDay(dayDate, new Date())) {
                         html += generateEventBlocks(dayDate);
@@ -1075,7 +1077,7 @@
                 const top = (sMins/60 - 6) * 60;
                 const height = ((eMins - sMins)/60) * 60;
                 
-                if(uiState.focusMode && dayDate > limitFocus) return ''; // Filtro Foco
+                if(uiState.focusMode && dayDate > limitFocus) return '';
 
                 html += `<div class="event-block class" style="top:${top}px; height:${height}px;">
                     <div class="title"><i class="fas fa-graduation-cap"></i> Clases</div>
@@ -1108,7 +1110,6 @@
                     const taskDate = new Date(t.recommendedStart);
                     if(!isSameDay(taskDate, dayDate)) return;
 
-                    // Filtro Foco
                     if(uiState.focusMode) {
                         if(!isSameDay(dayDate, new Date())) return;
                         if(taskDate > limitFocus) return;
@@ -1120,8 +1121,6 @@
                     const height = Math.max(25, (duration/60) * 60);
 
                     const subj = appData.subjects[t.subjectId] || {name:'General', color:'#888888', icon:'📌'};
-                    
-                    // Urgencia: 48 horas o menos
                     const dueDate = new Date(t.dueDate + 'T' + t.dueTime);
                     const isUrgent = dueDate <= new Date(Date.now() + 2*24*60*60*1000);
 
@@ -1150,6 +1149,29 @@
                 });
             }
 
+            // 5. Bloques de Estudio (NUEVO)
+            if(appData.studyBlocks) {
+                Object.entries(appData.studyBlocks).forEach(([id, block]) => {
+                    // Filtrar por fecha
+                    if(block.date !== dateStr) return;
+                    
+                    const sMins = timeToMins(block.startHour);
+                    const eMins = timeToMins(block.endHour);
+                    const top = (sMins/60 - 6) * 60;
+                    const height = ((eMins - sMins)/60) * 60;
+
+                    // Obtener info de la materia
+                    const subj = appData.subjects[block.subjectId] || {name:'Estudio', color:'#27ae60', icon:'book'};
+                    
+                    html += `<div class="event-block study" 
+                        style="top:${top}px; height:${height}px; border-left-color: ${subj.color}; background-color: ${subj.color}10;"
+                        onclick="openDetailPanel('study', '${id}')">
+                        <div class="title"><i class="fas fa-book"></i> Estudio: ${block.examTitle || 'Bloque'}</div>
+                        <div style="opacity:0.7">${block.startHour} - ${block.endHour}</div>
+                    </div>`;
+                });
+            }
+
             return html;
         }
 
@@ -1163,7 +1185,6 @@
             
             if(todayCol) {
                 const mins = now.getHours()*60 + now.getMinutes();
-                // Grid empieza a las 6am (360 mins)
                 const top = ((mins - 360) / 60) * 60;
 
                 if(top >= 0) {
@@ -1183,24 +1204,21 @@
 
             const firstDay = new Date(year, month, 1);
             const lastDay = new Date(year, month + 1, 0);
-            const startPadding = (firstDay.getDay() + 6) % 7; // Ajuste Lunes
+            const startPadding = (firstDay.getDay() + 6) % 7;
             
             let html = '';
             const today = new Date();
 
-            // Días vacíos iniciales
             for(let i=0; i<startPadding; i++) {
                 const prevDay = new Date(year, month, -startPadding + i + 1);
                 html += `<div class="month-day-card other-month"><div class="month-head"><span class="month-day-num">${prevDay.getDate()}</span></div></div>`;
             }
 
-            // Días del mes
             for(let d=1; d<=lastDay.getDate(); d++) {
                 const date = new Date(year, month, d);
                 const dateStr = date.toISOString().split('T')[0];
                 const isToday = d === today.getDate() && month === today.getMonth() && year === today.getFullYear();
                 
-                // Cálculo de Densidad
                 const density = calculateDayLoad(dateStr);
                 const isDanger = density > 6;
                 const densityColor = isDanger ? 'var(--density-high)' : (density > 3 ? 'var(--density-med)' : 'var(--density-low)');
@@ -1224,7 +1242,6 @@
 
         function generateDots(dateStr) {
             let dots = '';
-            // Tareas
             Object.values(appData.tasks).forEach(t => {
                 if(t.completed || !t.recommendedStart) return;
                 if(new Date(t.recommendedStart).toISOString().split('T')[0] === dateStr) {
@@ -1232,10 +1249,15 @@
                     dots += `<span class="dot" style="background:${c}"></span>`;
                 }
             });
-            // Exámenes
             Object.values(appData.exams).forEach(e => {
                 if(e.date === dateStr) {
                     dots += `<span class="dot" style="background:var(--danger); border-radius:2px; width:6px;"></span>`;
+                }
+            });
+            // Añadir dots para bloques de estudio
+            Object.values(appData.studyBlocks).forEach(b => {
+                if(b.date === dateStr) {
+                    dots += `<span class="dot" style="background:var(--success);"></span>`;
                 }
             });
             return dots;
@@ -1249,6 +1271,14 @@
                     totalHours += (t.duration || 60) / 60;
                 }
             });
+            // Sumar horas de bloques de estudio
+            Object.values(appData.studyBlocks).forEach(b => {
+                if(b.date === dateStr) {
+                    const start = timeToMins(b.startHour);
+                    const end = timeToMins(b.endHour);
+                    totalHours += (end - start) / 60;
+                }
+            });
             return totalHours;
         }
 
@@ -1256,53 +1286,68 @@
         
         window.openDetailPanel = function(type, id) {
             uiState.selectedEvent = { type, id };
-            const data = type === 'task' ? appData.tasks[id] : appData.exams[id];
-            if(!data) return;
-
-            const subj = appData.subjects[data.subjectId] || {name:'Sin Materia', color:'#888', icon:'?'};
+            let data;
             
-            // Header
-            $('detailTitle').innerText = data.title;
-            $('detailSubject').innerHTML = `<span style="color:${subj.color}">${subj.icon || ''}</span> ${subj.name}`;
-            document.querySelector('.detail-header').style.setProperty('--primary', subj.color);
-
-            // Reset sections
-            $('sectionSteps').style.display = 'none';
-            $('sectionFile').style.display = 'none';
-            $('btnComplete').style.display = 'flex';
-
-            if(type === 'task') {
-                // Info
-                $('detailStart').innerText = data.recommendedStart ? new Date(data.recommendedStart).toLocaleString('es') : 'N/A';
-                $('detailDuration').innerText = (data.duration || 60) + ' min';
+            // Soporte para bloques de estudio
+            if(type === 'study') {
+                data = appData.studyBlocks[id];
+                if(!data) return;
+                const subj = appData.subjects[data.subjectId] || {name:'Estudio', color:'#27ae60', icon:'book'};
                 
-                // Descripción
-                $('detailDesc').innerText = data.instructions || 'Sin descripción detallada.';
-
-                // Pasos
-                if(data.steps && data.steps.length > 0) {
-                    $('sectionSteps').style.display = 'block';
-                    $('detailSteps').innerHTML = data.steps.map(s => 
-                        `<li class="step-item"><i class="fas fa-check-circle step-check"></i> ${s}</li>`
-                    ).join('');
-                }
-
-                // Archivo
-                if(data.link) {
-                    $('sectionFile').style.display = 'block';
-                    $('detailLink').href = data.link;
-                }
-
-                // Countdown
-                startCountdown(new Date(data.dueDate + 'T' + data.dueTime));
-
+                $('detailTitle').innerText = "Bloque de Estudio";
+                $('detailSubject').innerHTML = `<span style="color:${subj.color}">${subj.icon || '📖'}</span> ${data.examTitle || 'Estudio'}`;
+                document.querySelector('.detail-header').style.setProperty('--primary', subj.color);
+                
+                $('detailStart').innerText = data.startHour;
+                $('detailDuration').innerText = `${Math.round((timeToMins(data.endHour) - timeToMins(data.startHour))/60)} hrs`;
+                $('detailDesc').innerText = `Sesión de estudio programada para el examen de ${data.examTitle}.`;
+                $('sectionSteps').style.display = 'none';
+                $('sectionFile').style.display = 'none';
+                $('btnComplete').style.display = 'none'; // No se "completa" un bloque aquí, sino en la práctica.
+                
+                // Countdown basado en la fecha del bloque
+                startCountdown(new Date(data.date + 'T' + data.startHour));
+                
             } else {
-                // Examen
-                $('detailStart').innerText = data.time;
-                $('detailDuration').innerText = '-';
-                $('detailDesc').innerText = "Evento de evaluación final.";
-                $('btnComplete').style.display = 'none';
-                startCountdown(new Date(data.date + 'T' + data.time));
+                data = type === 'task' ? appData.tasks[id] : appData.exams[id];
+                if(!data) return;
+
+                const subj = appData.subjects[data.subjectId] || {name:'Sin Materia', color:'#888', icon:'?'};
+                
+                $('detailTitle').innerText = data.title;
+                $('detailSubject').innerHTML = `<span style="color:${subj.color}">${subj.icon || ''}</span> ${subj.name}`;
+                document.querySelector('.detail-header').style.setProperty('--primary', subj.color);
+
+                $('sectionSteps').style.display = 'none';
+                $('sectionFile').style.display = 'none';
+                $('btnComplete').style.display = 'flex';
+
+                if(type === 'task') {
+                    $('detailStart').innerText = data.recommendedStart ? new Date(data.recommendedStart).toLocaleString('es') : 'N/A';
+                    $('detailDuration').innerText = (data.duration || 60) + ' min';
+                    $('detailDesc').innerText = data.instructions || 'Sin descripción detallada.';
+
+                    if(data.steps && data.steps.length > 0) {
+                        $('sectionSteps').style.display = 'block';
+                        $('detailSteps').innerHTML = data.steps.map(s => 
+                            `<li class="step-item"><i class="fas fa-check-circle step-check"></i> ${s}</li>`
+                        ).join('');
+                    }
+
+                    if(data.link) {
+                        $('sectionFile').style.display = 'block';
+                        $('detailLink').href = data.link;
+                    }
+
+                    startCountdown(new Date(data.dueDate + 'T' + data.dueTime));
+
+                } else {
+                    $('detailStart').innerText = data.time;
+                    $('detailDuration').innerText = '-';
+                    $('detailDesc').innerText = "Evento de evaluación final.";
+                    $('btnComplete').style.display = 'none';
+                    startCountdown(new Date(data.date + 'T' + data.time));
+                }
             }
 
             $('detailPanel').classList.add('active');
@@ -1346,61 +1391,49 @@
         window.rescheduleWeek = async function() {
             if(!confirm("El sistema reorganizará tus tareas pendientes para equilibrar la carga de la semana. ¿Continuar?")) return;
 
-            // 1. Recolección de tareas pendientes
             let tasks = [];
             const updates = {};
             
             Object.entries(appData.tasks).forEach(([id, t]) => {
                 if(t.completed) return;
                 tasks.push({ id, ...t });
-                // Limpiar ubicación actual para reasignar
                 updates[`tasks/${currentUser.uid}/${id}/recommendedStart`] = null;
                 updates[`tasks/${currentUser.uid}/${id}/recommendedEnd`] = null;
             });
 
-            // 2. Ordenamiento Personalizado
-            // Prioridad: Alta(1), Media(2), Baja(3)
-            // Dentro de misma prioridad: Sencilla(1) -> Difícil(2) -> Media(3)
             tasks.sort((a, b) => {
                 const pA = a.priority === 'alta' ? 1 : (a.priority === 'media' ? 2 : 3);
                 const pB = b.priority === 'alta' ? 1 : (b.priority === 'media' ? 2 : 3);
-                if(pA !== pB) return pA - pB; // Prioridad primero
-
+                if(pA !== pB) return pA - pB;
                 const dMap = { 'baja': 1, 'alta': 2, 'media': 3 };
                 return (dMap[a.difficulty] || 2) - (dMap[b.difficulty] || 2);
             });
 
-            // 3. Generación de Huecos Disponibles (Slots)
             let slots = [];
             let currentScan = new Date();
             currentScan.setMinutes(0, 0, 0);
             
-            // Escanear los próximos 7 días
             for(let d=0; d<7; d++) {
                 const dayLetter = ['D', 'L', 'M', 'X', 'J', 'V', 'S'][currentScan.getDay()];
                 
-                // Escanear horas (06:00 a 22:00)
                 for(let h=6; h<22; h++) {
                     const slotStart = new Date(currentScan); slotStart.setHours(h, 0, 0, 0);
                     const slotEnd = new Date(currentScan); slotEnd.setHours(h+1, 0, 0, 0);
                     
-                    // Validaciones
-                    if(slotEnd <= new Date()) continue; // Pasado
-                    // Sueño ya filtrado por rango horario
+                    if(slotEnd <= new Date()) continue;
 
                     let isBusy = false;
                     
-                    // Validar Clases
+                    // Ocupado por Clases
                     if(appData.classSchedule && appData.classSchedule[dayLetter]) {
                         const sch = appData.classSchedule[dayLetter];
-                        // Si el slot cae dentro de (inicio-1h) a (fin+1h)
                         const sMins = timeToMins(sch.start);
                         const eMins = timeToMins(sch.end);
                         const slotMins = h*60;
                         if(slotMins >= (sMins - 60) && slotMins < (eMins + 60)) isBusy = true;
                     }
                     
-                    // Validar Trabajo
+                    // Ocupado por Trabajo
                     if(appData.settings.works === 'si' && appData.workSchedule && appData.workSchedule[dayLetter]) {
                         const wrk = appData.workSchedule[dayLetter];
                         const sMins = timeToMins(wrk.start);
@@ -1409,13 +1442,25 @@
                         if(slotMins >= (sMins - 60) && slotMins < (eMins + 60)) isBusy = true;
                     }
 
+                    // Ocupado por Bloques de Estudio (NUEVO)
+                    const dateStrCheck = currentScan.toISOString().split('T')[0];
+                    if(appData.studyBlocks) {
+                        Object.values(appData.studyBlocks).forEach(b => {
+                            if(b.date === dateStrCheck) {
+                                const sMins = timeToMins(b.startHour);
+                                const eMins = timeToMins(b.endHour);
+                                const slotMins = h*60;
+                                // Si el slot cae dentro del bloque de estudio
+                                if(slotMins >= sMins && slotMins < eMins) isBusy = true;
+                            }
+                        });
+                    }
+
                     if(!isBusy) slots.push({ start: slotStart, dayIndex: d });
                 }
                 currentScan.setDate(currentScan.getDate() + 1);
             }
 
-            // 4. Distribución Equilibrada (Round Robin por Día)
-            // Agrupar slots por día para intercalar
             const slotsByDay = {};
             slots.forEach(s => {
                 if(!slotsByDay[s.dayIndex]) slotsByDay[s.dayIndex] = [];
@@ -1423,14 +1468,13 @@
             });
 
             let distributedSlots = [];
-            let maxRounds = 20; // Máximo de huecos a tomar por día
+            let maxRounds = 20;
             for(let r=0; r<maxRounds; r++) {
                 for(let d=0; d<7; d++) {
                     if(slotsByDay[d] && slotsByDay[d][r]) distributedSlots.push(slotsByDay[d][r]);
                 }
             }
 
-            // 5. Asignación
             tasks.forEach((task, i) => {
                 if(i < distributedSlots.length) {
                     const slot = distributedSlots[i];
@@ -1442,7 +1486,7 @@
             });
 
             await update(ref(db), updates);
-            alert("Semana reprogramada exitosamente. Las tareas han sido distribuidas.");
+            alert("Semana reprogramada exitosamente. Las tareas han sido distribuidas respetando los bloques de estudio.");
         };
 
         // --- 6. HELPERS Y UTILIDADES ---
@@ -1451,7 +1495,7 @@
         function getStartOfWeek(d) {
             const date = new Date(d);
             const day = date.getDay();
-            const diff = date.getDate() - day + (day === 0 ? -6 : 1); // Ajuste para Lunes
+            const diff = date.getDate() - day + (day === 0 ? -6 : 1);
             return new Date(date.setDate(diff));
         }
 
@@ -1530,6 +1574,9 @@
 
         // Actualización automática de la hora
         setInterval(drawTimeLine, 60000);
+        
+        // Logout function
+        window.signOut = () => auth.signOut();
 
     </script>
 </body>
