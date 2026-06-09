@@ -3,66 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thynka - Centro de Control de Tiempo</title>
+    <title>Thynka - Gestión de Exámenes</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* --- 1. SISTEMA DE DISEÑO Y VARIABLES (THEMING) --- */
         :root {
-            /* Paleta Principal */
-            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
-            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
-            --gray: #9a9a9a; --white: #ffffff;
-            
-            /* Fondos y Superficies */
-            --bg-primary: #f8f5f2; --bg-secondary: #ffffff; --bg-tertiary: #f0e6dc;
+            --primary: #8b6b47;
+            --primary-light: #a3846c;
+            --primary-dark: #6b5538;
+            --cream: #f8f5f2;
+            --beige: #f0e6dc;
+            --brown: #5a4032;
+            --gray: #9a9a9a;
+            --white: #ffffff;
+            --bg-primary: #f8f5f2;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc;
             --border-color: #f0e6dc;
-            
-            /* Texto */
-            --text-primary: #5a4032; --text-secondary: #9a9a9a; --text-muted: #bfbfbf;
-            
-            /* Estados y Semánticos */
-            --danger: #e74c3c; --success: #27ae60; --warning: #f39c12; --info: #3498db;
+            --text-primary: #5a4032;
+            --text-secondary: #9a9a9a;
+            --text-muted: #bfbfbf;
+            --danger: #dc2626;
+            --danger-light: #fef2f2;
+            --success: #16a34a;
+            --success-light: #f0fdf4;
+            --warning: #d97706;
+            --warning-light: #fffbeb;
+            --info: #2563eb;
             --overlay-bg: rgba(0, 0, 0, 0.7);
-            
-            /* Colores Específicos de Eventos */
-            --class-color: #3498db; --class-bg: rgba(52, 152, 219, 0.15);
-            --work-color: #9b59b6; --work-bg: rgba(155, 89, 182, 0.15);
-            
-            /* Densidad */
-            --density-low: #27ae60; --density-med: #f39c12; --density-high: #e74c3c;
-            
-            /* Sombras y Profundidad */
             --shadow-sm: 0 2px 5px rgba(107, 85, 56, 0.05);
             --shadow-md: 0 4px 15px rgba(107, 85, 56, 0.1);
             --shadow-lg: 0 10px 30px rgba(107, 85, 56, 0.15);
-            --shadow-hover: 0 8px 25px rgba(107, 85, 56, 0.2);
-            
-            /* Transiciones */
             --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             --transition-med: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            
-            /* Layout */
             --sidebar-width: 280px;
-            --left-panel-width: 340px;
             --header-height: 80px;
+            --urgent-red: #ef4444;
+            --urgent-orange: #f97316;
+            --calm-green: #22c55e;
         }
 
-        /* --- MODO OSCURO AVANZADO --- */
         [data-theme="dark"] {
-            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
-            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
-            --gray: #a89b8b; --white: #1a1815;
-            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
-            --bg-primary: #1a1815; --bg-secondary: #2a2520; --bg-tertiary: #3a342e;
+            --primary: #a3846c;
+            --primary-light: #c0a686;
+            --primary-dark: #8b6b47;
+            --cream: #2a2520;
+            --beige: #3a342e;
+            --brown: #e0d5c7;
+            --gray: #a89b8b;
+            --white: #1a1815;
+            --text-primary: #e0d5c7;
+            --text-secondary: #a89b8b;
+            --bg-primary: #1a1815;
+            --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e;
             --border-color: #3a342e;
-            --class-color: #5dade2; --work-color: #af7ac5;
-            --shadow-sm: 0 2px 5px rgba(0,0,0,0.2);
-            --shadow-md: 0 4px 15px rgba(0,0,0,0.3);
+            --danger-light: rgba(220, 38, 38, 0.15);
+            --success-light: rgba(22, 163, 74, 0.15);
+            --warning-light: rgba(217, 119, 6, 0.15);
         }
 
-        /* --- 2. RESET Y BASE GLOBAL --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         html, body {
@@ -71,18 +71,17 @@
             background: var(--bg-primary);
             color: var(--text-primary);
             line-height: 1.5;
-            overflow: hidden;
+            overflow-x: hidden;
         }
 
         body { display: flex; }
 
-        /* Scrollbar Personalizado */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--primary-light); }
 
-        /* --- 3. SIDEBAR PRINCIPAL (NAVEGACIÓN) --- */
+        /* Sidebar */
         .sidebar {
             position: fixed;
             left: 0; top: 0;
@@ -166,7 +165,7 @@
 
         .menu-item.active i { opacity: 1; color: var(--primary); }
 
-        /* --- 4. CONTROLES GLOBALES (TOGGLE) --- */
+        /* Controles */
         .menu-toggle {
             position: fixed;
             left: 20px; top: 20px;
@@ -219,17 +218,16 @@
 
         .overlay.active { opacity: 1; visibility: visible; }
 
-        /* --- 5. LAYOUT PRINCIPAL (DASHBOARD) --- */
+        /* Layout Principal */
         .main-container {
             flex: 1;
             margin-left: 0;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             padding-top: var(--header-height);
         }
 
-        /* Header Principal */
         .main-header {
             height: var(--header-height);
             padding: 0 30px;
@@ -249,46 +247,34 @@
             margin-left: 60px;
         }
 
-        .header-actions {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
+        .header-actions { display: flex; gap: 15px; align-items: center; }
 
-        /* Área de Contenido Dividida */
         .content-wrapper {
             flex: 1;
-            display: flex;
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 0;
             overflow: hidden;
-            height: 100%;
         }
 
-        /* Panel Izquierdo (Widgets) */
-        .left-rail {
-            width: var(--left-panel-width);
+        .main-content {
+            padding: 25px 30px;
+            overflow-y: auto;
+            background: var(--bg-primary);
+        }
+
+        .side-panel {
             background: var(--bg-secondary);
-            border-right: 1px solid var(--border-color);
+            border-left: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
             overflow-y: auto;
-            padding: 20px;
-            gap: 20px;
-            transition: width var(--transition-med), opacity var(--transition-med);
         }
 
-        /* Centro (Horario) */
-        .center-rail {
-            flex: 1;
-            background: var(--bg-primary);
-            overflow-y: auto;
-            position: relative;
-            padding: 25px 30px;
-        }
-
-        /* --- 6. COMPONENTES UI (CARDS, BOTONES) --- */
+        /* Cards y Componentes */
         .card {
             background: var(--bg-secondary);
-            border-radius: 20px;
+            border-radius: 16px;
             box-shadow: var(--shadow-sm);
             border: 1px solid var(--border-color);
             overflow: hidden;
@@ -298,7 +284,7 @@
         .card:hover { box-shadow: var(--shadow-md); }
 
         .card-header {
-            padding: 18px 20px;
+            padding: 16px 20px;
             border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
@@ -307,7 +293,7 @@
         }
 
         .card-title {
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 700;
             color: var(--primary-dark);
             display: flex;
@@ -334,294 +320,153 @@
             font-family: inherit;
         }
 
-        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(139, 107, 71, 0.2); }
-        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: var(--shadow-lg); }
-        
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); }
         .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
         .btn-secondary:hover { background: var(--border-color); }
-        
         .btn-danger { background: var(--danger); color: white; }
-        .btn-warning { background: var(--warning); color: white; }
         .btn-success { background: var(--success); color: white; }
-
+        .btn-warning { background: var(--warning); color: white; }
         .btn-icon { width: 36px; height: 36px; padding: 0; border-radius: 10px; }
         .btn-sm { padding: 6px 12px; font-size: 0.75rem; }
 
-        /* --- 7. MINI CALENDARIO Y EXAMENES (LEFT RAIL) --- */
-        .mini-cal-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .mini-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
-        .mini-cal-day { padding: 6px 0; border-radius: 6px; font-size: 0.75rem; cursor: pointer; transition: all var(--transition-fast); color: var(--text-secondary); }
-        .mini-cal-day:hover { background: var(--bg-primary); }
-        .mini-cal-day.active { background: var(--primary); color: white; font-weight: 700; }
-        .mini-cal-day.today { border: 1px solid var(--primary); }
-        .mini-cal-day.other-month { opacity: 0.4; }
-
-        .exam-list { display: flex; flex-direction: column; gap: 10px; max-height: 300px; overflow-y: auto; padding-right: 5px; }
-        .exam-item {
-            display: flex; align-items: center; gap: 12px;
-            padding: 12px; background: var(--bg-primary); border-radius: 12px;
-            cursor: pointer; transition: all var(--transition-fast);
-            border-left: 3px solid var(--text-muted);
-        }
-        .exam-item:hover { transform: translateX(5px); box-shadow: var(--shadow-sm); }
-        .exam-emoji { font-size: 1.2rem; width: 30px; text-align: center; }
-        .exam-info h5 { font-size: 0.85rem; margin-bottom: 2px; color: var(--text-primary); }
-        .exam-info span { font-size: 0.7rem; color: var(--text-secondary); }
-
-        /* --- 8. VISTA SEMANAL (CALENDAR GRID) --- */
-        .calendar-toolbar {
+        /* Secciones */
+        .section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-            gap: 15px;
+            margin-bottom: 20px;
         }
 
-        .nav-group { display: flex; align-items: center; gap: 10px; }
-        .nav-group h2 { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--primary-dark); min-width: 280px; text-align: center; }
-        
-        .view-switcher { display: flex; gap: 2px; background: var(--bg-secondary); padding: 4px; border-radius: 12px; border: 1px solid var(--border-color); }
-        .view-btn { padding: 8px 20px; border: none; background: transparent; color: var(--text-secondary); border-radius: 8px; cursor: pointer; font-weight: 600; transition: all var(--transition-fast); font-size: 0.85rem; }
-        .view-btn.active { background: var(--primary); color: white; box-shadow: var(--shadow-sm); }
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            color: var(--primary-dark);
+        }
 
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: 50px repeat(7, 1fr);
-            gap: 1px;
-            background: var(--border-color);
-            border-radius: 15px;
-            overflow: hidden;
+        /* Lista de Exámenes */
+        .exam-list { display: flex; flex-direction: column; gap: 12px; }
+
+        .exam-card {
+            background: var(--bg-secondary);
+            border-radius: 14px;
             border: 1px solid var(--border-color);
-            min-height: 70vh;
-        }
-
-        .grid-corner { background: var(--bg-tertiary); }
-        .grid-header { background: var(--bg-tertiary); padding: 15px 5px; text-align: center; border-bottom: 1px solid var(--border-color); }
-        .grid-header .day-name { font-size: 0.7rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 700; letter-spacing: 1px; }
-        .grid-header .day-num { font-size: 1.2rem; font-weight: 700; color: var(--text-primary); margin-top: 5px; }
-        .grid-header.today { background: var(--primary); }
-        .grid-header.today .day-name, .grid-header.today .day-num { color: white; }
-
-        .time-col { background: var(--bg-secondary); position: relative; border-right: 1px solid var(--border-color); }
-        .time-label { position: absolute; width: 100%; text-align: center; top: -7px; left: 0; font-size: 0.65rem; color: var(--text-muted); font-weight: 600; }
-
-        .day-col { background: var(--bg-secondary); min-height: 1260px; position: relative; transition: background var(--transition-fast); }
-        .day-col:hover { background: var(--bg-primary); }
-        
-        .hour-line { position: absolute; left: 0; right: 0; border-bottom: 1px dashed var(--border-color); opacity: 0.5; pointer-events: none; }
-
-        /* Bloques de Eventos */
-        .event-block {
-            position: absolute;
-            left: 4px; right: 4px;
-            border-radius: 6px;
-            padding: 6px 10px;
-            overflow: hidden;
-            cursor: pointer;
-            transition: all var(--transition-fast);
-            border-left: 4px solid rgba(0,0,0,0.1);
-            z-index: 10;
-            font-size: 0.75rem;
-            background: var(--beige);
-        }
-
-        .event-block:hover {
-            transform: scale(1.02);
-            z-index: 15;
-            box-shadow: var(--shadow-lg);
-        }
-
-        .event-block.class { background: var(--class-bg); border-left-color: var(--class-color); }
-        .event-block.class .title { color: var(--class-color); }
-        
-        .event-block.work { background: var(--work-bg); border-left-color: var(--work-color); }
-        .event-block.work .title { color: var(--work-color); }
-
-        .event-block.task { border-left-color: var(--primary); }
-        .event-block.task .title { color: var(--primary-dark); font-weight: 600; }
-
-        .event-block.exam { background: rgba(231, 76, 60, 0.15); border-left-color: var(--danger); }
-        .event-block.exam .title { color: var(--danger); font-weight: 700; }
-
-        /* Nuevo: Bloque de Estudio */
-        .event-block.study {
-            background: rgba(39, 174, 96, 0.1); 
-            border-left-style: dashed;
-            border-left-width: 3px;
-        }
-        .event-block.study .title { 
-            color: var(--success); 
-            font-weight: 600;
-        }
-
-        /* Efectos Visuales Avanzados */
-        .event-block.urgent {
-            animation: pulse-glow 2s infinite;
-        }
-
-        @keyframes pulse-glow {
-            0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4); }
-            50% { box-shadow: 0 0 15px 2px rgba(231, 76, 60, 0.2); border-left-width: 6px; }
-            100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
-        }
-
-        /* Línea de Tiempo Actual */
-        .time-line-indicator {
-            position: absolute;
-            left: 0; right: 0;
-            height: 2px;
-            background: var(--danger);
-            z-index: 20;
-            pointer-events: none;
-            display: flex;
+            padding: 18px 20px;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 16px;
             align-items: center;
-        }
-        .time-line-indicator::before {
-            content: '';
-            position: absolute;
-            left: -5px; top: -4px;
-            width: 10px; height: 10px;
-            background: var(--danger);
-            border-radius: 50%;
-            box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
-        }
-
-        /* --- 9. VISTA MENSUAL --- */
-        .month-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 10px;
-        }
-
-        .month-day-card {
-            min-height: 120px;
-            background: var(--bg-secondary);
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            padding: 10px;
-            cursor: pointer;
             transition: all var(--transition-fast);
-            position: relative;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .month-day-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: var(--shadow-md); }
-        .month-day-card.other-month { opacity: 0.3; background: var(--bg-primary); pointer-events: none; }
-        .month-day-card.today { border: 2px solid var(--primary); background: var(--beige); }
-
-        .month-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .month-day-num { font-weight: 700; font-size: 0.9rem; color: var(--text-secondary); }
-        .month-day-card.today .month-day-num { color: var(--primary); background: var(--white); width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-
-        .month-event-dots { display: flex; flex-wrap: wrap; gap: 3px; flex: 1; align-content: flex-start; }
-        .dot { width: 6px; height: 6px; border-radius: 50%; }
-
-        /* Densidad y Sugerencias IA */
-        .density-container { position: absolute; bottom: 5px; left: 5px; right: 5px; }
-        .density-bar { height: 4px; background: var(--border-color); border-radius: 2px; overflow: hidden; margin-top: auto; }
-        .density-fill { height: 100%; transition: width 0.5s ease; border-radius: 2px; }
-        
-        .density-warning {
-            display: none;
-            font-size: 0.6rem;
-            color: var(--danger);
-            text-align: center;
-            font-weight: 700;
-            margin-top: 4px;
-            background: rgba(231, 76, 60, 0.1);
-            border-radius: 4px;
-            padding: 2px;
-        }
-
-        .month-day-card.danger .density-warning { display: block; }
-
-        /* --- 10. PANEL DETALLE (SLIDE PANEL) --- */
-        .detail-panel {
-            position: fixed;
-            right: 0; top: 0;
-            width: 400px;
-            height: 100vh;
-            background: var(--bg-secondary);
-            z-index: 2000;
-            transform: translateX(100%);
-            transition: transform var(--transition-med);
-            display: flex;
-            flex-direction: column;
-            box-shadow: -5px 0 30px rgba(0,0,0,0.1);
-            border-left: 1px solid var(--border-color);
-        }
-
-        .detail-panel.active { transform: translateX(0); }
-
-        .detail-header {
-            padding: 30px;
-            background: var(--bg-tertiary);
+            cursor: pointer;
             position: relative;
             overflow: hidden;
         }
-        .detail-header::before {
+
+        .exam-card::before {
             content: '';
             position: absolute;
             left: 0; top: 0; bottom: 0;
-            width: 6px;
-            background: var(--primary);
+            width: 4px;
+            transition: all var(--transition-fast);
         }
 
-        .detail-close {
-            position: absolute;
-            top: 20px; right: 20px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            width: 30px; height: 30px;
+        .exam-card.urgent::before { background: var(--urgent-red); }
+        .exam-card.warning::before { background: var(--urgent-orange); }
+        .exam-card.calm::before { background: var(--calm-green); }
+
+        .exam-card:hover { 
+            transform: translateX(5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .exam-card.completed {
+            opacity: 0.6;
+            background: var(--bg-primary);
+        }
+
+        .exam-checkbox {
+            width: 28px;
+            height: 28px;
             border-radius: 8px;
-            cursor: pointer;
+            border: 2px solid var(--border-color);
             display: flex;
             align-items: center;
             justify-content: center;
+            cursor: pointer;
             transition: all var(--transition-fast);
-        }
-        .detail-close:hover { background: var(--danger); color: white; border-color: var(--danger); }
-
-        .detail-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark); margin-bottom: 5px; padding-right: 40px; }
-        .detail-subtitle { font-size: 0.9rem; color: var(--text-secondary); display: flex; align-items: center; gap: 8px; }
-
-        .detail-body { flex: 1; overflow-y: auto; padding: 25px; }
-
-        /* Countdown Widget */
-        .countdown-box {
             background: var(--bg-primary);
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 20px;
-            text-align: center;
-            border: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-around;
         }
-        .cd-item { display: flex; flex-direction: column; }
-        .cd-val { font-size: 1.6rem; font-weight: 700; color: var(--primary); font-family: 'Playfair Display', serif; }
-        .cd-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
 
-        /* Secciones de Detalle */
-        .detail-section { margin-bottom: 25px; }
-        .detail-section-header { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 10px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-        .detail-content { font-size: 0.9rem; color: var(--text-primary); line-height: 1.6; white-space: pre-wrap; }
-        
-        .steps-list { list-style: none; }
-        .step-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border-color); }
-        .step-item:last-child { border-bottom: none; }
-        .step-check { color: var(--success); }
+        .exam-checkbox:hover { border-color: var(--primary); }
+        .exam-checkbox.checked { background: var(--success); border-color: var(--success); color: white; }
 
-        /* Info Grid */
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .info-item { background: var(--bg-primary); padding: 12px; border-radius: 10px; }
-        .info-label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; }
-        .info-val { font-weight: 600; font-size: 0.9rem; }
+        .exam-content h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
 
-        /* --- 11. MODAL NUEVO EXAMEN --- */
-        .modal-exam {
+        .exam-content p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .exam-meta {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .exam-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .exam-meta-item i { font-size: 0.7rem; }
+
+        .exam-days-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .exam-days-badge.urgent {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+
+        .exam-days-badge.warning {
+            background: var(--warning-light);
+            color: var(--warning);
+        }
+
+        .exam-days-badge.calm {
+            background: var(--success-light);
+            color: var(--success);
+        }
+
+        .important-badge {
+            position: absolute;
+            top: 10px; right: 10px;
+            font-size: 0.65rem;
+            background: var(--danger);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        /* Modal */
+        .modal {
             position: fixed;
             inset: 0;
             background: var(--overlay-bg);
@@ -634,45 +479,359 @@
             transition: all var(--transition-med);
             backdrop-filter: blur(5px);
         }
-        .modal-exam.active { opacity: 1; visibility: visible; }
-        
+
+        .modal.active { opacity: 1; visibility: visible; }
+
         .modal-content {
             background: var(--bg-secondary);
             width: 100%;
-            max-width: 500px;
+            max-width: 520px;
+            max-height: 90vh;
+            overflow-y: auto;
             border-radius: 20px;
             box-shadow: var(--shadow-lg);
-            overflow: hidden;
             transform: scale(0.9);
             transition: transform var(--transition-med);
         }
-        .modal-exam.active .modal-content { transform: scale(1); }
 
-        .modal-head { padding: 20px 25px; background: var(--bg-tertiary); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .modal.active .modal-content { transform: scale(1); }
+
+        .modal-header {
+            padding: 20px 25px;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
         .modal-title { font-weight: 700; font-size: 1.1rem; color: var(--primary-dark); }
-        .modal-body { padding: 25px; }
-        .modal-foot { padding: 15px 25px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 10px; }
 
-        .form-group { margin-bottom: 20px; }
-        .form-label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.85rem; color: var(--text-secondary); }
-        .form-input { width: 100%; padding: 12px 15px; border: 1px solid var(--border-color); background: var(--bg-primary); border-radius: 10px; font-family: inherit; font-size: 0.9rem; transition: border var(--transition-fast); color: var(--text-primary); }
+        .modal-body { padding: 25px; }
+
+        .modal-footer {
+            padding: 15px 25px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-group { margin-bottom: 18px; }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: border var(--transition-fast);
+            color: var(--text-primary);
+        }
+
         .form-input:focus { outline: none; border-color: var(--primary); }
+
         .form-row { display: flex; gap: 15px; }
         .form-row > * { flex: 1; }
 
-        /* --- 12. RESPONSIVE --- */
-        @media (max-width: 1200px) {
-            .left-rail { width: 280px; }
+        textarea.form-input { min-height: 80px; resize: vertical; }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: var(--bg-primary);
+            border-radius: 10px;
+            cursor: pointer;
         }
-        @media (max-width: 900px) {
-            .left-rail { display: none; }
-            .content-wrapper { flex-direction: column; }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+        }
+
+        /* Simulador de Promedio */
+        .simulator-card {
+            background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary));
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .simulator-title {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .simulator-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .simulator-result {
+            padding: 15px;
+            background: var(--bg-primary);
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .result-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            font-family: 'Playfair Display', serif;
+        }
+
+        .result-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Notas */
+        .notes-section {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .notes-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .note-item {
+            padding: 12px 15px;
+            background: var(--bg-primary);
+            border-radius: 10px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .note-item h5 {
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            margin-bottom: 3px;
+        }
+
+        .note-item p {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .note-item .note-grade {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+            float: right;
+        }
+
+        /* Bloques de Estudio */
+        .study-blocks-section {
+            padding: 20px;
+            flex: 1;
+        }
+
+        .next-study-block {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 14px;
+            padding: 20px;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .next-study-block h4 {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .next-study-block .time {
+            font-size: 1.4rem;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .next-study-block .subject {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .study-block-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .study-block-item {
+            padding: 12px 15px;
+            background: var(--bg-primary);
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .study-block-item .block-time {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .study-block-item .block-exam {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .delete-block {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .delete-block:hover { background: var(--danger-light); color: var(--danger); }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            background: var(--bg-primary);
+            padding: 4px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px 15px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: all var(--transition-fast);
+            font-family: inherit;
+        }
+
+        .tab-btn.active {
+            background: var(--bg-secondary);
+            color: var(--primary-dark);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            font-family: 'Playfair Display', serif;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card.urgent .stat-value { color: var(--urgent-red); }
+        .stat-card.warning .stat-value { color: var(--urgent-orange); }
+        .stat-card.calm .stat-value { color: var(--calm-green); }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        .empty-state h4 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state p { font-size: 0.85rem; }
+
+        /* Responsive */
+        @media (max-width: 1100px) {
+            .content-wrapper {
+                grid-template-columns: 1fr;
+            }
+            .side-panel {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .exam-card {
+                grid-template-columns: auto 1fr;
+            }
+            .exam-days-badge {
+                grid-column: 1 / -1;
+                margin-top: 10px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- SIDEBAR PRINCIPAL -->
+    <!-- Sidebar -->
     <nav class="sidebar" id="mainSidebar">
         <div class="sidebar-header">
             <a href="dashboard.html" class="sidebar-logo">Thynka</a>
@@ -681,198 +840,239 @@
             <div class="menu-section-title">Principal</div>
             <a href="dashboard.html" class="menu-item"><i class="fas fa-home"></i>Dashboard</a>
             <a href="tareas.html" class="menu-item"><i class="fas fa-check-circle"></i>Mis Tareas</a>
-            <a href="horario.html" class="menu-item active"><i class="fas fa-calendar-alt"></i>Horario</a>
-            <a href="examen.html" class="menu-item"><i class="fas fa-file-alt"></i>Exámenes</a>
+            <a href="horario.html" class="menu-item"><i class="fas fa-calendar-alt"></i>Horario</a>
+            <a href="examen.html" class="menu-item active"><i class="fas fa-file-alt"></i>Examenes</a>
             
             <div class="menu-section-title">Herramientas</div>
             <a href="asistente.html" class="menu-item"><i class="fas fa-robot"></i>Asistente IA</a>
             <a href="recomendaciones.html" class="menu-item"><i class="fas fa-lightbulb"></i>Aprende</a>
             <a href="cuestionarios.html" class="menu-item"><i class="fas fa-question-circle"></i>Cuestionarios</a>
-            <a href="patron.html" class="menu-item"><i class="fas fa-chart-line"></i>Análisis</a>
+            <a href="patron.html" class="menu-item"><i class="fas fa-chart-line"></i>Analisis</a>
             
             <div class="menu-section-title">Cuenta</div>
             <a href="tutorial.html" class="menu-item"><i class="fas fa-book-open"></i>Tutorial</a>
-            <a href="#" class="menu-item" onclick="signOut()"><i class="fas fa-sign-out-alt"></i>Cerrar Sesión</a>
+            <a href="#" class="menu-item" onclick="signOut()"><i class="fas fa-sign-out-alt"></i>Cerrar Sesion</a>
         </div>
     </nav>
 
-    <!-- OVERLAY -->
+    <!-- Overlay -->
     <div class="overlay" id="overlayPanel"></div>
 
-    <!-- CONTROLES GLOBALES -->
+    <!-- Controles -->
     <button class="menu-toggle" id="btnMenu"><i class="fas fa-bars"></i></button>
     <button class="theme-toggle" id="btnTheme"><i class="fas fa-moon"></i></button>
 
-    <!-- CONTENEDOR PRINCIPAL -->
+    <!-- Contenedor Principal -->
     <div class="main-container">
-        <!-- Header Principal -->
         <header class="main-header">
-            <h1 class="header-title">Centro de Control</h1>
+            <h1 class="header-title">Gestion de Examenes</h1>
             <div class="header-actions">
-                <button class="btn btn-warning" id="btnFocusMode" onclick="toggleFocusMode()">
-                    <i class="fas fa-bullseye"></i> Modo Foco
-                </button>
-                <button class="btn btn-primary" onclick="rescheduleWeek()">
-                    <i class="fas fa-magic"></i> Reprogramar Semana
+                <button class="btn btn-primary" onclick="openExamModal()">
+                    <i class="fas fa-plus"></i> Nuevo Examen
                 </button>
             </div>
         </header>
 
         <div class="content-wrapper">
-            <!-- Panel Izquierdo -->
-            <aside class="left-rail">
-                <!-- Mini Calendario -->
-                <div class="card">
-                    <div class="card-header" style="border-bottom: none; margin-bottom: 0; background: transparent;">
-                        <div class="mini-cal-controls">
-                            <button class="btn btn-icon btn-sm btn-secondary" onclick="changeMiniMonth(-1)"><i class="fas fa-chevron-left"></i></button>
-                            <span id="miniCalMonthTitle" class="card-title" style="font-size: 0.9rem; margin: 0;"></span>
-                            <button class="btn btn-icon btn-sm btn-secondary" onclick="changeMiniMonth(1)"><i class="fas fa-chevron-right"></i></button>
-                        </div>
+            <!-- Contenido Principal -->
+            <main class="main-content">
+                <!-- Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card urgent">
+                        <div class="stat-value" id="urgentCount">0</div>
+                        <div class="stat-label">Urgentes (menos de 3 dias)</div>
                     </div>
-                    <div style="padding: 10px;">
-                        <div class="mini-cal-grid" style="font-size: 0.7rem; font-weight: 700; color: var(--text-muted); margin-bottom: 5px;">
-                            <div>L</div><div>M</div><div>X</div><div>J</div><div>V</div><div>S</div><div>D</div>
-                        </div>
-                        <div id="miniCalGrid" class="mini-cal-grid"></div>
+                    <div class="stat-card warning">
+                        <div class="stat-value" id="warningCount">0</div>
+                        <div class="stat-label">Proximos (1-2 semanas)</div>
+                    </div>
+                    <div class="stat-card calm">
+                        <div class="stat-value" id="calmCount">0</div>
+                        <div class="stat-label">Con tiempo (mas de 2 sem)</div>
                     </div>
                 </div>
 
-                <!-- Próximos Exámenes -->
-                <div class="card" style="flex: 1;">
-                    <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-file-alt"></i> Próximos Exámenes</h3>
-                        <button class="btn btn-icon btn-sm btn-secondary" onclick="openExamModal()"><i class="fas fa-plus"></i></button>
+                <!-- Tabs -->
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="filterExams('all')">Todos</button>
+                    <button class="tab-btn" onclick="filterExams('pending')">Pendientes</button>
+                    <button class="tab-btn" onclick="filterExams('completed')">Completados</button>
+                    <button class="tab-btn" onclick="filterExams('important')">Importantes</button>
+                </div>
+
+                <!-- Lista de Examenes -->
+                <div class="exam-list" id="examList"></div>
+            </main>
+
+            <!-- Panel Lateral -->
+            <aside class="side-panel">
+                <!-- Proximo Bloque de Estudio -->
+                <div class="study-blocks-section">
+                    <div class="next-study-block" id="nextStudyBlock">
+                        <h4><i class="fas fa-clock"></i> Tu proximo bloque de estudio</h4>
+                        <div class="time" id="nextBlockTime">Sin bloques programados</div>
+                        <div class="subject" id="nextBlockSubject"></div>
                     </div>
-                    <div class="exam-list" id="examListContainer">
-                        <!-- Se llena con JS -->
+
+                    <div class="section-header" style="margin-bottom: 15px;">
+                        <h3 class="card-title" style="font-size: 0.9rem;"><i class="fas fa-book"></i> Bloques de Estudio</h3>
+                        <button class="btn btn-sm btn-secondary" onclick="generateStudyBlocks()">
+                            <i class="fas fa-magic"></i> Regenerar
+                        </button>
                     </div>
+
+                    <div class="study-block-list" id="studyBlockList"></div>
+                </div>
+
+                <!-- Simulador de Promedio -->
+                <div class="notes-section">
+                    <div class="simulator-card">
+                        <div class="simulator-title">
+                            <i class="fas fa-calculator"></i> Simulador de Promedio
+                        </div>
+                        <div class="simulator-form">
+                            <div>
+                                <label class="form-label" style="font-size: 0.75rem;">Examen</label>
+                                <select class="form-input" id="simExamSelect" style="padding: 8px 12px; font-size: 0.8rem;">
+                                    <option value="">Seleccionar...</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label" style="font-size: 0.75rem;">Peso (%)</label>
+                                <input type="number" class="form-input" id="simWeight" placeholder="25" min="1" max="100" style="padding: 8px 12px; font-size: 0.8rem;">
+                            </div>
+                        </div>
+                        <div class="simulator-form">
+                            <div>
+                                <label class="form-label" style="font-size: 0.75rem;">Nota esperada</label>
+                                <input type="number" class="form-input" id="simExpectedGrade" placeholder="85" min="0" max="100" style="padding: 8px 12px; font-size: 0.8rem;">
+                            </div>
+                            <div>
+                                <label class="form-label" style="font-size: 0.75rem;">Promedio actual</label>
+                                <input type="number" class="form-input" id="simCurrentAvg" placeholder="75" min="0" max="100" style="padding: 8px 12px; font-size: 0.8rem;">
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" style="width: 100%; margin-bottom: 15px;" onclick="simulateGrade()">
+                            <i class="fas fa-chart-line"></i> Calcular
+                        </button>
+                        <div class="simulator-result">
+                            <div class="result-value" id="simResult">--</div>
+                            <div class="result-label">Tu nuevo promedio seria</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cuadro de Notas -->
+                <div class="notes-section" style="border-bottom: none;">
+                    <div class="section-header" style="margin-bottom: 15px;">
+                        <h3 class="card-title" style="font-size: 0.9rem;"><i class="fas fa-sticky-note"></i> Cuadro de Notas</h3>
+                        <button class="btn btn-sm btn-secondary" onclick="openNoteModal()">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="notes-list" id="notesList"></div>
                 </div>
             </aside>
-
-            <!-- Centro: Horario -->
-            <main class="center-rail">
-                <div class="calendar-toolbar">
-                    <div class="nav-group">
-                        <button class="btn btn-icon btn-secondary" onclick="changeWeek(-1)"><i class="fas fa-chevron-left"></i></button>
-                        <h2 id="weekTitleDisplay">Semana Actual</h2>
-                        <button class="btn btn-icon btn-secondary" onclick="changeWeek(1)"><i class="fas fa-chevron-right"></i></button>
-                        <button class="btn btn-sm btn-secondary" onclick="goToToday()">Hoy</button>
-                    </div>
-                    <div class="view-switcher">
-                        <button class="view-btn active" onclick="setView('week')">Semana</button>
-                        <button class="view-btn" onclick="setView('month')">Mes</button>
-                    </div>
-                </div>
-
-                <!-- Vista Semanal -->
-                <div id="weekViewContainer" class="calendar-grid"></div>
-                
-                <!-- Vista Mensual -->
-                <div id="monthViewContainer" class="month-grid" style="display: none;"></div>
-            </main>
         </div>
     </div>
 
-    <!-- PANEL DETALLE (SLIDE PANEL) -->
-    <div class="detail-panel" id="detailPanel">
-        <div class="detail-header">
-            <button class="detail-close" onclick="closeDetailPanel()"><i class="fas fa-times"></i></button>
-            <h2 class="detail-title" id="detailTitle">Nombre del Evento</h2>
-            <div class="detail-subtitle" id="detailSubject">Materia</div>
-        </div>
-        <div class="detail-body">
-            <!-- Countdown -->
-            <div class="countdown-box">
-                <div class="cd-item"><span class="cd-val" id="cdDays">0</span><span class="cd-label">Días</span></div>
-                <div class="cd-item"><span class="cd-val" id="cdHours">0</span><span class="cd-label">Horas</span></div>
-                <div class="cd-item"><span class="cd-val" id="cdMins">0</span><span class="cd-label">Min</span></div>
-            </div>
-
-            <!-- Info Grid -->
-            <div class="info-grid">
-                <div class="info-item">
-                    <div class="info-label"><i class="fas fa-clock"></i> Inicio</div>
-                    <div class="info-val" id="detailStart">--</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label"><i class="fas fa-hourglass-half"></i> Duración</div>
-                    <div class="info-val" id="detailDuration">--</div>
-                </div>
-            </div>
-
-            <!-- Pasos -->
-            <div class="detail-section" id="sectionSteps" style="display:none;">
-                <div class="detail-section-header"><i class="fas fa-list-ol"></i> Pasos a seguir</div>
-                <ul class="steps-list" id="detailSteps"></ul>
-            </div>
-
-            <!-- Descripción / Mensaje -->
-            <div class="detail-section">
-                <div class="detail-section-header"><i class="fas fa-align-left"></i> Descripción</div>
-                <div class="detail-content" id="detailDesc">Sin detalles.</div>
-            </div>
-
-            <!-- Archivo Adjunto -->
-            <div class="detail-section" id="sectionFile" style="display:none;">
-                <a id="detailLink" href="#" target="_blank" class="btn btn-secondary" style="width: 100%;">
-                    <i class="fas fa-link"></i> Abrir Archivo Adjunto
-                </a>
-            </div>
-
-            <!-- Acciones -->
-            <div style="margin-top: 30px; display: flex; gap: 10px;">
-                <button class="btn btn-success" style="flex:1" id="btnComplete" onclick="completeTask()"><i class="fas fa-check"></i> Completar</button>
-                <button class="btn btn-secondary" onclick="editCurrent()"><i class="fas fa-edit"></i> Editar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL NUEVO EXAMEN -->
-    <div class="modal-exam" id="modalExam">
+    <!-- Modal Nuevo Examen -->
+    <div class="modal" id="examModal">
         <div class="modal-content">
-            <div class="modal-head">
-                <h3 class="modal-title">Registrar Examen</h3>
+            <div class="modal-header">
+                <h3 class="modal-title" id="examModalTitle">Registrar Examen</h3>
                 <button class="btn btn-icon btn-sm btn-secondary" onclick="closeExamModal()"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label class="form-label">Título del Examen</label>
-                    <input type="text" id="inputExamTitle" class="form-input" placeholder="Ej: Final de Matemáticas">
+                    <label class="form-label">Titulo del Examen *</label>
+                    <input type="text" class="form-input" id="inputExamTitle" placeholder="Ej: Final de Matematicas">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Materia</label>
-                    <div style="display:flex; gap:10px;">
-                        <select id="inputExamSubject" class="form-input" style="flex:1"></select>
-                        <button class="btn btn-secondary" onclick="addSubjectFromExamModal()"><i class="fas fa-plus"></i></button>
+                    <label class="form-label">Materia *</label>
+                    <div style="display: flex; gap: 10px;">
+                        <select class="form-input" id="inputExamSubject" style="flex: 1;"></select>
+                        <button class="btn btn-secondary" onclick="addSubjectQuick()"><i class="fas fa-plus"></i></button>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label">Fecha</label>
-                        <input type="date" id="inputExamDate" class="form-input">
+                        <label class="form-label">Fecha *</label>
+                        <input type="date" class="form-input" id="inputExamDate">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Hora</label>
-                        <input type="time" id="inputExamTime" class="form-input" value="09:00">
+                        <input type="time" class="form-input" id="inputExamTime" value="09:00">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Descripcion</label>
+                    <textarea class="form-input" id="inputExamDesc" placeholder="Temas a evaluar, material de estudio..."></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Peso del Examen (%)</label>
+                        <input type="number" class="form-input" id="inputExamWeight" placeholder="25" min="1" max="100">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Duracion estimada (min)</label>
+                        <input type="number" class="form-input" id="inputExamDuration" placeholder="120" min="30">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="checkbox-group" onclick="toggleImportant()">
+                        <input type="checkbox" id="inputExamImportant">
+                        <span style="font-size: 0.85rem;">Marcar como importante (genera bloques de estudio automaticos)</span>
                     </div>
                 </div>
             </div>
-            <div class="modal-foot">
-                <button class="btn btn-secondary" onclick="closeExamModal()">Cancelar</button>
-                <button class="btn btn-primary" onclick="saveExamData()">Guardar Examen</button>
+            <div class="modal-footer">
+                <button class="btn btn-danger" id="btnDeleteExam" style="display:none;" onclick="deleteExam()">
+                    <i class="fas fa-trash"></i> Eliminar
+                </button>
+                
+                <div style="display:flex; gap:10px;">
+                    <button class="btn btn-secondary" onclick="closeExamModal()">Cancelar</button>
+                    <button class="btn btn-primary" onclick="saveExam()"><i class="fas fa-save"></i> Guardar</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- FIREBASE SCRIPT -->
+    <!-- Modal Nota -->
+    <div class="modal" id="noteModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Guardar Nota</h3>
+                <button class="btn btn-icon btn-sm btn-secondary" onclick="closeNoteModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Materia</label>
+                    <select class="form-input" id="inputNoteSubject"></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Nombre de evaluacion</label>
+                    <input type="text" class="form-input" id="inputNoteName" placeholder="Ej: Parcial 1">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Nota obtenida</label>
+                    <input type="number" class="form-input" id="inputNoteGrade" placeholder="85" min="0" max="100">
+                </div>
+            </div>
+            <div class="modal-footer" style="justify-content: flex-end;">
+                <button class="btn btn-secondary" onclick="closeNoteModal()">Cancelar</button>
+                <button class="btn btn-primary" onclick="saveNote()"><i class="fas fa-save"></i> Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Script -->
     <script type="module">
-        // --- IMPORTACIÓN DE MÓDULOS FIREBASE ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDatabase, ref, set, push, onValue, remove, update, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // --- CONFIGURACIÓN FIREBASE ---
         const firebaseConfig = {
             apiKey: "AIzaSyBH42jsEEaEOFa02LhD59aDkwFfo_RVVB4",
             authDomain: "thynka-1dd68.firebaseapp.com",
@@ -887,32 +1087,24 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        // --- ESTADO GLOBAL DE LA APLICACIÓN ---
         let currentUser = null;
         let appData = {
-            tasks: {},
+            exams: {},
             subjects: {},
-            settings: {},
+            notes: {},
+            studyBlocks: {},
             classSchedule: {},
             workSchedule: {},
-            exams: {},
-            studyBlocks: {}
-        };
-        
-        // Estado de UI
-        let uiState = {
-            currentDate: new Date(),
-            currentView: 'week',
-            focusMode: false,
-            selectedEvent: null,
-            miniCalDate: new Date()
+            tasks: {},
+            settings: {}
         };
 
-        // Helpers DOM
+        let currentFilter = 'all';
+        let editingExamId = null;
+
         const $ = (id) => document.getElementById(id);
-        const createEl = (tag, cls) => { const el = document.createElement(tag); if(cls) el.className = cls; return el; };
 
-        // --- 1. AUTENTICACIÓN Y SINCRONIZACIÓN ---
+        // Autenticacion
         onAuthStateChanged(auth, user => {
             if (user) {
                 currentUser = user;
@@ -923,652 +1115,454 @@
         });
 
         function initListeners() {
-            listenTo('tasks');
-            listenTo('subjects');
-            listenTo('classSchedule');
-            listenTo('workSchedule');
-            listenTo('exams');
-            listenTo('studyBlocks');
+            onValue(ref(db, `exams/${currentUser.uid}`), snap => {
+                appData.exams = snap.val() || {};
+                renderExams();
+                populateExamDropdowns();
+                updateStats();
+            });
+
+            onValue(ref(db, `subjects/${currentUser.uid}`), snap => {
+                appData.subjects = snap.val() || {};
+                populateSubjectDropdowns();
+            });
+
+            onValue(ref(db, `notes/${currentUser.uid}`), snap => {
+                appData.notes = snap.val() || {};
+                renderNotes();
+            });
+
+            onValue(ref(db, `studyBlocks/${currentUser.uid}`), snap => {
+                appData.studyBlocks = snap.val() || {};
+                renderStudyBlocks();
+            });
+
+            onValue(ref(db, `classSchedule/${currentUser.uid}`), snap => {
+                appData.classSchedule = snap.val() || {};
+            });
+
+            onValue(ref(db, `workSchedule/${currentUser.uid}`), snap => {
+                appData.workSchedule = snap.val() || {};
+            });
+            
+            onValue(ref(db, `tasks/${currentUser.uid}`), snap => {
+                appData.tasks = snap.val() || {};
+            });
+
             onValue(ref(db, `users/${currentUser.uid}`), snap => {
-                if(snap.exists()) appData.settings = snap.val();
-                renderAllViews();
+                if (snap.exists()) appData.settings = snap.val();
             });
         }
 
-        function listenTo(path) {
-            onValue(ref(db, `${path}/${currentUser.uid}`), snap => {
-                appData[path] = snap.val() || {};
-                if(path === 'subjects') populateExamDropdown();
-                renderAllViews();
-            });
-        }
-
-        // --- 2. INTERFAZ DE USUARIO GLOBAL ---
-        
-        // Theme Toggle
+        // UI Controls
         $('btnTheme').onclick = () => {
             const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
             document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
             localStorage.setItem('theme', isDark ? 'light' : 'dark');
             $('btnTheme').innerHTML = isDark ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
         };
-        if(localStorage.getItem('theme') === 'dark') {
+
+        if (localStorage.getItem('theme') === 'dark') {
             document.documentElement.setAttribute('data-theme', 'dark');
             $('btnTheme').innerHTML = '<i class="fas fa-sun"></i>';
         }
 
-        // Sidebar Toggle
         $('btnMenu').onclick = () => $('mainSidebar').classList.toggle('active');
         $('overlayPanel').onclick = () => {
             $('mainSidebar').classList.remove('active');
             $('overlayPanel').classList.remove('active');
         };
 
-        // Exam Modal Logic
-        window.openExamModal = () => {
-            populateExamDropdown();
-            $('modalExam').classList.add('active');
-        };
-        window.closeExamModal = () => $('modalExam').classList.remove('active');
-
-        function populateExamDropdown() {
-            const sel = $('inputExamSubject');
-            if(!sel) return;
-            const subjects = appData.subjects || {};
-            sel.innerHTML = Object.entries(subjects).map(([id, s]) => `<option value="${id}">${s.name}</option>`).join('');
-            if(Object.keys(subjects).length === 0) sel.innerHTML = '<option value="">Crea una materia primero</option>';
-        }
-
-        window.addSubjectFromExamModal = () => {
-            const n = prompt("Nombre de la nueva materia:");
-            if(n) {
-                const color = `hsl(${Math.random()*360}, 60%, 65%)`;
-                const newRef = push(ref(db, `subjects/${currentUser.uid}`));
-                set(newRef, { name: n, color: color });
+        // Funciones de Examen
+        window.openExamModal = function(examId = null) {
+            editingExamId = examId;
+            populateSubjectDropdowns();
+            const delBtn = $('btnDeleteExam');
+            
+            if (examId && appData.exams[examId]) {
+                const exam = appData.exams[examId];
+                $('examModalTitle').textContent = 'Editar Examen';
+                $('inputExamTitle').value = exam.title || '';
+                $('inputExamSubject').value = exam.subjectId || '';
+                $('inputExamDate').value = exam.date || '';
+                $('inputExamTime').value = exam.time || '09:00';
+                $('inputExamDesc').value = exam.description || '';
+                $('inputExamWeight').value = exam.weight || '';
+                $('inputExamDuration').value = exam.duration || '';
+                $('inputExamImportant').checked = exam.important || false;
+                delBtn.style.display = 'block';
+            } else {
+                $('examModalTitle').textContent = 'Registrar Examen';
+                $('inputExamTitle').value = '';
+                $('inputExamDate').value = '';
+                $('inputExamDesc').value = '';
+                $('inputExamWeight').value = '';
+                $('inputExamDuration').value = '';
+                $('inputExamImportant').checked = false;
+                delBtn.style.display = 'none';
             }
+            
+            $('examModal').classList.add('active');
         };
 
-        window.saveExamData = async () => {
-            const title = $('inputExamTitle').value;
+        window.closeExamModal = () => {
+            $('examModal').classList.remove('active');
+            editingExamId = null;
+        };
+
+        window.toggleImportant = () => {
+            $('inputExamImportant').checked = !$('inputExamImportant').checked;
+        };
+
+        window.saveExam = async function() {
+            const title = $('inputExamTitle').value.trim();
+            const subjectId = $('inputExamSubject').value;
             const date = $('inputExamDate').value;
             const time = $('inputExamTime').value;
-            const subjectId = $('inputExamSubject').value;
-            
-            if(!title || !date) return alert("Por favor ingresa título y fecha.");
-            if(!subjectId) return alert("Por favor selecciona o crea una materia.");
+            const description = $('inputExamDesc').value.trim();
+            const weight = parseInt($('inputExamWeight').value) || 0;
+            const duration = parseInt($('inputExamDuration').value) || 120;
+            const important = $('inputExamImportant').checked;
 
-            await push(ref(db, `exams/${currentUser.uid}`), { title, date, time, subjectId });
-            closeExamModal();
-        };
+            if (!title) { alert('Por favor ingresa un titulo'); return; }
+            if (!date) { alert('Por favor selecciona una fecha'); return; }
+            if (!subjectId) { alert('Por favor selecciona una materia'); return; }
 
-        // --- 3. LÓGICA DE RENDERIZADO PRINCIPAL ---
-        
-        window.renderAllViews = function() {
-            renderMiniCalendar();
-            renderExamList();
-            if(uiState.currentView === 'week') renderWeekView();
-            else renderMonthView();
-        };
-
-        // --- VISTA SEMANAL (DETALLADA) ---
-        function renderWeekView() {
-            const startOfWeek = getStartOfWeek(uiState.currentDate);
-            const endOfWeek = new Date(startOfWeek); endOfWeek.setDate(endOfWeek.getDate() + 6);
-            
-            const opts = { month: 'long', year: 'numeric' };
-            $('weekTitleDisplay').innerText = `${startOfWeek.getDate()} - ${endOfWeek.getDate()} de ${startOfWeek.toLocaleDateString('es-ES', opts)}`;
-
-            const days = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
-            let html = '<div class="grid-corner"></div>';
-
-            const today = new Date(); today.setHours(0,0,0,0);
-            for(let i=0; i<7; i++) {
-                const d = new Date(startOfWeek); d.setDate(d.getDate() + i);
-                const isToday = d.getTime() === today.getTime();
-                html += `<div class="grid-header ${isToday ? 'today' : ''}">
-                    <span class="day-name">${days[i]}</span>
-                    <span class="day-num">${d.getDate()}</span>
-                </div>`;
-            }
-
-            html += '<div class="time-col">';
-            for(let h=6; h<=21; h++) {
-                html += `<div class="time-label" style="top: ${((h-6)*60)+20}px">${h}:00</div>`;
-            }
-            html += '</div>';
-
-            for(let i=0; i<7; i++) {
-                const dayDate = new Date(startOfWeek); dayDate.setDate(dayDate.getDate() + i);
-                const dateStr = dayDate.toISOString().split('T')[0];
-                
-                html += `<div class="day-col" data-date="${dateStr}">`;
-                
-                for(let h=6; h<=21; h++) {
-                    html += `<div class="hour-line" style="top: ${(h-6)*60}px"></div>`;
-                }
-
-                // Renderizar Eventos
-                html += generateEventBlocks(dayDate);
-                
-                html += '</div>';
-            }
-
-            $('weekViewContainer').innerHTML = html;
-            drawTimeLine();
-        }
-
-        function generateEventBlocks(dayDate) {
-            let html = '';
-            const dateStr = dayDate.toISOString().split('T')[0];
-            const dayLetter = ['D', 'L', 'M', 'X', 'J', 'V', 'S'][dayDate.getDay()];
-            
-            // CHECK MODO FOCO AL PRINCIPIO
-            // Si modo foco está activo y no es hoy, retornar vacío
-            if(uiState.focusMode) {
-                const today = new Date();
-                today.setHours(0,0,0,0);
-                if(dayDate.getTime() !== today.getTime()) {
-                    return ''; 
-                }
-            }
-
-            // 1. Clases
-            if(appData.classSchedule && appData.classSchedule[dayLetter]) {
-                const sch = appData.classSchedule[dayLetter];
-                const sMins = timeToMins(sch.start);
-                const eMins = timeToMins(sch.end);
-                const top = (sMins/60 - 6) * 60;
-                const height = ((eMins - sMins)/60) * 60;
-
-                html += `<div class="event-block class" style="top:${top}px; height:${height}px;">
-                    <div class="title"><i class="fas fa-graduation-cap"></i> Clases</div>
-                    <div style="opacity:0.7">${sch.start} - ${sch.end}</div>
-                </div>`;
-            }
-
-            // 2. Trabajo
-            if(appData.settings.works === 'si' && appData.workSchedule && appData.workSchedule[dayLetter]) {
-                const wrk = appData.workSchedule[dayLetter];
-                const sMins = timeToMins(wrk.start);
-                const eMins = timeToMins(wrk.end);
-                const top = (sMins/60 - 6) * 60;
-                const height = ((eMins - sMins)/60) * 60;
-
-                html += `<div class="event-block work" style="top:${top}px; height:${height}px;">
-                    <div class="title"><i class="fas fa-briefcase"></i> Trabajo</div>
-                    <div style="opacity:0.7">${wrk.start} - ${wrk.end}</div>
-                </div>`;
-            }
-
-            // 3. Tareas (FILTRADO COMPLETADOS)
-            if(appData.tasks) {
-                Object.entries(appData.tasks).forEach(([id, t]) => {
-                    if(t.completed) return; // NO MOSTRAR SI ESTÁ COMPLETADO
-                    if(!t.recommendedStart) return;
-
-                    const taskDate = new Date(t.recommendedStart);
-                    if(!isSameDay(taskDate, dayDate)) return;
-
-                    const sMins = taskDate.getHours()*60 + taskDate.getMinutes();
-                    const duration = t.duration || 60;
-                    const top = (sMins/60 - 6) * 60;
-                    const height = Math.max(25, (duration/60) * 60);
-
-                    const subj = appData.subjects[t.subjectId] || {name:'General', color:'#888888', icon:'📌'};
-                    const dueDate = new Date(t.dueDate + 'T' + t.dueTime);
-                    const isUrgent = dueDate <= new Date(Date.now() + 2*24*60*60*1000);
-
-                    html += `<div class="event-block task ${isUrgent ? 'urgent' : ''}" 
-                        style="top:${top}px; height:${height}px; border-left-color: ${subj.color}; background-color: ${subj.color}15;"
-                        onclick="openDetailPanel('task', '${id}')">
-                        <div class="title">${subj.icon || ''} ${t.title}</div>
-                        <div style="opacity:0.8">${duration} min</div>
-                    </div>`;
-                });
-            }
-
-            // 4. Exámenes (FILTRADO COMPLETADOS)
-            if(appData.exams) {
-                Object.entries(appData.exams).forEach(([id, e]) => {
-                    if(e.completed) return; // NO MOSTRAR SI ESTÁ COMPLETADO
-                    if(e.date !== dateStr) return;
-
-                    const sMins = timeToMins(e.time);
-                    const top = (sMins/60 - 6) * 60;
-                    const subj = appData.subjects[e.subjectId] || {name:'General', color:'#e74c3c', icon:'📝'};
-                    
-                    html += `<div class="event-block exam" style="top:${top}px; height:35px; border-left-color:${subj.color};" onclick="openDetailPanel('exam', '${id}')">
-                        <div class="title">${subj.icon || '📝'} ${e.title}</div>
-                    </div>`;
-                });
-            }
-
-            // 5. Bloques de Estudio
-            if(appData.studyBlocks) {
-                Object.entries(appData.studyBlocks).forEach(([id, block]) => {
-                    if(block.date !== dateStr) return;
-                    
-                    const sMins = timeToMins(block.startHour);
-                    const eMins = timeToMins(block.endHour);
-                    const top = (sMins/60 - 6) * 60;
-                    const height = ((eMins - sMins)/60) * 60;
-
-                    const subj = appData.subjects[block.subjectId] || {name:'Estudio', color:'#27ae60', icon:'book'};
-                    
-                    html += `<div class="event-block study" 
-                        style="top:${top}px; height:${height}px; border-left-color: ${subj.color}; background-color: ${subj.color}10;"
-                        onclick="openDetailPanel('study', '${id}')">
-                        <div class="title"><i class="fas fa-book"></i> Estudio: ${block.examTitle || 'Bloque'}</div>
-                        <div style="opacity:0.7">${block.startHour} - ${block.endHour}</div>
-                    </div>`;
-                });
-            }
-
-            return html;
-        }
-
-        function drawTimeLine() {
-            const oldLine = document.querySelector('.time-line-indicator');
-            if(oldLine) oldLine.remove();
-
-            const now = new Date();
-            const todayStr = now.toISOString().split('T')[0];
-            const todayCol = document.querySelector(`.day-col[data-date="${todayStr}"]`);
-            
-            if(todayCol) {
-                const mins = now.getHours()*60 + now.getMinutes();
-                const top = ((mins - 360) / 60) * 60;
-
-                if(top >= 0) {
-                    const line = createEl('div', 'time-line-indicator');
-                    line.style.top = `${top}px`;
-                    todayCol.appendChild(line);
-                }
-            }
-        }
-
-        // --- VISTA MENSUAL ---
-        function renderMonthView() {
-            const year = uiState.currentDate.getFullYear();
-            const month = uiState.currentDate.getMonth();
-            
-            $('weekTitleDisplay').innerText = uiState.currentDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
-
-            const firstDay = new Date(year, month, 1);
-            const lastDay = new Date(year, month + 1, 0);
-            const startPadding = (firstDay.getDay() + 6) % 7;
-            
-            let html = '';
-            const today = new Date();
-
-            for(let i=0; i<startPadding; i++) {
-                const prevDay = new Date(year, month, -startPadding + i + 1);
-                html += `<div class="month-day-card other-month"><div class="month-head"><span class="month-day-num">${prevDay.getDate()}</span></div></div>`;
-            }
-
-            for(let d=1; d<=lastDay.getDate(); d++) {
-                const date = new Date(year, month, d);
-                const dateStr = date.toISOString().split('T')[0];
-                const isToday = d === today.getDate() && month === today.getMonth() && year === today.getFullYear();
-                
-                const density = calculateDayLoad(dateStr);
-                const isDanger = density > 6;
-                const densityColor = isDanger ? 'var(--density-high)' : (density > 3 ? 'var(--density-med)' : 'var(--density-low)');
-                
-                html += `<div class="month-day-card ${isToday ? 'today' : ''} ${isDanger ? 'danger' : ''}" onclick="selectDayFromMonth('${dateStr}')">
-                    <div class="month-head">
-                        <span class="month-day-num">${d}</span>
-                    </div>
-                    <div class="month-event-dots">
-                        ${generateDots(dateStr)}
-                    </div>
-                    <div class="density-container">
-                        <div class="density-bar"><div class="density-fill" style="width:${Math.min(density*10, 100)}%; background:${densityColor}"></div></div>
-                        <div class="density-warning">⚠️ Sobrecarga</div>
-                    </div>
-                </div>`;
-            }
-
-            $('monthViewContainer').innerHTML = html;
-        }
-
-        function generateDots(dateStr) {
-            let dots = '';
-            // Tareas
-            Object.values(appData.tasks).forEach(t => {
-                if(t.completed || !t.recommendedStart) return; // FILTRO
-                if(new Date(t.recommendedStart).toISOString().split('T')[0] === dateStr) {
-                    const c = (appData.subjects[t.subjectId] || {}).color || '#888';
-                    dots += `<span class="dot" style="background:${c}"></span>`;
-                }
-            });
-            // Examenes
-            Object.values(appData.exams).forEach(e => {
-                if(e.completed) return; // FILTRO
-                if(e.date === dateStr) {
-                    dots += `<span class="dot" style="background:var(--danger); border-radius:2px; width:6px;"></span>`;
-                }
-            });
-            // Bloques de estudio
-            Object.values(appData.studyBlocks).forEach(b => {
-                if(b.date === dateStr) {
-                    dots += `<span class="dot" style="background:var(--success);"></span>`;
-                }
-            });
-            return dots;
-        }
-
-        function calculateDayLoad(dateStr) {
-            let totalHours = 0;
-            Object.values(appData.tasks).forEach(t => {
-                if(t.completed || !t.recommendedStart) return;
-                if(new Date(t.recommendedStart).toISOString().split('T')[0] === dateStr) {
-                    totalHours += (t.duration || 60) / 60;
-                }
-            });
-            Object.values(appData.studyBlocks).forEach(b => {
-                if(b.date === dateStr) {
-                    const start = timeToMins(b.startHour);
-                    const end = timeToMins(b.endHour);
-                    totalHours += (end - start) / 60;
-                }
-            });
-            return totalHours;
-        }
-
-        // --- 4. PANEL DE DETALLES (SLIDE PANEL) ---
-        
-        window.openDetailPanel = function(type, id) {
-            uiState.selectedEvent = { type, id };
-            let data;
-            
-            if(type === 'study') {
-                data = appData.studyBlocks[id];
-                if(!data) return;
-                const subj = appData.subjects[data.subjectId] || {name:'Estudio', color:'#27ae60', icon:'book'};
-                
-                $('detailTitle').innerText = "Bloque de Estudio";
-                $('detailSubject').innerHTML = `<span style="color:${subj.color}">${subj.icon || '📖'}</span> ${data.examTitle || 'Estudio'}`;
-                document.querySelector('.detail-header').style.setProperty('--primary', subj.color);
-                
-                $('detailStart').innerText = data.startHour;
-                $('detailDuration').innerText = `${Math.round((timeToMins(data.endHour) - timeToMins(data.startHour))/60)} hrs`;
-                $('detailDesc').innerText = `Sesión de estudio programada para el examen de ${data.examTitle}.`;
-                $('sectionSteps').style.display = 'none';
-                $('sectionFile').style.display = 'none';
-                $('btnComplete').style.display = 'none';
-                
-                startCountdown(new Date(data.date + 'T' + data.startHour));
-                
-            } else {
-                data = type === 'task' ? appData.tasks[id] : appData.exams[id];
-                if(!data) return;
-
-                const subj = appData.subjects[data.subjectId] || {name:'Sin Materia', color:'#888', icon:'?'};
-                
-                $('detailTitle').innerText = data.title;
-                $('detailSubject').innerHTML = `<span style="color:${subj.color}">${subj.icon || ''}</span> ${subj.name}`;
-                document.querySelector('.detail-header').style.setProperty('--primary', subj.color);
-
-                $('sectionSteps').style.display = 'none';
-                $('sectionFile').style.display = 'none';
-                $('btnComplete').style.display = 'flex';
-
-                if(type === 'task') {
-                    $('detailStart').innerText = data.recommendedStart ? new Date(data.recommendedStart).toLocaleString('es') : 'N/A';
-                    $('detailDuration').innerText = (data.duration || 60) + ' min';
-                    $('detailDesc').innerText = data.instructions || 'Sin descripción detallada.';
-
-                    if(data.steps && data.steps.length > 0) {
-                        $('sectionSteps').style.display = 'block';
-                        $('detailSteps').innerHTML = data.steps.map(s => 
-                            `<li class="step-item"><i class="fas fa-check-circle step-check"></i> ${s}</li>`
-                        ).join('');
-                    }
-
-                    if(data.link) {
-                        $('sectionFile').style.display = 'block';
-                        $('detailLink').href = data.link;
-                    }
-
-                    startCountdown(new Date(data.dueDate + 'T' + data.dueTime));
-
-                } else {
-                    $('detailStart').innerText = data.time;
-                    $('detailDuration').innerText = '-';
-                    $('detailDesc').innerText = "Evento de evaluación final.";
-                    $('btnComplete').style.display = 'none';
-                    startCountdown(new Date(data.date + 'T' + data.time));
-                }
-            }
-
-            $('detailPanel').classList.add('active');
-        };
-
-        window.closeDetailPanel = () => $('detailPanel').classList.remove('active');
-
-        function startCountdown(targetDate) {
-            const update = () => {
-                const diff = targetDate - new Date();
-                if(diff < 0) {
-                    $('cdDays').innerText = '0'; $('cdHours').innerText = '0'; $('cdMins').innerText = '0';
-                    return;
-                }
-                const d = Math.floor(diff / (1000*60*60*24));
-                const h = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
-                const m = Math.floor((diff % (1000*60*60)) / (1000*60));
-                
-                $('cdDays').innerText = d;
-                $('cdHours').innerText = h;
-                $('cdMins').innerText = m;
+            const examData = {
+                title,
+                subjectId,
+                date,
+                time,
+                description,
+                weight,
+                duration,
+                important,
+                completed: false,
+                createdAt: Date.now()
             };
-            update();
-            clearInterval(window.cdInterval);
-            window.cdInterval = setInterval(update, 60000);
-        }
 
-        window.completeTask = async () => {
-            if(!uiState.selectedEvent || uiState.selectedEvent.type !== 'task') return;
-            await update(ref(db, `tasks/${currentUser.uid}/${uiState.selectedEvent.id}`), { completed: true });
-            closeDetailPanel();
-        };
+            try {
+                let savedExamId = editingExamId;
 
-        window.editCurrent = () => {
-            if(!uiState.selectedEvent) return;
-            if(uiState.selectedEvent.type === 'task') window.location.href = `tareas.html?edit=${uiState.selectedEvent.id}`;
-            else window.location.href = `examen.html?edit=${uiState.selectedEvent.id}`;
-        };
-
-        // --- 5. MOTOR DE REPROGRAMACIÓN INTELIGENTE ---
-        window.rescheduleWeek = async function() {
-            if(!confirm("El sistema reorganizará tus tareas pendientes para equilibrar la carga de la semana. ¿Continuar?")) return;
-
-            let tasks = [];
-            const updates = {};
-            
-            Object.entries(appData.tasks).forEach(([id, t]) => {
-                if(t.completed) return;
-                tasks.push({ id, ...t });
-                updates[`tasks/${currentUser.uid}/${id}/recommendedStart`] = null;
-                updates[`tasks/${currentUser.uid}/${id}/recommendedEnd`] = null;
-            });
-
-            tasks.sort((a, b) => {
-                const pA = a.priority === 'alta' ? 1 : (a.priority === 'media' ? 2 : 3);
-                const pB = b.priority === 'alta' ? 1 : (b.priority === 'media' ? 2 : 3);
-                if(pA !== pB) return pA - pB;
-                const dMap = { 'baja': 1, 'alta': 2, 'media': 3 };
-                return (dMap[a.difficulty] || 2) - (dMap[b.difficulty] || 2);
-            });
-
-            let slots = [];
-            let currentScan = new Date();
-            currentScan.setMinutes(0, 0, 0);
-            
-            for(let d=0; d<7; d++) {
-                const dayLetter = ['D', 'L', 'M', 'X', 'J', 'V', 'S'][currentScan.getDay()];
-                
-                for(let h=6; h<22; h++) {
-                    const slotStart = new Date(currentScan); slotStart.setHours(h, 0, 0, 0);
-                    const slotEnd = new Date(currentScan); slotEnd.setHours(h+1, 0, 0, 0);
-                    
-                    if(slotEnd <= new Date()) continue;
-
-                    let isBusy = false;
-                    
-                    if(appData.classSchedule && appData.classSchedule[dayLetter]) {
-                        const sch = appData.classSchedule[dayLetter];
-                        const sMins = timeToMins(sch.start);
-                        const eMins = timeToMins(sch.end);
-                        const slotMins = h*60;
-                        if(slotMins >= (sMins - 60) && slotMins < (eMins + 60)) isBusy = true;
-                    }
-                    
-                    if(appData.settings.works === 'si' && appData.workSchedule && appData.workSchedule[dayLetter]) {
-                        const wrk = appData.workSchedule[dayLetter];
-                        const sMins = timeToMins(wrk.start);
-                        const eMins = timeToMins(wrk.end);
-                        const slotMins = h*60;
-                        if(slotMins >= (sMins - 60) && slotMins < (eMins + 60)) isBusy = true;
-                    }
-
-                    const dateStrCheck = currentScan.toISOString().split('T')[0];
-                    if(appData.studyBlocks) {
-                        Object.values(appData.studyBlocks).forEach(b => {
-                            if(b.date === dateStrCheck) {
-                                const sMins = timeToMins(b.startHour);
-                                const eMins = timeToMins(b.endHour);
-                                const slotMins = h*60;
-                                if(slotMins >= sMins && slotMins < eMins) isBusy = true;
-                            }
-                        });
-                    }
-
-                    if(!isBusy) slots.push({ start: slotStart, dayIndex: d });
+                if (editingExamId) {
+                    await update(ref(db, `exams/${currentUser.uid}/${editingExamId}`), examData);
+                } else {
+                    const newRef = await push(ref(db, `exams/${currentUser.uid}`), examData);
+                    savedExamId = newRef.key;
                 }
-                currentScan.setDate(currentScan.getDate() + 1);
+
+                if (important && savedExamId) {
+                    await clearBlocksForExam(savedExamId);
+                    await generateSmartStudyBlocks(savedExamId, examData);
+                }
+
+                closeExamModal();
+                const msg = important ? 'Examen guardado y bloques de estudio generados.' : 'Examen guardado correctamente.';
+                alert(msg);
+
+            } catch (error) {
+                console.error('Error guardando examen:', error);
+                alert('Error al guardar el examen: ' + error.message);
             }
-
-            const slotsByDay = {};
-            slots.forEach(s => {
-                if(!slotsByDay[s.dayIndex]) slotsByDay[s.dayIndex] = [];
-                slotsByDay[s.dayIndex].push(s);
-            });
-
-            let distributedSlots = [];
-            let maxRounds = 20;
-            for(let r=0; r<maxRounds; r++) {
-                for(let d=0; d<7; d++) {
-                    if(slotsByDay[d] && slotsByDay[d][r]) distributedSlots.push(slotsByDay[d][r]);
-                }
-            }
-
-            tasks.forEach((task, i) => {
-                if(i < distributedSlots.length) {
-                    const slot = distributedSlots[i];
-                    const taskEnd = new Date(slot.start.getTime() + (task.duration || 60) * 60000);
-                    
-                    updates[`tasks/${currentUser.uid}/${task.id}/recommendedStart`] = slot.start.toISOString();
-                    updates[`tasks/${currentUser.uid}/${task.id}/recommendedEnd`] = taskEnd.toISOString();
-                }
-            });
-
-            await update(ref(db), updates);
-            alert("Semana reprogramada exitosamente. Las tareas han sido distribuidas respetando los bloques de estudio.");
         };
-
-        // --- 6. HELPERS Y UTILIDADES ---
-        function timeToMins(t) { if(!t) return 0; const p = t.split(':'); return parseInt(p[0])*60 + parseInt(p[1]); }
-        function isSameDay(d1, d2) { return d1.getFullYear() === d2.getFullYear() && d1.getMonth() === d2.getMonth() && d1.getDate() === d2.getDate(); }
-        function getStartOfWeek(d) {
-            const date = new Date(d);
-            const day = date.getDay();
-            const diff = date.getDate() - day + (day === 0 ? -6 : 1);
-            return new Date(date.setDate(diff));
-        }
-
-        window.changeWeek = (n) => { uiState.currentDate.setDate(uiState.currentDate.getDate() + n*7); renderAllViews(); };
-        window.goToToday = () => { uiState.currentDate = new Date(); renderAllViews(); };
-        window.setView = (v) => {
-            uiState.currentView = v;
-            document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
-            $('weekViewContainer').style.display = v === 'week' ? 'grid' : 'none';
-            $('monthViewContainer').style.display = v === 'month' ? 'grid' : 'none';
-            renderAllViews();
-        };
-        window.toggleFocusMode = () => {
-            uiState.focusMode = !uiState.focusMode;
-            $('btnFocusMode').classList.toggle('btn-warning', uiState.focusMode);
-            $('btnFocusMode').classList.toggle('btn-secondary', !uiState.focusMode);
-            renderAllViews();
-        };
-        window.selectDayFromMonth = (dateStr) => {
-            uiState.currentDate = new Date(dateStr + 'T12:00:00');
-            window.setView('week');
-        };
-
-        // Mini Calendario
-        window.changeMiniMonth = (n) => { uiState.miniCalDate.setMonth(uiState.miniCalDate.getMonth() + n); renderMiniCalendar(); };
         
-        function renderMiniCalendar() {
-            const year = uiState.miniCalDate.getFullYear();
-            const month = uiState.miniCalDate.getMonth();
-            const firstDay = new Date(year, month, 1);
-            const lastDay = new Date(year, month+1, 0);
-            const startPadding = (firstDay.getDay() + 6) % 7;
+        // --- ELIMINAR EXAMEN Y BLOQUES CORREGIDO ---
+        window.deleteExam = async function() {
+            if (!editingExamId) return;
+            if (!confirm("¿Eliminar este examen y SUS BLOQUES DE ESTUDIO ASOCIADOS?")) return;
             
-            $('miniCalMonthTitle').innerText = uiState.miniCalDate.toLocaleDateString('es-ES', {month:'long', year:'numeric'});
-            let html = '';
-            
-            for(let i=0; i<startPadding; i++) html += `<div class="mini-cal-day other-month"></div>`;
-            
-            const today = new Date();
-            for(let d=1; d<=lastDay.getDate(); d++) {
-                const isToday = d === today.getDate() && month === today.getMonth() && year === today.getFullYear();
-                html += `<div class="mini-cal-day ${isToday ? 'active' : ''}" onclick="selectDayFromMonth('${year}-${(month+1).toString().padStart(2,'0')}-${d.toString().padStart(2,'0')}')">${d}</div>`;
+            try {
+                // 1. Eliminar el examen
+                await remove(ref(db, `exams/${currentUser.uid}/${editingExamId}`));
+                
+                // 2. Limpiar los bloques de estudio usando la función mejorada
+                await clearBlocksForExam(editingExamId);
+                
+                closeExamModal();
+                alert("Examen y bloques eliminados correctamente.");
+            } catch(e) {
+                console.error(e);
+                alert("Error al eliminar: " + e.message);
             }
-            $('miniCalGrid').innerHTML = html;
+        };
+
+        // --- MOTOR INTELIGENTE DE BLOQUES ---
+        
+        // Función auxiliar para limpiar bloques viejos (CORREGIDA)
+        async function clearBlocksForExam(examId) {
+            // CORRECCIÓN: Buscamos directamente en la base de datos para asegurar que encontramos los bloques
+            // incluso si la memoria local no se ha actualizado.
+            const snapshot = await get(ref(db, `studyBlocks/${currentUser.uid}`));
+            const blocks = snapshot.val() || {};
+            
+            const updates = {};
+            let count = 0;
+            
+            for (const [id, block] of Object.entries(blocks)) {
+                // Si el bloque pertenece a este examen, lo marcamos para borrar
+                if (block.examId === examId) {
+                    updates[`studyBlocks/${currentUser.uid}/${id}`] = null;
+                    count++;
+                }
+            }
+            
+            // Si hay bloques para borrar, ejecutamos la actualización
+            if (Object.keys(updates).length > 0) {
+                await update(ref(db), updates);
+                console.log(`Eliminados ${count} bloques de estudio.`);
+            }
         }
 
-        // Examenes Sidebar (FILTRADO COMPLETADOS)
-        function renderExamList() {
+        async function generateSmartStudyBlocks(examId, exam) {
             const now = new Date();
-            const list = Object.entries(appData.exams || {})
-                .map(([id, e]) => ({id, ...e}))
-                .filter(e => {
-                    if(e.completed) return false; // NO MOSTRAR SI ESTÁ COMPLETADO
-                    return new Date(e.date) >= now.setHours(0,0,0,0);
-                })
-                .sort((a,b) => new Date(a.date) - new Date(b.date))
-                .slice(0, 5);
+            const examDate = new Date(exam.date + 'T23:59');
+            const totalDays = Math.ceil((examDate - now) / (1000 * 60 * 60 * 24));
 
-            $('examListContainer').innerHTML = list.map(e => {
-                const subj = appData.subjects[e.subjectId] || {name: 'General', color: '#e74c3c', icon: '📝'};
-                const examDate = new Date(e.date);
+            if (totalDays <= 0) return;
+
+            const maxBlocks = 6;
+            const blocksToGenerate = [];
+            const step = Math.max(2, Math.floor(totalDays / (maxBlocks + 1)));
+            
+            let localBusySlots = []; 
+
+            for (let d = 1; d <= totalDays; d++) {
+                if (blocksToGenerate.length >= maxBlocks) break;
+                if (d % step !== 0 && blocksToGenerate.length > 0) continue;
+
+                const blockDate = new Date(now);
+                blockDate.setDate(blockDate.getDate() + d);
+                const dateStr = blockDate.toISOString().split('T')[0];
+
+                const slot = findBestSlot(dateStr, localBusySlots);
+                
+                if (slot) {
+                    const blockData = {
+                        examId: examId,
+                        examTitle: exam.title,
+                        subjectId: exam.subjectId,
+                        date: dateStr,
+                        startHour: slot.start,
+                        endHour: slot.end,
+                        duration: 120
+                    };
+                    blocksToGenerate.push(blockData);
+                    localBusySlots.push({ date: dateStr, start: slot.start, end: slot.end });
+                }
+            }
+
+            for (const block of blocksToGenerate) {
+                await push(ref(db, `studyBlocks/${currentUser.uid}`), block);
+            }
+        }
+
+        function findBestSlot(dateStr, localBusySlots) {
+            const dayLetter = ['D', 'L', 'M', 'X', 'J', 'V', 'S'][new Date(dateStr).getDay()];
+            
+            let occupiedMinutes = [];
+            const addRange = (start, end) => { for(let i=start; i<end; i++) occupiedMinutes.push(i); };
+
+            addRange(0, 420); // Dormir inicio
+            addRange(1350, 1440); // Dormir fin
+            addRange(720, 780); // Almuerzo
+
+            if(appData.classSchedule && appData.classSchedule[dayLetter]) {
+                const c = appData.classSchedule[dayLetter];
+                if(c.start && c.end) addRange(timeToMins(c.start), timeToMins(c.end));
+            }
+            if(appData.workSchedule && appData.workSchedule[dayLetter]) {
+                const w = appData.workSchedule[dayLetter];
+                if(w.start && w.end) addRange(timeToMins(w.start), timeToMins(w.end));
+            }
+            Object.values(appData.tasks).forEach(t => {
+                if(t.recommendedStart && t.recommendedStart.startsWith(dateStr)) {
+                    const h = new Date(t.recommendedStart).getHours();
+                    const duration = t.duration || 60;
+                    addRange(h*60, h*60 + duration);
+                }
+            });
+            Object.values(appData.studyBlocks).forEach(b => {
+                if(b.date === dateStr) addRange(timeToMins(b.startHour), timeToMins(b.endHour));
+            });
+            localBusySlots.forEach(b => {
+                if(b.date === dateStr) addRange(timeToMins(b.start), timeToMins(b.end));
+            });
+
+            const ranges = [[420, 720], [780, 1080], [1080, 1290]];
+            ranges.sort(() => Math.random() - 0.5);
+
+            for (let range of ranges) {
+                for (let m = range[0]; m < range[1]; m += 30) {
+                    let end = m + 120;
+                    let isFree = true;
+                    for (let k = m; k < end; k++) {
+                        if (occupiedMinutes.includes(k)) { isFree = false; break; }
+                    }
+                    if (isFree) return { start: minsToTime(m), end: minsToTime(end) };
+                }
+            }
+            return null;
+        }
+
+        function timeToMins(t) { if(!t) return 0; const p=t.split(':'); return parseInt(p[0])*60+parseInt(p[1]); }
+        function minsToTime(m) { const h=Math.floor(m/60); const min=m%60; return `${h.toString().padStart(2,'0')}:${min.toString().padStart(2,'0')}`; }
+
+        window.generateStudyBlocks = async function() {
+            if(!confirm("Esto regenerará los bloques para todos los exámenes importantes. ¿Continuar?")) return;
+            
+            const importantExams = Object.entries(appData.exams).filter(([id,e]) => e.important && !e.completed);
+            if(importantExams.length === 0) return alert("No hay exámenes importantes.");
+
+            await set(ref(db, `studyBlocks/${currentUser.uid}`), {});
+            appData.studyBlocks = {};
+
+            for(const [id, exam] of importantExams) {
+                await generateSmartStudyBlocks(id, exam);
+            }
+            alert("Bloques regenerados inteligentemente.");
+        };
+
+        // --- RENDERIZADOS ---
+        
+        window.filterExams = function(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderExams();
+        };
+
+        function renderExams() {
+            const container = $('examList');
+            const exams = Object.entries(appData.exams || {});
+            
+            if (exams.length === 0) {
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-file-alt"></i><h4>No hay examenes registrados</h4><p>Crea tu primer examen</p></div>`;
+                return;
+            }
+
+            const now = new Date();
+            now.setHours(0, 0, 0, 0);
+
+            let filteredExams = exams.map(([id, exam]) => ({ id, ...exam }));
+            
+            if (currentFilter === 'pending') filteredExams = filteredExams.filter(e => !e.completed);
+            else if (currentFilter === 'completed') filteredExams = filteredExams.filter(e => e.completed);
+            else if (currentFilter === 'important') filteredExams = filteredExams.filter(e => e.important && !e.completed);
+
+            filteredExams.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            container.innerHTML = filteredExams.map(exam => {
+                const subject = appData.subjects[exam.subjectId] || { name: 'Sin materia', color: '#9a9a9a', icon: '📝' };
+                const examDate = new Date(exam.date + 'T' + (exam.time || '00:00'));
                 const diffTime = examDate - new Date();
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                 
+                let urgencyClass = 'calm', badgeClass = 'calm', daysText = `${diffDays} dias`;
+                if (diffDays <= 3) { urgencyClass = 'urgent'; badgeClass = 'urgent'; if (diffDays === 0) daysText = 'Hoy'; else if (diffDays === 1) daysText = 'Manana'; else if (diffDays < 0) daysText = 'Vencido'; }
+                else if (diffDays <= 14) { urgencyClass = 'warning'; badgeClass = 'warning'; }
+
                 return `
-                <div class="exam-item" style="border-left-color: ${subj.color}" onclick="openDetailPanel('exam', '${e.id}')">
-                    <div class="exam-emoji">${subj.icon || '📝'}</div>
-                    <div class="exam-info">
-                        <h5>${e.title}</h5>
-                        <span>${subj.name}</span>
-                        <div style="font-size:0.65rem; color:var(--text-muted); margin-top:2px;">
-                            ${examDate.toLocaleDateString('es')} <strong style="color:var(--danger)">${diffDays} días</strong>
+                    <div class="exam-card ${urgencyClass} ${exam.completed ? 'completed' : ''}" onclick="openExamModal('${exam.id}')">
+                        ${exam.important ? '<span class="important-badge"><i class="fas fa-star"></i> Importante</span>' : ''}
+                        <div class="exam-checkbox ${exam.completed ? 'checked' : ''}" onclick="event.stopPropagation(); toggleExamComplete('${exam.id}')">${exam.completed ? '<i class="fas fa-check"></i>' : ''}</div>
+                        <div class="exam-content">
+                            <h4>${exam.title}</h4>
+                            <p>${exam.description || 'Sin descripcion'}</p>
+                            <div class="exam-meta">
+                                <span class="exam-meta-item" style="color: ${subject.color}"><i class="fas fa-book"></i> ${subject.name}</span>
+                                <span class="exam-meta-item"><i class="fas fa-calendar"></i> ${formatDate(exam.date)}</span>
+                            </div>
                         </div>
-                    </div>
-                </div>`;
-            }).join('') || '<div style="text-align:center; padding: 20px 0; font-size:0.9rem; color:var(--text-secondary)">No hay exámenes próximos</div>';
+                        <div class="exam-days-badge ${badgeClass}">${daysText}</div>
+                    </div>`;
+            }).join('');
         }
 
-        // Actualización automática de la hora
-        setInterval(drawTimeLine, 60000);
-        
-        // Logout function
-        window.signOut = () => auth.signOut();
+        window.toggleExamComplete = async function(examId) {
+            const exam = appData.exams[examId];
+            if (!exam) return;
+            await update(ref(db, `exams/${currentUser.uid}/${examId}`), { completed: !exam.completed });
+        };
 
+        function updateStats() {
+            const now = new Date(); now.setHours(0, 0, 0, 0);
+            let urgent = 0, warning = 0, calm = 0;
+            Object.values(appData.exams || {}).forEach(exam => {
+                if (exam.completed) return;
+                const examDate = new Date(exam.date);
+                const diffDays = Math.ceil((examDate - now) / (1000 * 60 * 60 * 24));
+                if (diffDays <= 3) urgent++; else if (diffDays <= 14) warning++; else calm++;
+            });
+            $('urgentCount').textContent = urgent; $('warningCount').textContent = warning; $('calmCount').textContent = calm;
+        }
+
+        window.simulateGrade = function() {
+            const expectedGrade = parseFloat($('simExpectedGrade').value) || 0;
+            const weight = parseFloat($('simWeight').value) || 0;
+            const currentAvg = parseFloat($('simCurrentAvg').value) || 0;
+            if (weight <= 0 || weight > 100) { alert('Ingresa un peso valido'); return; }
+            const newAvg = (currentAvg * (1 - weight/100)) + (expectedGrade * weight/100);
+            $('simResult').textContent = newAvg.toFixed(1);
+        };
+
+        window.openNoteModal = function() { populateNoteSubjectDropdown(); $('noteModal').classList.add('active'); };
+        window.closeNoteModal = () => $('noteModal').classList.remove('active');
+
+        window.saveNote = async function() {
+            const subjectId = $('inputNoteSubject').value;
+            const name = $('inputNoteName').value.trim();
+            const grade = parseFloat($('inputNoteGrade').value);
+            if (!name || isNaN(grade)) { alert('Por favor completa todos los campos'); return; }
+            await push(ref(db, `notes/${currentUser.uid}`), { subjectId, name, grade, date: Date.now() });
+            closeNoteModal(); $('inputNoteName').value = ''; $('inputNoteGrade').value = '';
+        };
+
+        function renderNotes() {
+            const container = $('notesList');
+            const notes = Object.entries(appData.notes || {});
+            if (notes.length === 0) { container.innerHTML = '<p style="text-align: center; color: var(--text-muted); font-size: 0.85rem;">Sin notas</p>'; return; }
+            container.innerHTML = notes.map(([id, note]) => {
+                const subject = appData.subjects[note.subjectId] || { name: 'General', color: '#9a9a9a' };
+                return `<div class="note-item" style="border-left-color: ${subject.color}"><span class="note-grade">${note.grade}</span><h5>${note.name}</h5><p>${subject.name}</p></div>`;
+            }).join('');
+        }
+
+        function renderStudyBlocks() {
+            const container = $('studyBlockList');
+            const blocks = Object.entries(appData.studyBlocks || {});
+            if (blocks.length === 0) { container.innerHTML = '<p style="text-align: center; color: var(--text-muted); font-size: 0.85rem;">Sin bloques</p>'; $('nextBlockTime').textContent = 'Sin bloques'; $('nextBlockSubject').textContent = ''; return; }
+            
+            const sortedBlocks = blocks.map(([id, b]) => ({ id, ...b })).sort((a, b) => new Date(a.date + 'T' + a.startHour) - new Date(b.date + 'T' + b.startHour));
+            const now = new Date();
+            const nextBlock = sortedBlocks.find(b => new Date(b.date + 'T' + b.startHour) > now);
+            
+            if (nextBlock) {
+                const subject = appData.subjects[nextBlock.subjectId] || { name: 'Estudio', icon: '📚' };
+                const blockDate = new Date(nextBlock.date);
+                $('nextBlockTime').textContent = `${blockDate.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short' })} de ${nextBlock.startHour} a ${nextBlock.endHour}`;
+                $('nextBlockSubject').textContent = `${subject.icon} ${nextBlock.examTitle}`;
+            }
+
+            container.innerHTML = sortedBlocks.slice(0, 5).map(block => {
+                const subject = appData.subjects[block.subjectId] || { name: 'Estudio', color: '#9a9a9a' };
+                const blockDate = new Date(block.date);
+                return `<div class="study-block-item"><div><div class="block-time">${blockDate.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric' })} - ${block.startHour}</div><div class="block-exam">${subject.icon || '📚'} ${block.examTitle}</div></div><button class="delete-block" onclick="event.stopPropagation(); deleteStudyBlock('${block.id}')"><i class="fas fa-trash"></i></button></div>`;
+            }).join('');
+        }
+
+        window.deleteStudyBlock = async function(blockId) {
+            if (confirm('Eliminar este bloque?')) await remove(ref(db, `studyBlocks/${currentUser.uid}/${blockId}`));
+        };
+
+        function formatDate(dateStr) { if (!dateStr) return ''; return new Date(dateStr + 'T12:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }); }
+        function populateSubjectDropdowns() { const subjects = appData.subjects || {}; $('inputExamSubject').innerHTML = `<option value="">Seleccionar</option>${Object.entries(subjects).map(([id, s]) => `<option value="${id}">${s.name}</option>`).join('')}`; }
+        function populateNoteSubjectDropdown() { const subjects = appData.subjects || {}; $('inputNoteSubject').innerHTML = `<option value="">Seleccionar</option>${Object.entries(subjects).map(([id, s]) => `<option value="${id}">${s.name}</option>`).join('')}`; }
+        function populateExamDropdowns() { const exams = appData.exams || {}; $('simExamSelect').innerHTML = `<option value="">Seleccionar</option>${Object.entries(exams).filter(([id, e]) => !e.completed).map(([id, e]) => `<option value="${id}">${e.title}</option>`).join('')}`; }
+
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeExamModal(); closeNoteModal(); } });
+        $('examModal').addEventListener('click', (e) => { if (e.target === $('examModal')) closeExamModal(); });
+        $('noteModal').addEventListener('click', (e) => { if (e.target === $('noteModal')) closeNoteModal(); });
+        window.signOut = () => auth.signOut();
     </script>
 </body>
 </html>
