@@ -1062,14 +1062,14 @@
             drawTimeLine();
         }
 
-        function generateEventBlocks(dayDate) {
+              function generateEventBlocks(dayDate) {
             let html = '';
             const dateStr = dayDate.toISOString().split('T')[0];
             const dayLetter = ['D', 'L', 'M', 'X', 'J', 'V', 'S'][dayDate.getDay()];
             const now = new Date();
             const limitFocus = new Date(now.getTime() + 12 * 60 * 60 * 1000);
 
-            // 1. Clases
+            // 1. Clases (Igual)
             if(appData.classSchedule && appData.classSchedule[dayLetter]) {
                 const sch = appData.classSchedule[dayLetter];
                 const sMins = timeToMins(sch.start);
@@ -1078,33 +1078,25 @@
                 const height = ((eMins - sMins)/60) * 60;
                 
                 if(uiState.focusMode && dayDate > limitFocus) return '';
-
-                html += `<div class="event-block class" style="top:${top}px; height:${height}px;">
-                    <div class="title"><i class="fas fa-graduation-cap"></i> Clases</div>
-                    <div style="opacity:0.7">${sch.start} - ${sch.end}</div>
-                </div>`;
+                html += `<div class="event-block class" style="top:${top}px; height:${height}px;"><div class="title"><i class="fas fa-graduation-cap"></i> Clases</div><div style="opacity:0.7">${sch.start} - ${sch.end}</div></div>`;
             }
 
-            // 2. Trabajo
+            // 2. Trabajo (Igual)
             if(appData.settings.works === 'si' && appData.workSchedule && appData.workSchedule[dayLetter]) {
                 const wrk = appData.workSchedule[dayLetter];
                 const sMins = timeToMins(wrk.start);
                 const eMins = timeToMins(wrk.end);
                 const top = (sMins/60 - 6) * 60;
                 const height = ((eMins - sMins)/60) * 60;
-                
                 if(uiState.focusMode && dayDate > limitFocus) return '';
-
-                html += `<div class="event-block work" style="top:${top}px; height:${height}px;">
-                    <div class="title"><i class="fas fa-briefcase"></i> Trabajo</div>
-                    <div style="opacity:0.7">${wrk.start} - ${wrk.end}</div>
-                </div>`;
+                html += `<div class="event-block work" style="top:${top}px; height:${height}px;"><div class="title"><i class="fas fa-briefcase"></i> Trabajo</div><div style="opacity:0.7">${wrk.start} - ${wrk.end}</div></div>`;
             }
 
-            // 3. Tareas
+            // 3. Tareas (CORREGIDO: Filtrar completed)
             if(appData.tasks) {
                 Object.entries(appData.tasks).forEach(([id, t]) => {
-                    if(t.completed) return;
+                    // FILTRO: Si está completada, no mostrar
+                    if(t.completed) return; 
                     if(!t.recommendedStart) return;
 
                     const taskDate = new Date(t.recommendedStart);
@@ -1133,9 +1125,12 @@
                 });
             }
 
-            // 4. Exámenes
+            // 4. Exámenes (CORREGIDO: Filtrar completed)
             if(appData.exams) {
                 Object.entries(appData.exams).forEach(([id, e]) => {
+                    // FILTRO: Si está completado, no mostrar
+                    if(e.completed) return;
+
                     if(e.date !== dateStr) return;
                     if(uiState.focusMode && !isSameDay(dayDate, new Date())) return;
 
@@ -1149,10 +1144,9 @@
                 });
             }
 
-            // 5. Bloques de Estudio (NUEVO)
+            // 5. Bloques de Estudio (Mostrar en horario)
             if(appData.studyBlocks) {
                 Object.entries(appData.studyBlocks).forEach(([id, block]) => {
-                    // Filtrar por fecha
                     if(block.date !== dateStr) return;
                     
                     const sMins = timeToMins(block.startHour);
@@ -1160,7 +1154,6 @@
                     const top = (sMins/60 - 6) * 60;
                     const height = ((eMins - sMins)/60) * 60;
 
-                    // Obtener info de la materia
                     const subj = appData.subjects[block.subjectId] || {name:'Estudio', color:'#27ae60', icon:'book'};
                     
                     html += `<div class="event-block study" 
