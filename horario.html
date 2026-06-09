@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* --- 1. SISTEMA DE DISEÑO Y VARIABLES --- */
+        /* --- 1. SISTEMA DE DISEÑO Y VARIABLES (THEMING) --- */
         :root {
             /* Paleta Principal */
             --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
@@ -528,7 +528,7 @@
 
         .month-day-card.danger .density-warning { display: block; }
 
-        /* --- 10. PANEL DETALLE (SIDE PANEL) --- */
+        /* --- 10. PANEL DETALLE (SLIDE PANEL) --- */
         .detail-panel {
             position: fixed;
             right: 0; top: 0;
@@ -646,7 +646,7 @@
 
         .form-group { margin-bottom: 20px; }
         .form-label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.85rem; color: var(--text-secondary); }
-        .form-input { width: 100%; padding: 12px 15px; border: 1px solid var(--border-color); background: var(--bg-primary); border-radius: 10px; font-family: inherit; font-size: 0.9rem; transition: border var(--transition-fast); }
+        .form-input { width: 100%; padding: 12px 15px; border: 1px solid var(--border-color); background: var(--bg-primary); border-radius: 10px; font-family: inherit; font-size: 0.9rem; transition: border var(--transition-fast); color: var(--text-primary); }
         .form-input:focus { outline: none; border-color: var(--primary); }
         .form-row { display: flex; gap: 15px; }
         .form-row > * { flex: 1; }
@@ -765,7 +765,7 @@
         </div>
     </div>
 
-    <!-- PANEL DETALLE (Side Panel) -->
+    <!-- PANEL DETALLE (SLIDE PANEL) -->
     <div class="detail-panel" id="detailPanel">
         <div class="detail-header">
             <button class="detail-close" onclick="closeDetailPanel()"><i class="fas fa-times"></i></button>
@@ -833,7 +833,10 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Materia</label>
-                    <select id="inputExamSubject" class="form-input"></select>
+                    <div style="display:flex; gap:10px;">
+                        <select id="inputExamSubject" class="form-input" style="flex:1"></select>
+                        <button class="btn btn-secondary" onclick="addSubjectFromExamModal()"><i class="fas fa-plus"></i></button>
+                    </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
@@ -924,7 +927,7 @@
         function listenTo(path) {
             onValue(ref(db, `${path}/${currentUser.uid}`), snap => {
                 appData[path] = snap.val() || {};
-                if(path === 'subjects') populateSubjectDropdowns();
+                if(path === 'subjects') populateExamDropdown(); // Actualizar dropdown si cambian materias
                 renderAllViews();
             });
         }
@@ -950,11 +953,44 @@
             $('overlayPanel').classList.remove('active');
         };
 
+        // Exam Modal Logic
         window.openExamModal = () => {
-            populateSubjectDropdowns();
+            populateExamDropdown();
             $('modalExam').classList.add('active');
         };
         window.closeExamModal = () => $('modalExam').classList.remove('active');
+
+        function populateExamDropdown() {
+            const sel = $('inputExamSubject');
+            if(!sel) return;
+            const subjects = appData.subjects || {};
+            sel.innerHTML = Object.entries(subjects).map(([id, s]) => `<option value="${id}">${s.name}</option>`).join('');
+            // Si no hay materias, poner opción default
+            if(Object.keys(subjects).length === 0) sel.innerHTML = '<option value="">Crea una materia primero</option>';
+        }
+
+        window.addSubjectFromExamModal = () => {
+            const n = prompt("Nombre de la nueva materia:");
+            if(n) {
+                const color = `hsl(${Math.random()*360}, 60%, 65%)`;
+                const newRef = push(ref(db, `subjects/${currentUser.uid}`));
+                set(newRef, { name: n, color: color });
+                // El listener de Firebase actualizará el dropdown automáticamente
+            }
+        };
+
+        window.saveExamData = async () => {
+            const title = $('inputExamTitle').value;
+            const date = $('inputExamDate').value;
+            const time = $('inputExamTime').value;
+            const subjectId = $('inputExamSubject').value;
+            
+            if(!title || !date) return alert("Por favor ingresa título y fecha.");
+            if(!subjectId) return alert("Por favor selecciona o crea una materia.");
+
+            await push(ref(db, `exams/${currentUser.uid}`), { title, date, time, subjectId });
+            closeExamModal();
+        };
 
         // --- 3. LÓGICA DE RENDERIZADO PRINCIPAL ---
         
@@ -1094,7 +1130,6 @@
                         onclick="openDetailPanel('task', '${id}')">
                         <div class="title">${subj.icon || ''} ${t.title}</div>
                         <div style="opacity:0.8">${duration} min</div>
-                        <div style="font-size:0.65rem; opacity:0.6; margin-top:2px;">Vence: ${dueDate.toLocaleDateString('es')}</div>
                     </div>`;
                 });
             }
@@ -1231,7 +1266,7 @@
             $('detailSubject').innerHTML = `<span style="color:${subj.color}">${subj.icon || ''}</span> ${subj.name}`;
             document.querySelector('.detail-header').style.setProperty('--primary', subj.color);
 
-            // Reset
+            // Reset sections
             $('sectionSteps').style.display = 'none';
             $('sectionFile').style.display = 'none';
             $('btnComplete').style.display = 'flex';
@@ -1475,35 +1510,23 @@
 
             $('examListContainer').innerHTML = list.map(e => {
                 const subj = appData.subjects[e.subjectId] || {name: 'General', color: '#e74c3c', icon: '📝'};
+                const examDate = new Date(e.date);
+                const diffTime = examDate - new Date();
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
                 return `
                 <div class="exam-item" style="border-left-color: ${subj.color}" onclick="openDetailPanel('exam', '${e.id}')">
                     <div class="exam-emoji">${subj.icon || '📝'}</div>
                     <div class="exam-info">
                         <h5>${e.title}</h5>
-                        <span>${new Date(e.date).toLocaleDateString('es')} - ${e.time}</span>
+                        <span>${subj.name}</span>
+                        <div style="font-size:0.65rem; color:var(--text-muted); margin-top:2px;">
+                            ${examDate.toLocaleDateString('es')} <strong style="color:var(--danger)">${diffDays} días</strong>
+                        </div>
                     </div>
                 </div>`;
             }).join('') || '<div style="text-align:center; padding: 20px 0; font-size:0.9rem; color:var(--text-secondary)">No hay exámenes próximos</div>';
         }
-
-        function populateSubjectDropdowns() {
-            const sel = $('inputExamSubject');
-            if(!sel) return;
-            sel.innerHTML = Object.entries(appData.subjects || {}).map(([id, s]) => 
-                `<option value="${id}">${s.name}</option>`
-            ).join('');
-        }
-
-        window.saveExamData = async () => {
-            const title = $('inputExamTitle').value;
-            const date = $('inputExamDate').value;
-            const time = $('inputExamTime').value;
-            const subjectId = $('inputExamSubject').value;
-            if(!title || !date) return alert("Faltan datos");
-            
-            await push(ref(db, `exams/${currentUser.uid}`), { title, date, time, subjectId });
-            closeExamModal();
-        };
 
         // Actualización automática de la hora
         setInterval(drawTimeLine, 60000);
