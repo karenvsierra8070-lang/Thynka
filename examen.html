@@ -249,7 +249,6 @@
 
         .header-actions { display: flex; gap: 15px; align-items: center; }
 
-        /* Contenido */
         .content-wrapper {
             flex: 1;
             display: grid;
@@ -902,9 +901,7 @@
                 </div>
 
                 <!-- Lista de Examenes -->
-                <div class="exam-list" id="examList">
-                    <!-- Se llena dinamicamente -->
-                </div>
+                <div class="exam-list" id="examList"></div>
             </main>
 
             <!-- Panel Lateral -->
@@ -924,9 +921,7 @@
                         </button>
                     </div>
 
-                    <div class="study-block-list" id="studyBlockList">
-                        <!-- Se llena dinamicamente -->
-                    </div>
+                    <div class="study-block-list" id="studyBlockList"></div>
                 </div>
 
                 <!-- Simulador de Promedio -->
@@ -975,9 +970,7 @@
                             <i class="fas fa-plus"></i>
                         </button>
                     </div>
-                    <div class="notes-list" id="notesList">
-                        <!-- Se llena dinamicamente -->
-                    </div>
+                    <div class="notes-list" id="notesList"></div>
                 </div>
             </aside>
         </div>
@@ -1034,7 +1027,6 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <!-- BOTON ELIMINAR AGREGADO AQUI -->
                 <button class="btn btn-danger" id="btnDeleteExam" style="display:none;" onclick="deleteExam()">
                     <i class="fas fa-trash"></i> Eliminar
                 </button>
@@ -1123,7 +1115,6 @@
         });
 
         function initListeners() {
-            // Escuchar cambios en todas las rutas necesarias
             onValue(ref(db, `exams/${currentUser.uid}`), snap => {
                 appData.exams = snap.val() || {};
                 renderExams();
@@ -1199,7 +1190,7 @@
                 $('inputExamWeight').value = exam.weight || '';
                 $('inputExamDuration').value = exam.duration || '';
                 $('inputExamImportant').checked = exam.important || false;
-                delBtn.style.display = 'block'; // Mostrar eliminar
+                delBtn.style.display = 'block';
             } else {
                 $('examModalTitle').textContent = 'Registrar Examen';
                 $('inputExamTitle').value = '';
@@ -1208,7 +1199,7 @@
                 $('inputExamWeight').value = '';
                 $('inputExamDuration').value = '';
                 $('inputExamImportant').checked = false;
-                delBtn.style.display = 'none'; // Ocultar eliminar
+                delBtn.style.display = 'none';
             }
             
             $('examModal').classList.add('active');
@@ -1223,7 +1214,6 @@
             $('inputExamImportant').checked = !$('inputExamImportant').checked;
         };
 
-        // --- GUARDAR EXAMEN (CORREGIDO) ---
         window.saveExam = async function() {
             const title = $('inputExamTitle').value.trim();
             const subjectId = $('inputExamSubject').value;
@@ -1254,7 +1244,6 @@
             try {
                 let savedExamId = editingExamId;
 
-                // 1. Guardar Examen
                 if (editingExamId) {
                     await update(ref(db, `exams/${currentUser.uid}/${editingExamId}`), examData);
                 } else {
@@ -1262,14 +1251,12 @@
                     savedExamId = newRef.key;
                 }
 
-                // 2. Generar bloques de estudio si es importante
                 if (important && savedExamId) {
                     await clearBlocksForExam(savedExamId);
                     await generateSmartStudyBlocks(savedExamId, examData);
                 }
 
                 closeExamModal();
-                // Mensaje de éxito más amigable
                 const msg = important ? 'Examen guardado y bloques de estudio generados.' : 'Examen guardado correctamente.';
                 alert(msg);
 
@@ -1279,38 +1266,53 @@
             }
         };
         
-        // --- ELIMINAR EXAMEN ---
+        // --- ELIMINAR EXAMEN Y BLOQUES CORREGIDO ---
         window.deleteExam = async function() {
             if (!editingExamId) return;
-            if (!confirm("¿Eliminar este examen y sus bloques de estudio asociados?")) return;
+            if (!confirm("¿Eliminar este examen y SUS BLOQUES DE ESTUDIO ASOCIADOS?")) return;
             
             try {
+                // 1. Eliminar el examen
                 await remove(ref(db, `exams/${currentUser.uid}/${editingExamId}`));
+                
+                // 2. Limpiar los bloques de estudio usando la función mejorada
                 await clearBlocksForExam(editingExamId);
+                
                 closeExamModal();
-                alert("Examen eliminado.");
+                alert("Examen y bloques eliminados correctamente.");
             } catch(e) {
+                console.error(e);
                 alert("Error al eliminar: " + e.message);
             }
         };
 
         // --- MOTOR INTELIGENTE DE BLOQUES ---
         
-        // Función auxiliar para limpiar bloques viejos
+        // Función auxiliar para limpiar bloques viejos (CORREGIDA)
         async function clearBlocksForExam(examId) {
-            const blocks = appData.studyBlocks || {};
+            // CORRECCIÓN: Buscamos directamente en la base de datos para asegurar que encontramos los bloques
+            // incluso si la memoria local no se ha actualizado.
+            const snapshot = await get(ref(db, `studyBlocks/${currentUser.uid}`));
+            const blocks = snapshot.val() || {};
+            
             const updates = {};
+            let count = 0;
+            
             for (const [id, block] of Object.entries(blocks)) {
+                // Si el bloque pertenece a este examen, lo marcamos para borrar
                 if (block.examId === examId) {
                     updates[`studyBlocks/${currentUser.uid}/${id}`] = null;
+                    count++;
                 }
             }
+            
+            // Si hay bloques para borrar, ejecutamos la actualización
             if (Object.keys(updates).length > 0) {
                 await update(ref(db), updates);
+                console.log(`Eliminados ${count} bloques de estudio.`);
             }
         }
 
-        // Generador principal
         async function generateSmartStudyBlocks(examId, exam) {
             const now = new Date();
             const examDate = new Date(exam.date + 'T23:59');
@@ -1318,28 +1320,20 @@
 
             if (totalDays <= 0) return;
 
-            const maxBlocks = 6; // Límite para no saturar
+            const maxBlocks = 6;
             const blocksToGenerate = [];
-
-            // Paso: cada cuántos días debería haber un bloque
-            // Ejemplo: Si faltan 30 días y max es 6, step = 5 días.
             const step = Math.max(2, Math.floor(totalDays / (maxBlocks + 1)));
             
-            // Memoria local para evitar choques en la misma generación
             let localBusySlots = []; 
 
-            // Iterar días
             for (let d = 1; d <= totalDays; d++) {
                 if (blocksToGenerate.length >= maxBlocks) break;
-
-                // Lógica intercalada: solo agregar si el día coincide con el paso
                 if (d % step !== 0 && blocksToGenerate.length > 0) continue;
 
                 const blockDate = new Date(now);
                 blockDate.setDate(blockDate.getDate() + d);
                 const dateStr = blockDate.toISOString().split('T')[0];
 
-                // Buscar hueco
                 const slot = findBestSlot(dateStr, localBusySlots);
                 
                 if (slot) {
@@ -1353,46 +1347,33 @@
                         duration: 120
                     };
                     blocksToGenerate.push(blockData);
-                    // Agregar a memoria local para no chocar con el siguiente
                     localBusySlots.push({ date: dateStr, start: slot.start, end: slot.end });
                 }
             }
 
-            // Guardar en Firebase
             for (const block of blocksToGenerate) {
                 await push(ref(db, `studyBlocks/${currentUser.uid}`), block);
             }
         }
 
-        // Buscador de huecos libres
         function findBestSlot(dateStr, localBusySlots) {
             const dayLetter = ['D', 'L', 'M', 'X', 'J', 'V', 'S'][new Date(dateStr).getDay()];
             
-            // 1. Recolectar minutos ocupados
             let occupiedMinutes = [];
+            const addRange = (start, end) => { for(let i=start; i<end; i++) occupiedMinutes.push(i); };
 
-            const addRange = (start, end) => {
-                for(let i=start; i<end; i++) occupiedMinutes.push(i);
-            };
+            addRange(0, 420); // Dormir inicio
+            addRange(1350, 1440); // Dormir fin
+            addRange(720, 780); // Almuerzo
 
-            // Sueño: 00:00 - 07:00 (Respetamos despertar y desayunar)
-            addRange(0, 420); 
-            // Sueño: 22:30 - 24:00
-            addRange(1350, 1440);
-            // Almuerzo: 12:00 - 13:00
-            addRange(720, 780);
-
-            // Clases
             if(appData.classSchedule && appData.classSchedule[dayLetter]) {
                 const c = appData.classSchedule[dayLetter];
                 if(c.start && c.end) addRange(timeToMins(c.start), timeToMins(c.end));
             }
-            // Trabajo
             if(appData.workSchedule && appData.workSchedule[dayLetter]) {
                 const w = appData.workSchedule[dayLetter];
                 if(w.start && w.end) addRange(timeToMins(w.start), timeToMins(w.end));
             }
-            // Tareas
             Object.values(appData.tasks).forEach(t => {
                 if(t.recommendedStart && t.recommendedStart.startsWith(dateStr)) {
                     const h = new Date(t.recommendedStart).getHours();
@@ -1400,24 +1381,14 @@
                     addRange(h*60, h*60 + duration);
                 }
             });
-            // Bloques existentes en DB
             Object.values(appData.studyBlocks).forEach(b => {
                 if(b.date === dateStr) addRange(timeToMins(b.startHour), timeToMins(b.endHour));
             });
-            // Bloques generados en esta sesión
             localBusySlots.forEach(b => {
                 if(b.date === dateStr) addRange(timeToMins(b.start), timeToMins(b.end));
             });
 
-            // 2. Buscar hueco de 2 horas (120 mins)
-            // Rangos: Mañana (7-12), Tarde (13-18), Noche (18-22:30)
-            const ranges = [
-                [420, 720],  // Mañana
-                [780, 1080], // Tarde
-                [1080, 1290] // Noche
-            ];
-            
-            // Aleatorizar orden para variedad
+            const ranges = [[420, 720], [780, 1080], [1080, 1290]];
             ranges.sort(() => Math.random() - 0.5);
 
             for (let range of ranges) {
@@ -1425,31 +1396,23 @@
                     let end = m + 120;
                     let isFree = true;
                     for (let k = m; k < end; k++) {
-                        if (occupiedMinutes.includes(k)) {
-                            isFree = false;
-                            break;
-                        }
+                        if (occupiedMinutes.includes(k)) { isFree = false; break; }
                     }
-                    if (isFree) {
-                        return { start: minsToTime(m), end: minsToTime(end) };
-                    }
+                    if (isFree) return { start: minsToTime(m), end: minsToTime(end) };
                 }
             }
             return null;
         }
 
-        // Helpers
         function timeToMins(t) { if(!t) return 0; const p=t.split(':'); return parseInt(p[0])*60+parseInt(p[1]); }
         function minsToTime(m) { const h=Math.floor(m/60); const min=m%60; return `${h.toString().padStart(2,'0')}:${min.toString().padStart(2,'0')}`; }
 
-        // Generación manual global
         window.generateStudyBlocks = async function() {
             if(!confirm("Esto regenerará los bloques para todos los exámenes importantes. ¿Continuar?")) return;
             
             const importantExams = Object.entries(appData.exams).filter(([id,e]) => e.important && !e.completed);
             if(importantExams.length === 0) return alert("No hay exámenes importantes.");
 
-            // Limpiar todo
             await set(ref(db, `studyBlocks/${currentUser.uid}`), {});
             appData.studyBlocks = {};
 
@@ -1473,13 +1436,7 @@
             const exams = Object.entries(appData.exams || {});
             
             if (exams.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-file-alt"></i>
-                        <h4>No hay examenes registrados</h4>
-                        <p>Crea tu primer examen para comenzar a organizar tus estudios</p>
-                    </div>
-                `;
+                container.innerHTML = `<div class="empty-state"><i class="fas fa-file-alt"></i><h4>No hay examenes registrados</h4><p>Crea tu primer examen</p></div>`;
                 return;
             }
 
@@ -1488,13 +1445,9 @@
 
             let filteredExams = exams.map(([id, exam]) => ({ id, ...exam }));
             
-            if (currentFilter === 'pending') {
-                filteredExams = filteredExams.filter(e => !e.completed);
-            } else if (currentFilter === 'completed') {
-                filteredExams = filteredExams.filter(e => e.completed);
-            } else if (currentFilter === 'important') {
-                filteredExams = filteredExams.filter(e => e.important && !e.completed);
-            }
+            if (currentFilter === 'pending') filteredExams = filteredExams.filter(e => !e.completed);
+            else if (currentFilter === 'completed') filteredExams = filteredExams.filter(e => e.completed);
+            else if (currentFilter === 'important') filteredExams = filteredExams.filter(e => e.important && !e.completed);
 
             filteredExams.sort((a, b) => new Date(a.date) - new Date(b.date));
 
@@ -1504,256 +1457,112 @@
                 const diffTime = examDate - new Date();
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                 
-                let urgencyClass = 'calm';
-                let badgeClass = 'calm';
-                let daysText = `${diffDays} dias`;
-                
-                if (diffDays <= 3) {
-                    urgencyClass = 'urgent';
-                    badgeClass = 'urgent';
-                    if (diffDays === 0) daysText = 'Hoy';
-                    else if (diffDays === 1) daysText = 'Manana';
-                    else if (diffDays < 0) daysText = 'Vencido';
-                } else if (diffDays <= 14) {
-                    urgencyClass = 'warning';
-                    badgeClass = 'warning';
-                }
+                let urgencyClass = 'calm', badgeClass = 'calm', daysText = `${diffDays} dias`;
+                if (diffDays <= 3) { urgencyClass = 'urgent'; badgeClass = 'urgent'; if (diffDays === 0) daysText = 'Hoy'; else if (diffDays === 1) daysText = 'Manana'; else if (diffDays < 0) daysText = 'Vencido'; }
+                else if (diffDays <= 14) { urgencyClass = 'warning'; badgeClass = 'warning'; }
 
                 return `
                     <div class="exam-card ${urgencyClass} ${exam.completed ? 'completed' : ''}" onclick="openExamModal('${exam.id}')">
                         ${exam.important ? '<span class="important-badge"><i class="fas fa-star"></i> Importante</span>' : ''}
-                        <div class="exam-checkbox ${exam.completed ? 'checked' : ''}" onclick="event.stopPropagation(); toggleExamComplete('${exam.id}')">
-                            ${exam.completed ? '<i class="fas fa-check"></i>' : ''}
-                        </div>
+                        <div class="exam-checkbox ${exam.completed ? 'checked' : ''}" onclick="event.stopPropagation(); toggleExamComplete('${exam.id}')">${exam.completed ? '<i class="fas fa-check"></i>' : ''}</div>
                         <div class="exam-content">
                             <h4>${exam.title}</h4>
                             <p>${exam.description || 'Sin descripcion'}</p>
                             <div class="exam-meta">
-                                <span class="exam-meta-item" style="color: ${subject.color}">
-                                    <i class="${subject.icon ? 'fas' : 'fas fa-book'}"></i>
-                                    ${subject.name}
-                                </span>
-                                <span class="exam-meta-item">
-                                    <i class="fas fa-calendar"></i>
-                                    ${formatDate(exam.date)}
-                                </span>
-                                ${exam.weight ? `<span class="exam-meta-item"><i class="fas fa-weight-hanging"></i> ${exam.weight}%</span>` : ''}
+                                <span class="exam-meta-item" style="color: ${subject.color}"><i class="fas fa-book"></i> ${subject.name}</span>
+                                <span class="exam-meta-item"><i class="fas fa-calendar"></i> ${formatDate(exam.date)}</span>
                             </div>
                         </div>
-                        <div class="exam-days-badge ${badgeClass}">
-                            ${daysText}
-                        </div>
-                    </div>
-                `;
+                        <div class="exam-days-badge ${badgeClass}">${daysText}</div>
+                    </div>`;
             }).join('');
         }
 
         window.toggleExamComplete = async function(examId) {
             const exam = appData.exams[examId];
             if (!exam) return;
-            
-            await update(ref(db, `exams/${currentUser.uid}/${examId}`), {
-                completed: !exam.completed
-            });
+            await update(ref(db, `exams/${currentUser.uid}/${examId}`), { completed: !exam.completed });
         };
 
         function updateStats() {
-            const now = new Date();
-            now.setHours(0, 0, 0, 0);
-            
+            const now = new Date(); now.setHours(0, 0, 0, 0);
             let urgent = 0, warning = 0, calm = 0;
-            
             Object.values(appData.exams || {}).forEach(exam => {
                 if (exam.completed) return;
-                
                 const examDate = new Date(exam.date);
                 const diffDays = Math.ceil((examDate - now) / (1000 * 60 * 60 * 24));
-                
-                if (diffDays <= 3) urgent++;
-                else if (diffDays <= 14) warning++;
-                else calm++;
+                if (diffDays <= 3) urgent++; else if (diffDays <= 14) warning++; else calm++;
             });
-            
-            $('urgentCount').textContent = urgent;
-            $('warningCount').textContent = warning;
-            $('calmCount').textContent = calm;
+            $('urgentCount').textContent = urgent; $('warningCount').textContent = warning; $('calmCount').textContent = calm;
         }
 
-        // Simulador
         window.simulateGrade = function() {
             const expectedGrade = parseFloat($('simExpectedGrade').value) || 0;
             const weight = parseFloat($('simWeight').value) || 0;
             const currentAvg = parseFloat($('simCurrentAvg').value) || 0;
-            
-            if (weight <= 0 || weight > 100) {
-                alert('Ingresa un peso valido (1-100%)');
-                return;
-            }
-            
-            const weightDecimal = weight / 100;
-            const remainingWeight = 1 - weightDecimal;
-            const newAvg = (currentAvg * remainingWeight) + (expectedGrade * weightDecimal);
-            
+            if (weight <= 0 || weight > 100) { alert('Ingresa un peso valido'); return; }
+            const newAvg = (currentAvg * (1 - weight/100)) + (expectedGrade * weight/100);
             $('simResult').textContent = newAvg.toFixed(1);
         };
 
-        // Notas
-        window.openNoteModal = function() {
-            populateNoteSubjectDropdown();
-            $('noteModal').classList.add('active');
-        };
-
+        window.openNoteModal = function() { populateNoteSubjectDropdown(); $('noteModal').classList.add('active'); };
         window.closeNoteModal = () => $('noteModal').classList.remove('active');
 
         window.saveNote = async function() {
             const subjectId = $('inputNoteSubject').value;
             const name = $('inputNoteName').value.trim();
             const grade = parseFloat($('inputNoteGrade').value);
-            
-            if (!name || isNaN(grade)) {
-                alert('Por favor completa todos los campos');
-                return;
-            }
-            
-            await push(ref(db, `notes/${currentUser.uid}`), {
-                subjectId,
-                name,
-                grade,
-                date: Date.now()
-            });
-            
-            closeNoteModal();
-            $('inputNoteName').value = '';
-            $('inputNoteGrade').value = '';
+            if (!name || isNaN(grade)) { alert('Por favor completa todos los campos'); return; }
+            await push(ref(db, `notes/${currentUser.uid}`), { subjectId, name, grade, date: Date.now() });
+            closeNoteModal(); $('inputNoteName').value = ''; $('inputNoteGrade').value = '';
         };
 
         function renderNotes() {
             const container = $('notesList');
             const notes = Object.entries(appData.notes || {});
-            
-            if (notes.length === 0) {
-                container.innerHTML = '<p style="text-align: center; color: var(--text-muted); font-size: 0.85rem;">Sin notas guardadas</p>';
-                return;
-            }
-            
+            if (notes.length === 0) { container.innerHTML = '<p style="text-align: center; color: var(--text-muted); font-size: 0.85rem;">Sin notas</p>'; return; }
             container.innerHTML = notes.map(([id, note]) => {
                 const subject = appData.subjects[note.subjectId] || { name: 'General', color: '#9a9a9a' };
-                return `
-                    <div class="note-item" style="border-left-color: ${subject.color}">
-                        <span class="note-grade">${note.grade}</span>
-                        <h5>${note.name}</h5>
-                        <p>${subject.name}</p>
-                    </div>
-                `;
+                return `<div class="note-item" style="border-left-color: ${subject.color}"><span class="note-grade">${note.grade}</span><h5>${note.name}</h5><p>${subject.name}</p></div>`;
             }).join('');
         }
 
         function renderStudyBlocks() {
             const container = $('studyBlockList');
             const blocks = Object.entries(appData.studyBlocks || {});
+            if (blocks.length === 0) { container.innerHTML = '<p style="text-align: center; color: var(--text-muted); font-size: 0.85rem;">Sin bloques</p>'; $('nextBlockTime').textContent = 'Sin bloques'; $('nextBlockSubject').textContent = ''; return; }
             
-            if (blocks.length === 0) {
-                container.innerHTML = '<p style="text-align: center; color: var(--text-muted); font-size: 0.85rem;">Sin bloques de estudio</p>';
-                $('nextBlockTime').textContent = 'Sin bloques programados';
-                $('nextBlockSubject').textContent = '';
-                return;
-            }
-            
-            const sortedBlocks = blocks.map(([id, b]) => ({ id, ...b }))
-                .sort((a, b) => new Date(a.date + 'T' + a.startHour) - new Date(b.date + 'T' + b.startHour));
-            
+            const sortedBlocks = blocks.map(([id, b]) => ({ id, ...b })).sort((a, b) => new Date(a.date + 'T' + a.startHour) - new Date(b.date + 'T' + b.startHour));
             const now = new Date();
             const nextBlock = sortedBlocks.find(b => new Date(b.date + 'T' + b.startHour) > now);
             
             if (nextBlock) {
                 const subject = appData.subjects[nextBlock.subjectId] || { name: 'Estudio', icon: '📚' };
                 const blockDate = new Date(nextBlock.date);
-                const options = { weekday: 'long', day: 'numeric', month: 'short' };
-                
-                $('nextBlockTime').textContent = `${blockDate.toLocaleDateString('es-ES', options)} de ${nextBlock.startHour} a ${nextBlock.endHour}`;
+                $('nextBlockTime').textContent = `${blockDate.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short' })} de ${nextBlock.startHour} a ${nextBlock.endHour}`;
                 $('nextBlockSubject').textContent = `${subject.icon} ${nextBlock.examTitle}`;
-            } else {
-                $('nextBlockTime').textContent = 'Sin bloques proximos';
-                $('nextBlockSubject').textContent = '';
             }
-            
+
             container.innerHTML = sortedBlocks.slice(0, 5).map(block => {
                 const subject = appData.subjects[block.subjectId] || { name: 'Estudio', color: '#9a9a9a' };
                 const blockDate = new Date(block.date);
-                
-                return `
-                    <div class="study-block-item">
-                        <div>
-                            <div class="block-time">${blockDate.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric' })} - ${block.startHour} a ${block.endHour}</div>
-                            <div class="block-exam">${subject.icon || '📚'} ${block.examTitle}</div>
-                        </div>
-                        <button class="delete-block" onclick="event.stopPropagation(); deleteStudyBlock('${block.id}')">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                `;
+                return `<div class="study-block-item"><div><div class="block-time">${blockDate.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric' })} - ${block.startHour}</div><div class="block-exam">${subject.icon || '📚'} ${block.examTitle}</div></div><button class="delete-block" onclick="event.stopPropagation(); deleteStudyBlock('${block.id}')"><i class="fas fa-trash"></i></button></div>`;
             }).join('');
         }
 
         window.deleteStudyBlock = async function(blockId) {
-            if (confirm('Eliminar este bloque de estudio?')) {
-                await remove(ref(db, `studyBlocks/${currentUser.uid}/${blockId}`));
-            }
+            if (confirm('Eliminar este bloque?')) await remove(ref(db, `studyBlocks/${currentUser.uid}/${blockId}`));
         };
 
-        // Utilidades
-        function formatDate(dateStr) {
-            if (!dateStr) return '';
-            const date = new Date(dateStr + 'T12:00:00');
-            return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
-        }
+        function formatDate(dateStr) { if (!dateStr) return ''; return new Date(dateStr + 'T12:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }); }
+        function populateSubjectDropdowns() { const subjects = appData.subjects || {}; $('inputExamSubject').innerHTML = `<option value="">Seleccionar</option>${Object.entries(subjects).map(([id, s]) => `<option value="${id}">${s.name}</option>`).join('')}`; }
+        function populateNoteSubjectDropdown() { const subjects = appData.subjects || {}; $('inputNoteSubject').innerHTML = `<option value="">Seleccionar</option>${Object.entries(subjects).map(([id, s]) => `<option value="${id}">${s.name}</option>`).join('')}`; }
+        function populateExamDropdowns() { const exams = appData.exams || {}; $('simExamSelect').innerHTML = `<option value="">Seleccionar</option>${Object.entries(exams).filter(([id, e]) => !e.completed).map(([id, e]) => `<option value="${id}">${e.title}</option>`).join('')}`; }
 
-        function populateSubjectDropdowns() {
-            const subjects = appData.subjects || {};
-            const options = Object.entries(subjects)
-                .map(([id, s]) => `<option value="${id}">${s.name}</option>`)
-                .join('');
-            
-            $('inputExamSubject').innerHTML = `<option value="">Seleccionar materia</option>${options}`;
-        }
-
-        function populateNoteSubjectDropdown() {
-            const subjects = appData.subjects || {};
-            const options = Object.entries(subjects)
-                .map(([id, s]) => `<option value="${id}">${s.name}</option>`)
-                .join('');
-            
-            $('inputNoteSubject').innerHTML = `<option value="">Seleccionar materia</option>${options}`;
-        }
-
-        function populateExamDropdowns() {
-            const exams = appData.exams || {};
-            const options = Object.entries(exams)
-                .filter(([id, e]) => !e.completed)
-                .map(([id, e]) => `<option value="${id}">${e.title}</option>`)
-                .join('');
-            
-            $('simExamSelect').innerHTML = `<option value="">Seleccionar...</option>${options}`;
-        }
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                closeExamModal();
-                closeNoteModal();
-            }
-        });
-
-        $('examModal').addEventListener('click', (e) => {
-            if (e.target === $('examModal')) closeExamModal();
-        });
-        
-        $('noteModal').addEventListener('click', (e) => {
-            if (e.target === $('noteModal')) closeNoteModal();
-        });
-
-        window.signOut = () => {
-            auth.signOut();
-        };
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeExamModal(); closeNoteModal(); } });
+        $('examModal').addEventListener('click', (e) => { if (e.target === $('examModal')) closeExamModal(); });
+        $('noteModal').addEventListener('click', (e) => { if (e.target === $('noteModal')) closeNoteModal(); });
+        window.signOut = () => auth.signOut();
     </script>
 </body>
 </html>
