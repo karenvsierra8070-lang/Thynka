@@ -4,14 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mapa Conceptual - Thynka</title>
-    <!-- Fuentes: Poppins, Playfair y +20 fuentes aesthetic -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&family=Lora:wght@400;700&family=Montserrat:wght@400;600&family=Raleway:wght@400;700&family=Roboto+Slab:wght@400;700&family=Merriweather:wght@400;700&family=Open+Sans:wght@400;700&family=PT+Sans:wght@400;700&family=Nunito:wght@400;700&family=Quicksand:wght@400;700&family=Ubuntu:wght@400;700&family=Rubik:wght@400;700&family=Work+Sans:wght@400;700&family=Fira+Sans:wght@400;700&family=Inter:wght@400;700&family=Josefin+Sans:wght@400;700&family=Crimson+Text:wght@400;700&family=Bitter:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Librerias para Mapas y Exportacion -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.26.0/cytoscape.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Dancing+Script:wght@400;700&family=Fjalla+One&family=Josefin+Sans:wght@300;400;600;700&family=Lora:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700;800&family=Open+Sans:wght@300;400;500;600;700&family=Oswald:wght@300;400;500;600;700&family=Pacifico&family=Playfair+Display:wght@400;500;600;700;800;900&family=Quicksand:wght@300;400;500;600;700&family=Raleway:wght@300;400;500;600;700;800&family=Roboto+Slab:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700;900&family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
     <style>
         :root {
             --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
@@ -21,607 +18,1714 @@
             --text-primary: #5a4032; --text-secondary: #9a9a9a;
             --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
             --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
-            --danger: #e74c3c; --success: #27ae60; --warning: #f39c12;
+            --node-bg: #ffffff;
+            --node-border: #8b6b47;
+            --node-text: #5a4032;
+            --connector-color: #8b6b47;
         }
 
         [data-theme="dark"] {
             --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
             --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
             --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
             --text-primary: #e0d5c7; --text-secondary: #a89b8b;
             --bg-primary: #1a1815; --bg-secondary: #2a2520;
             --bg-tertiary: #3a342e; --border-color: #3a342e;
+            --node-bg: #2a2520;
+            --node-border: #a3846c;
+            --node-text: #e0d5c7;
+            --connector-color: #a3846c;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; overflow: hidden; }
 
-        /* Top Bar */
+        /* TOP BAR */
         .top-bar {
-            position: fixed; top: 0; left: 0; right: 0; height: 70px;
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
             background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 25px; z-index: 1000; box-shadow: 0 2px 10px var(--shadow);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
         }
-        .top-left { display: flex; align-items: center; gap: 20px; }
         .back-btn {
-            width: 45px; height: 45px; border-radius: 12px; background: var(--bg-tertiary);
-            border: 1px solid var(--border-color); color: var(--primary);
-            display: flex; align-items: center; justify-content: center; cursor: pointer;
-            text-decoration: none; transition: all 0.3s;
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s; cursor: pointer;
         }
-        .back-btn:hover { background: var(--primary); color: white; transform: translateX(-3px); }
-        .page-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--primary-dark); }
-
-        .top-center { flex: 1; display: flex; justify-content: center; padding: 0 20px; }
-        .input-group { display: flex; gap: 10px; max-width: 600px; width: 100%; }
-        .topic-input { flex: 1; padding: 12px 20px; border-radius: 12px; border: 2px solid var(--border-color); background: var(--bg-primary); font-family: inherit; font-size: 0.95rem; color: var(--text-primary); transition: all 0.3s; }
-        .topic-input:focus { outline: none; border-color: var(--primary); }
-        .generate-btn { padding: 12px 25px; border-radius: 12px; border: none; background: var(--primary); color: white; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px; font-family: inherit; }
-        .generate-btn:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 5px 15px var(--shadow-hover); }
-        .generate-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-
-        .top-right { display: flex; align-items: center; gap: 10px; }
-        .action-btn { padding: 10px 18px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--bg-tertiary); color: var(--text-primary); font-weight: 500; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; font-family: inherit; }
-        .action-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
+        .back-btn:hover { background: var(--primary); color: white; }
         
-        .theme-toggle { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--bg-tertiary); color: var(--primary); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
-
-        /* Canvas Container */
-        .canvas-container { position: fixed; top: 70px; left: 280px; right: 0; bottom: 0; background: var(--bg-primary); }
-        #cy { width: 100%; height: 100%; }
-
-        /* Sidebar Tools */
-        .tools-sidebar {
-            position: fixed; top: 70px; left: 0; width: 280px; bottom: 0;
-            background: var(--bg-secondary); border-right: 1px solid var(--border-color);
-            overflow-y: auto; z-index: 100;
+        .page-title-input {
+            font-family: 'Playfair Display', serif; font-size: 1.5rem;
+            background: transparent; border: none; color: var(--primary-dark);
+            text-align: center; width: 400px; font-weight: 700;
         }
-        .tool-section { padding: 20px; border-bottom: 1px solid var(--border-color); }
-        .tool-section-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 15px; font-weight: 700; }
+        .page-title-input:focus { outline: none; background: var(--bg-tertiary); border-radius: 8px; padding: 5px 15px; }
         
-        /* Layout Styles Grid */
-        .layout-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .layout-btn { padding: 12px 8px; border-radius: 10px; border: 2px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary); font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.2s; text-align: center; font-family: inherit; }
-        .layout-btn:hover { border-color: var(--primary); background: var(--bg-tertiary); }
-        .layout-btn.active { border-color: var(--primary); background: var(--primary); color: white; }
-        .layout-btn i { display: block; font-size: 1.2rem; margin-bottom: 5px; }
+        .top-actions { display: flex; gap: 10px; align-items: center; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--border-color); }
+        .btn-success { background: #27ae60; color: white; }
+        .btn-success:hover { background: #219a52; }
 
-        /* Color Pickers */
-        .color-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-        .color-label { font-size: 0.9rem; color: var(--text-primary); }
-        .color-picker { width: 40px; height: 40px; border: none; border-radius: 8px; cursor: pointer; padding: 0; background: transparent; }
-        .color-picker::-webkit-color-swatch-wrapper { padding: 0; }
-        .color-picker::-webkit-color-swatch { border-radius: 8px; border: 2px solid var(--border-color); }
+        /* ZOOM CONTROLS */
+        .zoom-controls {
+            position: fixed; bottom: 30px; right: 30px;
+            display: flex; flex-direction: column; gap: 8px;
+            z-index: 100;
+        }
+        .zoom-btn {
+            width: 45px; height: 45px; border: none; border-radius: 12px;
+            background: var(--bg-secondary); border: 1px solid var(--border-color);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            color: var(--text-primary); font-size: 1.1rem;
+            box-shadow: 0 4px 15px var(--shadow); transition: all 0.2s;
+        }
+        .zoom-btn:hover { background: var(--primary); color: white; }
+        .zoom-level-display {
+            text-align: center; font-size: 0.75rem; font-weight: 600;
+            color: var(--text-secondary); background: var(--bg-secondary);
+            padding: 4px 8px; border-radius: 8px;
+        }
 
-        /* Font Select */
-        .font-select { width: 100%; padding: 12px; border-radius: 10px; border: 2px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary); font-family: inherit; cursor: pointer; }
+        /* MINIMAP */
+        .minimap-container {
+            position: fixed; bottom: 30px; left: 30px;
+            width: 200px; height: 150px;
+            background: var(--bg-secondary); border: 1px solid var(--border-color);
+            border-radius: 12px; overflow: hidden;
+            box-shadow: 0 4px 15px var(--shadow); z-index: 100;
+        }
+        .minimap-title {
+            font-size: 0.7rem; font-weight: 600; color: var(--text-secondary);
+            padding: 6px 10px; background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .minimap-canvas {
+            width: 100%; height: calc(100% - 24px);
+            position: relative; overflow: hidden;
+        }
+        .minimap-viewport {
+            position: absolute; border: 2px solid var(--primary);
+            background: rgba(139, 107, 71, 0.1); pointer-events: none;
+        }
+        .minimap-node {
+            position: absolute; background: var(--primary);
+            border-radius: 2px; opacity: 0.6;
+        }
 
-        /* Shape Buttons */
-        .shape-grid { display: flex; flex-wrap: wrap; gap: 8px; }
-        .shape-btn { width: 45px; height: 45px; border-radius: 8px; border: 2px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
-        .shape-btn:hover { border-color: var(--primary); }
-        .shape-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        /* TOOLBAR */
+        .toolbar {
+            position: fixed; top: 65px; left: 0; right: 0; height: 55px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; padding: 0 20px; gap: 15px; z-index: 999;
+        }
+        .tool-group { display: flex; align-items: center; gap: 8px; padding: 0 15px; border-right: 1px solid var(--border-color); }
+        .tool-group:last-child { border-right: none; }
+        .tool-label { font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-right: 5px; }
+        
+        .tool-btn {
+            width: 36px; height: 36px; border: 1px solid var(--border-color); background: var(--bg-primary);
+            border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            color: var(--text-primary); transition: all 0.2s;
+        }
+        .tool-btn:hover, .tool-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        
+        .style-select {
+            padding: 8px 15px; border: 1px solid var(--border-color); background: var(--bg-primary);
+            border-radius: 8px; font-family: inherit; font-size: 0.85rem; color: var(--text-primary);
+            cursor: pointer; min-width: 120px;
+        }
 
-        /* Projects List */
-        .project-list { max-height: 200px; overflow-y: auto; }
-        .project-item { padding: 12px; background: var(--bg-primary); border-radius: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; }
-        .project-item:hover { border-color: var(--primary); }
-        .project-item .name { font-weight: 500; font-size: 0.9rem; }
-        .project-item .date { font-size: 0.75rem; color: var(--text-secondary); }
+        /* MAIN AREA */
+        .main-container { display: flex; margin-top: 120px; height: calc(100vh - 120px); }
+        
+        /* INPUT PANEL */
+        .input-panel {
+            width: 420px; background: var(--bg-secondary); border-right: 1px solid var(--border-color);
+            display: flex; flex-direction: column; transition: width 0.3s; overflow: hidden;
+        }
+        .input-panel.collapsed { width: 0; }
+        .panel-header {
+            padding: 20px; border-bottom: 1px solid var(--border-color);
+            background: var(--bg-tertiary); display: flex; justify-content: space-between; align-items: center;
+        }
+        .panel-title { font-weight: 700; color: var(--primary-dark); display: flex; align-items: center; gap: 10px; }
+        .panel-body { flex: 1; padding: 20px; overflow-y: auto; }
+        
+        .text-input {
+            width: 100%; height: 300px; resize: vertical; padding: 15px;
+            border: 1px solid var(--border-color); border-radius: 12px;
+            background: var(--bg-primary); color: var(--text-primary);
+            font-family: inherit; font-size: 0.95rem; line-height: 1.6;
+        }
+        .text-input:focus { outline: none; border-color: var(--primary); }
+        
+        .generate-btn {
+            width: 100%; padding: 15px; margin-top: 15px;
+            background: var(--primary); color: white; border: none;
+            border-radius: 12px; font-family: inherit; font-size: 1rem;
+            font-weight: 700; cursor: pointer; transition: all 0.3s;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .generate-btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
+        
+        .tips-box {
+            margin-top: 20px; padding: 15px; background: var(--bg-tertiary);
+            border-radius: 12px; border: 1px solid var(--border-color);
+        }
+        .tips-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 10px; color: var(--primary); }
+        .tips-list { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.8; }
+        .tips-list li { margin-bottom: 6px; padding-left: 18px; position: relative; }
+        .tips-list li::before { content: '•'; position: absolute; left: 0; color: var(--primary); }
 
-        /* Edit Tooltip */
-        .edit-tooltip {
-            position: fixed; padding: 15px; background: var(--bg-secondary);
-            border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            z-index: 2000; display: none; border: 1px solid var(--border-color);
+        /* CANVAS AREA */
+        .canvas-area { flex: 1; position: relative; overflow: auto; background: var(--bg-primary); cursor: grab; }
+        .canvas-area:active { cursor: grabbing; }
+        .canvas-wrapper { 
+            min-width: 5000px; min-height: 4000px; position: relative;
+            background-image: radial-gradient(circle, var(--border-color) 1px, transparent 1px);
+            background-size: 25px 25px;
+            transform-origin: 0 0;
+        }
+        
+        /* SVG */
+        .connectors-svg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 1;
+        }
+        .connector-line {
+            fill: none; stroke: var(--connector-color); stroke-width: 2;
+            stroke-linecap: round; stroke-linejoin: round;
+        }
+
+        /* CONNECTOR LABELS */
+        .connector-label {
+            position: absolute; padding: 4px 10px;
+            background: var(--bg-secondary); border: 1px solid var(--connector-color);
+            border-radius: 20px; font-size: 0.78rem; font-weight: 600;
+            color: var(--connector-color); z-index: 5;
+            white-space: nowrap; pointer-events: none;
+        }
+
+        /* NODES */
+        .concept-node {
+            position: absolute; min-width: 200px; max-width: 380px;
+            background: var(--node-bg); border: 3px solid var(--node-border);
+            border-radius: 12px; padding: 14px 18px; cursor: move;
+            box-shadow: 0 5px 18px var(--shadow); z-index: 10;
+            transition: box-shadow 0.3s, transform 0.1s;
+            user-select: none;
+        }
+        .concept-node:hover { box-shadow: 0 8px 25px var(--shadow-hover); }
+        .concept-node.selected { 
+            border-color: var(--primary); 
+            box-shadow: 0 0 0 4px rgba(139, 107, 71, 0.25);
+        }
+        .concept-node.dragging { opacity: 0.85; transform: scale(1.02); z-index: 100; }
+        
+        .concept-node.is-main {
+            min-width: 280px; border-width: 4px;
+            background: linear-gradient(145deg, var(--node-bg) 0%, var(--bg-tertiary) 100%);
+        }
+        
+        .concept-node.is-definition {
             min-width: 300px;
+            border-style: double;
+            border-width: 3px;
         }
-        .edit-tooltip.active { display: block; }
-        .edit-input { width: 100%; padding: 10px; border: 2px solid var(--border-color); border-radius: 8px; background: var(--bg-primary); color: var(--text-primary); font-family: inherit; margin-bottom: 10px; }
-        .edit-input:focus { outline: none; border-color: var(--primary); }
-        .edit-actions { display: flex; gap: 8px; justify-content: flex-end; }
-
-        /* Loading Overlay */
-        .loading-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 3000; flex-direction: column; gap: 20px; }
-        .loading-overlay.active { display: flex; }
-        .loader { width: 60px; height: 60px; border: 4px solid var(--bg-tertiary); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .loading-text { color: white; font-weight: 600; }
-
-        /* Dropdown Menu */
-        .dropdown { position: relative; }
-        .dropdown-menu { position: absolute; top: 100%; right: 0; margin-top: 5px; background: var(--bg-secondary); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); min-width: 180px; overflow: hidden; z-index: 1001; display: none; border: 1px solid var(--border-color); }
-        .dropdown-menu.active { display: block; }
-        .dropdown-item { padding: 12px 18px; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: background 0.2s; font-size: 0.9rem; }
-        .dropdown-item:hover { background: var(--bg-tertiary); }
-        .dropdown-item i { width: 20px; color: var(--primary); }
-
-        /* Responsive */
-        @media (max-width: 900px) {
-            .tools-sidebar { width: 220px; }
-            .canvas-container { left: 220px; }
-            .top-center { display: none; }
+        
+        .node-title {
+            font-weight: 700; font-size: 0.98rem; color: var(--node-text);
+            margin-bottom: 8px; line-height: 1.35;
         }
-        @media (max-width: 600px) {
-            .tools-sidebar { display: none; }
-            .canvas-container { left: 0; }
+        .node-content {
+            font-size: 0.86rem; color: var(--text-secondary); line-height: 1.5;
+        }
+        .node-content[contenteditable="true"]:focus { 
+            outline: none; background: var(--bg-tertiary); 
+            border-radius: 6px; padding: 3px 6px; margin: -3px -6px;
+        }
+        .node-title[contenteditable="true"]:focus {
+            outline: none; background: var(--bg-tertiary); 
+            border-radius: 4px; padding: 2px 5px; margin: -2px -5px;
+        }
+
+        /* Highlighted data */
+        .highlight-data { color: var(--primary-dark); font-weight: 600; }
+        .highlight-date { color: #e74c3c; font-weight: 600; }
+        .highlight-name { color: #3498db; font-weight: 600; }
+        .highlight-number { color: #27ae60; font-weight: 600; }
+        
+        /* Node shapes */
+        .node-shape-rectangle { border-radius: 12px; }
+        .node-shape-rounded { border-radius: 25px; }
+        .node-shape-circle { border-radius: 50%; min-width: 130px; min-height: 130px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        .node-shape-diamond { border-radius: 4px; }
+        .node-shape-cloud { border-radius: 50px 50px 50px 50px / 35px 35px 35px 35px; }
+
+        /* SETTINGS PANEL */
+        .settings-panel {
+            position: fixed; right: -420px; top: 120px; width: 400px;
+            height: calc(100vh - 120px); background: var(--bg-secondary);
+            border-left: 1px solid var(--border-color); z-index: 100;
+            transition: right 0.3s; overflow-y: auto;
+        }
+        .settings-panel.active { right: 0; }
+        
+        .settings-section { padding: 20px; border-bottom: 1px solid var(--border-color); }
+        .settings-section-title { 
+            font-weight: 700; font-size: 0.9rem; margin-bottom: 15px;
+            color: var(--primary-dark); display: flex; align-items: center; gap: 10px;
+        }
+        
+        .layout-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .layout-option {
+            padding: 12px; border: 2px solid var(--border-color); border-radius: 10px;
+            cursor: pointer; text-align: center; transition: all 0.2s;
+            background: var(--bg-primary);
+        }
+        .layout-option:hover { border-color: var(--primary); }
+        .layout-option.selected { border-color: var(--primary); background: var(--bg-tertiary); }
+        .layout-preview { font-size: 1.8rem; margin-bottom: 6px; color: var(--primary); }
+        .layout-name { font-size: 0.75rem; font-weight: 600; }
+        
+        .shape-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+        .shape-option {
+            width: 42px; height: 42px; border: 2px solid var(--border-color);
+            border-radius: 8px; cursor: pointer; display: flex; align-items: center;
+            justify-content: center; transition: all 0.2s; background: var(--bg-primary);
+        }
+        .shape-option:hover { border-color: var(--primary); }
+        .shape-option.selected { border-color: var(--primary); background: var(--primary); color: white; }
+        
+        .color-section { display: flex; flex-direction: column; gap: 10px; }
+        .color-row { display: flex; align-items: center; gap: 10px; }
+        .color-label { font-size: 0.82rem; color: var(--text-secondary); min-width: 85px; }
+        .color-input-wrapper { flex: 1; display: flex; align-items: center; gap: 8px; }
+        .color-input-wrapper input[type="color"] {
+            width: 36px; height: 28px; border: none; border-radius: 6px; cursor: pointer;
+            padding: 0; background: transparent;
+        }
+        .color-hex { 
+            width: 70px; padding: 5px 7px; border: 1px solid var(--border-color);
+            border-radius: 6px; text-align: center; font-family: monospace;
+            background: var(--bg-primary); color: var(--text-primary); font-size: 0.8rem;
+        }
+
+        /* Projects panel */
+        .projects-panel {
+            position: fixed; left: -420px; top: 120px; width: 400px;
+            height: calc(100vh - 120px); background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color); z-index: 100;
+            transition: left 0.3s; overflow-y: auto;
+        }
+        .projects-panel.active { left: 0; }
+        .project-card {
+            padding: 14px; margin: 10px; background: var(--bg-primary);
+            border: 1px solid var(--border-color); border-radius: 10px;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .project-card:hover { border-color: var(--primary); transform: translateX(4px); }
+        .project-title { font-weight: 700; margin-bottom: 4px; }
+        .project-date { font-size: 0.78rem; color: var(--text-secondary); }
+        .project-actions { display: flex; gap: 8px; margin-top: 10px; }
+
+        /* Overlay */
+        .overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+            z-index: 99; opacity: 0; visibility: hidden; transition: all 0.3s;
+        }
+        .overlay.active { opacity: 1; visibility: visible; }
+
+        /* Toast */
+        .toast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
+            padding: 14px 22px; background: var(--bg-secondary); border: 1px solid var(--border-color);
+            border-radius: 10px; box-shadow: 0 8px 25px var(--shadow); z-index: 10000;
+            transition: transform 0.3s; display: flex; align-items: center; gap: 10px;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+        .toast.success { border-left: 4px solid #27ae60; }
+        .toast.error { border-left: 4px solid #e74c3c; }
+
+        @media (max-width: 768px) {
+            .input-panel { position: fixed; left: 0; top: 120px; height: calc(100vh - 120px); z-index: 100; }
+            .minimap-container { display: none; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Top Bar -->
+    <!-- TOP BAR -->
     <header class="top-bar">
-        <div class="top-left">
-            <a href="recomendaciones.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
-            <h1 class="page-title">Mapa Conceptual</h1>
-        </div>
-        <div class="top-center">
-            <div class="input-group">
-                <input type="text" class="topic-input" id="topicInput" placeholder="Escribe un tema (ej: Fotosintesis, Revolucion Industrial...)">
-                <button class="generate-btn" id="generateBtn" onclick="generateMap()">
-                    <i class="fas fa-magic"></i> Generar
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <input type="text" class="page-title-input" id="mapTitle" value="Mapa Conceptual" placeholder="Titulo...">
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" onclick="toggleProjectsPanel()">
+                <i class="fas fa-folder-open"></i> Proyectos
+            </button>
+            <button class="action-btn btn-secondary" onclick="toggleInputPanel()">
+                <i class="fas fa-edit"></i> Texto
+            </button>
+            <button class="action-btn btn-success" onclick="saveProject()">
+                <i class="fas fa-save"></i> Guardar
+            </button>
+            <div style="position: relative;">
+                <button class="action-btn btn-primary" onclick="toggleExportMenu()">
+                    <i class="fas fa-download"></i> Exportar
                 </button>
-            </div>
-        </div>
-        <div class="top-right">
-            <div class="dropdown">
-                <button class="action-btn" onclick="toggleDropdown('saveMenu')"><i class="fas fa-download"></i> Exportar</button>
-                <div class="dropdown-menu" id="saveMenu">
-                    <div class="dropdown-item" onclick="saveToLocal()"><i class="fas fa-save"></i> Guardar Proyecto</div>
-                    <div class="dropdown-item" onclick="exportPNG()"><i class="fas fa-image"></i> Descargar PNG</div>
-                    <div class="dropdown-item" onclick="exportJPG()"><i class="fas fa-file-image"></i> Descargar JPG</div>
-                    <div class="dropdown-item" onclick="exportPDF()"><i class="fas fa-file-pdf"></i> Descargar PDF</div>
+                <div id="exportMenu" style="display: none; position: absolute; top: 100%; right: 0; margin-top: 8px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 10px; overflow: hidden; box-shadow: 0 8px 25px var(--shadow); min-width: 140px;">
+                    <button onclick="exportAs('png')" style="width: 100%; padding: 10px 16px; border: none; background: transparent; text-align: left; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 8px; color: inherit;">
+                        <i class="fas fa-image"></i> PNG
+                    </button>
+                    <button onclick="exportAs('jpg')" style="width: 100%; padding: 10px 16px; border: none; background: transparent; text-align: left; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 8px; color: inherit;">
+                        <i class="fas fa-file-image"></i> JPG
+                    </button>
+                    <button onclick="exportAs('pdf')" style="width: 100%; padding: 10px 16px; border: none; background: transparent; text-align: left; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 8px; color: inherit;">
+                        <i class="fas fa-file-pdf"></i> PDF
+                    </button>
+                    <button onclick="exportAs('json')" style="width: 100%; padding: 10px 16px; border: none; background: transparent; text-align: left; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 8px; color: inherit;">
+                        <i class="fas fa-code"></i> JSON
+                    </button>
                 </div>
             </div>
-            <button class="action-btn" onclick="clearCanvas()"><i class="fas fa-trash-alt"></i> Limpiar</button>
-            <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
         </div>
     </header>
 
-    <!-- Tools Sidebar -->
-    <aside class="tools-sidebar">
-        <div class="tool-section">
-            <div class="tool-section-title">Estructura del Mapa</div>
-            <div class="layout-grid">
-                <button class="layout-btn active" data-layout="breadthfirst" onclick="setLayout('breadthfirst')"><i class="fas fa-sitemap"></i>Jerarquico</button>
-                <button class="layout-btn" data-layout="circle" onclick="setLayout('circle')"><i class="fas fa-circle-notch"></i>Circular</button>
-                <button class="layout-btn" data-layout="concentric" onclick="setLayout('concentric')"><i class="fas fa-bullseye"></i>Concentrico</button>
-                <button class="layout-btn" data-layout="grid" onclick="setLayout('grid')"><i class="fas fa-th"></i>Cuadricula</button>
-                <button class="layout-btn" data-layout="cose" onclick="setLayout('cose')"><i class="fas fa-project-diagram"></i>Organico</button>
-                <button class="layout-btn" data-layout="random" onclick="setLayout('random')"><i class="fas fa-random"></i>Aleatorio</button>
-                <button class="layout-btn" data-layout="tree-left" onclick="setLayout('tree-left')"><i class="fas fa-align-left"></i>Arbol Izq</button>
-                <button class="layout-btn" data-layout="tree-right" onclick="setLayout('tree-right')"><i class="fas fa-align-right"></i>Arbol Der</button>
-                <button class="layout-btn" data-layout="radial" onclick="setLayout('radial')"><i class="fas fa-sun"></i>Radial</button>
-                <button class="layout-btn" data-layout="avsdf" onclick="setLayout('avsdf')"><i class="fas fa-water"></i>Flujo</button>
-            </div>
-        </div>
-
-        <div class="tool-section">
-            <div class="tool-section-title">Paleta de Colores</div>
-            <div class="color-row">
-                <span class="color-label">Fondo Nodos</span>
-                <input type="color" class="color-picker" id="nodeBgColor" value="#f0e6dc" onchange="updateStyle()">
-            </div>
-            <div class="color-row">
-                <span class="color-label">Texto Nodos</span>
-                <input type="color" class="color-picker" id="nodeTextColor" value="#5a4032" onchange="updateStyle()">
-            </div>
-            <div class="color-row">
-                <span class="color-label">Bordes</span>
-                <input type="color" class="color-picker" id="nodeBorderColor" value="#8b6b47" onchange="updateStyle()">
-            </div>
-            <div class="color-row">
-                <span class="color-label">Lineas</span>
-                <input type="color" class="color-picker" id="edgeColor" value="#8b6b47" onchange="updateStyle()">
-            </div>
-            <div class="color-row">
-                <span class="color-label">Fondo Canvas</span>
-                <input type="color" class="color-picker" id="canvasBgColor" value="#f8f5f2" onchange="updateCanvasBg()">
-            </div>
-        </div>
-
-        <div class="tool-section">
-            <div class="tool-section-title">Tipografia</div>
-            <select class="font-select" id="fontSelect" onchange="updateStyle()">
-                <option value="Poppins">Poppins</option>
-                <option value="Playfair Display">Playfair Display</option>
-                <option value="Lora">Lora</option>
-                <option value="Montserrat">Montserrat</option>
-                <option value="Raleway">Raleway</option>
-                <option value="Roboto Slab">Roboto Slab</option>
-                <option value="Merriweather">Merriweather</option>
-                <option value="Open Sans">Open Sans</option>
-                <option value="PT Sans">PT Sans</option>
-                <option value="Nunito">Nunito</option>
-                <option value="Quicksand">Quicksand</option>
-                <option value="Ubuntu">Ubuntu</option>
-                <option value="Rubik">Rubik</option>
-                <option value="Work Sans">Work Sans</option>
-                <option value="Fira Sans">Fira Sans</option>
-                <option value="Inter">Inter</option>
-                <option value="Josefin Sans">Josefin Sans</option>
-                <option value="Crimson Text">Crimson Text</option>
-                <option value="Bitter">Bitter</option>
-                <option value="Georgia">Georgia</option>
+    <!-- TOOLBAR -->
+    <div class="toolbar">
+        <div class="tool-group">
+            <span class="tool-label">Estilo</span>
+            <select class="style-select" id="layoutSelect" onchange="changeLayout(this.value)">
+                <option value="conceptual">Mapa Conceptual</option>
+                <option value="jerarquico">Jerarquico</option>
+                <option value="arbol">Arbol</option>
+                <option value="red">Red</option>
             </select>
         </div>
+        
+        <div class="tool-group">
+            <span class="tool-label">Fuente</span>
+            <select class="style-select" id="fontSelect" onchange="changeFont(this.value)" style="min-width: 140px;">
+                <option value="Poppins">Poppins</option>
+                <option value="Playfair Display">Playfair Display</option>
+                <option value="Roboto">Roboto</option>
+                <option value="Montserrat">Montserrat</option>
+                <option value="Lora">Lora</option>
+                <option value="Raleway">Raleway</option>
+                <option value="Quicksand">Quicksand</option>
+                <option value="Oswald">Oswald</option>
+                <option value="Caveat">Caveat</option>
+                <option value="Pacifico">Pacifico</option>
+                <option value="Roboto Slab">Roboto Slab</option>
+            </select>
+        </div>
+        
+        <div class="tool-group">
+            <span class="tool-label">Forma</span>
+            <select class="style-select" id="shapeSelect" onchange="changeNodeShape(this.value)">
+                <option value="rectangle">Rectangulo</option>
+                <option value="rounded">Redondeado</option>
+                <option value="circle">Circular</option>
+                <option value="diamond">Diamante</option>
+                <option value="cloud">Nube</option>
+            </select>
+        </div>
+        
+        <div class="tool-group">
+            <button class="tool-btn" onclick="toggleSettingsPanel()" title="Colores">
+                <i class="fas fa-palette"></i>
+            </button>
+            <button class="tool-btn" onclick="addNode()" title="Agregar nodo">
+                <i class="fas fa-plus"></i>
+            </button>
+            <button class="tool-btn" onclick="deleteSelectedNode()" title="Eliminar nodo">
+                <i class="fas fa-trash"></i>
+            </button>
+            <button class="tool-btn" onclick="clearCanvas()" title="Limpiar">
+                <i class="fas fa-eraser"></i>
+            </button>
+            <button class="tool-btn" onclick="centerMap()" title="Centrar mapa">
+                <i class="fas fa-crosshairs"></i>
+            </button>
+        </div>
+    </div>
 
-        <div class="tool-section">
-            <div class="tool-section-title">Formas de Nodos</div>
-            <div class="shape-grid">
-                <button class="shape-btn active" data-shape="roundrectangle" onclick="setShape('roundrectangle')"><i class="far fa-square"></i></button>
-                <button class="shape-btn" data-shape="rectangle" onclick="setShape('rectangle')"><i class="fas fa-square"></i></button>
-                <button class="shape-btn" data-shape="ellipse" onclick="setShape('ellipse')"><i class="fas fa-circle"></i></button>
-                <button class="shape-btn" data-shape="hexagon" onclick="setShape('hexagon')">⬡</button>
-                <button class="shape-btn" data-shape="diamond" onclick="setShape('diamond')"><i class="fas fa-diamond"></i></button>
-                <button class="shape-btn" data-shape="star" onclick="setShape('star')"><i class="fas fa-star"></i></button>
+    <!-- MAIN CONTAINER -->
+    <div class="main-container">
+        <!-- INPUT PANEL -->
+        <aside class="input-panel" id="inputPanel">
+            <div class="panel-header">
+                <span class="panel-title"><i class="fas fa-keyboard"></i> Ingresa tu Texto</span>
+                <button class="tool-btn" onclick="toggleInputPanel()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="panel-body">
+                <textarea class="text-input" id="sourceText" placeholder="Pega aqui el texto...
+
+El sistema detectara automaticamente:
+- Palabras repetidas para el titulo
+- Definiciones (con &quot;es&quot;, &quot;son&quot;, &quot;significa&quot;)
+- Datos: fechas, nombres, cifras
+- Conectores presentes en el texto"></textarea>
+                <button class="generate-btn" onclick="generateMap()">
+                    <i class="fas fa-magic"></i> Generar Mapa Conceptual
+                </button>
+                
+                <div class="tips-box">
+                    <div class="tips-title"><i class="fas fa-lightbulb"></i> Estructura del mapa</div>
+                    <ul class="tips-list">
+                        <li><strong>Titulo:</strong> Palabra/frase mas repetida</li>
+                        <li><strong>Definicion:</strong> Párrafo con &quot;es&quot;, &quot;son&quot;, &quot;significa&quot;</li>
+                        <li><strong>Conceptos:</strong> Demas párrafos ordenados izquierda-derecha</li>
+                        <li><strong>Conectores:</strong> Solo los que estan en el texto</li>
+                    </ul>
+                </div>
+            </div>
+        </aside>
+
+        <!-- CANVAS AREA -->
+        <div class="canvas-area" id="canvasArea">
+            <div class="canvas-wrapper" id="canvasWrapper">
+                <svg class="connectors-svg" id="connectorsSvg"></svg>
             </div>
         </div>
+    </div>
 
-        <div class="tool-section">
-            <div class="tool-section-title">Proyectos Guardados</div>
-            <div class="project-list" id="projectList">
-                <p style="color: var(--text-secondary); font-size: 0.85rem; text-align: center; padding: 20px;">No hay proyectos</p>
+    <!-- MINIMAP -->
+    <div class="minimap-container" id="minimapContainer">
+        <div class="minimap-title"><i class="fas fa-map"></i> Vista general</div>
+        <div class="minimap-canvas" id="minimapCanvas"></div>
+    </div>
+
+    <!-- ZOOM CONTROLS -->
+    <div class="zoom-controls">
+        <button class="zoom-btn" onclick="zoomCanvas(1.3)" title="Acercar"><i class="fas fa-plus"></i></button>
+        <div class="zoom-level-display" id="zoomDisplay">100%</div>
+        <button class="zoom-btn" onclick="zoomCanvas(0.7)" title="Alejar"><i class="fas fa-minus"></i></button>
+        <button class="zoom-btn" onclick="resetZoom()" title="Reset"><i class="fas fa-expand"></i></button>
+        <button class="zoom-btn" onclick="centerMap()" title="Centrar"><i class="fas fa-crosshairs"></i></button>
+    </div>
+
+    <!-- SETTINGS PANEL -->
+    <aside class="settings-panel" id="settingsPanel">
+        <div class="panel-header">
+            <span class="panel-title"><i class="fas fa-palette"></i> Personalizacion</span>
+            <button class="tool-btn" onclick="toggleSettingsPanel()"><i class="fas fa-times"></i></button>
+        </div>
+        
+        <div class="settings-section">
+            <div class="settings-section-title"><i class="fas fa-swatchbook"></i> Colores</div>
+            <div class="color-section">
+                <div class="color-row">
+                    <span class="color-label">Fondo</span>
+                    <div class="color-input-wrapper">
+                        <input type="color" id="nodeBgColor" value="#ffffff" onchange="updateColors()">
+                        <input type="text" class="color-hex" id="nodeBgHex" value="#ffffff" onchange="syncColorInput('nodeBg')">
+                    </div>
+                </div>
+                <div class="color-row">
+                    <span class="color-label">Borde</span>
+                    <div class="color-input-wrapper">
+                        <input type="color" id="nodeBorderColor" value="#8b6b47" onchange="updateColors()">
+                        <input type="text" class="color-hex" id="nodeBorderHex" value="#8b6b47" onchange="syncColorInput('nodeBorder')">
+                    </div>
+                </div>
+                <div class="color-row">
+                    <span class="color-label">Texto</span>
+                    <div class="color-input-wrapper">
+                        <input type="color" id="nodeTextColor" value="#5a4032" onchange="updateColors()">
+                        <input type="text" class="color-hex" id="nodeTextHex" value="#5a4032" onchange="syncColorInput('nodeText')">
+                    </div>
+                </div>
+                <div class="color-row">
+                    <span class="color-label">Lineas</span>
+                    <div class="color-input-wrapper">
+                        <input type="color" id="connectorColor" value="#8b6b47" onchange="updateColors()">
+                        <input type="text" class="color-hex" id="connectorHex" value="#8b6b47" onchange="syncColorInput('connector')">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="settings-section">
+            <div class="settings-section-title"><i class="fas fa-shapes"></i> Formas</div>
+            <div class="shape-grid">
+                <div class="shape-option selected" data-shape="rectangle" onclick="selectShape('rectangle')">
+                    <div style="width: 22px; height: 16px; border: 2px solid currentColor; border-radius: 3px;"></div>
+                </div>
+                <div class="shape-option" data-shape="rounded" onclick="selectShape('rounded')">
+                    <div style="width: 22px; height: 16px; border: 2px solid currentColor; border-radius: 8px;"></div>
+                </div>
+                <div class="shape-option" data-shape="circle" onclick="selectShape('circle')">
+                    <div style="width: 18px; height: 18px; border: 2px solid currentColor; border-radius: 50%;"></div>
+                </div>
+                <div class="shape-option" data-shape="diamond" onclick="selectShape('diamond')">
+                    <div style="width: 14px; height: 14px; border: 2px solid currentColor; transform: rotate(45deg);"></div>
+                </div>
+                <div class="shape-option" data-shape="cloud" onclick="selectShape('cloud')">
+                    <div style="width: 22px; height: 16px; border: 2px solid currentColor; border-radius: 40px 40px 40px 40px / 25px 25px 25px 25px;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="settings-section">
+            <div class="settings-section-title"><i class="fas fa-sitemap"></i> Estilos</div>
+            <div class="layout-grid">
+                <div class="layout-option selected" data-layout="conceptual" onclick="selectLayout('conceptual')">
+                    <div class="layout-preview"><i class="fas fa-project-diagram"></i></div>
+                    <div class="layout-name">Conceptual</div>
+                </div>
+                <div class="layout-option" data-layout="jerarquico" onclick="selectLayout('jerarquico')">
+                    <div class="layout-preview"><i class="fas fa-sitemap"></i></div>
+                    <div class="layout-name">Jerarquico</div>
+                </div>
+                <div class="layout-option" data-layout="arbol" onclick="selectLayout('arbol')">
+                    <div class="layout-preview"><i class="fas fa-tree"></i></div>
+                    <div class="layout-name">Arbol</div>
+                </div>
+                <div class="layout-option" data-layout="red" onclick="selectLayout('red')">
+                    <div class="layout-preview"><i class="fas fa-network-wired"></i></div>
+                    <div class="layout-name">Red</div>
+                </div>
             </div>
         </div>
     </aside>
 
-    <!-- Canvas -->
-    <div class="canvas-container" id="canvasContainer">
-        <div id="cy"></div>
-    </div>
-
-    <!-- Edit Tooltip -->
-    <div class="edit-tooltip" id="editTooltip">
-        <input type="text" class="edit-input" id="editNodeLabel" placeholder="Etiqueta">
-        <textarea class="edit-input" id="editNodeDesc" placeholder="Descripcion breve" rows="2" style="resize:none;"></textarea>
-        <div class="edit-actions">
-            <button class="action-btn" onclick="closeEditTooltip()">Cancelar</button>
-            <button class="action-btn" style="background: var(--primary); color: white; border-color: var(--primary);" onclick="saveNodeEdit()">Guardar</button>
+    <!-- PROJECTS PANEL -->
+    <aside class="projects-panel" id="projectsPanel">
+        <div class="panel-header">
+            <span class="panel-title"><i class="fas fa-folder-open"></i> Mis Proyectos</span>
+            <button class="tool-btn" onclick="toggleProjectsPanel()"><i class="fas fa-times"></i></button>
         </div>
-    </div>
+        <div id="projectsList"></div>
+    </aside>
 
-    <!-- Loading Overlay -->
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loader"></div>
-        <div class="loading-text">Generando mapa conceptual con IA...</div>
-    </div>
+    <!-- OVERLAY -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"><i class="fas fa-check-circle"></i> <span id="toastMessage">Guardado</span></div>
 
     <script>
-        let cy = null;
-        let currentShape = 'roundrectangle';
-        let currentLayout = 'breadthfirst';
-        let editingNode = null;
+        // ==================== STATE ====================
+        let state = {
+            nodes: [],
+            connections: [],
+            selectedNode: null,
+            zoom: 1,
+            currentLayout: 'conceptual',
+            currentFont: 'Poppins',
+            currentShape: 'rectangle',
+            colors: {
+                nodeBg: '#ffffff',
+                nodeBorder: '#8b6b47',
+                nodeText: '#5a4032',
+                connector: '#8b6b47'
+            },
+            nodeIdCounter: 0
+        };
 
-        // ==========================================
-        // CONFIGURACION API DE GEMINI
-        // ==========================================
-        // 1. Obtén tu key en: https://aistudio.google.com/app/apikey
-        // 2. Pegala dentro de las comillas de abajo:
-        const GEMINI_API_KEY = "AQ.Ab8RN6JOzfvCMcvzWeoFxdAWfq11JmH9nWmg-9LCt91qBpQ_Rw"; 
-        const GEMINI_MODEL = "gemini-1.5-flash"; 
-        // ==========================================
+        // ==================== STOPWORDS ====================
+        const STOPWORDS = new Set([
+            'el', 'la', 'los', 'las', 'un', 'una', 'unos', 'unas', 'y', 'o', 'a', 'ante', 'bajo', 'con', 'de', 'en', 'entre', 'hacia', 'hasta', 'para', 'por', 'segun', 'sin', 'sobre', 'tras',
+            'que', 'quien', 'cual', 'donde', 'cuando', 'como', 'cuanto', 'cuyo', 'del', 'al',
+            'es', 'son', 'esta', 'estan', 'era', 'fueron', 'ser', 'fue', 'han', 'ha', 'se', 'su', 'sus',
+            'este', 'esta', 'estos', 'estas', 'ese', 'esa', 'esos', 'esas',
+            'muy', 'mas', 'menos', 'tan', 'mucho', 'poco', 'bastante',
+            'tambien', 'ademas', 'incluso', 'solo', 'ya', 'aun', 'todavia', 'siempre', 'nunca',
+            'pero', 'aunque', 'sin embargo', 'no obstante', 'por ejemplo', 'por tanto',
+            'yo', 'tu', 'el', 'ella', 'nosotros', 'ellos', 'me', 'te', 'le', 'nos', 'les',
+            'lo', 'las', 'les', 'ello', 'esto', 'aquello',
+            'cada', 'todo', 'toda', 'todos', 'todas', 'otro', 'otra', 'otros', 'otras', 'mismo', 'misma',
+            'ni', 'no', 'si', 'mientras', 'porque', 'pues',
+            'durante', 'mediante', 'excepto', 'salvo', 'sino',
+            'primera', 'primero', 'segundo', 'segunda', 'tercer', 'tercera', 'ultimo', 'ultima',
+            'nuevo', 'nueva', 'nuevos', 'nuevas', 'gran', 'grande', 'grandes', 'mayor', 'menor', 'mejor', 'peor',
+            'podria', 'podrian', 'debe', 'deben', 'puede', 'pueden', 'habia', 'habian', 'siendo'
+        ]);
 
+        // ==================== DEFINITION VERBS ====================
+        const DEFINITION_VERBS = ['es', 'son', 'significa', 'consiste', 'representa', 'se define', 'se caracteriza'];
+
+        // ==================== INITIALIZATION ====================
         document.addEventListener('DOMContentLoaded', () => {
-            initCytoscape();
             loadProjects();
+            setupDragAndDrop();
+            setupCanvasPan();
             setupTheme();
+            setupKeyboardShortcuts();
+            updateMinimap();
         });
 
-        function initCytoscape() {
-            cy = cytoscape({
-                container: document.getElementById('cy'),
-                elements: [],
-                style: getStylesheet(),
-                layout: { name: 'breadthfirst', fit: true, padding: 50 },
-                wheelSensitivity: 0.3
-            });
+        function setupTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        }
 
-            cy.on('tap', 'node', function(evt) {
-                showEditTooltip(evt.target);
-            });
-            cy.on('tap', function(evt) {
-                if(evt.target === cy) closeEditTooltip();
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Delete' && state.selectedNode) {
+                    deleteSelectedNode();
+                }
+                if (e.ctrlKey && e.key === 's') {
+                    e.preventDefault();
+                    saveProject();
+                }
             });
         }
 
-        function getStylesheet() {
-            const bgColor = document.getElementById('nodeBgColor').value;
-            const textColor = document.getElementById('nodeTextColor').value;
-            const borderColor = document.getElementById('nodeBorderColor').value;
-            const edgeColor = document.getElementById('edgeColor').value;
-            const font = document.getElementById('fontSelect').value;
+        // ==================== TEXT PROCESSING ====================
+        function generateMap() {
+            const text = document.getElementById('sourceText').value.trim();
+            if (!text) {
+                showToast('Por favor ingresa un texto', 'error');
+                return;
+            }
 
-            return [
-                {
-                    selector: 'node',
-                    style: {
-                        'background-color': bgColor,
-                        'label': 'data(label)',
-                        'color': textColor,
-                        'border-color': borderColor,
-                        'border-width': 2,
-                        'shape': currentShape,
-                        'width': 'label',
-                        'height': 'label',
-                        'padding': '15px',
-                        'text-valign': 'center',
-                        'text-halign': 'center',
-                        'font-size': '14px',
-                        'font-family': font,
-                        'text-wrap': 'wrap',
-                        'text-max-width': '200px'
-                    }
-                },
-                {
-                    selector: 'edge',
-                    style: {
-                        'width': 2,
-                        'line-color': edgeColor,
-                        'target-arrow-color': edgeColor,
-                        'target-arrow-shape': 'triangle',
-                        'curve-style': 'bezier'
+            clearCanvas();
+            
+            const processedData = processText(text);
+            createNodesFromProcessedData(processedData);
+            applyLayout(state.currentLayout);
+            drawConnections();
+            updateMinimap();
+            centerMap();
+            
+            showToast('Mapa conceptual generado', 'success');
+        }
+
+        function processText(text) {
+            const result = {
+                title: '',
+                definition: null,
+                concepts: []
+            };
+
+            // 1. Find title
+            result.title = findMostRepeatedPhrase(text);
+            document.getElementById('mapTitle').value = result.title;
+
+            // 2. Split into sentences
+            const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+            
+            // 3. Find definition paragraph (contains "es", "son", "significa")
+            let definitionIndex = -1;
+            for (let i = 0; i < sentences.length; i++) {
+                const sentence = sentences[i].toLowerCase();
+                for (const verb of DEFINITION_VERBS) {
+                    if (sentence.includes(' ' + verb + ' ') || sentence.startsWith(verb + ' ')) {
+                        definitionIndex = i;
+                        break;
                     }
                 }
-            ];
-        }
-
-        // ==========================================
-        // LOGICA DE GENERACION CON IA
-        // ==========================================
-        async function generateMap() {
-            const topic = document.getElementById('topicInput').value.trim();
-            if(!topic) return alert('Por favor ingresa un tema');
-
-            showLoading(true);
-            document.getElementById('generateBtn').disabled = true;
-
-            try {
-                const mapData = await generateConceptMapData(topic);
-                cy.elements().remove();
-                cy.add(mapData);
-                setLayout(currentLayout);
-            } catch(error) {
-                console.error(error);
-                alert('Error al generar. Verifica tu API Key o intenta otro tema.');
-            } finally {
-                showLoading(false);
-                document.getElementById('generateBtn').disabled = false;
-            }
-        }
-
-        async function generateConceptMapData(topic) {
-            // Verificar si hay API Key
-            if (!GEMINI_API_KEY || GEMINI_API_KEY === "AQUI_PEGA_TU_API_KEY_DE_GEMINI") {
-                console.warn("Sin API Key, usando modo demo.");
-                return generateFallbackMap(topic);
+                if (definitionIndex >= 0) break;
             }
 
-            const prompt = `
-                Eres un experto en pedagogía. Genera un mapa conceptual detallado sobre: "${topic}".
-                REGLAS:
-                1. Estructura jerárquica clara.
-                2. Nodos con concepto principal y descripción breve entre paréntesis.
-                3. Formato de salida EXCLUSIVAMENTE JSON puro, sin markdown.
-                4. Estructura JSON: Array de objetos.
-                   - Nodos: { "data": { "id": "n0", "label": "CONCEPTO (desc)" } }
-                   - Conexiones: { "data": { "id": "e1", "source": "n0", "target": "n1" } }
-                5. El nodo principal es "n0".
-                6. IDs deben ser únicos y consecutivos.
+            // 4. Process sentences
+            sentences.forEach((sentence, idx) => {
+                const cleanSentence = sentence.trim();
+                if (cleanSentence.length < 10) return;
+
+                const conceptData = extractConceptData(cleanSentence, idx);
                 
-                Ejemplo para "Agua":
-                [
-                  {"data": {"id": "n0", "label": "AGUA (Compuesto vital)"}},
-                  {"data": {"id": "n1", "label": "Composición (H2O)"}},
-                  {"data": {"id": "e0", "source": "n0", "target": "n1"}}
-                ]
-                
-                Genera el JSON para "${topic}":
-            `;
-
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
-            
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: prompt }] }]
-                })
+                if (idx === definitionIndex) {
+                    // This is the definition
+                    result.definition = conceptData;
+                } else {
+                    // Regular concept
+                    result.concepts.push(conceptData);
+                }
             });
 
-            if (!response.ok) throw new Error("Error API");
-
-            const result = await response.json();
-            let text = result.candidates[0].content.parts[0].text;
-            
-            // Limpieza de formato
-            text = text.replace(/```json/g, '').replace(/```/g, '').trim();
-            
-            return JSON.parse(text);
+            return result;
         }
 
-        // Mapa de respaldo si no hay API Key
-        function generateFallbackMap(topic) {
-            const mainId = 'n0';
-            let elements = [
-                { data: { id: mainId, label: topic.toUpperCase() } }
-            ];
-            const subtopics = ['Definición', 'Características', 'Tipos', 'Importancia', 'Ejemplos'];
-            subtopics.forEach((sub, i) => {
-                const id = 'n' + (i + 1);
-                elements.push({ data: { id: id, label: sub } });
-                elements.push({ data: { id: 'e' + i, source: mainId, target: id } });
-            });
-            return elements;
-        }
+        function findMostRepeatedPhrase(text) {
+            const words = text.toLowerCase()
+                .replace(/[^\p{L}\s]/gu, ' ')
+                .split(/\s+/)
+                .filter(w => w.length > 2 && !STOPWORDS.has(w));
 
-        // ==========================================
-        // FUNCIONES DE INTERFAZ
-        // ==========================================
-
-        function setLayout(layoutName) {
-            currentLayout = layoutName;
-            document.querySelectorAll('.layout-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.layout === layoutName);
+            const wordFreq = {};
+            words.forEach(w => {
+                wordFreq[w] = (wordFreq[w] || 0) + 1;
             });
 
-            let config = { name: layoutName, fit: true, padding: 50, animate: true };
-            if (layoutName === 'breadthfirst') { config.directed = true; config.spacingFactor = 1.5; }
-            if (layoutName === 'cose') { config.nodeRepulsion = 80000; }
-            
-            cy.layout(config).run();
+            // Check bigrams
+            const bigrams = {};
+            for (let i = 0; i < words.length - 1; i++) {
+                const bigram = words[i] + ' ' + words[i + 1];
+                if (!STOPWORDS.has(words[i]) && !STOPWORDS.has(words[i + 1])) {
+                    bigrams[bigram] = (bigrams[bigram] || 0) + 1;
+                }
+            }
+
+            const sortedBigrams = Object.entries(bigrams)
+                .filter(([_, count]) => count >= 2)
+                .sort((a, b) => b[1] - a[1]);
+
+            if (sortedBigrams.length > 0) {
+                const phrase = sortedBigrams[0][0];
+                return phrase.charAt(0).toUpperCase() + phrase.slice(1);
+            }
+
+            const sortedWords = Object.entries(wordFreq).sort((a, b) => b[1] - a[1]);
+            if (sortedWords.length > 0) {
+                return sortedWords[0][0].charAt(0).toUpperCase() + sortedWords[0][0].slice(1);
+            }
+
+            return 'Concepto Principal';
         }
 
-        function setShape(shape) {
-            currentShape = shape;
-            document.querySelectorAll('.shape-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.shape === shape);
-            });
-            updateStyle();
-        }
-
-        function updateStyle() { cy.style(getStylesheet()).update(); }
-        function updateCanvasBg() { document.getElementById('canvasContainer').style.backgroundColor = document.getElementById('canvasBgColor').value; }
-
-        function showEditTooltip(node) {
-            editingNode = node;
-            const tooltip = document.getElementById('editTooltip');
-            document.getElementById('editNodeLabel').value = node.data('label').split('\n')[0];
-            tooltip.style.left = (node.renderedPosition().x + 280) + 'px';
-            tooltip.style.top = (node.renderedPosition().y + 100) + 'px';
-            tooltip.classList.add('active');
-        }
-
-        function closeEditTooltip() { document.getElementById('editTooltip').classList.remove('active'); editingNode = null; }
-
-        function saveNodeEdit() {
-            if(!editingNode) return;
-            const label = document.getElementById('editNodeLabel').value;
-            const desc = document.getElementById('editNodeDesc').value;
-            editingNode.data('label', desc ? `${label}\n(${desc})` : label);
-            closeEditTooltip();
-        }
-
-        function clearCanvas() { if(confirm('¿Limpiar todo el mapa?')) cy.elements().remove(); }
-
-        // ==========================================
-        // GUARDADO Y EXPORTACION
-        // ==========================================
-
-        function saveToLocal() {
-            const name = prompt('Nombre del proyecto:', 'Mi Mapa');
-            if(!name) return;
-            const projects = JSON.parse(localStorage.getItem('conceptMaps') || '{}');
-            projects[name] = {
-                elements: cy.elements().jsons(),
-                style: {
-                    nodeBg: document.getElementById('nodeBgColor').value,
-                    nodeText: document.getElementById('nodeTextColor').value,
-                    nodeBorder: document.getElementById('nodeBorderColor').value,
-                    edge: document.getElementById('edgeColor').value,
-                    canvas: document.getElementById('canvasBgColor').value,
-                    font: document.getElementById('fontSelect').value,
-                    shape: currentShape
-                },
-                date: new Date().toISOString()
+        function extractConceptData(sentence, index) {
+            const data = {
+                index: index,
+                text: sentence,
+                title: '',
+                content: '',
+                connector: null
             };
-            localStorage.setItem('conceptMaps', JSON.stringify(projects));
+
+            // Find connector in sentence
+            const connectors = ['es', 'son', 'significa', 'consiste en', 'representa', 'se define como', 
+                              'se divide en', 'consta de', 'incluye', 'sirve para', 'se utiliza para',
+                              'se caracteriza por', 'deriva de', 'proviene de', 'se origina', 'nace de'];
+            
+            for (const conn of connectors) {
+                const regex = new RegExp(`(.+?)\\s+${conn.replace(/\s/g, '\\s+')}\\s+(.+)`, 'i');
+                const match = sentence.match(regex);
+                if (match) {
+                    data.connector = conn;
+                    data.title = cleanTitle(match[1].trim());
+                    data.content = match[2].trim();
+                    break;
+                }
+            }
+
+            if (!data.connector) {
+                const colonMatch = sentence.match(/^([^:]{4,50}):\s*(.+)$/s);
+                if (colonMatch) {
+                    data.title = cleanTitle(colonMatch[1].trim());
+                    data.content = colonMatch[2].trim();
+                } else {
+                    const words = sentence.split(/\s+/);
+                    data.title = cleanTitle(words.slice(0, Math.min(6, Math.ceil(words.length / 3))).join(' '));
+                    data.content = sentence;
+                }
+            }
+
+            return data;
+        }
+
+        function cleanTitle(title) {
+            return title
+                .replace(/^(Por un lado,?\s*|Por otro lado,?\s*|Ademas,?\s*|Sin embargo,?\s*|Por ejemplo,?\s*|Es decir,?\s*)/i, '')
+                .replace(/[.!?]+$/, '')
+                .trim();
+        }
+
+        // ==================== NODE CREATION ====================
+        function createNodesFromProcessedData(data) {
+            state.nodeIdCounter = 0;
+            
+            // 1. Create TITLE node
+            const titleNode = {
+                id: state.nodeIdCounter++,
+                type: 'main',
+                title: data.title,
+                content: '',
+                x: 0,
+                y: 0
+            };
+            state.nodes.push(titleNode);
+
+            let definitionNode = null;
+            let parentNode = titleNode;
+
+            // 2. Create DEFINITION node if exists
+            if (data.definition) {
+                definitionNode = {
+                    id: state.nodeIdCounter++,
+                    type: 'definition',
+                    title: data.definition.title || data.title,
+                    content: data.definition.content,
+                    x: 0,
+                    y: 0,
+                    parentId: titleNode.id,
+                    connector: data.definition.connector || ''
+                };
+                state.nodes.push(definitionNode);
+                
+                state.connections.push({
+                    from: titleNode.id,
+                    to: definitionNode.id,
+                    label: data.definition.connector || ''
+                });
+                
+                parentNode = definitionNode;
+            }
+
+            // 3. Create CONCEPT nodes (distributed horizontally)
+            const conceptsToShow = data.concepts.slice(0, 8); // Limit to avoid overflow
+            
+            conceptsToShow.forEach((concept, idx) => {
+                const conceptNode = {
+                    id: state.nodeIdCounter++,
+                    type: 'concept',
+                    title: concept.title,
+                    content: concept.content,
+                    x: 0,
+                    y: 0,
+                    parentId: parentNode.id,
+                    connector: concept.connector || '',
+                    order: idx
+                };
+                state.nodes.push(conceptNode);
+                
+                state.connections.push({
+                    from: parentNode.id,
+                    to: conceptNode.id,
+                    label: concept.connector || ''
+                });
+            });
+
+            renderNodes();
+        }
+
+        function renderNodes() {
+            const wrapper = document.getElementById('canvasWrapper');
+            wrapper.querySelectorAll('.concept-node').forEach(el => el.remove());
+            
+            state.nodes.forEach(node => {
+                const nodeEl = document.createElement('div');
+                nodeEl.className = `concept-node node-shape-${state.currentShape}`;
+                if (node.type === 'main') nodeEl.classList.add('is-main');
+                if (node.type === 'definition') nodeEl.classList.add('is-definition');
+                
+                nodeEl.id = `node-${node.id}`;
+                nodeEl.style.left = node.x + 'px';
+                nodeEl.style.top = node.y + 'px';
+                nodeEl.style.fontFamily = state.currentFont;
+                nodeEl.style.background = state.colors.nodeBg;
+                nodeEl.style.borderColor = state.colors.nodeBorder;
+                nodeEl.style.color = state.colors.nodeText;
+                
+                nodeEl.innerHTML = `
+                    <div class="node-title" contenteditable="true" data-node-id="${node.id}">${node.title}</div>
+                    ${node.content ? `<div class="node-content" contenteditable="true" data-node-id="${node.id}">${node.content}</div>` : ''}
+                `;
+                
+                wrapper.appendChild(nodeEl);
+                
+                setupNodeDrag(nodeEl, node);
+                
+                nodeEl.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    selectNode(node.id);
+                });
+                
+                nodeEl.querySelectorAll('[contenteditable="true"]').forEach(el => {
+                    el.addEventListener('blur', () => {
+                        const nodeId = parseInt(el.dataset.nodeId);
+                        const nodeData = state.nodes.find(n => n.id === nodeId);
+                        if (nodeData) {
+                            if (el.classList.contains('node-title')) {
+                                nodeData.title = el.innerText;
+                            } else {
+                                nodeData.content = el.innerText;
+                            }
+                        }
+                    });
+                });
+            });
+
+            updateMinimap();
+        }
+
+        function addNode() {
+            const node = {
+                id: state.nodeIdCounter++,
+                type: 'concept',
+                title: 'Nuevo Concepto',
+                content: 'Descripcion...',
+                x: 400 + Math.random() * 200,
+                y: 400 + Math.random() * 200,
+                parentId: null
+            };
+            
+            state.nodes.push(node);
+            
+            if (state.selectedNode !== null) {
+                node.parentId = state.selectedNode;
+                state.connections.push({ from: state.selectedNode, to: node.id, label: '' });
+            }
+            
+            renderNodes();
+            drawConnections();
+            updateMinimap();
+        }
+
+        function deleteSelectedNode() {
+            if (state.selectedNode === null) return;
+            
+            const nodeToDelete = state.nodes.find(n => n.id === state.selectedNode);
+            if (nodeToDelete && nodeToDelete.type === 'main') {
+                showToast('No puedes eliminar el concepto principal', 'error');
+                return;
+            }
+            
+            const nodesToRemove = [state.selectedNode];
+            let changed = true;
+            while (changed) {
+                changed = false;
+                state.nodes.forEach(n => {
+                    if (n.parentId !== null && nodesToRemove.includes(n.parentId) && !nodesToRemove.includes(n.id)) {
+                        nodesToRemove.push(n.id);
+                        changed = true;
+                    }
+                });
+            }
+            
+            state.nodes = state.nodes.filter(n => !nodesToRemove.includes(n.id));
+            state.connections = state.connections.filter(c => 
+                !nodesToRemove.includes(c.from) && !nodesToRemove.includes(c.to)
+            );
+            
+            state.selectedNode = null;
+            renderNodes();
+            drawConnections();
+            updateMinimap();
+        }
+
+        function selectNode(nodeId) {
+            state.selectedNode = nodeId;
+            document.querySelectorAll('.concept-node').forEach(el => {
+                el.classList.toggle('selected', el.id === `node-${nodeId}`);
+            });
+        }
+
+        // ==================== DRAG AND DROP ====================
+        function setupDragAndDrop() {
+            const canvasArea = document.getElementById('canvasArea');
+            const wrapper = document.getElementById('canvasWrapper');
+            
+            canvasArea.addEventListener('click', (e) => {
+                if (e.target === canvasArea || e.target === wrapper || e.target.classList.contains('connectors-svg')) {
+                    state.selectedNode = null;
+                    document.querySelectorAll('.concept-node').forEach(el => el.classList.remove('selected'));
+                }
+            });
+        }
+
+        function setupCanvasPan() {
+            const canvasArea = document.getElementById('canvasArea');
+            let isPanning = false;
+            let startX, startY, scrollStartX, scrollStartY;
+
+            canvasArea.addEventListener('mousedown', (e) => {
+                if (e.target === canvasArea || e.target.id === 'canvasWrapper' || e.target.tagName === 'svg') {
+                    isPanning = true;
+                    canvasArea.style.cursor = 'grabbing';
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    scrollStartX = canvasArea.scrollLeft;
+                    scrollStartY = canvasArea.scrollTop;
+                }
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isPanning) return;
+                const dx = startX - e.clientX;
+                const dy = startY - e.clientY;
+                canvasArea.scrollLeft = scrollStartX + dx;
+                canvasArea.scrollTop = scrollStartY + dy;
+            });
+
+            document.addEventListener('mouseup', () => {
+                isPanning = false;
+                canvasArea.style.cursor = 'grab';
+            });
+
+            canvasArea.addEventListener('wheel', (e) => {
+                if (e.ctrlKey) {
+                    e.preventDefault();
+                    zoomCanvas(e.deltaY < 0 ? 1.1 : 0.9);
+                }
+            }, { passive: false });
+        }
+
+        function setupNodeDrag(element, node) {
+            let isDragging = false;
+            let startX, startY, initialX, initialY;
+            
+            element.addEventListener('mousedown', (e) => {
+                if (e.target.getAttribute('contenteditable') === 'true') return;
+                
+                isDragging = true;
+                element.classList.add('dragging');
+                startX = e.clientX;
+                startY = e.clientY;
+                initialX = node.x;
+                initialY = node.y;
+                e.preventDefault();
+                e.stopPropagation();
+            });
+            
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                const dx = (e.clientX - startX) / state.zoom;
+                const dy = (e.clientY - startY) / state.zoom;
+                node.x = Math.max(20, initialX + dx);
+                node.y = Math.max(20, initialY + dy);
+                element.style.left = node.x + 'px';
+                element.style.top = node.y + 'px';
+                drawConnections();
+                updateMinimap();
+            });
+            
+            document.addEventListener('mouseup', () => {
+                if (isDragging) {
+                    isDragging = false;
+                    element.classList.remove('dragging');
+                }
+            });
+        }
+
+        // ==================== CONNECTIONS ====================
+        function drawConnections() {
+            const svg = document.getElementById('connectorsSvg');
+            svg.innerHTML = '';
+            document.querySelectorAll('.connector-label').forEach(el => el.remove());
+            
+            state.connections.forEach(conn => {
+                const fromNode = state.nodes.find(n => n.id === conn.from);
+                const toNode = state.nodes.find(n => n.id === conn.to);
+                
+                if (!fromNode || !toNode) return;
+                
+                const fromEl = document.getElementById(`node-${fromNode.id}`);
+                const toEl = document.getElementById(`node-${toNode.id}`);
+                
+                if (!fromEl || !toEl) return;
+                
+                const fromRect = { x: fromNode.x, y: fromNode.y, width: fromEl.offsetWidth, height: fromEl.offsetHeight };
+                const toRect = { x: toNode.x, y: toNode.y, width: toEl.offsetWidth, height: toEl.offsetHeight };
+                
+                const points = calculateConnectionPoints(fromRect, toRect);
+                
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('d', createPath(points.start, points.end));
+                path.setAttribute('class', 'connector-line');
+                path.setAttribute('stroke', state.colors.connector);
+                svg.appendChild(path);
+                
+                // Draw connector label if exists
+                if (conn.label && conn.label.trim()) {
+                    const midX = (points.start.x + points.end.x) / 2;
+                    const midY = (points.start.y + points.end.y) / 2;
+                    
+                    const label = document.createElement('div');
+                    label.className = 'connector-label';
+                    label.textContent = conn.label;
+                    label.style.left = midX + 'px';
+                    label.style.top = midY + 'px';
+                    label.style.transform = 'translate(-50%, -50%)';
+                    label.style.color = state.colors.connector;
+                    label.style.borderColor = state.colors.connector;
+                    label.style.background = state.colors.nodeBg;
+                    
+                    document.getElementById('canvasWrapper').appendChild(label);
+                }
+            });
+        }
+
+        function calculateConnectionPoints(fromRect, toRect) {
+            const fromCenterX = fromRect.x + fromRect.width / 2;
+            const fromCenterY = fromRect.y + fromRect.height / 2;
+            const toCenterX = toRect.x + toRect.width / 2;
+            const toCenterY = toRect.y + toRect.height / 2;
+            
+            const dx = toCenterX - fromCenterX;
+            const dy = toCenterY - fromCenterY;
+            
+            let startX, startY, endX, endY;
+            
+            if (Math.abs(dy) > Math.abs(dx)) {
+                if (dy > 0) {
+                    startY = fromRect.y + fromRect.height;
+                    endY = toRect.y;
+                } else {
+                    startY = fromRect.y;
+                    endY = toRect.y + toRect.height;
+                }
+                startX = fromCenterX;
+                endX = toCenterX;
+            } else {
+                if (dx > 0) {
+                    startX = fromRect.x + fromRect.width;
+                    endX = toRect.x;
+                } else {
+                    startX = fromRect.x;
+                    endX = toRect.x + toRect.width;
+                }
+                startY = fromCenterY;
+                endY = toCenterY;
+            }
+            
+            return { start: { x: startX, y: startY }, end: { x: endX, y: endY } };
+        }
+
+        function createPath(start, end) {
+            const midY = (start.y + end.y) / 2;
+            return `M ${start.x} ${start.y} C ${start.x} ${midY}, ${end.x} ${midY}, ${end.x} ${end.y}`;
+        }
+
+        // ==================== LAYOUTS ====================
+        function applyLayout(layoutType) {
+            if (state.nodes.length === 0) return;
+            
+            const layouts = {
+                'conceptual': () => layoutConceptual(),
+                'jerarquico': () => layoutJerarquico(),
+                'arbol': () => layoutArbol(),
+                'red': () => layoutRed()
+            };
+            
+            if (layouts[layoutType]) {
+                layouts[layoutType]();
+            }
+            
+            renderNodes();
+            drawConnections();
+            updateMinimap();
+        }
+
+        function layoutConceptual() {
+            // TITULO arriba centrado
+            // DEFINICION abajo del titulo centrada
+            // DEMAS CONCEPTOS distribuidos horizontalmente debajo
+            
+            const centerX = 2000;
+            const startY = 150;
+            const verticalGap = 180;
+            const nodeWidth = 280;
+            const horizontalGap = 50;
+            
+            // Find nodes by type
+            const titleNode = state.nodes.find(n => n.type === 'main');
+            const definitionNode = state.nodes.find(n => n.type === 'definition');
+            const conceptNodes = state.nodes.filter(n => n.type === 'concept');
+            
+            // Position TITLE
+            if (titleNode) {
+                titleNode.x = centerX;
+                titleNode.y = startY;
+            }
+            
+            let currentY = startY + verticalGap;
+            let parentNode = titleNode;
+            
+            // Position DEFINITION (centered below title)
+            if (definitionNode) {
+                definitionNode.x = centerX;
+                definitionNode.y = currentY;
+                currentY += verticalGap;
+                parentNode = definitionNode;
+            }
+            
+            // Position CONCEPTS horizontally
+            if (conceptNodes.length > 0) {
+                const totalWidth = conceptNodes.length * nodeWidth + (conceptNodes.length - 1) * horizontalGap;
+                const startX = centerX - totalWidth / 2;
+                
+                conceptNodes.forEach((node, idx) => {
+                    node.x = startX + idx * (nodeWidth + horizontalGap);
+                    node.y = currentY;
+                });
+            }
+        }
+
+        function layoutJerarquico() {
+            const centerX = 2000;
+            const startY = 150;
+            const nodeHeight = 160;
+            
+            const levels = {};
+            state.nodes.forEach(node => {
+                const level = node.type === 'main' ? 0 : node.type === 'definition' ? 1 : 2;
+                if (!levels[level]) levels[level] = [];
+                levels[level].push(node);
+            });
+            
+            Object.keys(levels).forEach(level => {
+                const nodesInLevel = levels[level];
+                const levelNum = parseInt(level);
+                const nodeWidth = 260;
+                const gap = 40;
+                const totalWidth = nodesInLevel.length * nodeWidth + (nodesInLevel.length - 1) * gap;
+                const offsetX = centerX - totalWidth / 2;
+                
+                nodesInLevel.forEach((node, idx) => {
+                    node.x = offsetX + idx * (nodeWidth + gap);
+                    node.y = startY + levelNum * nodeHeight;
+                });
+            });
+        }
+
+        function layoutArbol() {
+            const mainNode = state.nodes.find(n => n.type === 'main');
+            if (!mainNode) return;
+            
+            mainNode.x = 2000;
+            mainNode.y = 200;
+            
+            const children = state.nodes.filter(n => n.parentId === mainNode.id);
+            const angleStep = Math.PI / (children.length + 1);
+            const radius = 350;
+            
+            children.forEach((child, i) => {
+                const angle = Math.PI / 2 + (i + 1) * angleStep - Math.PI / 2;
+                child.x = mainNode.x + radius * Math.cos(angle);
+                child.y = mainNode.y + radius * Math.sin(angle);
+            });
+        }
+
+        function layoutRed() {
+            const centerX = 2000;
+            const centerY = 1800;
+            
+            state.nodes.forEach((node, i) => {
+                if (node.type === 'main') {
+                    node.x = centerX;
+                    node.y = centerY;
+                } else {
+                    const angle = (i / (state.nodes.length - 1)) * 2 * Math.PI;
+                    const radius = 300 + Math.random() * 200;
+                    node.x = centerX + radius * Math.cos(angle);
+                    node.y = centerY + radius * Math.sin(angle);
+                }
+            });
+        }
+
+        // ==================== ZOOM & NAVIGATION ====================
+        function zoomCanvas(factor) {
+            state.zoom = Math.max(0.3, Math.min(2.5, state.zoom * factor));
+            document.getElementById('canvasWrapper').style.transform = `scale(${state.zoom})`;
+            document.getElementById('zoomDisplay').textContent = Math.round(state.zoom * 100) + '%';
+            updateMinimap();
+        }
+
+        function resetZoom() {
+            state.zoom = 1;
+            document.getElementById('canvasWrapper').style.transform = 'scale(1)';
+            document.getElementById('zoomDisplay').textContent = '100%';
+            updateMinimap();
+        }
+
+        function centerMap() {
+            if (state.nodes.length === 0) return;
+            
+            let minX = Infinity, minY = Infinity, maxX = 0, maxY = 0;
+            state.nodes.forEach(node => {
+                minX = Math.min(minX, node.x);
+                minY = Math.min(minY, node.y);
+                maxX = Math.max(maxX, node.x + 300);
+                maxY = Math.max(maxY, node.y + 150);
+            });
+            
+            const centerX = (minX + maxX) / 2;
+            const centerY = (minY + maxY) / 2;
+            
+            const canvasArea = document.getElementById('canvasArea');
+            const viewWidth = canvasArea.clientWidth;
+            const viewHeight = canvasArea.clientHeight;
+            
+            canvasArea.scrollLeft = centerX * state.zoom - viewWidth / 2;
+            canvasArea.scrollTop = centerY * state.zoom - viewHeight / 2;
+        }
+
+        // ==================== MINIMAP ====================
+        function updateMinimap() {
+            const minimapCanvas = document.getElementById('minimapCanvas');
+            minimapCanvas.innerHTML = '';
+            
+            if (state.nodes.length === 0) return;
+            
+            let minX = Infinity, minY = Infinity, maxX = 0, maxY = 0;
+            state.nodes.forEach(node => {
+                minX = Math.min(minX, node.x);
+                minY = Math.min(minY, node.y);
+                maxX = Math.max(maxX, node.x + 200);
+                maxY = Math.max(maxY, node.y + 100);
+            });
+            
+            const scale = 0.04;
+            const offsetX = -minX * scale + 10;
+            const offsetY = -minY * scale + 10;
+            
+            state.nodes.forEach(node => {
+                const dot = document.createElement('div');
+                dot.className = 'minimap-node';
+                dot.style.left = (node.x * scale + offsetX) + 'px';
+                dot.style.top = (node.y * scale + offsetY) + 'px';
+                dot.style.width = Math.max(4, 200 * scale) + 'px';
+                dot.style.height = Math.max(3, 80 * scale) + 'px';
+                if (node.type === 'main') {
+                    dot.style.background = 'var(--primary-dark)';
+                }
+                minimapCanvas.appendChild(dot);
+            });
+            
+            const canvasArea = document.getElementById('canvasArea');
+            const viewport = document.createElement('div');
+            viewport.className = 'minimap-viewport';
+            viewport.style.left = (canvasArea.scrollLeft / state.zoom * scale + offsetX) + 'px';
+            viewport.style.top = (canvasArea.scrollTop / state.zoom * scale + offsetY) + 'px';
+            viewport.style.width = (canvasArea.clientWidth / state.zoom * scale) + 'px';
+            viewport.style.height = (canvasArea.clientHeight / state.zoom * scale) + 'px';
+            minimapCanvas.appendChild(viewport);
+        }
+
+        document.getElementById('canvasArea')?.addEventListener('scroll', updateMinimap);
+
+        // ==================== STYLING ====================
+        function changeLayout(layout) {
+            state.currentLayout = layout;
+            applyLayout(layout);
+            document.querySelectorAll('.layout-option').forEach(el => {
+                el.classList.toggle('selected', el.dataset.layout === layout);
+            });
+            document.getElementById('layoutSelect').value = layout;
+        }
+
+        function changeFont(font) {
+            state.currentFont = font;
+            document.querySelectorAll('.concept-node').forEach(el => {
+                el.style.fontFamily = font;
+            });
+            document.getElementById('fontSelect').value = font;
+        }
+
+        function changeNodeShape(shape) {
+            state.currentShape = shape;
+            document.querySelectorAll('.concept-node').forEach(el => {
+                el.className = el.className.replace(/node-shape-\w+/, `node-shape-${shape}`);
+            });
+            document.getElementById('shapeSelect').value = shape;
+        }
+
+        function updateColors() {
+            state.colors.nodeBg = document.getElementById('nodeBgColor').value;
+            state.colors.nodeBorder = document.getElementById('nodeBorderColor').value;
+            state.colors.nodeText = document.getElementById('nodeTextColor').value;
+            state.colors.connector = document.getElementById('connectorColor').value;
+            
+            document.getElementById('nodeBgHex').value = state.colors.nodeBg;
+            document.getElementById('nodeBorderHex').value = state.colors.nodeBorder;
+            document.getElementById('nodeTextHex').value = state.colors.nodeText;
+            document.getElementById('connectorHex').value = state.colors.connector;
+            
+            document.querySelectorAll('.concept-node').forEach(el => {
+                el.style.background = state.colors.nodeBg;
+                el.style.borderColor = state.colors.nodeBorder;
+                el.style.color = state.colors.nodeText;
+            });
+            
+            drawConnections();
+        }
+
+        function syncColorInput(type) {
+            const hexInput = document.getElementById(`${type}Hex`);
+            const colorInput = document.getElementById(`${type === 'nodeBg' ? 'nodeBgColor' : type === 'nodeBorder' ? 'nodeBorderColor' : type === 'nodeText' ? 'nodeTextColor' : 'connectorColor'}`);
+            
+            if (/^#[0-9A-Fa-f]{6}$/.test(hexInput.value)) {
+                colorInput.value = hexInput.value;
+                updateColors();
+            }
+        }
+
+        function selectShape(shape) {
+            changeNodeShape(shape);
+            document.querySelectorAll('.shape-option').forEach(el => {
+                el.classList.toggle('selected', el.dataset.shape === shape);
+            });
+        }
+
+        function selectLayout(layout) {
+            changeLayout(layout);
+        }
+
+        // ==================== SAVE/LOAD ====================
+        function saveProject() {
+            const title = document.getElementById('mapTitle').value || 'Mi Mapa Conceptual';
+            const project = {
+                id: Date.now(),
+                title: title,
+                nodes: state.nodes,
+                connections: state.connections,
+                layout: state.currentLayout,
+                font: state.currentFont,
+                shape: state.currentShape,
+                colors: state.colors,
+                createdAt: new Date().toISOString()
+            };
+            
+            let projects = JSON.parse(localStorage.getItem('conceptMapProjects') || '[]');
+            const existingIndex = projects.findIndex(p => p.title === title);
+            
+            if (existingIndex >= 0) {
+                projects[existingIndex] = project;
+            } else {
+                projects.push(project);
+            }
+            
+            localStorage.setItem('conceptMapProjects', JSON.stringify(projects));
             loadProjects();
-            alert('Proyecto guardado localmente');
+            showToast('Proyecto guardado', 'success');
+        }
+
+        function loadProject(projectId) {
+            const projects = JSON.parse(localStorage.getItem('conceptMapProjects') || '[]');
+            const project = projects.find(p => p.id === projectId);
+            
+            if (project) {
+                clearCanvas();
+                
+                state.nodes = project.nodes || [];
+                state.connections = project.connections || [];
+                state.currentLayout = project.layout || 'conceptual';
+                state.currentFont = project.font || 'Poppins';
+                state.currentShape = project.shape || 'rectangle';
+                state.colors = project.colors || state.colors;
+                state.nodeIdCounter = Math.max(...state.nodes.map(n => n.id), 0) + 1;
+                
+                document.getElementById('mapTitle').value = project.title;
+                document.getElementById('layoutSelect').value = state.currentLayout;
+                document.getElementById('fontSelect').value = state.currentFont;
+                document.getElementById('shapeSelect').value = state.currentShape;
+                
+                document.getElementById('nodeBgColor').value = state.colors.nodeBg;
+                document.getElementById('nodeBorderColor').value = state.colors.nodeBorder;
+                document.getElementById('nodeTextColor').value = state.colors.nodeText;
+                document.getElementById('connectorColor').value = state.colors.connector;
+                
+                renderNodes();
+                drawConnections();
+                updateMinimap();
+                toggleProjectsPanel();
+                
+                showToast('Proyecto cargado', 'success');
+            }
+        }
+
+        function deleteProject(projectId) {
+            let projects = JSON.parse(localStorage.getItem('conceptMapProjects') || '[]');
+            projects = projects.filter(p => p.id !== projectId);
+            localStorage.setItem('conceptMapProjects', JSON.stringify(projects));
+            loadProjects();
+            showToast('Proyecto eliminado', 'success');
         }
 
         function loadProjects() {
-            const projects = JSON.parse(localStorage.getItem('conceptMaps') || '{}');
-            const list = document.getElementById('projectList');
-            const names = Object.keys(projects);
-            if(names.length === 0) { list.innerHTML = '<p style="padding:20px; text-align:center; color:var(--text-secondary);">Sin proyectos</p>'; return; }
+            const projects = JSON.parse(localStorage.getItem('conceptMapProjects') || '[]');
+            const list = document.getElementById('projectsList');
             
-            list.innerHTML = names.map(name => `
-                <div class="project-item" onclick="loadProject('${name}')">
-                    <div>
-                        <div class="name">${name}</div>
-                        <div class="date">${new Date(projects[name].date).toLocaleDateString()}</div>
+            if (projects.length === 0) {
+                list.innerHTML = `
+                    <div style="text-align: center; padding: 40px 20px; color: var(--text-secondary);">
+                        <i class="fas fa-folder-open" style="font-size: 2.5rem; opacity: 0.3; margin-bottom: 12px;"></i>
+                        <p>No hay proyectos guardados</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            list.innerHTML = projects.map(p => `
+                <div class="project-card" onclick="loadProject(${p.id})">
+                    <div class="project-title">${p.title}</div>
+                    <div class="project-date">${new Date(p.createdAt).toLocaleDateString('es-ES')}</div>
+                    <div class="project-actions">
+                        <button class="action-btn btn-secondary" style="font-size: 0.7rem; padding: 5px 10px;" onclick="event.stopPropagation(); loadProject(${p.id})">
+                            <i class="fas fa-folder-open"></i> Abrir
+                        </button>
+                        <button class="action-btn" style="font-size: 0.7rem; padding: 5px 10px; background: transparent; color: #e74c3c; border: 1px solid #e74c3c;" onclick="event.stopPropagation(); deleteProject(${p.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </div>
                 </div>
             `).join('');
         }
 
-        function loadProject(name) {
-            const project = JSON.parse(localStorage.getItem('conceptMaps'))[name];
-            if(!project) return;
-            cy.elements().remove(); 
-            cy.add(project.elements);
-            
-            // Restaurar estilos
-            document.getElementById('nodeBgColor').value = project.style.nodeBg;
-            document.getElementById('nodeTextColor').value = project.style.nodeText;
-            document.getElementById('nodeBorderColor').value = project.style.nodeBorder;
-            document.getElementById('edgeColor').value = project.style.edge;
-            document.getElementById('canvasBgColor').value = project.style.canvas;
-            document.getElementById('fontSelect').value = project.style.font;
-            currentShape = project.style.shape;
-            
-            updateStyle();
-            updateCanvasBg();
-            cy.layout({ name: 'breadthfirst', fit: true }).run();
+        // ==================== EXPORT ====================
+        function toggleExportMenu() {
+            const menu = document.getElementById('exportMenu');
+            menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
         }
 
-        function exportPNG() {
-            const png = cy.png({ full: true, scale: 2 });
-            downloadFile(png, 'mapa-conceptual.png');
-        }
-
-        function exportJPG() {
-            const jpg = cy.jpg({ full: true, scale: 2, quality: 0.9, bg: document.getElementById('canvasBgColor').value });
-            downloadFile(jpg, 'mapa-conceptual.jpg');
-        }
-
-        function exportPDF() {
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('l', 'mm', 'a4');
-            const png = cy.png({ full: true, scale: 2 });
-            pdf.addImage(png, 'PNG', 10, 10, 277, 190);
-            pdf.save('mapa-conceptual.pdf');
-        }
-
-        function downloadFile(data, filename) {
-            const link = document.createElement('a');
-            link.href = data; link.download = filename;
-            document.body.appendChild(link); link.click(); document.body.removeChild(link);
-        }
-
-        // ==========================================
-        // UTILIDADES
-        // ==========================================
-
-        function showLoading(show) { document.getElementById('loadingOverlay').classList.toggle('active', show); }
-
-        function toggleDropdown(id) { document.getElementById(id).classList.toggle('active'); }
-
-        function setupTheme() {
-            const toggle = document.getElementById('themeToggle');
-            if(localStorage.getItem('theme') === 'dark') {
-                document.documentElement.setAttribute('data-theme', 'dark');
-                toggle.innerHTML = '<i class="fas fa-sun"></i>';
-            }
-            toggle.onclick = () => {
-                const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-                document.documentElement.setAttribute('data-theme', next);
-                localStorage.setItem('theme', next);
-                toggle.innerHTML = next === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-            };
-        }
-
-        // Cerrar dropdowns al hacer clic fuera
         document.addEventListener('click', (e) => {
-            if(!e.target.closest('.dropdown')) document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('active'));
+            if (!e.target.closest('.top-actions')) {
+                document.getElementById('exportMenu').style.display = 'none';
+            }
         });
 
-        document.getElementById('topicInput').addEventListener('keypress', (e) => {
-            if(e.key === 'Enter') generateMap();
+        async function exportAs(format) {
+            document.getElementById('exportMenu').style.display = 'none';
+            
+            const wrapper = document.getElementById('canvasWrapper');
+            const nodes = wrapper.querySelectorAll('.concept-node');
+            
+            if (nodes.length === 0) {
+                showToast('No hay contenido para exportar', 'error');
+                return;
+            }
+            
+            let minX = Infinity, minY = Infinity, maxX = 0, maxY = 0;
+            
+            nodes.forEach(node => {
+                const rect = node.getBoundingClientRect();
+                const wrapperRect = wrapper.getBoundingClientRect();
+                const x = (rect.left - wrapperRect.left) / state.zoom;
+                const y = (rect.top - wrapperRect.top) / state.zoom;
+                minX = Math.min(minX, x);
+                minY = Math.min(minY, y);
+                maxX = Math.max(maxX, x + rect.width / state.zoom);
+                maxY = Math.max(maxY, y + rect.height / state.zoom);
+            });
+            
+            const padding = 50;
+            const width = maxX - minX + padding * 2;
+            const height = maxY - minY + padding * 2;
+            
+            const originalTransform = wrapper.style.transform;
+            wrapper.style.transform = 'none';
+            wrapper.style.width = width + 'px';
+            wrapper.style.height = height + 'px';
+            
+            nodes.forEach(node => {
+                const data = state.nodes.find(n => `node-${n.id}` === node.id);
+                if (data) {
+                    node.style.left = (data.x - minX + padding) + 'px';
+                    node.style.top = (data.y - minY + padding) + 'px';
+                }
+            });
+            
+            document.querySelectorAll('.connector-label').forEach(label => label.remove());
+            drawConnections();
+            
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            try {
+                const canvas = await html2canvas(wrapper, {
+                    backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--bg-primary').trim() || '#f8f5f2',
+                    scale: 2
+                });
+                
+                if (format === 'png' || format === 'jpg') {
+                    const link = document.createElement('a');
+                    link.download = `${document.getElementById('mapTitle').value || 'mapa-conceptual'}.${format}`;
+                    link.href = canvas.toDataURL(`image/${format === 'jpg' ? 'jpeg' : 'png'}`, 0.95);
+                    link.click();
+                } else if (format === 'pdf') {
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF({
+                        orientation: width > height ? 'landscape' : 'portrait',
+                        unit: 'px',
+                        format: [width, height]
+                    });
+                    const imgData = canvas.toDataURL('image/png');
+                    pdf.addImage(imgData, 'PNG', 0, 0, width, height);
+                    pdf.save(`${document.getElementById('mapTitle').value || 'mapa-conceptual'}.pdf`);
+                } else if (format === 'json') {
+                    const data = {
+                        title: document.getElementById('mapTitle').value,
+                        nodes: state.nodes,
+                        connections: state.connections,
+                        layout: state.currentLayout,
+                        font: state.currentFont,
+                        shape: state.currentShape,
+                        colors: state.colors,
+                        exportedAt: new Date().toISOString()
+                    };
+                    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                    const link = document.createElement('a');
+                    link.download = `${document.getElementById('mapTitle').value || 'mapa-conceptual'}.json`;
+                    link.href = URL.createObjectURL(blob);
+                    link.click();
+                }
+                
+                showToast(`Exportado como ${format.toUpperCase()}`, 'success');
+            } catch (error) {
+                console.error('Export error:', error);
+                showToast('Error al exportar', 'error');
+            }
+            
+            wrapper.style.transform = originalTransform;
+            wrapper.style.width = '';
+            wrapper.style.height = '';
+            
+            nodes.forEach(node => {
+                const data = state.nodes.find(n => `node-${n.id}` === node.id);
+                if (data) {
+                    node.style.left = data.x + 'px';
+                    node.style.top = data.y + 'px';
+                }
+            });
+            
+            drawConnections();
+        }
+
+        // ==================== PANELS ====================
+        function toggleInputPanel() {
+            document.getElementById('inputPanel').classList.toggle('collapsed');
+        }
+
+        function toggleSettingsPanel() {
+            document.getElementById('settingsPanel').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        function toggleProjectsPanel() {
+            document.getElementById('projectsPanel').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        document.getElementById('overlay').addEventListener('click', () => {
+            document.getElementById('settingsPanel').classList.remove('active');
+            document.getElementById('projectsPanel').classList.remove('active');
+            document.getElementById('overlay').classList.remove('active');
         });
+
+        // ==================== UTILITIES ====================
+        function clearCanvas() {
+            state.nodes = [];
+            state.connections = [];
+            state.selectedNode = null;
+            state.nodeIdCounter = 0;
+            renderNodes();
+            drawConnections();
+            updateMinimap();
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            toast.className = `toast ${type} show`;
+            toastMessage.textContent = message;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
     </script>
 </body>
 </html>
