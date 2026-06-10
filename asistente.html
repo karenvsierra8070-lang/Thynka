@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cuestionario V/F - Thynka</title>
+    <title>Thynka - Asistente IA</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -11,843 +11,582 @@
             --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
             --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
             --gray: #9a9a9a; --white: #ffffff;
-            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
-            --text-primary: #5a4032; --text-secondary: #9a9a9a;
-            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
-            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
-            --success: #27ae60; --success-light: #e8f8f0;
-            --danger: #e74c3c; --danger-light: #fdecea;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff; --bg-tertiary: #f0e6dc;
+            --border-color: #f0e6dc;
+            --text-primary: #5a4032; --text-secondary: #9a9a9a; --text-muted: #bfbfbf;
+            --overlay-bg: rgba(0, 0, 0, 0.7);
+            --shadow-sm: 0 2px 5px rgba(107, 85, 56, 0.05);
+            --shadow-md: 0 4px 15px rgba(107, 85, 56, 0.1);
+            --shadow-lg: 0 10px 30px rgba(107, 85, 56, 0.2);
+            --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-med: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --sidebar-width: 280px;
+            --header-height: 80px;
         }
 
         [data-theme="dark"] {
             --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
             --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
             --gray: #a89b8b; --white: #1a1815;
-            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
             --text-primary: #e0d5c7; --text-secondary: #a89b8b;
-            --bg-primary: #1a1815; --bg-secondary: #2a2520;
-            --bg-tertiary: #3a342e; --border-color: #3a342e;
-            --success-light: rgba(39, 174, 96, 0.15);
-            --danger-light: rgba(231, 76, 60, 0.15);
+            --bg-primary: #1a1815; --bg-secondary: #2a2520; --bg-tertiary: #3a342e;
+            --border-color: #3a342e;
+            --overlay-bg: rgba(0, 0, 0, 0.85);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; }
-
-        /* TOP BAR */
-        .top-bar {
-            position: fixed; top: 0; left: 0; right: 0; height: 65px;
-            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
-            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
-            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
-        }
-        .back-btn {
-            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
-            background: var(--bg-tertiary); border: 1px solid var(--border-color);
-            border-radius: 10px; color: var(--text-primary); text-decoration: none;
-            font-weight: 600; transition: all 0.3s;
-        }
-        .back-btn:hover { background: var(--primary); color: white; }
         
-        .page-title {
-            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
-            display: flex; align-items: center; gap: 10px;
-        }
-        
-        .top-actions { display: flex; gap: 10px; }
-        .action-btn {
-            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
-            font-weight: 600; font-family: inherit; font-size: 0.85rem;
-            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
-        }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); }
-        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
-        .btn-secondary:hover { background: var(--border-color); }
-        .btn-success { background: var(--success); color: white; }
-        .btn-ai { 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-            color: white; 
-        }
-        .btn-ai:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3); }
-
-        /* MAIN CONTAINER */
-        .main-container { padding: 90px 30px 40px; max-width: 900px; margin: 0 auto; transition: margin-right 0.3s; }
-        .main-container.shifted { margin-right: 420px; }
-
-        /* STEP INDICATOR */
-        .step-indicator {
-            display: flex; justify-content: center; gap: 15px; margin-bottom: 30px;
-        }
-        .step {
-            display: flex; align-items: center; gap: 8px;
-            padding: 10px 20px; border-radius: 50px;
-            background: var(--bg-secondary); border: 2px solid var(--border-color);
-            font-weight: 600; font-size: 0.85rem; color: var(--text-secondary);
-            transition: all 0.3s;
-        }
-        .step.active { border-color: var(--primary); color: var(--primary); background: var(--bg-tertiary); }
-        .step.completed { border-color: var(--success); color: var(--success); }
-        .step-number {
-            width: 24px; height: 24px; border-radius: 50%;
-            background: var(--border-color); display: flex; align-items: center;
-            justify-content: center; font-size: 0.75rem; font-weight: 700;
-        }
-        .step.active .step-number { background: var(--primary); color: white; }
-        .step.completed .step-number { background: var(--success); color: white; }
-
-        /* PANELS */
-        .panel {
-            background: var(--bg-secondary); border-radius: 20px;
-            box-shadow: 0 4px 20px var(--shadow); overflow: hidden;
-            display: none; animation: fadeIn 0.4s ease;
-        }
-        .panel.active { display: block; }
-        
-        .panel-header {
-            padding: 25px 30px; border-bottom: 1px solid var(--border-color);
-            background: var(--bg-tertiary); display: flex; align-items: center; gap: 15px;
-        }
-        .panel-icon { font-size: 1.8rem; color: var(--primary); }
-        .panel-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--primary-dark); }
-        .panel-subtitle { font-size: 0.9rem; color: var(--text-secondary); }
-        
-        .panel-body { padding: 30px; }
-
-        /* FORM ELEMENTS */
-        .form-group { margin-bottom: 25px; }
-        .form-label { display: block; font-weight: 600; margin-bottom: 10px; color: var(--text-primary); font-size: 0.95rem; }
-        .form-hint { font-size: 0.85rem; color: var(--text-secondary); margin-top: 5px; }
-        
-        textarea {
-            width: 100%; height: 220px; resize: vertical; padding: 15px;
-            border: 2px solid var(--border-color); border-radius: 12px;
-            background: var(--bg-primary); color: var(--text-primary);
-            font-family: inherit; font-size: 0.95rem; line-height: 1.6;
-            transition: border-color 0.3s;
-        }
-        textarea:focus { outline: none; border-color: var(--primary); }
-        
-        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
-        
-        select {
-            width: 100%; padding: 12px 15px; border: 2px solid var(--border-color);
-            border-radius: 10px; background: var(--bg-primary); color: var(--text-primary);
-            font-family: inherit; font-size: 0.95rem; cursor: pointer;
-        }
-        select:focus { outline: none; border-color: var(--primary); }
-
-        /* QUESTION CARD */
-        .question-card {
-            background: var(--bg-primary); border: 2px solid var(--border-color);
-            border-radius: 15px; padding: 20px 25px; margin-bottom: 20px;
-            transition: all 0.3s; position: relative;
-        }
-        .question-card.answered { pointer-events: none; }
-        .question-card.correct { border-color: var(--success); background: var(--success-light); }
-        .question-card.incorrect { border-color: var(--danger); background: var(--danger-light); }
-        
-        .question-number {
-            position: absolute; top: -10px; left: 20px;
-            background: var(--primary); color: white;
-            padding: 4px 12px; border-radius: 20px;
-            font-size: 0.75rem; font-weight: 700;
-        }
-        
-        .question-text {
-            font-size: 1.05rem; line-height: 1.6; margin-bottom: 20px;
-            padding-top: 10px;
-        }
-        
-        .question-options {
-            display: flex; gap: 15px;
-        }
-        
-        .option-btn {
-            flex: 1; padding: 12px 20px; border: 2px solid var(--border-color);
-            border-radius: 10px; background: transparent;
-            cursor: pointer; font-family: inherit; font-weight: 600;
-            font-size: 0.95rem; color: var(--text-primary);
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            transition: all 0.2s;
-        }
-        .option-btn:hover:not(:disabled) { border-color: var(--primary); background: var(--bg-tertiary); }
-        .option-btn:disabled { cursor: not-allowed; opacity: 0.7; }
-        .option-btn.selected-true { border-color: var(--success); background: var(--success-light); color: var(--success); }
-        .option-btn.selected-false { border-color: var(--danger); background: var(--danger-light); color: var(--danger); }
-        
-        .answer-feedback {
-            margin-top: 15px; padding: 12px 15px; border-radius: 8px;
-            font-size: 0.9rem; display: none;
-        }
-        .answer-feedback.show { display: block; }
-        .answer-feedback.correct { background: rgba(39, 174, 96, 0.2); color: #1e8449; }
-        .answer-feedback.incorrect { background: rgba(231, 76, 60, 0.2); color: #c0392b; }
-
-        /* RESULTS PANEL */
-        .results-container { text-align: center; padding: 40px 20px; }
-        .results-score {
-            font-size: 5rem; font-weight: 700; font-family: 'Playfair Display', serif;
-            color: var(--primary); margin-bottom: 10px;
-        }
-        .results-label { font-size: 1.2rem; color: var(--text-secondary); margin-bottom: 30px; }
-        
-        .results-stats {
-            display: flex; justify-content: center; gap: 40px; margin-bottom: 30px;
-        }
-        .stat-item { text-align: center; }
-        .stat-value { font-size: 2rem; font-weight: 700; }
-        .stat-value.correct { color: var(--success); }
-        .stat-value.incorrect { color: var(--danger); }
-        .stat-label { font-size: 0.85rem; color: var(--text-secondary); }
-
-        /* BUTTONS */
-        .btn-group { display: flex; gap: 15px; justify-content: center; margin-top: 30px; flex-wrap: wrap; }
-
-        /* AI CHATBOT PANEL - FULL HEIGHT */
-        .chatbot-panel {
-            position: fixed; right: -400px; top: 0; width: 400px;
-            height: 100vh; z-index: 2000;
-            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex; flex-direction: column;
-            background: var(--bg-secondary);
-        }
-        .chatbot-panel.active { right: 0; }
-        
-        .chatbot-header {
-            padding: 15px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white; display: flex; justify-content: space-between; align-items: center;
-            flex-shrink: 0;
-        }
-        .chatbot-title { font-weight: 700; display: flex; align-items: center; gap: 10px; font-size: 0.95rem; }
-        .chatbot-close {
-            width: 32px; height: 32px; border: none; background: rgba(255,255,255,0.2);
-            border-radius: 8px; color: white; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            transition: background 0.2s;
-        }
-        .chatbot-close:hover { background: rgba(255,255,255,0.3); }
-        
-        .chatbot-body { 
-            flex: 1; 
-            display: flex; 
+        html, body {
+            height: 100%;
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
             overflow: hidden;
         }
-        
-        .chatbot-iframe { 
-            flex: 1; 
-            border: none; 
-            width: 100%; 
+
+        body { display: flex; }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-light); }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            position: fixed;
+            left: 0; top: 0;
+            height: 100vh;
+            width: var(--sidebar-width);
+            background: var(--bg-secondary);
+            box-shadow: 2px 0 15px var(--shadow-md);
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            transition: transform var(--transition-med);
+            transform: translateX(-100%);
+        }
+
+        .sidebar.active { transform: translateX(0); }
+
+        .sidebar-header {
+            padding: 30px 25px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .sidebar-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            color: var(--primary-dark);
+            letter-spacing: 1px;
+            text-decoration: none;
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            padding: 20px 0;
+            overflow-y: auto;
+        }
+
+        .menu-section-title {
+            padding: 15px 30px 10px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 1.5px;
+            font-weight: 700;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 30px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all var(--transition-fast);
+            border-left: 3px solid transparent;
+            margin: 2px 0;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .menu-item i {
+            width: 24px;
+            font-size: 1.1rem;
+            margin-right: 15px;
+            opacity: 0.7;
+        }
+
+        .menu-item:hover {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .menu-item.active {
+            background: var(--bg-primary);
+            color: var(--primary-dark);
+            border-left-color: var(--primary);
+            font-weight: 600;
+        }
+
+        .menu-item.active i { opacity: 1; color: var(--primary); }
+
+        /* --- CONTROLES --- */
+        .menu-toggle {
+            position: fixed;
+            left: 20px; top: 20px;
+            width: 50px; height: 50px;
+            background: var(--primary);
+            border: none;
+            border-radius: 15px;
+            color: var(--white);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            z-index: 1000;
+            box-shadow: var(--shadow-md);
+            transition: all var(--transition-fast);
+        }
+
+        .menu-toggle:hover { transform: scale(1.05); box-shadow: var(--shadow-lg); }
+
+        .theme-toggle {
+            position: fixed;
+            right: 20px; top: 20px;
+            width: 50px; height: 50px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            color: var(--primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            z-index: 1000;
+            transition: all var(--transition-fast);
+        }
+
+        .theme-toggle:hover { transform: rotate(20deg) scale(1.1); }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--overlay-bg);
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-med);
+            z-index: 998;
+            backdrop-filter: blur(4px);
+        }
+
+        .overlay.active { opacity: 1; visibility: visible; }
+
+        /* --- LAYOUT PRINCIPAL --- */
+        .main-container {
+            flex: 1;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-top: var(--header-height);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* --- EFECTOS DE FONDO --- */
+        .bg-effects {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: float 20s infinite alternate;
+        }
+
+        .blob-1 {
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, var(--primary-light), transparent);
+            top: -200px; left: -200px;
+        }
+
+        .blob-2 {
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, var(--beige), transparent);
+            bottom: -100px; right: -100px;
+            animation-delay: -5s;
+        }
+
+        .grid-pattern {
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(var(--border-color) 1px, transparent 1px);
+            background-size: 30px 30px;
+            opacity: 0.3;
+            z-index: 1;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(50px, 20px) scale(1.1); }
+        }
+
+        /* --- HEADER --- */
+        .main-header {
+            height: var(--header-height);
+            padding: 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+            z-index: 10;
+        }
+
+        .header-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: var(--primary-dark);
+            margin-left: 60px;
+        }
+
+        .header-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-left: 15px;
+            font-weight: 400;
+        }
+
+        /* --- CHAT WRAPPER --- */
+        .chat-wrapper {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+            height: calc(100vh - var(--header-height));
+        }
+
+        .chat-container {
+            width: 100%;
             height: 100%;
+            max-width: 1200px;
+            background: var(--bg-secondary);
+            border-radius: 24px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            position: relative;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* Floating AI button */
-        .ai-fab {
-            position: fixed; bottom: 30px; right: 30px;
-            width: 60px; height: 60px; border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none; cursor: pointer; z-index: 1500;
-            display: none; align-items: center; justify-content: center;
-            color: white; font-size: 1.5rem;
-            box-shadow: 0 5px 25px rgba(102, 126, 234, 0.4);
-            transition: all 0.3s;
+        /* --- SELECTOR DE MODELOS --- */
+        .model-selector {
+            display: flex;
+            gap: 10px;
+            padding: 15px 20px;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-color);
+            overflow-x: auto;
         }
-        .ai-fab.visible { display: flex; }
-        .ai-fab:hover { transform: scale(1.1); }
 
-        /* Loading */
-        .loading-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.6);
-            display: none; justify-content: center; align-items: center; z-index: 3000;
-            backdrop-filter: blur(5px);
+        .model-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            white-space: nowrap;
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-weight: 500;
+            font-size: 0.85rem;
         }
-        .loading-overlay.show { display: flex; }
-        .loading-spinner {
-            background: var(--bg-secondary); padding: 40px 60px;
-            border-radius: 20px; text-align: center;
-        }
-        .spinner {
-            width: 50px; height: 50px; border: 4px solid var(--border-color);
-            border-top-color: var(--primary); border-radius: 50%;
-            animation: spin 1s linear infinite; margin: 0 auto 15px;
-        }
-        .loading-text { font-weight: 600; color: var(--text-primary); margin-top: 10px; }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .model-btn:hover {
+            border-color: var(--primary);
+            color: var(--text-primary);
+            transform: translateY(-1px);
+        }
+
+        .model-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 4px 10px rgba(139, 107, 71, 0.3);
+        }
+
+        .model-btn i { font-size: 1rem; }
+
+        /* --- HEADER INTERNO --- */
+        .chat-header-info {
+            padding: 18px 25px;
+            background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary));
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .ai-avatar {
+            width: 45px; height: 45px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 10px rgba(139, 107, 71, 0.3);
+            transition: transform var(--transition-fast);
+        }
+
+        .ai-status h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .ai-status span {
+            font-size: 0.75rem;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .ai-status span::before {
+            content: '';
+            width: 8px; height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* --- IFRAME --- */
+        .iframe-container {
+            flex: 1;
+            position: relative;
+            background: var(--cream);
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
 
         /* Responsive */
-        @media (max-width: 900px) {
-            .chatbot-panel { width: 100%; right: -100%; }
-            .main-container.shifted { margin-right: 0; }
-        }
-
         @media (max-width: 768px) {
-            .main-container { padding: 80px 15px 20px; }
-            .step-indicator { flex-wrap: wrap; gap: 10px; }
-            .step { padding: 8px 15px; font-size: 0.8rem; }
-            .question-options { flex-direction: column; }
+            .header-subtitle { display: none; }
+            .chat-wrapper { padding: 10px; }
+            .chat-container { border-radius: 16px; }
+            .model-selector { padding: 10px; }
+            .model-btn { padding: 8px 12px; font-size: 0.8rem; }
         }
     </style>
 </head>
 <body>
 
-    <!-- TOP BAR -->
-    <header class="top-bar">
-        <a href="recomendaciones.html" class="back-btn">
-            <i class="fas fa-arrow-left"></i> Volver
-        </a>
-        <h1 class="page-title"><i class="fas fa-check-double"></i> Verdadero o Falso</h1>
-        <div class="top-actions">
-            <button class="action-btn btn-ai" onclick="toggleChatbot()" id="chatbotToggle" style="display: none;">
-                <i class="fas fa-robot"></i> Preguntar a IA
-            </button>
-            <button class="action-btn btn-secondary" id="themeToggle">
-                <i class="fas fa-moon"></i>
-            </button>
+    <!-- SIDEBAR -->
+    <nav class="sidebar" id="mainSidebar">
+        <div class="sidebar-header">
+            <a href="dashboard.html" class="sidebar-logo">Thynka</a>
         </div>
-    </header>
+        <div class="sidebar-menu">
+            <div class="menu-section-title">Principal</div>
+            <a href="dashboard.html" class="menu-item"><i class="fas fa-home"></i>Dashboard</a>
+            <a href="tareas.html" class="menu-item"><i class="fas fa-check-circle"></i>Mis Tareas</a>
+            <a href="horario.html" class="menu-item"><i class="fas fa-calendar-alt"></i>Horario</a>
+            <a href="examen.html" class="menu-item"><i class="fas fa-file-alt"></i>Exámenes</a>
+            
+            <div class="menu-section-title">Herramientas</div>
+            <a href="asistente.html" class="menu-item active"><i class="fas fa-robot"></i>Asistente IA</a>
+            <a href="recomendaciones.html" class="menu-item"><i class="fas fa-lightbulb"></i>Aprende</a>
+            <a href="cuestionarios.html" class="menu-item"><i class="fas fa-question-circle"></i>Cuestionarios</a>
+            <a href="patron.html" class="menu-item"><i class="fas fa-chart-line"></i>Análisis</a>
+            
+            <div class="menu-section-title">Cuenta</div>
+            <a href="tutorial.html" class="menu-item"><i class="fas fa-book-open"></i>Tutorial</a>
+            <a href="#" class="menu-item" onclick="signOut()"><i class="fas fa-sign-out-alt"></i>Cerrar Sesión</a>
+        </div>
+    </nav>
 
-    <!-- AI CHATBOT PANEL - UDIFY -->
-    <div class="chatbot-panel" id="chatbotPanel">
-        <div class="chatbot-header">
-            <span class="chatbot-title"><i class="fas fa-robot"></i> Asistente Thynka</span>
-            <button class="chatbot-close" onclick="toggleChatbot()"><i class="fas fa-times"></i></button>
+    <!-- OVERLAY -->
+    <div class="overlay" id="overlayPanel"></div>
+
+    <!-- CONTROLES -->
+    <button class="menu-toggle" id="btnMenu"><i class="fas fa-bars"></i></button>
+    <button class="theme-toggle" id="btnTheme"><i class="fas fa-moon"></i></button>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <div class="main-container">
+        <!-- Efectos de Fondo -->
+        <div class="bg-effects">
+            <div class="blob blob-1"></div>
+            <div class="blob blob-2"></div>
+            <div class="grid-pattern"></div>
         </div>
-        <div class="chatbot-body">
-            <iframe 
-                id="chatbotIframe" 
-                class="chatbot-iframe" 
-                src="https://udify.app/chatbot/uy4EpXZLTv8AYCiF"
-                allow="microphone"
-                title="Asistente Thynka">
-            </iframe>
+
+        <!-- Header -->
+        <header class="main-header">
+            <div style="display: flex; align-items: baseline;">
+                <h1 class="header-title">Asistente Inteligente</h1>
+                <span class="header-subtitle">Elige tu modelo preferido</span>
+            </div>
+        </header>
+
+        <!-- Chat Wrapper -->
+        <div class="chat-wrapper">
+            <div class="chat-container">
+                <!-- Selector de Modelos -->
+                <div class="model-selector">
+                    <button class="model-btn active" data-model="general">
+                        <i class="fas fa-robot"></i> General
+                    </button>
+                    <button class="model-btn" data-model="avanzado">
+                        <i class="fas fa-microchip"></i> Avanzado
+                    </button>
+                    <button class="model-btn" data-model="alternativo">
+                        <i class="fas fa-comments"></i> Alternativo
+                    </button>
+                </div>
+
+                <div class="chat-header-info">
+                    <div class="ai-avatar" id="modelAvatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="ai-status">
+                        <h3 id="modelName">Thynka General</h3>
+                        <span>En línea y listo para ayudar</span>
+                    </div>
+                </div>
+
+                <div class="iframe-container">
+                    <iframe 
+                        id="chatFrame"
+                        src="https://udify.app/chatbot/uy4EpXZLTv8AYCiF" 
+                        allow="microphone"
+                        title="Asistente Thynka">
+                    </iframe>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- AI FLOATING BUTTON -->
-    <button class="ai-fab" id="aiFab" onclick="toggleChatbot()">
-        <i class="fas fa-robot"></i>
-    </button>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-    <!-- LOADING OVERLAY -->
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-spinner">
-            <div class="spinner"></div>
-            <p class="loading-text">Generando cuestionario aleatorio...</p>
-        </div>
-    </div>
-
-    <!-- MAIN CONTAINER -->
-    <main class="main-container" id="mainContainer">
-        
-        <!-- STEP INDICATOR -->
-        <div class="step-indicator">
-            <div class="step active" data-step="1">
-                <span class="step-number">1</span>
-                <span>Texto</span>
-            </div>
-            <div class="step" data-step="2">
-                <span class="step-number">2</span>
-                <span>Configurar</span>
-            </div>
-            <div class="step" data-step="3">
-                <span class="step-number">3</span>
-                <span>Cuestionario</span>
-            </div>
-            <div class="step" data-step="4">
-                <span class="step-number">4</span>
-                <span>Resultados</span>
-            </div>
-        </div>
-
-        <!-- PANEL 1: INPUT TEXT -->
-        <div class="panel active" id="panel1">
-            <div class="panel-header">
-                <i class="fas fa-file-alt panel-icon"></i>
-                <div>
-                    <h2 class="panel-title">Pega tu contenido</h2>
-                    <p class="panel-subtitle">Ingresa el texto que deseas estudiar</p>
-                </div>
-            </div>
-            <div class="panel-body">
-                <div class="form-group">
-                    <label class="form-label">Contenido a analizar</label>
-                    <textarea id="sourceText" placeholder="Pega aqui tus apuntes, resumenes o material de estudio...
-
-El sistema extraera frases del texto y las convertira en afirmaciones verdaderas y falsas de forma aleatoria para que practiques.
-
-Si no entiendes una respuesta, puedes preguntarle a la IA!"></textarea>
-                    <p class="form-hint"><i class="fas fa-lightbulb"></i> Minimo 100 palabras para mejores resultados</p>
-                </div>
-                <div class="btn-group">
-                    <button class="action-btn btn-primary" onclick="goToStep(2)">
-                        Continuar <i class="fas fa-arrow-right"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- PANEL 2: CONFIG -->
-        <div class="panel" id="panel2">
-            <div class="panel-header">
-                <i class="fas fa-cog panel-icon"></i>
-                <div>
-                    <h2 class="panel-title">Configuracion</h2>
-                    <p class="panel-subtitle">Ajusta los parametros del cuestionario</p>
-                </div>
-            </div>
-            <div class="panel-body">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Numero de preguntas</label>
-                        <select id="questionCount">
-                            <option value="5">5 preguntas</option>
-                            <option value="10" selected>10 preguntas</option>
-                            <option value="15">15 preguntas</option>
-                            <option value="20">20 preguntas</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Dificultad</label>
-                        <select id="difficulty">
-                            <option value="easy">Facil</option>
-                            <option value="medium" selected>Media</option>
-                            <option value="hard">Dificil</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="btn-group">
-                    <button class="action-btn btn-secondary" onclick="goToStep(1)">
-                        <i class="fas fa-arrow-left"></i> Atras
-                    </button>
-                    <button class="action-btn btn-primary" onclick="generateQuestions()">
-                        <i class="fas fa-magic"></i> Generar Cuestionario
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- PANEL 3: QUIZ -->
-        <div class="panel" id="panel3">
-            <div class="panel-header">
-                <i class="fas fa-question-circle panel-icon"></i>
-                <div>
-                    <h2 class="panel-title">Cuestionario</h2>
-                    <p class="panel-subtitle" id="quizProgress">Pregunta 0 de 10</p>
-                </div>
-            </div>
-            <div class="panel-body">
-                <div id="quizContainer"></div>
-                <div class="btn-group">
-                    <button class="action-btn btn-ai" onclick="toggleChatbot()" style="margin-top: 10px;">
-                        <i class="fas fa-robot"></i> Preguntar dudas a IA
-                    </button>
-                    <button class="action-btn btn-primary" onclick="finishQuiz()" id="finishBtn" style="display: none;">
-                        <i class="fas fa-check"></i> Ver Resultados
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- PANEL 4: RESULTS -->
-        <div class="panel" id="panel4">
-            <div class="panel-header">
-                <i class="fas fa-trophy panel-icon"></i>
-                <div>
-                    <h2 class="panel-title">Resultados</h2>
-                    <p class="panel-subtitle">Tu rendimiento en el cuestionario</p>
-                </div>
-            </div>
-            <div class="panel-body">
-                <div class="results-container">
-                    <div class="results-score" id="finalScore">0%</div>
-                    <p class="results-label">de respuestas correctas</p>
-                    <div class="results-stats">
-                        <div class="stat-item">
-                            <div class="stat-value correct" id="correctCount">0</div>
-                            <div class="stat-label">Correctas</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value incorrect" id="incorrectCount">0</div>
-                            <div class="stat-label">Incorrectas</div>
-                        </div>
-                    </div>
-                </div>
-                <div id="resultsDetail"></div>
-                <div class="btn-group">
-                    <button class="action-btn btn-secondary" onclick="goToStep(1)">
-                        <i class="fas fa-redo"></i> Nuevo cuestionario
-                    </button>
-                    <button class="action-btn btn-primary" onclick="retryQuiz()">
-                        <i class="fas fa-sync"></i> Reintentar
-                    </button>
-                    <button class="action-btn btn-ai" onclick="toggleChatbot()">
-                        <i class="fas fa-robot"></i> Preguntar a IA
-                    </button>
-                </div>
-            </div>
-        </div>
-
-    </main>
-
-    <script>
-        // ==================== STATE ====================
-        let state = {
-            currentStep: 1,
-            questions: [],
-            userAnswers: [],
-            sourceText: '',
-            chatbotOpen: false
+        const firebaseConfig = {
+            apiKey: "AIzaSyBH42jsEEaEOFa02LhD59aDkwFfo_RVVB4",
+            authDomain: "thynka-1dd68.firebaseapp.com",
+            databaseURL: "https://thynka-1dd68-default-rtdb.firebaseio.com",
+            projectId: "thynka-1dd68",
+            storageBucket: "thynka-1dd68.appspot.com",
+            messagingSenderId: "704622327906",
+            appId: "1:704622327906:web:57c4efb9da7b935b80f93b"
         };
 
-        // ==================== THEME ====================
-        document.getElementById('themeToggle').addEventListener('click', () => {
-            const current = document.documentElement.getAttribute('data-theme');
-            const newTheme = current === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            document.getElementById('themeToggle').innerHTML = newTheme === 'dark' 
-                ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-            localStorage.setItem('theme', newTheme);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const $ = (id) => document.getElementById(id);
+
+        // Datos de los modelos
+        const models = {
+            general: {
+                name: 'Thynka General',
+                url: 'https://udify.app/chatbot/uy4EpXZLTv8AYCiF',
+                icon: 'fas fa-robot'
+            },
+            avanzado: {
+                name: 'Thynka Avanzado',
+                url: 'https://udify.app/chatbot/svB75pzl0XKqKxrj',
+                icon: 'fas fa-microchip'
+            },
+            alternativo: {
+                name: 'Thynka Alternativo',
+                url: 'https://udify.app/chatbot/Ri9yOb2keoFOhLjo',
+                icon: 'fas fa-comments'
+            }
+        };
+
+        onAuthStateChanged(auth, user => {
+            if (!user) window.location.href = 'index.html';
         });
 
-        if (localStorage.getItem('theme') === 'dark') {
+        // Theme Toggle
+        $('btnTheme').onclick = () => {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            localStorage.setItem('theme', isDark ? 'light' : 'dark');
+            $('btnTheme').innerHTML = isDark ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+        };
+        if(localStorage.getItem('theme') === 'dark') {
             document.documentElement.setAttribute('data-theme', 'dark');
-            document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            $('btnTheme').innerHTML = '<i class="fas fa-sun"></i>';
         }
 
-        // ==================== CHATBOT ====================
-        function toggleChatbot() {
-            const panel = document.getElementById('chatbotPanel');
-            const mainContent = document.getElementById('mainContainer');
-            
-            state.chatbotOpen = !state.chatbotOpen;
-            
-            if (state.chatbotOpen) {
-                panel.classList.add('active');
-                // On desktop, shift main content
-                if (window.innerWidth > 900) {
-                    mainContent.classList.add('shifted');
-                }
-            } else {
-                panel.classList.remove('active');
-                mainContent.classList.remove('shifted');
-            }
-        }
+        // Sidebar Toggle
+        $('btnMenu').onclick = () => $('mainSidebar').classList.toggle('active');
+        $('overlayPanel').onclick = () => {
+            $('mainSidebar').classList.remove('active');
+            $('overlayPanel').classList.remove('active');
+        };
 
-        function updateAIFabVisibility() {
-            const fab = document.getElementById('aiFab');
-            const toggleBtn = document.getElementById('chatbotToggle');
-            
-            if (state.currentStep >= 3) {
-                fab.classList.add('visible');
-                toggleBtn.style.display = 'inline-flex';
-            } else {
-                fab.classList.remove('visible');
-                toggleBtn.style.display = 'none';
-            }
-        }
-
-        // ==================== NAVIGATION ====================
-        function goToStep(step) {
-            state.currentStep = step;
-            
-            document.querySelectorAll('.step').forEach(el => {
-                const s = parseInt(el.dataset.step);
-                el.classList.remove('active', 'completed');
-                if (s === step) el.classList.add('active');
-                else if (s < step) el.classList.add('completed');
-            });
-            
-            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-            document.getElementById(`panel${step}`).classList.add('active');
-            
-            updateAIFabVisibility();
-        }
-
-        // ==================== TEXT ANALYSIS ====================
-        function extractSentences(text) {
-            const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
-            return sentences
-                .map(s => s.trim())
-                .filter(s => s.length > 20 && s.length < 350);
-        }
-
-        // ==================== RANDOM FALSE GENERATION ====================
-        function makeRandomFalse(statement) {
-            const methods = [
-                addRandomNegation,
-                swapKeywords,
-                addRandomWord,
-                removeKeyWord
-            ];
-            
-            const randomMethod = methods[Math.floor(Math.random() * methods.length)];
-            return randomMethod(statement);
-        }
-
-        function addRandomNegation(text) {
-            const negations = ['no ', 'nunca ', 'jamas '];
-            const randomNeg = negations[Math.floor(Math.random() * negations.length)];
-            
-            const words = text.split(' ');
-            if (words.length > 3) {
-                const insertPos = Math.floor(Math.random() * (words.length - 2)) + 1;
-                words.splice(insertPos, 0, randomNeg.trim());
-            }
-            return words.join(' ');
-        }
-
-        function swapKeywords(text) {
-            const swaps = [
-                ['todos', 'ninguno'],
-                ['todas', 'ninguna'],
-                ['siempre', 'nunca'],
-                ['nunca', 'siempre'],
-                ['todo', 'nada'],
-                ['mucho', 'poco'],
-                ['poco', 'mucho'],
-                ['mayor', 'menor'],
-                ['menor', 'mayor'],
-                ['primero', 'ultimo'],
-                ['ultimo', 'primero'],
-                ['antes', 'despues'],
-                ['despues', 'antes'],
-                ['mas', 'menos'],
-                ['menos', 'mas'],
-                ['bueno', 'malo'],
-                ['malo', 'bueno'],
-                ['facil', 'dificil'],
-                ['dificil', 'facil']
-            ];
-            
-            let modified = text.toLowerCase();
-            for (const [from, to] of swaps) {
-                if (modified.includes(from)) {
-                    modified = modified.replace(from, to);
-                    break;
-                }
-            }
-            
-            return modified.charAt(0).toUpperCase() + modified.slice(1);
-        }
-
-        function addRandomWord(text) {
-            const randomWords = ['posiblemente', 'tal vez', 'a veces', 'raramente', 'frecuentemente'];
-            const word = randomWords[Math.floor(Math.random() * randomWords.length)];
-            
-            const words = text.split(' ');
-            if (words.length > 2) {
-                const pos = Math.floor(Math.random() * words.length);
-                words.splice(pos, 0, word);
-            }
-            return words.join(' ');
-        }
-
-        function removeKeyWord(text) {
-            const words = text.split(' ');
-            if (words.length > 4) {
-                const pos = Math.floor(Math.random() * (words.length - 2)) + 1;
-                words.splice(pos, 1);
-            }
-            return words.join(' ');
-        }
-
-        // ==================== QUESTION GENERATION ====================
-        function generateQuestions() {
-            const text = document.getElementById('sourceText').value.trim();
-            if (text.length < 100) {
-                alert('Por favor ingresa al menos 100 caracteres de texto.');
-                return;
-            }
-
-            state.sourceText = text;
-            document.getElementById('loadingOverlay').classList.add('show');
-
-            setTimeout(() => {
-                const count = parseInt(document.getElementById('questionCount').value);
-                const sentences = extractSentences(text);
+        // Model Switcher Logic
+        document.querySelectorAll('.model-btn').forEach(btn => {
+            btn.onclick = () => {
+                const modelId = btn.getAttribute('data-model');
+                const model = models[modelId];
                 
-                if (sentences.length < 3) {
-                    document.getElementById('loadingOverlay').classList.remove('show');
-                    alert('El texto es muy corto o no tiene suficientes oraciones. Intenta con un texto mas largo.');
-                    return;
-                }
-
-                const shuffledSentences = shuffleArray([...sentences]);
-                
-                state.questions = [];
-                
-                const selectedSentences = shuffledSentences.slice(0, count);
-                
-                selectedSentences.forEach((sentence, index) => {
-                    const isTrue = Math.random() > 0.5;
+                if (model) {
+                    // Actualizar estado visual de los botones
+                    document.querySelectorAll('.model-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
                     
-                    let questionText;
-                    if (isTrue) {
-                        questionText = sentence;
-                    } else {
-                        questionText = makeRandomFalse(sentence);
-                    }
+                    // Actualizar iframe y header
+                    $('chatFrame').src = model.url;
+                    $('modelName').innerText = model.name;
                     
-                    state.questions.push({
-                        id: index,
-                        text: questionText,
-                        isTrue: isTrue,
-                        originalSentence: sentence
-                    });
-                });
+                    // Animación del avatar
+                    const avatar = $('modelAvatar');
+                    avatar.style.transform = 'scale(0.8) rotate(-10deg)';
+                    setTimeout(() => {
+                        avatar.innerHTML = `<i class="${model.icon}"></i>`;
+                        avatar.style.transform = 'scale(1) rotate(0deg)';
+                    }, 150);
+                }
+            };
+        });
 
-                state.questions = shuffleArray(state.questions);
-                state.questions.forEach((q, i) => q.id = i);
-                
-                state.userAnswers = [];
-
-                document.getElementById('loadingOverlay').classList.remove('show');
-                renderQuiz();
-                goToStep(3);
-            }, 1500);
-        }
-
-        function shuffleArray(array) {
-            const arr = [...array];
-            for (let i = arr.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [arr[i], arr[j]] = [arr[j], arr[i]];
-            }
-            return arr;
-        }
-
-        // ==================== QUIZ ====================
-        function renderQuiz() {
-            const container = document.getElementById('quizContainer');
-            
-            container.innerHTML = state.questions.map((q, i) => `
-                <div class="question-card" id="qcard-${i}">
-                    <span class="question-number">Pregunta ${i + 1}</span>
-                    <div class="question-text">${q.text}</div>
-                    <div class="question-options">
-                        <button class="option-btn" id="btn-true-${i}" onclick="selectAnswer(${i}, true)">
-                            <i class="fas fa-check"></i> Verdadero
-                        </button>
-                        <button class="option-btn" id="btn-false-${i}" onclick="selectAnswer(${i}, false)">
-                            <i class="fas fa-times"></i> Falso
-                        </button>
-                    </div>
-                    <div class="answer-feedback" id="feedback-${i}"></div>
-                </div>
-            `).join('');
-
-            updateProgress();
-            document.getElementById('finishBtn').style.display = 'none';
-        }
-
-        function selectAnswer(questionIndex, answer) {
-            if (state.userAnswers[questionIndex] !== undefined) {
-                return;
-            }
-
-            const question = state.questions[questionIndex];
-            const isCorrect = answer === question.isTrue;
-            
-            state.userAnswers[questionIndex] = { answer, isCorrect };
-
-            const card = document.getElementById(`qcard-${questionIndex}`);
-            const btnTrue = document.getElementById(`btn-true-${questionIndex}`);
-            const btnFalse = document.getElementById(`btn-false-${questionIndex}`);
-            const feedback = document.getElementById(`feedback-${questionIndex}`);
-
-            btnTrue.disabled = true;
-            btnFalse.disabled = true;
-
-            card.classList.add('answered');
-            card.classList.add(isCorrect ? 'correct' : 'incorrect');
-
-            if (answer) {
-                btnTrue.classList.add('selected-true');
-            } else {
-                btnFalse.classList.add('selected-false');
-            }
-
-            feedback.className = `answer-feedback show ${isCorrect ? 'correct' : 'incorrect'}`;
-            feedback.innerHTML = isCorrect 
-                ? '<i class="fas fa-check-circle"></i> Correcto!'
-                : `<i class="fas fa-times-circle"></i> Incorrecto. La respuesta correcta es: <strong>${question.isTrue ? 'Verdadero' : 'Falso'}</strong>`;
-
-            updateProgress();
-        }
-
-        function updateProgress() {
-            const answered = state.userAnswers.filter(a => a !== undefined).length;
-            const total = state.questions.length;
-            document.getElementById('quizProgress').textContent = `Pregunta ${answered} de ${total} respondidas`;
-
-            if (answered === total) {
-                document.getElementById('finishBtn').style.display = 'inline-flex';
-            }
-        }
-
-        function finishQuiz() {
-            const correct = state.userAnswers.filter(a => a && a.isCorrect).length;
-            const incorrect = state.userAnswers.filter(a => a && !a.isCorrect).length;
-            const total = state.questions.length;
-            const score = Math.round((correct / total) * 100);
-
-            document.getElementById('finalScore').textContent = score + '%';
-            document.getElementById('correctCount').textContent = correct;
-            document.getElementById('incorrectCount').textContent = incorrect;
-
-            const detailContainer = document.getElementById('resultsDetail');
-            detailContainer.innerHTML = state.questions.map((q, i) => {
-                const userAnswer = state.userAnswers[i];
-                const answered = userAnswer !== undefined;
-                const isCorrect = answered && userAnswer.isCorrect;
-                
-                return `
-                    <div class="question-card ${isCorrect ? 'correct' : 'incorrect'}">
-                        <span class="question-number">Pregunta ${i + 1}</span>
-                        <div class="question-text">${q.text}</div>
-                        <div class="answer-feedback show ${isCorrect ? 'correct' : 'incorrect'}">
-                            ${!answered ? '<i class="fas fa-minus-circle"></i> No respondida' :
-                              isCorrect ? '<i class="fas fa-check-circle"></i> Correcto!' :
-                              `<i class="fas fa-times-circle"></i> Tu respuesta: ${userAnswer.answer ? 'Verdadero' : 'Falso'} | Correcta: ${q.isTrue ? 'Verdadero' : 'Falso'}`}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            goToStep(4);
-        }
-
-        function retryQuiz() {
-            state.userAnswers = [];
-            const sentences = extractSentences(state.sourceText);
-            const shuffledSentences = shuffleArray([...sentences]);
-            const count = state.questions.length;
-            const selectedSentences = shuffledSentences.slice(0, count);
-            
-            state.questions = [];
-            selectedSentences.forEach((sentence, index) => {
-                const isTrue = Math.random() > 0.5;
-                let questionText = isTrue ? sentence : makeRandomFalse(sentence);
-                
-                state.questions.push({
-                    id: index,
-                    text: questionText,
-                    isTrue: isTrue,
-                    originalSentence: sentence
-                });
-            });
-            
-            state.questions = shuffleArray(state.questions);
-            state.questions.forEach((q, i) => q.id = i);
-            
-            renderQuiz();
-            goToStep(3);
-        }
-
-        // Initialize
-        goToStep(1);
+        window.signOut = () => auth.signOut();
     </script>
 </body>
 </html>
