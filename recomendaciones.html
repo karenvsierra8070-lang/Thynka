@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aprende a Estudiar - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --danger: #e74c3c; --success: #27ae60; --warning: #f39c12; --info: #3498db;
+            --overlay-bg: rgba(0, 0, 0, 0.7);
+            --sidebar-width: 280px;
+            
+            /* Category colors */
+            --cat-organizacion: #3498db;
+            --cat-memoria: #9b59b6;
+            --cat-concentracion: #27ae60;
+            --cat-lectura: #e67e22;
+            --cat-examenes: #e74c3c;
+            --cat-herramientas: #1abc9c;
+            --cat-escritura: #34495e;
+            --cat-bienestar: #f39c12;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+            --overlay-bg: rgba(0, 0, 0, 0.85);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; display: flex; overflow-x: hidden; }
+
+        /* SIDEBAR */
+        .sidebar {
+            position: fixed; left: 0; top: 0; height: 100vh; width: var(--sidebar-width);
+            background: var(--bg-secondary); box-shadow: 2px 0 15px var(--shadow);
+            transform: translateX(-100%); transition: transform 0.3s ease; z-index: 9999;
+            display: flex; flex-direction: column;
+        }
+        .sidebar.active { transform: translateX(0); }
+        .sidebar-header { padding: 30px 20px; border-bottom: 1px solid var(--border-color); background: var(--bg-tertiary); }
+        .sidebar-logo { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--primary-dark); letter-spacing: 1px; }
+        
+        .sidebar-menu { flex: 1; padding: 20px 0; overflow-y: auto; }
+        .menu-section-title { padding: 10px 25px; font-size: 0.75rem; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 1px; font-weight: 700; }
+        .menu-item { display: block; padding: 14px 25px; color: var(--text-primary); text-decoration: none; transition: all 0.2s; border-left: 3px solid transparent; display: flex; align-items: center; gap: 15px; font-weight: 500; }
+        .menu-item:hover, .menu-item.active { background: var(--bg-tertiary); border-left-color: var(--primary); }
+        .menu-item i { width: 20px; text-align: center; opacity: 0.7; font-size: 1.1rem; }
+        .menu-item.active i { opacity: 1; color: var(--primary); }
+
+        .sidebar-subjects { padding: 20px; border-top: 1px solid var(--border-color); margin-top: auto; background: var(--bg-tertiary); max-height: 250px; overflow-y: auto; }
+        .sidebar-subjects h4 { color: var(--text-secondary); font-size: 0.75rem; text-transform: uppercase; margin-bottom: 15px; padding-left: 5px; letter-spacing: 1px; }
+        .subject-list { list-style: none; }
+        .subject-list-item { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 8px; margin-bottom: 5px; font-size: 0.9rem; cursor: pointer; transition: background 0.2s; }
+        .subject-list-item:hover { background: var(--bg-secondary); }
+        .subject-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+        /* OVERLAY */
+        .overlay { position: fixed; inset: 0; background: var(--overlay-bg); opacity: 0; visibility: hidden; transition: all 0.3s; z-index: 9998; backdrop-filter: blur(5px); }
+        .overlay.active { opacity: 1; visibility: visible; }
+
+        /* CONTROLES */
+        .menu-toggle { position: fixed; left: 20px; top: 20px; width: 50px; height: 50px; background: var(--primary); border: none; border-radius: 15px; color: var(--white); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; z-index: 10000; box-shadow: 0 4px 15px var(--shadow); transition: all 0.3s; }
+        .menu-toggle:hover { transform: scale(1.05); }
+        .theme-toggle { position: fixed; right: 20px; top: 20px; width: 50px; height: 50px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 15px; color: var(--primary); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; z-index: 10000; transition: all 0.3s; }
+        .theme-toggle:hover { transform: rotate(20deg) scale(1.1); }
+
+        /* MAIN CONTENT */
+        .main-content { flex: 1; padding: 90px 30px 40px; max-width: 1600px; margin: 0 auto; width: 100%; }
+
+        .page-header { text-align: center; margin-bottom: 50px; padding-bottom: 30px; border-bottom: 1px solid var(--border-color); }
+        .page-title { font-family: 'Playfair Display', serif; font-size: 3rem; color: var(--primary-dark); margin-bottom: 15px; position: relative; display: inline-block; }
+        .page-subtitle { font-size: 1.1rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto; line-height: 1.6; }
+
+        /* CATEGORY FILTERS */
+        .category-filters { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-bottom: 40px; padding: 20px; background: var(--bg-secondary); border-radius: 20px; box-shadow: 0 4px 15px var(--shadow); }
+        .filter-btn { padding: 12px 24px; border: 2px solid var(--border-color); background: transparent; border-radius: 50px; cursor: pointer; font-family: inherit; font-weight: 600; font-size: 0.9rem; transition: all 0.3s; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
+        .filter-btn:hover { border-color: var(--primary); background: var(--bg-tertiary); }
+        .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .filter-btn .count { background: var(--bg-tertiary); padding: 2px 8px; border-radius: 20px; font-size: 0.75rem; }
+        .filter-btn.active .count { background: rgba(255,255,255,0.2); }
+
+        /* SEARCH BAR */
+        .search-container { max-width: 500px; margin: 0 auto 40px; position: relative; }
+        .search-input { width: 100%; padding: 18px 25px 18px 55px; background: var(--bg-secondary); border: 2px solid var(--border-color); border-radius: 50px; font-size: 1rem; font-family: inherit; color: var(--text-primary); transition: all 0.3s; box-shadow: 0 4px 15px var(--shadow); }
+        .search-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 8px 25px var(--shadow-hover); }
+        .search-icon { position: absolute; left: 22px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); font-size: 1.1rem; }
+
+        /* GALLERY GRID */
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
+
+        .gallery-card {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: cardFadeIn 0.6s ease forwards;
+        }
+        .gallery-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px var(--shadow-hover);
+        }
+        .gallery-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 5px;
+            background: var(--card-accent, var(--primary));
+        }
+
+        .card-visual {
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-primary) 100%);
+        }
+        .card-visual::after {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: var(--card-accent, var(--primary));
+            opacity: 0.08;
+            top: -50px;
+            right: -50px;
+            transition: transform 0.4s;
+        }
+        .gallery-card:hover .card-visual::after { transform: scale(1.3); }
+
+        .card-icon {
+            font-size: 3.5rem;
+            color: var(--card-accent, var(--primary));
+            transition: transform 0.4s;
+            position: relative;
+            z-index: 1;
+        }
+        .gallery-card:hover .card-icon { transform: scale(1.15) rotate(-5deg); }
+
+        .card-number {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 20px;
+            opacity: 0.8;
+        }
+
+        .card-content { padding: 25px; flex: 1; display: flex; flex-direction: column; }
+        .card-category { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--card-accent, var(--primary)); font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+        .card-category::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--card-accent, var(--primary)); }
+        
+        .card-title { font-size: 1.1rem; font-weight: 700; color: var(--text-primary); line-height: 1.4; margin-bottom: 12px; flex: 1; }
+        
+        .card-meta { display: flex; justify-content: space-between; align-items: center; padding-top: 15px; border-top: 1px solid var(--border-color); margin-top: auto; }
+        .card-time { font-size: 0.85rem; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; }
+        .card-arrow { width: 35px; height: 35px; border-radius: 50%; background: var(--bg-tertiary); display: flex; align-items: center; justify-content: center; color: var(--primary); transition: all 0.3s; }
+        .gallery-card:hover .card-arrow { background: var(--primary); color: white; transform: translateX(5px); }
+
+        /* EMPTY STATE */
+        .empty-state { text-align: center; padding: 80px 20px; color: var(--text-secondary); background: var(--bg-secondary); border-radius: 20px; border: 2px dashed var(--border-color); grid-column: 1 / -1; }
+        .empty-state i { font-size: 4rem; margin-bottom: 20px; opacity: 0.3; }
+
+        /* STATS BAR */
+        .stats-bar { display: flex; justify-content: center; gap: 40px; margin-bottom: 40px; flex-wrap: wrap; }
+        .stat-item { text-align: center; }
+        .stat-number { font-family: 'Playfair Display', serif; font-size: 2.5rem; color: var(--primary-dark); font-weight: 700; }
+        .stat-label { font-size: 0.9rem; color: var(--text-secondary); }
+
+        /* ANIMATIONS */
+        @keyframes cardFadeIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .gallery-card:nth-child(1) { animation-delay: 0.05s; }
+        .gallery-card:nth-child(2) { animation-delay: 0.1s; }
+        .gallery-card:nth-child(3) { animation-delay: 0.15s; }
+        .gallery-card:nth-child(4) { animation-delay: 0.2s; }
+        .gallery-card:nth-child(5) { animation-delay: 0.25s; }
+        .gallery-card:nth-child(6) { animation-delay: 0.3s; }
+        .gallery-card:nth-child(7) { animation-delay: 0.35s; }
+        .gallery-card:nth-child(8) { animation-delay: 0.4s; }
+        .gallery-card:nth-child(9) { animation-delay: 0.45s; }
+        .gallery-card:nth-child(10) { animation-delay: 0.5s; }
+        .gallery-card:nth-child(n+11) { animation-delay: 0.55s; }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .main-content { padding: 80px 15px 20px; }
+            .page-title { font-size: 2rem; }
+            .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+            .category-filters { padding: 15px; gap: 8px; }
+            .filter-btn { padding: 10px 16px; font-size: 0.8rem; }
+            .stats-bar { gap: 25px; }
+            .stat-number { font-size: 2rem; }
+        }
+
+        @media (max-width: 480px) {
+            .gallery-grid { grid-template-columns: 1fr; }
+            .page-header { margin-bottom: 30px; }
+        }
+
+        /* Floating particles */
+        .particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; overflow: hidden; }
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: var(--primary);
+            border-radius: 50%;
+            opacity: 0.15;
+            animation: floatParticle 20s infinite linear;
+        }
+        @keyframes floatParticle {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.15; }
+            90% { opacity: 0.15; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* Scroll indicator */
+        .scroll-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 15px var(--shadow);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 999;
+        }
+        .scroll-top.visible { opacity: 1; visibility: visible; }
+        .scroll-top:hover { transform: translateY(-5px); }
+    </style>
+</head>
+<body>
+
+    <!-- PARTICLES BACKGROUND -->
+    <div class="particles" id="particles"></div>
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2 class="sidebar-logo">Thynka</h2>
+        </div>
+        <div class="sidebar-menu">
+            <div class="menu-section-title">Navegacion</div>
+            <a href="dashboard.html" class="menu-item"><i class="fas fa-home"></i> Cuenta</a>
+            <a href="tareas.html" class="menu-item"><i class="fas fa-tasks"></i> Tareas</a>
+            <a href="horario.html" class="menu-item"><i class="fas fa-calendar-alt"></i> Horario</a>
+            <a href="examen.html" class="menu-item"><i class="fas fa-file-alt"></i> Examenes</a>
+            
+            <div class="menu-section-title">Herramientas</div>
+            <a href="asistente.html" class="menu-item"><i class="fas fa-robot"></i> Asistente IA</a>
+            <a href="recomendaciones.html" class="menu-item active"><i class="fas fa-graduation-cap"></i> Aprende</a>
+            <a href="cuestionarios.html" class="menu-item"><i class="fas fa-question-circle"></i> Cuestionarios</a>
+            <a href="patron.html" class="menu-item"><i class="fas fa-chart-line"></i> Analisis</a>
+            
+            <div class="menu-section-title">Ayuda</div>
+            <a href="tutorial.html" class="menu-item"><i class="fas fa-book-open"></i> Tutorial</a>
+        </div>
+        <div class="sidebar-subjects">
+            <h4>Materias Registradas</h4>
+            <ul class="subject-list" id="subjectSidebarList">
+                <li class="subject-list-item">
+                    <div class="subject-dot" style="background: #3498db;"></div>
+                    <span>Matematicas</span>
+                </li>
+                <li class="subject-list-item">
+                    <div class="subject-dot" style="background: #e74c3c;"></div>
+                    <span>Fisica</span>
+                </li>
+                <li class="subject-list-item">
+                    <div class="subject-dot" style="background: #27ae60;"></div>
+                    <span>Programacion</span>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- OVERLAY -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- CONTROLES -->
+    <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+    <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+
+    <!-- SCROLL TO TOP -->
+    <button class="scroll-top" id="scrollTop"><i class="fas fa-chevron-up"></i></button>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <header class="page-header">
+            <h1 class="page-title">Aprende a Estudiar</h1>
+            <p class="page-subtitle">Descubre tecnicas probadas, metodos de estudio y estrategias para maximizar tu rendimiento academico</p>
+        </header>
+
+        <!-- STATS -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-number" id="totalCount">67</div>
+                <div class="stat-label">Tecnicas disponibles</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">8</div>
+                <div class="stat-label">Categorias</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Efectividad</div>
+            </div>
+        </div>
+
+        <!-- SEARCH -->
+        <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" class="search-input" id="searchInput" placeholder="Buscar tecnica o metodo...">
+        </div>
+
+        <!-- FILTERS -->
+        <div class="category-filters" id="categoryFilters">
+            <button class="filter-btn active" data-category="all">
+                <i class="fas fa-th-large"></i> Todos <span class="count">67</span>
+            </button>
+            <button class="filter-btn" data-category="organizacion" style="--btn-accent: var(--cat-organizacion);">
+                <i class="fas fa-folder-open"></i> Organizacion
+            </button>
+            <button class="filter-btn" data-category="memoria" style="--btn-accent: var(--cat-memoria);">
+                <i class="fas fa-brain"></i> Memoria
+            </button>
+            <button class="filter-btn" data-category="concentracion" style="--btn-accent: var(--cat-concentracion);">
+                <i class="fas fa-bullseye"></i> Concentracion
+            </button>
+            <button class="filter-btn" data-category="lectura" style="--btn-accent: var(--cat-lectura);">
+                <i class="fas fa-book-reader"></i> Lectura
+            </button>
+            <button class="filter-btn" data-category="examenes" style="--btn-accent: var(--cat-examenes);">
+                <i class="fas fa-clipboard-check"></i> Examenes
+            </button>
+            <button class="filter-btn" data-category="herramientas" style="--btn-accent: var(--cat-herramientas);">
+                <i class="fas fa-tools"></i> Herramientas
+            </button>
+            <button class="filter-btn" data-category="escritura" style="--btn-accent: var(--cat-escritura);">
+                <i class="fas fa-pen-fancy"></i> Escritura
+            </button>
+            <button class="filter-btn" data-category="bienestar" style="--btn-accent: var(--cat-bienestar);">
+                <i class="fas fa-heart"></i> Bienestar
+            </button>
+        </div>
+
+        <!-- GALLERY -->
+        <div class="gallery-grid" id="galleryGrid"></div>
+    </main>
+
+    <script>
+        // Data de todas las técnicas
+        const techniques = [
+            { id: 1, title: "Mapa Conceptual", category: "herramientas", icon: "fa-project-diagram", time: "15 min", color: "#1abc9c" },
+            { id: 2, title: "Cuestionario Verdadero o Falso", category: "herramientas", icon: "fa-check-double", time: "10 min", color: "#1abc9c" },
+            { id: 3, title: "Flashcards", category: "memoria", icon: "fa-layer-group", time: "20 min", color: "#9b59b6" },
+            { id: 4, title: "Sopa de Letras", category: "herramientas", icon: "fa-th", time: "15 min", color: "#1abc9c" },
+            { id: 5, title: "Completa la Frase", category: "herramientas", icon: "fa-fill-drip", time: "10 min", color: "#1abc9c" },
+            { id: 6, title: "Metodo Cornell", category: "lectura", icon: "fa-columns", time: "25 min", color: "#e67e22" },
+            { id: 7, title: "Que, Como y Por Que", category: "organizacion", icon: "fa-question-circle", time: "15 min", color: "#3498db" },
+            { id: 8, title: "Recuerdo Activo", category: "memoria", icon: "fa-lightbulb", time: "20 min", color: "#9b59b6" },
+            { id: 9, title: "Que Hacer Antes de Empezar a Estudiar", category: "organizacion", icon: "fa-clipboard-list", time: "10 min", color: "#3498db" },
+            { id: 10, title: "Como Organizar el Material para Estudiar", category: "organizacion", icon: "fa-boxes", time: "20 min", color: "#3498db" },
+            { id: 11, title: "Metodo para Clasificar Apuntes por Materia", category: "organizacion", icon: "fa-tags", time: "15 min", color: "#3498db" },
+            { id: 12, title: "Estrategias para Digitalizar Apuntes", category: "herramientas", icon: "fa-mobile-alt", time: "25 min", color: "#1abc9c" },
+            { id: 13, title: "Como Seleccionar Libros de Texto Clave", category: "lectura", icon: "fa-book", time: "20 min", color: "#e67e22" },
+            { id: 14, title: "Formas de Etiquetar Apuntes Rapidamente", category: "organizacion", icon: "fa-tag", time: "10 min", color: "#3498db" },
+            { id: 15, title: "Organizar Lecturas Digitales con PDF", category: "lectura", icon: "fa-file-pdf", time: "15 min", color: "#e67e22" },
+            { id: 16, title: "Metodo de la Caja de Arena", category: "organizacion", icon: "fa-cube", time: "20 min", color: "#3498db" },
+            { id: 17, title: "Estructurar un Portafolio de Evidencias", category: "organizacion", icon: "fa-briefcase", time: "30 min", color: "#3498db" },
+            { id: 18, title: "Metodo de la Pagina en Blanco", category: "memoria", icon: "fa-file", time: "15 min", color: "#9b59b6" },
+            { id: 19, title: "Sistema Leitner para Repeticion Espaciada", category: "memoria", icon: "fa-boxes-stacked", time: "25 min", color: "#9b59b6" },
+            { id: 20, title: "Transformar Titulos en Preguntas de Examen", category: "examenes", icon: "fa-exchange-alt", time: "10 min", color: "#e74c3c" },
+            { id: 21, title: "Metodo Feynman para Temas Complejos", category: "memoria", icon: "fa-user-graduate", time: "30 min", color: "#9b59b6" },
+            { id: 22, title: "Tecnicas de Asociacion Mental", category: "memoria", icon: "fa-link", time: "15 min", color: "#9b59b6" },
+            { id: 23, title: "Palacio de la Memoria (Metodo Loci)", category: "memoria", icon: "fa-landmark", time: "25 min", color: "#9b59b6" },
+            { id: 24, title: "Crear Acronimos y Reglas Mnemotecnicas", category: "memoria", icon: "fa-font", time: "10 min", color: "#9b59b6" },
+            { id: 25, title: "Simulacros de Examen Bajo Presion", category: "examenes", icon: "fa-stopwatch", time: "45 min", color: "#e74c3c" },
+            { id: 26, title: "Aprendizaje Basado en Problemas", category: "concentracion", icon: "fa-puzzle-piece", time: "40 min", color: "#27ae60" },
+            { id: 27, title: "Disenar un Espacio de Concentracion", category: "concentracion", icon: "fa-couch", time: "20 min", color: "#27ae60" },
+            { id: 28, title: "Estudiar con Musica: Generos Recomendados", category: "concentracion", icon: "fa-headphones", time: "15 min", color: "#27ae60" },
+            { id: 29, title: "Identificar Horas de Maxima Energia Mental", category: "concentracion", icon: "fa-sun", time: "10 min", color: "#27ae60" },
+            { id: 30, title: "Diferencia entre Fatiga Fisica y Cognitiva", category: "bienestar", icon: "fa-battery-half", time: "15 min", color: "#f39c12" },
+            { id: 31, title: "Manejar la Frustracion en Temas Dificiles", category: "bienestar", icon: "fa-meh", time: "20 min", color: "#f39c12" },
+            { id: 32, title: "Vencer la Procrastinacion en 5 Minutos", category: "concentracion", icon: "fa-rocket", time: "10 min", color: "#27ae60" },
+            { id: 33, title: "Combatir el Sindrome del Impostor", category: "bienestar", icon: "fa-mask", time: "15 min", color: "#f39c12" },
+            { id: 34, title: "Ejercicios de Respiracion Pre-Examen", category: "bienestar", icon: "fa-wind", time: "5 min", color: "#f39c12" },
+            { id: 35, title: "Automotivarte con Materias Aburridas", category: "bienestar", icon: "fa-fire", time: "15 min", color: "#f39c12" },
+            { id: 36, title: "Pasar de Lectura Pasiva a Critica", category: "lectura", icon: "fa-glasses", time: "25 min", color: "#e67e22" },
+            { id: 37, title: "El Peligro de Subrayar Todo el Libro", category: "lectura", icon: "fa-highlighter", time: "15 min", color: "#e67e22" },
+            { id: 38, title: "Tomar Apuntes a Gran Velocidad", category: "lectura", icon: "fa-pencil-alt", time: "20 min", color: "#e67e22" },
+            { id: 39, title: "Metodo de Mapeo para Conferencias", category: "lectura", icon: "fa-sitemap", time: "25 min", color: "#e67e22" },
+            { id: 40, title: "Tecnica de Lectura Rapida (Skimming y Scanning)", category: "lectura", icon: "fa-book-open", time: "20 min", color: "#e67e22" },
+            { id: 41, title: "Metodo de las Tres Lecturas", category: "lectura", icon: "fa-book-reader", time: "30 min", color: "#e67e22" },
+            { id: 42, title: "Evaluar Credibilidad de Fuentes en Internet", category: "herramientas", icon: "fa-search", time: "15 min", color: "#1abc9c" },
+            { id: 43, title: "El Peligro de Transcribir Textualmente", category: "lectura", icon: "fa-copy", time: "10 min", color: "#e67e22" },
+            { id: 44, title: "Abordar Examenes de Problemas Matematicos", category: "examenes", icon: "fa-calculator", time: "35 min", color: "#e74c3c" },
+            { id: 45, title: "Simulacro de Examen con Temporizador", category: "examenes", icon: "fa-hourglass-half", time: "45 min", color: "#e74c3c" },
+            { id: 46, title: "Estrategias para Repasar el Dia Antes", category: "examenes", icon: "fa-calendar-day", time: "20 min", color: "#e74c3c" },
+            { id: 47, title: "Orden de Resolucion: Facil vs Dificil", category: "examenes", icon: "fa-sort", time: "10 min", color: "#e74c3c" },
+            { id: 48, title: "Controlar el Tiempo Durante la Prueba", category: "examenes", icon: "fa-clock", time: "15 min", color: "#e74c3c" },
+            { id: 49, title: "Tecnicas para Recordar Datos Puros", category: "memoria", icon: "fa-database", time: "20 min", color: "#9b59b6" },
+            { id: 50, title: "Manejar Bloqueos Mentales en Examen", category: "examenes", icon: "fa-brain", time: "15 min", color: "#e74c3c" },
+            { id: 51, title: "Estrategias cuando estas 50% Seguro", category: "examenes", icon: "fa-percentage", time: "10 min", color: "#e74c3c" },
+            { id: 52, title: "Motores de Busqueda Academicos", category: "herramientas", icon: "fa-search-plus", time: "15 min", color: "#1abc9c" },
+            { id: 53, title: "IA como Tutora: Evaluar sin Respuestas", category: "herramientas", icon: "fa-robot", time: "20 min", color: "#1abc9c" },
+            { id: 54, title: "Extensiones para Bloquear Paginas Adictivas", category: "herramientas", icon: "fa-ban", time: "10 min", color: "#1abc9c" },
+            { id: 55, title: "Estudiar Materias con Alta Carga Teorica", category: "concentracion", icon: "fa-book-dead", time: "25 min", color: "#27ae60" },
+            { id: 56, title: "Enfoque para Materias Practicas", category: "concentracion", icon: "fa-hands", time: "20 min", color: "#27ae60" },
+            { id: 57, title: "Memorizar Formulas Matematicas", category: "memoria", icon: "fa-square-root-alt", time: "20 min", color: "#9b59b6" },
+            { id: 58, title: "Estudiar Casos de Estudio Empresariales", category: "lectura", icon: "fa-building", time: "30 min", color: "#e67e22" },
+            { id: 59, title: "Evaluar tu Propio Metodo de Estudio", category: "organizacion", icon: "fa-chart-pie", time: "15 min", color: "#3498db" },
+            { id: 60, title: "Regla 10-20-30 de Guy Kawasaki", category: "escritura", icon: "fa-presentation", time: "15 min", color: "#34495e" },
+            { id: 61, title: "El Peligro de Leer las Diapositivas", category: "escritura", icon: "fa-chalkboard", time: "10 min", color: "#34495e" },
+            { id: 62, title: "Coordinar Exposicion en Grupo", category: "escritura", icon: "fa-users", time: "25 min", color: "#34495e" },
+            { id: 63, title: "Metodo Dividir y Conquistar", category: "organizacion", icon: "fa-cut", time: "15 min", color: "#3498db" },
+            { id: 64, title: "Tecnica de los Micro-Pasos", category: "concentracion", icon: "fa-shoe-prints", time: "10 min", color: "#27ae60" },
+            { id: 65, title: "Redactar Introduccion Solida para Ensayo", category: "escritura", icon: "fa-pen-nib", time: "25 min", color: "#34495e" },
+            { id: 66, title: "Estrategias de Deep Work", category: "concentracion", icon: "fa-water", time: "30 min", color: "#27ae60" },
+            { id: 67, title: "Evaluar Calidad de Argumentos en Ensayos", category: "escritura", icon: "fa-balance-scale", time: "20 min", color: "#34495e" }
+        ];
+
+        // Category colors map
+        const categoryColors = {
+            organizacion: "#3498db",
+            memoria: "#9b59b6",
+            concentracion: "#27ae60",
+            lectura: "#e67e22",
+            examenes: "#e74c3c",
+            herramientas: "#1abc9c",
+            escritura: "#34495e",
+            bienestar: "#f39c12"
+        };
+
+        // Category names map
+        const categoryNames = {
+            organizacion: "Organizacion",
+            memoria: "Memoria",
+            concentracion: "Concentracion",
+            lectura: "Lectura",
+            examenes: "Examenes",
+            herramientas: "Herramientas",
+            escritura: "Escritura",
+            bienestar: "Bienestar"
+        };
+
+        // DOM Elements
+        const galleryGrid = document.getElementById('galleryGrid');
+        const searchInput = document.getElementById('searchInput');
+        const categoryFilters = document.getElementById('categoryFilters');
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        const themeToggle = document.getElementById('themeToggle');
+        const scrollTopBtn = document.getElementById('scrollTop');
+        const particlesContainer = document.getElementById('particles');
+
+        // Current filter
+        let currentCategory = 'all';
+
+        // Initialize
+        function init() {
+            renderGallery(techniques);
+            setupEventListeners();
+            createParticles();
+            updateCategoryCounts();
+        }
+
+        // Render gallery
+        function renderGallery(items) {
+            if (items.length === 0) {
+                galleryGrid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-search"></i>
+                        <p>No se encontraron resultados</p>
+                    </div>
+                `;
+                return;
+            }
+
+            galleryGrid.innerHTML = items.map(item => `
+                <a href="${item.id}.html" class="gallery-card" style="--card-accent: ${item.color};">
+                    <div class="card-visual">
+                        <i class="fas ${item.icon} card-icon"></i>
+                        <span class="card-number">#${item.id}</span>
+                    </div>
+                    <div class="card-content">
+                        <span class="card-category">${categoryNames[item.category]}</span>
+                        <h3 class="card-title">${item.title}</h3>
+                        <div class="card-meta">
+                            <span class="card-time"><i class="fas fa-clock"></i> ${item.time}</span>
+                            <span class="card-arrow"><i class="fas fa-arrow-right"></i></span>
+                        </div>
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        // Filter by category
+        function filterByCategory(category) {
+            currentCategory = category;
+            const filtered = category === 'all' 
+                ? techniques 
+                : techniques.filter(t => t.category === category);
+            
+            renderGallery(filtered);
+            
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.category === category);
+            });
+        }
+
+        // Search
+        function search(query) {
+            const q = query.toLowerCase().trim();
+            const filtered = techniques.filter(t => {
+                const matchesSearch = t.title.toLowerCase().includes(q) || 
+                                      categoryNames[t.category].toLowerCase().includes(q);
+                const matchesCategory = currentCategory === 'all' || t.category === currentCategory;
+                return matchesSearch && matchesCategory;
+            });
+            renderGallery(filtered);
+        }
+
+        // Update category counts
+        function updateCategoryCounts() {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                const cat = btn.dataset.category;
+                const count = cat === 'all' 
+                    ? techniques.length 
+                    : techniques.filter(t => t.category === cat).length;
+                const countEl = btn.querySelector('.count');
+                if (countEl) countEl.textContent = count;
+            });
+        }
+
+        // Create particles
+        function createParticles() {
+            for (let i = 0; i < 15; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Menu toggle
+            menuToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+            });
+
+            overlay.addEventListener('click', () => {
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+            });
+
+            // Theme toggle
+            themeToggle.addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                themeToggle.innerHTML = newTheme === 'dark' 
+                    ? '<i class="fas fa-sun"></i>' 
+                    : '<i class="fas fa-moon"></i>';
+            });
+
+            // Load saved theme
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+
+            // Category filters
+            categoryFilters.addEventListener('click', (e) => {
+                const btn = e.target.closest('.filter-btn');
+                if (btn) {
+                    filterByCategory(btn.dataset.category);
+                }
+            });
+
+            // Search
+            searchInput.addEventListener('input', (e) => {
+                search(e.target.value);
+            });
+
+            // Scroll to top
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 300) {
+                    scrollTopBtn.classList.add('visible');
+                } else {
+                    scrollTopBtn.classList.remove('visible');
+                }
+            });
+
+            scrollTopBtn.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
+
+        // Initialize on load
+        init();
+    </script>
+</body>
+</html>
