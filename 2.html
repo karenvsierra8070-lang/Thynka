@@ -65,10 +65,15 @@
         .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
         .btn-secondary:hover { background: var(--border-color); }
         .btn-success { background: var(--success); color: white; }
-        .btn-ai { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .btn-ai { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: white; 
+        }
+        .btn-ai:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3); }
 
         /* MAIN CONTAINER */
-        .main-container { padding: 90px 30px 40px; max-width: 900px; margin: 0 auto; }
+        .main-container { padding: 90px 30px 40px; max-width: 900px; margin: 0 auto; transition: margin-right 0.3s; }
+        .main-container.shifted { margin-right: 420px; }
 
         /* STEP INDICATOR */
         .step-indicator {
@@ -199,21 +204,22 @@
         /* BUTTONS */
         .btn-group { display: flex; gap: 15px; justify-content: center; margin-top: 30px; flex-wrap: wrap; }
 
-        /* AI CHATBOT PANEL */
+        /* AI CHATBOT PANEL - FULL HEIGHT */
         .chatbot-panel {
-            position: fixed; right: -420px; top: 0; width: 400px;
-            height: 100vh; background: var(--bg-secondary);
-            border-left: 1px solid var(--border-color); z-index: 2000;
+            position: fixed; right: -400px; top: 0; width: 400px;
+            height: 100vh; z-index: 2000;
             transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex; flex-direction: column;
+            background: var(--bg-secondary);
         }
         .chatbot-panel.active { right: 0; }
         
         .chatbot-header {
-            padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white; display: flex; justify-content: space-between; align-items: center;
+            flex-shrink: 0;
         }
-        .chatbot-title { font-weight: 700; display: flex; align-items: center; gap: 10px; }
+        .chatbot-title { font-weight: 700; display: flex; align-items: center; gap: 10px; font-size: 0.95rem; }
         .chatbot-close {
             width: 32px; height: 32px; border: none; background: rgba(255,255,255,0.2);
             border-radius: 8px; color: white; cursor: pointer;
@@ -222,12 +228,17 @@
         }
         .chatbot-close:hover { background: rgba(255,255,255,0.3); }
         
-        .chatbot-body { flex: 1; display: flex; flex-direction: column; }
-        .chatbot-iframe { flex: 1; border: none; width: 100%; }
+        .chatbot-body { 
+            flex: 1; 
+            display: flex; 
+            overflow: hidden;
+        }
         
-        .chatbot-info {
-            padding: 15px; background: var(--bg-tertiary); border-top: 1px solid var(--border-color);
-            font-size: 0.85rem; color: var(--text-secondary); text-align: center;
+        .chatbot-iframe { 
+            flex: 1; 
+            border: none; 
+            width: 100%; 
+            height: 100%;
         }
 
         /* Floating AI button */
@@ -266,12 +277,16 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Responsive */
+        @media (max-width: 900px) {
+            .chatbot-panel { width: 100%; right: -100%; }
+            .main-container.shifted { margin-right: 0; }
+        }
+
         @media (max-width: 768px) {
             .main-container { padding: 80px 15px 20px; }
             .step-indicator { flex-wrap: wrap; gap: 10px; }
             .step { padding: 8px 15px; font-size: 0.8rem; }
             .question-options { flex-direction: column; }
-            .chatbot-panel { width: 100%; right: -100%; }
         }
     </style>
 </head>
@@ -293,22 +308,20 @@
         </div>
     </header>
 
-    <!-- AI CHATBOT PANEL -->
+    <!-- AI CHATBOT PANEL - UDIFY -->
     <div class="chatbot-panel" id="chatbotPanel">
         <div class="chatbot-header">
-            <span class="chatbot-title"><i class="fas fa-robot"></i> Asistente de Estudio</span>
+            <span class="chatbot-title"><i class="fas fa-robot"></i> Asistente Thynka</span>
             <button class="chatbot-close" onclick="toggleChatbot()"><i class="fas fa-times"></i></button>
         </div>
         <div class="chatbot-body">
             <iframe 
                 id="chatbotIframe" 
                 class="chatbot-iframe" 
-                src="https://mizou.com/login-thread?ID=2UBVHAfm_hJ8poOULApiOMTDSWb2NdqUbfAQBgrxWy4-135253"
-                allow="microphone; camera"
-            ></iframe>
-        </div>
-        <div class="chatbot-info">
-            <i class="fas fa-info-circle"></i> Pregunta sobre las respuestas que no entendiste
+                src="https://udify.app/chatbot/uy4EpXZLTv8AYCiF"
+                allow="microphone"
+                title="Asistente Thynka">
+            </iframe>
         </div>
     </div>
 
@@ -326,7 +339,7 @@
     </div>
 
     <!-- MAIN CONTAINER -->
-    <main class="main-container">
+    <main class="main-container" id="mainContainer">
         
         <!-- STEP INDICATOR -->
         <div class="step-indicator">
@@ -362,7 +375,9 @@
                     <label class="form-label">Contenido a analizar</label>
                     <textarea id="sourceText" placeholder="Pega aqui tus apuntes, resumenes o material de estudio...
 
-El sistema extraera frases del texto y las convertira en afirmaciones verdaderas y falsas de forma aleatoria para que practiques."></textarea>
+El sistema extraera frases del texto y las convertira en afirmaciones verdaderas y falsas de forma aleatoria para que practiques.
+
+Si no entiendes una respuesta, puedes preguntarle a la IA!"></textarea>
                     <p class="form-hint"><i class="fas fa-lightbulb"></i> Minimo 100 palabras para mejores resultados</p>
                 </div>
                 <div class="btn-group">
@@ -425,6 +440,9 @@ El sistema extraera frases del texto y las convertira en afirmaciones verdaderas
             <div class="panel-body">
                 <div id="quizContainer"></div>
                 <div class="btn-group">
+                    <button class="action-btn btn-ai" onclick="toggleChatbot()" style="margin-top: 10px;">
+                        <i class="fas fa-robot"></i> Preguntar dudas a IA
+                    </button>
                     <button class="action-btn btn-primary" onclick="finishQuiz()" id="finishBtn" style="display: none;">
                         <i class="fas fa-check"></i> Ver Resultados
                     </button>
@@ -479,7 +497,8 @@ El sistema extraera frases del texto y las convertira en afirmaciones verdaderas
             currentStep: 1,
             questions: [],
             userAnswers: [],
-            sourceText: ''
+            sourceText: '',
+            chatbotOpen: false
         };
 
         // ==================== THEME ====================
@@ -500,7 +519,20 @@ El sistema extraera frases del texto y las convertira en afirmaciones verdaderas
         // ==================== CHATBOT ====================
         function toggleChatbot() {
             const panel = document.getElementById('chatbotPanel');
-            panel.classList.toggle('active');
+            const mainContent = document.getElementById('mainContainer');
+            
+            state.chatbotOpen = !state.chatbotOpen;
+            
+            if (state.chatbotOpen) {
+                panel.classList.add('active');
+                // On desktop, shift main content
+                if (window.innerWidth > 900) {
+                    mainContent.classList.add('shifted');
+                }
+            } else {
+                panel.classList.remove('active');
+                mainContent.classList.remove('shifted');
+            }
         }
 
         function updateAIFabVisibility() {
@@ -535,7 +567,6 @@ El sistema extraera frases del texto y las convertira en afirmaciones verdaderas
 
         // ==================== TEXT ANALYSIS ====================
         function extractSentences(text) {
-            // Split by sentence-ending punctuation
             const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
             return sentences
                 .map(s => s.trim())
@@ -544,7 +575,6 @@ El sistema extraera frases del texto y las convertira en afirmaciones verdaderas
 
         // ==================== RANDOM FALSE GENERATION ====================
         function makeRandomFalse(statement) {
-            // Randomly decide how to make it false
             const methods = [
                 addRandomNegation,
                 swapKeywords,
@@ -560,7 +590,6 @@ El sistema extraera frases del texto y las convertira en afirmaciones verdaderas
             const negations = ['no ', 'nunca ', 'jamas '];
             const randomNeg = negations[Math.floor(Math.random() * negations.length)];
             
-            // Find a random position to insert negation (after a verb-like word)
             const words = text.split(' ');
             if (words.length > 3) {
                 const insertPos = Math.floor(Math.random() * (words.length - 2)) + 1;
@@ -570,7 +599,6 @@ El sistema extraera frases del texto y las convertira en afirmaciones verdaderas
         }
 
         function swapKeywords(text) {
-            // Swap common words with their opposites
             const swaps = [
                 ['todos', 'ninguno'],
                 ['todas', 'ninguna'],
@@ -597,11 +625,10 @@ El sistema extraera frases del texto y las convertira en afirmaciones verdaderas
             for (const [from, to] of swaps) {
                 if (modified.includes(from)) {
                     modified = modified.replace(from, to);
-                    break; // Only one swap per statement
+                    break;
                 }
             }
             
-            // Capitalize first letter
             return modified.charAt(0).toUpperCase() + modified.slice(1);
         }
 
@@ -618,7 +645,6 @@ El sistema extraera frases del texto y las convertira en afirmaciones verdaderas
         }
 
         function removeKeyWord(text) {
-            // Remove a random word from the middle of the sentence
             const words = text.split(' ');
             if (words.length > 4) {
                 const pos = Math.floor(Math.random() * (words.length - 2)) + 1;
@@ -648,16 +674,13 @@ El sistema extraera frases del texto y las convertira en afirmaciones verdaderas
                     return;
                 }
 
-                // Shuffle sentences
                 const shuffledSentences = shuffleArray([...sentences]);
                 
                 state.questions = [];
                 
-                // Take sentences and randomly assign true/false
                 const selectedSentences = shuffledSentences.slice(0, count);
                 
                 selectedSentences.forEach((sentence, index) => {
-                    // Randomly decide if this will be true or false (50/50)
                     const isTrue = Math.random() > 0.5;
                     
                     let questionText;
@@ -675,7 +698,6 @@ El sistema extraera frases del texto y las convertira en afirmaciones verdaderas
                     });
                 });
 
-                // Shuffle the final questions so true/false are mixed
                 state.questions = shuffleArray(state.questions);
                 state.questions.forEach((q, i) => q.id = i);
                 
@@ -721,39 +743,32 @@ El sistema extraera frases del texto y las convertira en afirmaciones verdaderas
         }
 
         function selectAnswer(questionIndex, answer) {
-            // Check if already answered
             if (state.userAnswers[questionIndex] !== undefined) {
-                return; // Already answered, don't allow change
+                return;
             }
 
             const question = state.questions[questionIndex];
             const isCorrect = answer === question.isTrue;
             
-            // Store answer
             state.userAnswers[questionIndex] = { answer, isCorrect };
 
-            // Get elements
             const card = document.getElementById(`qcard-${questionIndex}`);
             const btnTrue = document.getElementById(`btn-true-${questionIndex}`);
             const btnFalse = document.getElementById(`btn-false-${questionIndex}`);
             const feedback = document.getElementById(`feedback-${questionIndex}`);
 
-            // Disable buttons
             btnTrue.disabled = true;
             btnFalse.disabled = true;
 
-            // Mark card as answered
             card.classList.add('answered');
             card.classList.add(isCorrect ? 'correct' : 'incorrect');
 
-            // Style selected button
             if (answer) {
                 btnTrue.classList.add('selected-true');
             } else {
                 btnFalse.classList.add('selected-false');
             }
 
-            // Show feedback immediately
             feedback.className = `answer-feedback show ${isCorrect ? 'correct' : 'incorrect'}`;
             feedback.innerHTML = isCorrect 
                 ? '<i class="fas fa-check-circle"></i> Correcto!'
@@ -782,7 +797,6 @@ El sistema extraera frases del texto y las convertira en afirmaciones verdaderas
             document.getElementById('correctCount').textContent = correct;
             document.getElementById('incorrectCount').textContent = incorrect;
 
-            // Show detailed results
             const detailContainer = document.getElementById('resultsDetail');
             detailContainer.innerHTML = state.questions.map((q, i) => {
                 const userAnswer = state.userAnswers[i];
@@ -807,7 +821,6 @@ El sistema extraera frases del texto y las convertira en afirmaciones verdaderas
 
         function retryQuiz() {
             state.userAnswers = [];
-            // Regenerate questions with same text but different true/false assignments
             const sentences = extractSentences(state.sourceText);
             const shuffledSentences = shuffleArray([...sentences]);
             const count = state.questions.length;
