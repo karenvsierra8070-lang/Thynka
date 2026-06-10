@@ -3,123 +3,625 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador de Mapas Conceptuales IA</title>
+    <title>Mapa Conceptual - Thynka</title>
+    <!-- Fuentes: Poppins, Playfair y +20 fuentes aesthetic -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&family=Lora:wght@400;700&family=Montserrat:wght@400;600&family=Raleway:wght@400;700&family=Roboto+Slab:wght@400;700&family=Merriweather:wght@400;700&family=Open+Sans:wght@400;700&family=PT+Sans:wght@400;700&family=Nunito:wght@400;700&family=Quicksand:wght@400;700&family=Ubuntu:wght@400;700&family=Rubik:wght@400;700&family=Work+Sans:wght@400;700&family=Fira+Sans:wght@400;700&family=Inter:wght@400;700&family=Josefin+Sans:wght@400;700&family=Crimson+Text:wght@400;700&family=Bitter:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Librerías de código abierto necesarias para dibujar el mapa visual -->
-    <script src="https://jsdelivr.net"></script>
-    <script src="https://jsdelivr.net"></script>
-    
+    <!-- Librerias para Mapas y Exportacion -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.26.0/cytoscape.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
     <style>
-        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #f0f2f5; margin: 0; padding: 20px; display: flex; justify-content: center; }
-        .wrapper { width: 100%; max-width: 1000px; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        h1 { color: #1a1a1a; margin-top: 0; font-size: 24px; }
-        .control-panel { display: flex; gap: 10px; margin-bottom: 20px; }
-        input[type="text"] { flex: 1; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 6px; font-size: 16px; transition: border 0.3s; }
-        input[type="text"]:focus { border-color: #4a90e2; outline: none; }
-        button { background-color: #4a90e2; color: white; border: none; padding: 12px 25px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; transition: background 0.2s; }
-        button:hover { background-color: #357abd; }
-        button:disabled { background-color: #cccccc; cursor: not-allowed; }
-        #status-msg { margin-bottom: 15px; color: #666; font-style: italic; display: none; }
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --danger: #e74c3c; --success: #27ae60; --warning: #f39c12;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; overflow: hidden; }
+
+        /* Top Bar */
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 70px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 25px; z-index: 1000; box-shadow: 0 2px 10px var(--shadow);
+        }
+        .top-left { display: flex; align-items: center; gap: 20px; }
+        .back-btn {
+            width: 45px; height: 45px; border-radius: 12px; background: var(--bg-tertiary);
+            border: 1px solid var(--border-color); color: var(--primary);
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            text-decoration: none; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; transform: translateX(-3px); }
+        .page-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--primary-dark); }
+
+        .top-center { flex: 1; display: flex; justify-content: center; padding: 0 20px; }
+        .input-group { display: flex; gap: 10px; max-width: 600px; width: 100%; }
+        .topic-input { flex: 1; padding: 12px 20px; border-radius: 12px; border: 2px solid var(--border-color); background: var(--bg-primary); font-family: inherit; font-size: 0.95rem; color: var(--text-primary); transition: all 0.3s; }
+        .topic-input:focus { outline: none; border-color: var(--primary); }
+        .generate-btn { padding: 12px 25px; border-radius: 12px; border: none; background: var(--primary); color: white; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px; font-family: inherit; }
+        .generate-btn:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 5px 15px var(--shadow-hover); }
+        .generate-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .top-right { display: flex; align-items: center; gap: 10px; }
+        .action-btn { padding: 10px 18px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--bg-tertiary); color: var(--text-primary); font-weight: 500; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; font-family: inherit; }
+        .action-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
         
-        /* Contenedor del mapa conceptual interactivo */
-        .map-container { width: 100%; height: 600px; border: 2px solid #eeeeee; border-radius: 8px; background-color: #fafafa; position: relative; }
-        #mindmap { width: 100%; height: 100%; }
+        .theme-toggle { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--bg-tertiary); color: var(--primary); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
+
+        /* Canvas Container */
+        .canvas-container { position: fixed; top: 70px; left: 280px; right: 0; bottom: 0; background: var(--bg-primary); }
+        #cy { width: 100%; height: 100%; }
+
+        /* Sidebar Tools */
+        .tools-sidebar {
+            position: fixed; top: 70px; left: 0; width: 280px; bottom: 0;
+            background: var(--bg-secondary); border-right: 1px solid var(--border-color);
+            overflow-y: auto; z-index: 100;
+        }
+        .tool-section { padding: 20px; border-bottom: 1px solid var(--border-color); }
+        .tool-section-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 15px; font-weight: 700; }
+        
+        /* Layout Styles Grid */
+        .layout-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .layout-btn { padding: 12px 8px; border-radius: 10px; border: 2px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary); font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.2s; text-align: center; font-family: inherit; }
+        .layout-btn:hover { border-color: var(--primary); background: var(--bg-tertiary); }
+        .layout-btn.active { border-color: var(--primary); background: var(--primary); color: white; }
+        .layout-btn i { display: block; font-size: 1.2rem; margin-bottom: 5px; }
+
+        /* Color Pickers */
+        .color-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+        .color-label { font-size: 0.9rem; color: var(--text-primary); }
+        .color-picker { width: 40px; height: 40px; border: none; border-radius: 8px; cursor: pointer; padding: 0; background: transparent; }
+        .color-picker::-webkit-color-swatch-wrapper { padding: 0; }
+        .color-picker::-webkit-color-swatch { border-radius: 8px; border: 2px solid var(--border-color); }
+
+        /* Font Select */
+        .font-select { width: 100%; padding: 12px; border-radius: 10px; border: 2px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary); font-family: inherit; cursor: pointer; }
+
+        /* Shape Buttons */
+        .shape-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+        .shape-btn { width: 45px; height: 45px; border-radius: 8px; border: 2px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+        .shape-btn:hover { border-color: var(--primary); }
+        .shape-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        /* Projects List */
+        .project-list { max-height: 200px; overflow-y: auto; }
+        .project-item { padding: 12px; background: var(--bg-primary); border-radius: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; }
+        .project-item:hover { border-color: var(--primary); }
+        .project-item .name { font-weight: 500; font-size: 0.9rem; }
+        .project-item .date { font-size: 0.75rem; color: var(--text-secondary); }
+
+        /* Edit Tooltip */
+        .edit-tooltip {
+            position: fixed; padding: 15px; background: var(--bg-secondary);
+            border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            z-index: 2000; display: none; border: 1px solid var(--border-color);
+            min-width: 300px;
+        }
+        .edit-tooltip.active { display: block; }
+        .edit-input { width: 100%; padding: 10px; border: 2px solid var(--border-color); border-radius: 8px; background: var(--bg-primary); color: var(--text-primary); font-family: inherit; margin-bottom: 10px; }
+        .edit-input:focus { outline: none; border-color: var(--primary); }
+        .edit-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+        /* Loading Overlay */
+        .loading-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 3000; flex-direction: column; gap: 20px; }
+        .loading-overlay.active { display: flex; }
+        .loader { width: 60px; height: 60px; border: 4px solid var(--bg-tertiary); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-text { color: white; font-weight: 600; }
+
+        /* Dropdown Menu */
+        .dropdown { position: relative; }
+        .dropdown-menu { position: absolute; top: 100%; right: 0; margin-top: 5px; background: var(--bg-secondary); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); min-width: 180px; overflow: hidden; z-index: 1001; display: none; border: 1px solid var(--border-color); }
+        .dropdown-menu.active { display: block; }
+        .dropdown-item { padding: 12px 18px; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: background 0.2s; font-size: 0.9rem; }
+        .dropdown-item:hover { background: var(--bg-tertiary); }
+        .dropdown-item i { width: 20px; color: var(--primary); }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .tools-sidebar { width: 220px; }
+            .canvas-container { left: 220px; }
+            .top-center { display: none; }
+        }
+        @media (max-width: 600px) {
+            .tools-sidebar { display: none; }
+            .canvas-container { left: 0; }
+        }
     </style>
 </head>
 <body>
 
-<div class="wrapper">
-    <h1>Generador Instantáneo de Mapas Conceptuales</h1>
-    <p>Ingresa cualquier tema para que la IA estructure y dibuje un mapa interactivo sin límites.</p>
-    
-    <div class="control-panel">
-        <input type="text" id="userTopic" placeholder="Ej: El ciclo del agua, Segunda Guerra Mundial, Programación Orientada a Objetos...">
-        <button id="btnGenerate" onclick="createConceptMap()">Generar Mapa</button>
+    <!-- Top Bar -->
+    <header class="top-bar">
+        <div class="top-left">
+            <a href="recomendaciones.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+            <h1 class="page-title">Mapa Conceptual</h1>
+        </div>
+        <div class="top-center">
+            <div class="input-group">
+                <input type="text" class="topic-input" id="topicInput" placeholder="Escribe un tema (ej: Fotosintesis, Revolucion Industrial...)">
+                <button class="generate-btn" id="generateBtn" onclick="generateMap()">
+                    <i class="fas fa-magic"></i> Generar
+                </button>
+            </div>
+        </div>
+        <div class="top-right">
+            <div class="dropdown">
+                <button class="action-btn" onclick="toggleDropdown('saveMenu')"><i class="fas fa-download"></i> Exportar</button>
+                <div class="dropdown-menu" id="saveMenu">
+                    <div class="dropdown-item" onclick="saveToLocal()"><i class="fas fa-save"></i> Guardar Proyecto</div>
+                    <div class="dropdown-item" onclick="exportPNG()"><i class="fas fa-image"></i> Descargar PNG</div>
+                    <div class="dropdown-item" onclick="exportJPG()"><i class="fas fa-file-image"></i> Descargar JPG</div>
+                    <div class="dropdown-item" onclick="exportPDF()"><i class="fas fa-file-pdf"></i> Descargar PDF</div>
+                </div>
+            </div>
+            <button class="action-btn" onclick="clearCanvas()"><i class="fas fa-trash-alt"></i> Limpiar</button>
+            <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+        </div>
+    </header>
+
+    <!-- Tools Sidebar -->
+    <aside class="tools-sidebar">
+        <div class="tool-section">
+            <div class="tool-section-title">Estructura del Mapa</div>
+            <div class="layout-grid">
+                <button class="layout-btn active" data-layout="breadthfirst" onclick="setLayout('breadthfirst')"><i class="fas fa-sitemap"></i>Jerarquico</button>
+                <button class="layout-btn" data-layout="circle" onclick="setLayout('circle')"><i class="fas fa-circle-notch"></i>Circular</button>
+                <button class="layout-btn" data-layout="concentric" onclick="setLayout('concentric')"><i class="fas fa-bullseye"></i>Concentrico</button>
+                <button class="layout-btn" data-layout="grid" onclick="setLayout('grid')"><i class="fas fa-th"></i>Cuadricula</button>
+                <button class="layout-btn" data-layout="cose" onclick="setLayout('cose')"><i class="fas fa-project-diagram"></i>Organico</button>
+                <button class="layout-btn" data-layout="random" onclick="setLayout('random')"><i class="fas fa-random"></i>Aleatorio</button>
+                <button class="layout-btn" data-layout="tree-left" onclick="setLayout('tree-left')"><i class="fas fa-align-left"></i>Arbol Izq</button>
+                <button class="layout-btn" data-layout="tree-right" onclick="setLayout('tree-right')"><i class="fas fa-align-right"></i>Arbol Der</button>
+                <button class="layout-btn" data-layout="radial" onclick="setLayout('radial')"><i class="fas fa-sun"></i>Radial</button>
+                <button class="layout-btn" data-layout="avsdf" onclick="setLayout('avsdf')"><i class="fas fa-water"></i>Flujo</button>
+            </div>
+        </div>
+
+        <div class="tool-section">
+            <div class="tool-section-title">Paleta de Colores</div>
+            <div class="color-row">
+                <span class="color-label">Fondo Nodos</span>
+                <input type="color" class="color-picker" id="nodeBgColor" value="#f0e6dc" onchange="updateStyle()">
+            </div>
+            <div class="color-row">
+                <span class="color-label">Texto Nodos</span>
+                <input type="color" class="color-picker" id="nodeTextColor" value="#5a4032" onchange="updateStyle()">
+            </div>
+            <div class="color-row">
+                <span class="color-label">Bordes</span>
+                <input type="color" class="color-picker" id="nodeBorderColor" value="#8b6b47" onchange="updateStyle()">
+            </div>
+            <div class="color-row">
+                <span class="color-label">Lineas</span>
+                <input type="color" class="color-picker" id="edgeColor" value="#8b6b47" onchange="updateStyle()">
+            </div>
+            <div class="color-row">
+                <span class="color-label">Fondo Canvas</span>
+                <input type="color" class="color-picker" id="canvasBgColor" value="#f8f5f2" onchange="updateCanvasBg()">
+            </div>
+        </div>
+
+        <div class="tool-section">
+            <div class="tool-section-title">Tipografia</div>
+            <select class="font-select" id="fontSelect" onchange="updateStyle()">
+                <option value="Poppins">Poppins</option>
+                <option value="Playfair Display">Playfair Display</option>
+                <option value="Lora">Lora</option>
+                <option value="Montserrat">Montserrat</option>
+                <option value="Raleway">Raleway</option>
+                <option value="Roboto Slab">Roboto Slab</option>
+                <option value="Merriweather">Merriweather</option>
+                <option value="Open Sans">Open Sans</option>
+                <option value="PT Sans">PT Sans</option>
+                <option value="Nunito">Nunito</option>
+                <option value="Quicksand">Quicksand</option>
+                <option value="Ubuntu">Ubuntu</option>
+                <option value="Rubik">Rubik</option>
+                <option value="Work Sans">Work Sans</option>
+                <option value="Fira Sans">Fira Sans</option>
+                <option value="Inter">Inter</option>
+                <option value="Josefin Sans">Josefin Sans</option>
+                <option value="Crimson Text">Crimson Text</option>
+                <option value="Bitter">Bitter</option>
+                <option value="Georgia">Georgia</option>
+            </select>
+        </div>
+
+        <div class="tool-section">
+            <div class="tool-section-title">Formas de Nodos</div>
+            <div class="shape-grid">
+                <button class="shape-btn active" data-shape="roundrectangle" onclick="setShape('roundrectangle')"><i class="far fa-square"></i></button>
+                <button class="shape-btn" data-shape="rectangle" onclick="setShape('rectangle')"><i class="fas fa-square"></i></button>
+                <button class="shape-btn" data-shape="ellipse" onclick="setShape('ellipse')"><i class="fas fa-circle"></i></button>
+                <button class="shape-btn" data-shape="hexagon" onclick="setShape('hexagon')">⬡</button>
+                <button class="shape-btn" data-shape="diamond" onclick="setShape('diamond')"><i class="fas fa-diamond"></i></button>
+                <button class="shape-btn" data-shape="star" onclick="setShape('star')"><i class="fas fa-star"></i></button>
+            </div>
+        </div>
+
+        <div class="tool-section">
+            <div class="tool-section-title">Proyectos Guardados</div>
+            <div class="project-list" id="projectList">
+                <p style="color: var(--text-secondary); font-size: 0.85rem; text-align: center; padding: 20px;">No hay proyectos</p>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Canvas -->
+    <div class="canvas-container" id="canvasContainer">
+        <div id="cy"></div>
     </div>
-    
-    <div id="status-msg">🤖 La IA está organizando los conceptos, un momento...</div>
-    
-    <div class="map-container">
-        <!-- El mapa se renderiza dinámicamente dentro de esta etiqueta SVG -->
-        <svg id="mindmap"></svg>
+
+    <!-- Edit Tooltip -->
+    <div class="edit-tooltip" id="editTooltip">
+        <input type="text" class="edit-input" id="editNodeLabel" placeholder="Etiqueta">
+        <textarea class="edit-input" id="editNodeDesc" placeholder="Descripcion breve" rows="2" style="resize:none;"></textarea>
+        <div class="edit-actions">
+            <button class="action-btn" onclick="closeEditTooltip()">Cancelar</button>
+            <button class="action-btn" style="background: var(--primary); color: white; border-color: var(--primary);" onclick="saveNodeEdit()">Guardar</button>
+        </div>
     </div>
-</div>
 
-<script>
-// REEMPLAZA ESTO CON TU CLAVE API ACTUAL DE GEMINI
-const MY_GEMINI_KEY = "AQ.Ab8RN6KjnMZFOt-aeT4GdJy21LKUKbU0nIZOwmFI22O1wiGgFA"; 
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loader"></div>
+        <div class="loading-text">Generando mapa conceptual con IA...</div>
+    </div>
 
-async function createConceptMap() {
-    const topicInput = document.getElementById('userTopic');
-    const statusMsg = document.getElementById('status-msg');
-    const btn = document.getElementById('btnGenerate');
-    const topic = topicInput.value.trim();
-    
-    if (!topic) {
-        alert("Por favor, escribe un tema primero.");
-        return;
-    }
-    
-    // Bloquear interfaz durante la carga
-    statusMsg.style.display = "block";
-    btn.disabled = true;
-    topicInput.disabled = true;
+    <script>
+        let cy = null;
+        let currentShape = 'roundrectangle';
+        let currentLayout = 'breadthfirst';
+        let editingNode = null;
 
-    // Prompt estricto para asegurar que Gemini responda únicamente en formato Markdown jerárquico
-    const promptPayload = {
-        contents: [{
-            parts: [{
-                text: `Actúa como un experto en mapas conceptuales y pedagogía médica y técnica. Crea un mapa conceptual extenso, profundo y muy detallado sobre el tema: "${topic}". 
-                
-                Reglas obligatorias de formato:
-                1. Usa formato Markdown limpio con jerarquías (# para título central, ## para categorías principales, - para subconceptos o conectores).
-                2. No agregues introducciones, explicaciones, saludos ni despedidas.
-                3. Entrega exclusivamente las líneas de Markdown.`
-            }]
-        }]
-    };
+        // ==========================================
+        // CONFIGURACION API DE GEMINI
+        // ==========================================
+        // 1. Obtén tu key en: https://aistudio.google.com/app/apikey
+        // 2. Pegala dentro de las comillas de abajo:
+        const GEMINI_API_KEY = "AQ.Ab8RN6JOzfvCMcvzWeoFxdAWfq11JmH9nWmg-9LCt91qBpQ_Rw"; 
+        const GEMINI_MODEL = "gemini-1.5-flash"; 
+        // ==========================================
 
-    try {
-        // Petición directa al endpoint oficial de Gemini utilizando tu API Key
-        const response = await fetch(`https://googleapis.com{MY_GEMINI_KEY}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(promptPayload)
+        document.addEventListener('DOMContentLoaded', () => {
+            initCytoscape();
+            loadProjects();
+            setupTheme();
         });
 
-        if (!response.ok) throw new Error("Error en la respuesta del servidor de IA");
+        function initCytoscape() {
+            cy = cytoscape({
+                container: document.getElementById('cy'),
+                elements: [],
+                style: getStylesheet(),
+                layout: { name: 'breadthfirst', fit: true, padding: 50 },
+                wheelSensitivity: 0.3
+            });
 
-        const data = await response.json();
-        
-        // Extraer texto de la respuesta estructurada de Gemini
-        let markdownOutput = data.candidates[0].content.parts[0].text;
-        
-        // Limpieza de seguridad: remueve los bloques tipográficos ```markdown y ``` que la IA suele auto-generar
-        markdownOutput = markdownOutput.replace(/```markdown/gi, '').replace(/```/g, '').trim();
+            cy.on('tap', 'node', function(evt) {
+                showEditTooltip(evt.target);
+            });
+            cy.on('tap', function(evt) {
+                if(evt.target === cy) closeEditTooltip();
+            });
+        }
 
-        // Inicializar e inyectar los datos en el visualizador Markmap.js
-        const { Markmap, loadTransformer } = window.markmap;
-        const transformer = await loadTransformer();
-        const { root } = transformer.transform(markdownOutput);
-        
-        // Resetear visualizaciones previas antes de pintar el nuevo mapa
-        document.getElementById('mindmap').innerHTML = '';
-        
-        // Dibujar el mapa (habilita arrastrar con el mouse y hacer zoom con la rueda)
-        Markmap.create('#mindmap', null, root);
+        function getStylesheet() {
+            const bgColor = document.getElementById('nodeBgColor').value;
+            const textColor = document.getElementById('nodeTextColor').value;
+            const borderColor = document.getElementById('nodeBorderColor').value;
+            const edgeColor = document.getElementById('edgeColor').value;
+            const font = document.getElementById('fontSelect').value;
 
-    } catch (error) {
-        console.error("Error al generar el mapa:", error);
-        alert("No se pudo generar el mapa conceptual en este momento. Revisa la consola o tu configuración de API.");
-    } finally {
-        // Desbloquear interfaz
-        statusMsg.style.display = "none";
-        btn.disabled = false;
-        topicInput.disabled = false;
-    }
-}
-</script>
+            return [
+                {
+                    selector: 'node',
+                    style: {
+                        'background-color': bgColor,
+                        'label': 'data(label)',
+                        'color': textColor,
+                        'border-color': borderColor,
+                        'border-width': 2,
+                        'shape': currentShape,
+                        'width': 'label',
+                        'height': 'label',
+                        'padding': '15px',
+                        'text-valign': 'center',
+                        'text-halign': 'center',
+                        'font-size': '14px',
+                        'font-family': font,
+                        'text-wrap': 'wrap',
+                        'text-max-width': '200px'
+                    }
+                },
+                {
+                    selector: 'edge',
+                    style: {
+                        'width': 2,
+                        'line-color': edgeColor,
+                        'target-arrow-color': edgeColor,
+                        'target-arrow-shape': 'triangle',
+                        'curve-style': 'bezier'
+                    }
+                }
+            ];
+        }
 
+        // ==========================================
+        // LOGICA DE GENERACION CON IA
+        // ==========================================
+        async function generateMap() {
+            const topic = document.getElementById('topicInput').value.trim();
+            if(!topic) return alert('Por favor ingresa un tema');
+
+            showLoading(true);
+            document.getElementById('generateBtn').disabled = true;
+
+            try {
+                const mapData = await generateConceptMapData(topic);
+                cy.elements().remove();
+                cy.add(mapData);
+                setLayout(currentLayout);
+            } catch(error) {
+                console.error(error);
+                alert('Error al generar. Verifica tu API Key o intenta otro tema.');
+            } finally {
+                showLoading(false);
+                document.getElementById('generateBtn').disabled = false;
+            }
+        }
+
+        async function generateConceptMapData(topic) {
+            // Verificar si hay API Key
+            if (!GEMINI_API_KEY || GEMINI_API_KEY === "AQUI_PEGA_TU_API_KEY_DE_GEMINI") {
+                console.warn("Sin API Key, usando modo demo.");
+                return generateFallbackMap(topic);
+            }
+
+            const prompt = `
+                Eres un experto en pedagogía. Genera un mapa conceptual detallado sobre: "${topic}".
+                REGLAS:
+                1. Estructura jerárquica clara.
+                2. Nodos con concepto principal y descripción breve entre paréntesis.
+                3. Formato de salida EXCLUSIVAMENTE JSON puro, sin markdown.
+                4. Estructura JSON: Array de objetos.
+                   - Nodos: { "data": { "id": "n0", "label": "CONCEPTO (desc)" } }
+                   - Conexiones: { "data": { "id": "e1", "source": "n0", "target": "n1" } }
+                5. El nodo principal es "n0".
+                6. IDs deben ser únicos y consecutivos.
+                
+                Ejemplo para "Agua":
+                [
+                  {"data": {"id": "n0", "label": "AGUA (Compuesto vital)"}},
+                  {"data": {"id": "n1", "label": "Composición (H2O)"}},
+                  {"data": {"id": "e0", "source": "n0", "target": "n1"}}
+                ]
+                
+                Genera el JSON para "${topic}":
+            `;
+
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
+            
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: prompt }] }]
+                })
+            });
+
+            if (!response.ok) throw new Error("Error API");
+
+            const result = await response.json();
+            let text = result.candidates[0].content.parts[0].text;
+            
+            // Limpieza de formato
+            text = text.replace(/```json/g, '').replace(/```/g, '').trim();
+            
+            return JSON.parse(text);
+        }
+
+        // Mapa de respaldo si no hay API Key
+        function generateFallbackMap(topic) {
+            const mainId = 'n0';
+            let elements = [
+                { data: { id: mainId, label: topic.toUpperCase() } }
+            ];
+            const subtopics = ['Definición', 'Características', 'Tipos', 'Importancia', 'Ejemplos'];
+            subtopics.forEach((sub, i) => {
+                const id = 'n' + (i + 1);
+                elements.push({ data: { id: id, label: sub } });
+                elements.push({ data: { id: 'e' + i, source: mainId, target: id } });
+            });
+            return elements;
+        }
+
+        // ==========================================
+        // FUNCIONES DE INTERFAZ
+        // ==========================================
+
+        function setLayout(layoutName) {
+            currentLayout = layoutName;
+            document.querySelectorAll('.layout-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.layout === layoutName);
+            });
+
+            let config = { name: layoutName, fit: true, padding: 50, animate: true };
+            if (layoutName === 'breadthfirst') { config.directed = true; config.spacingFactor = 1.5; }
+            if (layoutName === 'cose') { config.nodeRepulsion = 80000; }
+            
+            cy.layout(config).run();
+        }
+
+        function setShape(shape) {
+            currentShape = shape;
+            document.querySelectorAll('.shape-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.shape === shape);
+            });
+            updateStyle();
+        }
+
+        function updateStyle() { cy.style(getStylesheet()).update(); }
+        function updateCanvasBg() { document.getElementById('canvasContainer').style.backgroundColor = document.getElementById('canvasBgColor').value; }
+
+        function showEditTooltip(node) {
+            editingNode = node;
+            const tooltip = document.getElementById('editTooltip');
+            document.getElementById('editNodeLabel').value = node.data('label').split('\n')[0];
+            tooltip.style.left = (node.renderedPosition().x + 280) + 'px';
+            tooltip.style.top = (node.renderedPosition().y + 100) + 'px';
+            tooltip.classList.add('active');
+        }
+
+        function closeEditTooltip() { document.getElementById('editTooltip').classList.remove('active'); editingNode = null; }
+
+        function saveNodeEdit() {
+            if(!editingNode) return;
+            const label = document.getElementById('editNodeLabel').value;
+            const desc = document.getElementById('editNodeDesc').value;
+            editingNode.data('label', desc ? `${label}\n(${desc})` : label);
+            closeEditTooltip();
+        }
+
+        function clearCanvas() { if(confirm('¿Limpiar todo el mapa?')) cy.elements().remove(); }
+
+        // ==========================================
+        // GUARDADO Y EXPORTACION
+        // ==========================================
+
+        function saveToLocal() {
+            const name = prompt('Nombre del proyecto:', 'Mi Mapa');
+            if(!name) return;
+            const projects = JSON.parse(localStorage.getItem('conceptMaps') || '{}');
+            projects[name] = {
+                elements: cy.elements().jsons(),
+                style: {
+                    nodeBg: document.getElementById('nodeBgColor').value,
+                    nodeText: document.getElementById('nodeTextColor').value,
+                    nodeBorder: document.getElementById('nodeBorderColor').value,
+                    edge: document.getElementById('edgeColor').value,
+                    canvas: document.getElementById('canvasBgColor').value,
+                    font: document.getElementById('fontSelect').value,
+                    shape: currentShape
+                },
+                date: new Date().toISOString()
+            };
+            localStorage.setItem('conceptMaps', JSON.stringify(projects));
+            loadProjects();
+            alert('Proyecto guardado localmente');
+        }
+
+        function loadProjects() {
+            const projects = JSON.parse(localStorage.getItem('conceptMaps') || '{}');
+            const list = document.getElementById('projectList');
+            const names = Object.keys(projects);
+            if(names.length === 0) { list.innerHTML = '<p style="padding:20px; text-align:center; color:var(--text-secondary);">Sin proyectos</p>'; return; }
+            
+            list.innerHTML = names.map(name => `
+                <div class="project-item" onclick="loadProject('${name}')">
+                    <div>
+                        <div class="name">${name}</div>
+                        <div class="date">${new Date(projects[name].date).toLocaleDateString()}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadProject(name) {
+            const project = JSON.parse(localStorage.getItem('conceptMaps'))[name];
+            if(!project) return;
+            cy.elements().remove(); 
+            cy.add(project.elements);
+            
+            // Restaurar estilos
+            document.getElementById('nodeBgColor').value = project.style.nodeBg;
+            document.getElementById('nodeTextColor').value = project.style.nodeText;
+            document.getElementById('nodeBorderColor').value = project.style.nodeBorder;
+            document.getElementById('edgeColor').value = project.style.edge;
+            document.getElementById('canvasBgColor').value = project.style.canvas;
+            document.getElementById('fontSelect').value = project.style.font;
+            currentShape = project.style.shape;
+            
+            updateStyle();
+            updateCanvasBg();
+            cy.layout({ name: 'breadthfirst', fit: true }).run();
+        }
+
+        function exportPNG() {
+            const png = cy.png({ full: true, scale: 2 });
+            downloadFile(png, 'mapa-conceptual.png');
+        }
+
+        function exportJPG() {
+            const jpg = cy.jpg({ full: true, scale: 2, quality: 0.9, bg: document.getElementById('canvasBgColor').value });
+            downloadFile(jpg, 'mapa-conceptual.jpg');
+        }
+
+        function exportPDF() {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('l', 'mm', 'a4');
+            const png = cy.png({ full: true, scale: 2 });
+            pdf.addImage(png, 'PNG', 10, 10, 277, 190);
+            pdf.save('mapa-conceptual.pdf');
+        }
+
+        function downloadFile(data, filename) {
+            const link = document.createElement('a');
+            link.href = data; link.download = filename;
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        }
+
+        // ==========================================
+        // UTILIDADES
+        // ==========================================
+
+        function showLoading(show) { document.getElementById('loadingOverlay').classList.toggle('active', show); }
+
+        function toggleDropdown(id) { document.getElementById(id).classList.toggle('active'); }
+
+        function setupTheme() {
+            const toggle = document.getElementById('themeToggle');
+            if(localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                toggle.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+            toggle.onclick = () => {
+                const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', next);
+                localStorage.setItem('theme', next);
+                toggle.innerHTML = next === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            };
+        }
+
+        // Cerrar dropdowns al hacer clic fuera
+        document.addEventListener('click', (e) => {
+            if(!e.target.closest('.dropdown')) document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('active'));
+        });
+
+        document.getElementById('topicInput').addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') generateMap();
+        });
+    </script>
 </body>
 </html>
