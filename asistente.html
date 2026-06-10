@@ -191,7 +191,6 @@
         /* --- LAYOUT PRINCIPAL --- */
         .main-container {
             flex: 1;
-            margin-left: 0;
             height: 100vh;
             display: flex;
             flex-direction: column;
@@ -200,7 +199,7 @@
             overflow: hidden;
         }
 
-        /* --- EFECTOS DE FONDO (ATMÓSFERA) --- */
+        /* --- EFECTOS DE FONDO --- */
         .bg-effects {
             position: absolute;
             inset: 0;
@@ -230,20 +229,6 @@
             animation-delay: -5s;
         }
 
-        .blob-3 {
-            width: 400px; height: 400px;
-            background: radial-gradient(circle, var(--bg-tertiary), transparent);
-            top: 40%; left: 60%;
-            opacity: 0.3;
-            animation-delay: -10s;
-        }
-
-        @keyframes float {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(50px, 20px) scale(1.1); }
-        }
-
-        /* Grid Pattern Overlay */
         .grid-pattern {
             position: absolute;
             inset: 0;
@@ -251,6 +236,11 @@
             background-size: 30px 30px;
             opacity: 0.3;
             z-index: 1;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(50px, 20px) scale(1.1); }
         }
 
         /* --- HEADER --- */
@@ -280,7 +270,7 @@
             font-weight: 400;
         }
 
-        /* --- CONTENIDO DEL CHAT --- */
+        /* --- CHAT WRAPPER --- */
         .chat-wrapper {
             flex: 1;
             display: flex;
@@ -306,6 +296,49 @@
             flex-direction: column;
         }
 
+        /* --- SELECTOR DE MODELOS --- */
+        .model-selector {
+            display: flex;
+            gap: 10px;
+            padding: 15px 20px;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-color);
+            overflow-x: auto;
+        }
+
+        .model-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            white-space: nowrap;
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        .model-btn:hover {
+            border-color: var(--primary);
+            color: var(--text-primary);
+            transform: translateY(-1px);
+        }
+
+        .model-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 4px 10px rgba(139, 107, 71, 0.3);
+        }
+
+        .model-btn i { font-size: 1rem; }
+
+        /* --- HEADER INTERNO --- */
         .chat-header-info {
             padding: 18px 25px;
             background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary));
@@ -325,6 +358,7 @@
             color: white;
             font-size: 1.2rem;
             box-shadow: 0 4px 10px rgba(139, 107, 71, 0.3);
+            transition: transform var(--transition-fast);
         }
 
         .ai-status h3 {
@@ -354,6 +388,7 @@
             50% { opacity: 0.5; }
         }
 
+        /* --- IFRAME --- */
         .iframe-container {
             flex: 1;
             position: relative;
@@ -371,6 +406,8 @@
             .header-subtitle { display: none; }
             .chat-wrapper { padding: 10px; }
             .chat-container { border-radius: 16px; }
+            .model-selector { padding: 10px; }
+            .model-btn { padding: 8px 12px; font-size: 0.8rem; }
         }
     </style>
 </head>
@@ -413,7 +450,6 @@
         <div class="bg-effects">
             <div class="blob blob-1"></div>
             <div class="blob blob-2"></div>
-            <div class="blob blob-3"></div>
             <div class="grid-pattern"></div>
         </div>
 
@@ -421,24 +457,39 @@
         <header class="main-header">
             <div style="display: flex; align-items: baseline;">
                 <h1 class="header-title">Asistente Inteligente</h1>
-                <span class="header-subtitle">Potenciado por IA</span>
+                <span class="header-subtitle">Elige tu modelo preferido</span>
             </div>
         </header>
 
         <!-- Chat Wrapper -->
         <div class="chat-wrapper">
             <div class="chat-container">
+                <!-- Selector de Modelos -->
+                <div class="model-selector">
+                    <button class="model-btn active" data-model="general">
+                        <i class="fas fa-robot"></i> General
+                    </button>
+                    <button class="model-btn" data-model="avanzado">
+                        <i class="fas fa-microchip"></i> Avanzado
+                    </button>
+                    <button class="model-btn" data-model="alternativo">
+                        <i class="fas fa-comments"></i> Alternativo
+                    </button>
+                </div>
+
                 <div class="chat-header-info">
-                    <div class="ai-avatar">
-                        <i class="fas fa-brain"></i>
+                    <div class="ai-avatar" id="modelAvatar">
+                        <i class="fas fa-robot"></i>
                     </div>
                     <div class="ai-status">
-                        <h3>Thynka Bot</h3>
+                        <h3 id="modelName">Thynka General</h3>
                         <span>En línea y listo para ayudar</span>
                     </div>
                 </div>
+
                 <div class="iframe-container">
                     <iframe 
+                        id="chatFrame"
                         src="https://udify.app/chatbot/uy4EpXZLTv8AYCiF" 
                         allow="microphone"
                         title="Asistente Thynka">
@@ -467,6 +518,25 @@
 
         const $ = (id) => document.getElementById(id);
 
+        // Datos de los modelos
+        const models = {
+            general: {
+                name: 'Thynka General',
+                url: 'https://udify.app/chatbot/uy4EpXZLTv8AYCiF',
+                icon: 'fas fa-robot'
+            },
+            avanzado: {
+                name: 'Thynka Avanzado',
+                url: 'https://udify.app/chatbot/svB75pzl0XKqKxrj',
+                icon: 'fas fa-microchip'
+            },
+            alternativo: {
+                name: 'Thynka Alternativo',
+                url: 'https://udify.app/chatbot/Ri9yOb2keoFOhLjo',
+                icon: 'fas fa-comments'
+            }
+        };
+
         onAuthStateChanged(auth, user => {
             if (!user) window.location.href = 'index.html';
         });
@@ -489,6 +559,32 @@
             $('mainSidebar').classList.remove('active');
             $('overlayPanel').classList.remove('active');
         };
+
+        // Model Switcher Logic
+        document.querySelectorAll('.model-btn').forEach(btn => {
+            btn.onclick = () => {
+                const modelId = btn.getAttribute('data-model');
+                const model = models[modelId];
+                
+                if (model) {
+                    // Actualizar estado visual de los botones
+                    document.querySelectorAll('.model-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    // Actualizar iframe y header
+                    $('chatFrame').src = model.url;
+                    $('modelName').innerText = model.name;
+                    
+                    // Animación del avatar
+                    const avatar = $('modelAvatar');
+                    avatar.style.transform = 'scale(0.8) rotate(-10deg)';
+                    setTimeout(() => {
+                        avatar.innerHTML = `<i class="${model.icon}"></i>`;
+                        avatar.style.transform = 'scale(1) rotate(0deg)';
+                    }, 150);
+                }
+            };
+        });
 
         window.signOut = () => auth.signOut();
     </script>
