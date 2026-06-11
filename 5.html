@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Completa la Frase - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --success: #27ae60;
+            --success-bg: #e8f8f0;
+            --error: #e74c3c;
+            --error-bg: #fdecea;
+            --warning: #f39c12;
+            --warning-bg: #fef5e7;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+            --success-bg: rgba(39, 174, 96, 0.15);
+            --error-bg: rgba(231, 76, 60, 0.15);
+            --warning-bg: rgba(243, 156, 18, 0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+        .btn-success { background: var(--success); color: white; }
+
+        .main-container { padding: 90px 30px 40px; max-width: 900px; margin: 0 auto; }
+
+        .panel {
+            background: var(--bg-secondary); border-radius: 20px;
+            box-shadow: 0 4px 20px var(--shadow); overflow: hidden;
+            display: none; animation: fadeIn 0.4s ease;
+        }
+        .panel.active { display: block; }
+        
+        .panel-header {
+            padding: 20px 25px; border-bottom: 1px solid var(--border-color);
+            background: var(--bg-tertiary); display: flex; align-items: center; gap: 15px;
+        }
+        .panel-icon { font-size: 1.5rem; color: var(--primary); }
+        .panel-title { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--primary-dark); }
+        .panel-subtitle { font-size: 0.85rem; color: var(--text-secondary); }
+        .panel-body { padding: 25px; }
+
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; font-weight: 600; margin-bottom: 8px; color: var(--text-primary); font-size: 0.9rem; }
+        .form-hint { font-size: 0.8rem; color: var(--text-secondary); margin-top: 6px; }
+        
+        textarea {
+            width: 100%; height: 180px; resize: vertical; padding: 12px;
+            border: 2px solid var(--border-color); border-radius: 12px;
+            background: var(--bg-primary); color: var(--text-primary);
+            font-family: inherit; font-size: 0.9rem; line-height: 1.6;
+            transition: border-color 0.3s;
+        }
+        textarea:focus { outline: none; border-color: var(--primary); }
+        
+        select, input[type="number"] {
+            width: 100%; padding: 10px 12px; border: 2px solid var(--border-color);
+            border-radius: 10px; background: var(--bg-primary); color: var(--text-primary);
+            font-family: inherit; font-size: 0.9rem; cursor: pointer;
+        }
+        select:focus, input:focus { outline: none; border-color: var(--primary); }
+
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
+        .btn-group { display: flex; gap: 12px; justify-content: center; margin-top: 25px; flex-wrap: wrap; }
+
+        /* Step indicator */
+        .steps-indicator {
+            display: flex; justify-content: center; gap: 15px; margin-bottom: 25px;
+        }
+        .step {
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 16px; border-radius: 20px;
+            background: var(--bg-tertiary); font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        .step.active { background: var(--primary); color: white; }
+        .step.completed { background: var(--success-bg); color: var(--success); }
+        .step-number {
+            width: 24px; height: 24px; border-radius: 50%;
+            background: var(--bg-secondary); display: flex;
+            align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.8rem;
+        }
+        .step.active .step-number { background: rgba(255,255,255,0.2); color: white; }
+        .step.completed .step-number { background: var(--success); color: white; }
+
+        /* Mode cards */
+        .mode-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
+        .mode-card {
+            background: var(--bg-primary); border: 2px solid var(--border-color);
+            border-radius: 15px; padding: 25px; cursor: pointer; transition: all 0.3s;
+            text-align: center;
+        }
+        .mode-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 8px 25px var(--shadow); }
+        .mode-card.selected { border-color: var(--primary); background: var(--bg-tertiary); }
+        .mode-card i { font-size: 2.5rem; color: var(--primary); margin-bottom: 12px; }
+        .mode-card h4 { font-weight: 700; margin-bottom: 8px; color: var(--text-primary); font-size: 1.1rem; }
+        .mode-card p { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; }
+
+        /* Game stats */
+        .game-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 25px; flex-wrap: wrap; gap: 15px;
+        }
+        .game-stats { display: flex; gap: 15px; flex-wrap: wrap; }
+        .stat-box {
+            background: var(--bg-tertiary); padding: 10px 18px;
+            border-radius: 10px; text-align: center;
+        }
+        .stat-value { font-size: 1.4rem; font-weight: 700; font-family: 'Playfair Display', serif; color: var(--primary); }
+        .stat-label { font-size: 0.75rem; color: var(--text-secondary); font-weight: 600; }
+
+        /* Progress bar */
+        .progress-container { margin-bottom: 25px; }
+        .progress-bar {
+            height: 8px; background: var(--bg-tertiary); border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%; background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            border-radius: 10px; transition: width 0.5s ease;
+        }
+        .progress-text {
+            display: flex; justify-content: space-between; margin-top: 8px;
+            font-size: 0.85rem; color: var(--text-secondary);
+        }
+
+        /* Phrase display */
+        .phrase-container {
+            background: var(--bg-tertiary); border-radius: 15px; padding: 30px;
+            margin-bottom: 20px; text-align: center;
+        }
+        .phrase-text {
+            font-size: 1.15rem; line-height: 2.2; color: var(--text-primary);
+        }
+        .blank-space {
+            display: inline-block; min-width: 90px; padding: 4px 15px;
+            border: 2px dashed var(--primary); border-radius: 8px;
+            margin: 0 4px; text-align: center; cursor: pointer;
+            color: var(--primary); font-weight: 600; transition: all 0.2s;
+            background: var(--bg-secondary);
+        }
+        .blank-space:hover { background: var(--beige); }
+        .blank-space.active { 
+            border-style: solid; 
+            box-shadow: 0 0 0 3px rgba(139, 107, 71, 0.2);
+        }
+        .blank-space.filled { border-style: solid; cursor: default; }
+        .blank-space.correct { background: var(--success-bg); border-color: var(--success); color: var(--success); }
+        .blank-space.incorrect { background: var(--error-bg); border-color: var(--error); color: var(--error); }
+
+        /* Options popup */
+        .options-popup {
+            background: var(--bg-secondary); border-radius: 12px;
+            padding: 15px; margin-top: 15px; box-shadow: 0 4px 20px var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+        .options-title {
+            font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 10px;
+            text-align: center;
+        }
+        .options-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+        }
+        .option-btn {
+            padding: 10px 15px; border: 2px solid var(--border-color);
+            border-radius: 8px; background: var(--bg-primary); color: var(--text-primary);
+            font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+        .option-btn:hover:not(:disabled) { border-color: var(--primary); background: var(--bg-tertiary); }
+        .option-btn.selected { border-color: var(--primary); background: var(--primary); color: white; }
+        .option-btn.correct { border-color: var(--success); background: var(--success-bg); color: var(--success); }
+        .option-btn.incorrect { border-color: var(--error); background: var(--error-bg); color: var(--error); }
+        .option-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        /* Writing mode */
+        .writing-area { margin-top: 20px; }
+        .writing-inputs {
+            display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;
+        }
+        .input-group {
+            display: flex; flex-direction: column; align-items: center; gap: 6px;
+        }
+        .input-label { font-size: 0.8rem; color: var(--text-secondary); }
+        .word-input {
+            padding: 12px 20px; border: 2px solid var(--border-color);
+            border-radius: 10px; background: var(--bg-primary);
+            color: var(--text-primary); font-family: inherit;
+            font-size: 1rem; width: 180px; text-align: center;
+        }
+        .word-input:focus { outline: none; border-color: var(--primary); }
+        .word-input.correct { border-color: var(--success); background: var(--success-bg); }
+        .word-input.incorrect { border-color: var(--error); background: var(--error-bg); }
+
+        /* Timer */
+        .timer-display {
+            font-size: 2rem; font-weight: 700; font-family: 'Playfair Display', serif;
+            color: var(--primary);
+        }
+        .timer-display.warning { color: var(--warning); }
+        .timer-display.danger { color: var(--error); animation: pulse 0.5s infinite; }
+
+        /* Feedback */
+        .feedback {
+            padding: 15px 25px; border-radius: 12px; text-align: center;
+            margin-top: 15px; font-weight: 600;
+        }
+        .feedback.success { background: var(--success-bg); color: var(--success); border: 2px solid var(--success); }
+        .feedback.error { background: var(--error-bg); color: var(--error); border: 2px solid var(--error); }
+
+        /* Complete screen */
+        .complete-content { text-align: center; padding: 30px 0; }
+        .complete-icon { font-size: 4rem; color: var(--success); margin-bottom: 20px; }
+        .complete-title { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--primary-dark); margin-bottom: 15px; }
+        .complete-stats {
+            display: flex; justify-content: center; gap: 25px; margin: 25px 0;
+            flex-wrap: wrap;
+        }
+        .complete-stat {
+            text-align: center; padding: 15px 25px;
+            background: var(--bg-tertiary); border-radius: 12px;
+        }
+        .complete-stat-value { font-size: 2rem; font-weight: 700; color: var(--primary); }
+        .complete-stat-label { font-size: 0.85rem; color: var(--text-secondary); }
+
+        /* Hint button */
+        .hint-btn {
+            background: var(--warning-bg); color: var(--warning); border: 2px solid var(--warning);
+            padding: 8px 16px; border-radius: 8px; font-size: 0.85rem;
+            cursor: pointer; transition: all 0.2s; font-weight: 600; font-family: inherit;
+        }
+        .hint-btn:hover:not(:disabled) { background: var(--warning); color: white; }
+        .hint-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+        @media (max-width: 600px) {
+            .main-container { padding: 80px 15px 20px; }
+            .phrase-text { font-size: 1rem; line-height: 2; }
+            .mode-cards { grid-template-columns: 1fr; }
+            .game-header { flex-direction: column; text-align: center; }
+            .blank-space { min-width: 70px; padding: 3px 10px; font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-pen-fancy"></i> Completa la Frase</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+
+        <!-- PANEL 1: Text input -->
+        <div class="panel active" id="panel1">
+            <div class="panel-header">
+                <i class="fas fa-file-alt panel-icon"></i>
+                <div>
+                    <h2 class="panel-title">Paso 1: Texto de Estudio</h2>
+                    <p class="panel-subtitle">Pega el contenido que quieres practicar</p>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="steps-indicator">
+                    <div class="step active">
+                        <span class="step-number">1</span>
+                        <span>Texto</span>
+                    </div>
+                    <div class="step">
+                        <span class="step-number">2</span>
+                        <span>Ritmo</span>
+                    </div>
+                    <div class="step">
+                        <span class="step-number">3</span>
+                        <span>Modo</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Texto de estudio</label>
+                    <textarea id="sourceText" placeholder="Pega aqui el texto que quieres estudiar...
+
+El sistema extraera frases completas y eliminara palabras clave para que las completes."></textarea>
+                    <p class="form-hint"><i class="fas fa-lightbulb"></i> Minimo 200 caracteres para mejores resultados</p>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Cantidad de frases</label>
+                        <select id="phraseCount">
+                            <option value="5">5 frases</option>
+                            <option value="8">8 frases</option>
+                            <option value="10" selected>10 frases</option>
+                            <option value="15">15 frases</option>
+                            <option value="20">20 frases</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Espacios vacios por frase</label>
+                        <select id="blankCount">
+                            <option value="1">1 palabra</option>
+                            <option value="2">2 palabras</option>
+                            <option value="3" selected>3 palabras</option>
+                            <option value="4">4 palabras</option>
+                            <option value="5">5 palabras</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="action-btn btn-primary" onclick="goToStep2()">
+                        Continuar <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL 2: Time mode -->
+        <div class="panel" id="panel2">
+            <div class="panel-header">
+                <i class="fas fa-clock panel-icon"></i>
+                <div>
+                    <h2 class="panel-title">Paso 2: Elige el Ritmo</h2>
+                    <p class="panel-subtitle">Normal sin presiones o Examen con tiempo</p>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="steps-indicator">
+                    <div class="step completed">
+                        <span class="step-number"><i class="fas fa-check"></i></span>
+                        <span>Texto</span>
+                    </div>
+                    <div class="step active">
+                        <span class="step-number">2</span>
+                        <span>Ritmo</span>
+                    </div>
+                    <div class="step">
+                        <span class="step-number">3</span>
+                        <span>Modo</span>
+                    </div>
+                </div>
+
+                <div class="mode-cards">
+                    <div class="mode-card" data-mode="normal" onclick="selectTimeMode('normal')">
+                        <i class="fas fa-book-open"></i>
+                        <h4>Modo Normal</h4>
+                        <p>Sin tiempo limite. Practica a tu propio ritmo, sin presiones.</p>
+                    </div>
+                    <div class="mode-card" data-mode="exam" onclick="selectTimeMode('exam')">
+                        <i class="fas fa-stopwatch"></i>
+                        <h4>Modo Examen</h4>
+                        <p>Con tiempo limite por frase. Simula un examen real.</p>
+                    </div>
+                </div>
+
+                <div id="timeConfig" style="display: none; margin-top: 20px;">
+                    <div class="form-group">
+                        <label class="form-label">Tiempo por frase</label>
+                        <select id="timeLimit">
+                            <option value="30">30 segundos</option>
+                            <option value="45">45 segundos</option>
+                            <option value="60" selected>60 segundos</option>
+                            <option value="90">90 segundos</option>
+                            <option value="120">2 minutos</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="action-btn btn-secondary" onclick="goToStep1()">
+                        <i class="fas fa-arrow-left"></i> Atras
+                    </button>
+                    <button class="action-btn btn-primary" id="step2Next" onclick="goToStep3()" disabled>
+                        Continuar <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL 3: Game mode -->
+        <div class="panel" id="panel3">
+            <div class="panel-header">
+                <i class="fas fa-gamepad panel-icon"></i>
+                <div>
+                    <h2 class="panel-title">Paso 3: Elige como Responder</h2>
+                    <p class="panel-subtitle">Selecciona el tipo de interaccion</p>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="steps-indicator">
+                    <div class="step completed">
+                        <span class="step-number"><i class="fas fa-check"></i></span>
+                        <span>Texto</span>
+                    </div>
+                    <div class="step completed">
+                        <span class="step-number"><i class="fas fa-check"></i></span>
+                        <span>Ritmo</span>
+                    </div>
+                    <div class="step active">
+                        <span class="step-number">3</span>
+                        <span>Modo</span>
+                    </div>
+                </div>
+
+                <div class="mode-cards">
+                    <div class="mode-card" data-mode="selection" onclick="selectGameMode('selection')">
+                        <i class="fas fa-hand-pointer"></i>
+                        <h4>Seleccion</h4>
+                        <p>Haz clic en el espacio vacio y selecciona la palabra correcta de las opciones.</p>
+                    </div>
+                    <div class="mode-card" data-mode="writing" onclick="selectGameMode('writing')">
+                        <i class="fas fa-keyboard"></i>
+                        <h4>Escritura</h4>
+                        <p>Escribe la palabra correcta. No importa mayusculas, minusculas o tildes.</p>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="action-btn btn-secondary" onclick="goToStep2FromStep3()">
+                        <i class="fas fa-arrow-left"></i> Atras
+                    </button>
+                    <button class="action-btn btn-primary" id="startBtn" onclick="startGame()" disabled>
+                        <i class="fas fa-play"></i> Comenzar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL 4: Game -->
+        <div class="panel" id="panel4">
+            <div class="panel-body">
+                <div class="game-header">
+                    <div class="game-stats">
+                        <div class="stat-box">
+                            <div class="stat-value" id="currentPhrase">1</div>
+                            <div class="stat-label">Frase</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="correctCount">0</div>
+                            <div class="stat-label">Correctas</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="hintsLeft">3</div>
+                            <div class="stat-label">Pistas</div>
+                        </div>
+                    </div>
+                    <div id="timerContainer" style="display: none;">
+                        <div class="timer-display" id="timerDisplay">60</div>
+                    </div>
+                </div>
+
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span id="progressText">Frase 1 de 10</span>
+                        <span id="accuracyText">Precision: 0%</span>
+                    </div>
+                </div>
+
+                <div class="phrase-container">
+                    <div class="phrase-text" id="phraseText"></div>
+                </div>
+
+                <!-- Selection mode area -->
+                <div id="selectionArea" style="display: none;">
+                    <div class="options-popup" id="optionsPopup" style="display: none;">
+                        <div class="options-title">
+                            <i class="fas fa-lightbulb"></i> Selecciona la palabra correcta:
+                        </div>
+                        <div class="options-grid" id="optionsGrid"></div>
+                    </div>
+                </div>
+
+                <!-- Writing mode area -->
+                <div id="writingArea" style="display: none;">
+                    <div class="writing-area">
+                        <div class="writing-inputs" id="writingInputs"></div>
+                    </div>
+                </div>
+
+                <div class="btn-group" style="margin-top: 20px;">
+                    <button class="hint-btn" id="hintBtn" onclick="useHint()">
+                        <i class="fas fa-lightbulb"></i> Usar pista (<span id="hintCount">3</span>)
+                    </button>
+                    <button class="action-btn btn-primary" id="checkBtn" style="display: none;" onclick="checkAllAnswers()">
+                        <i class="fas fa-check"></i> Verificar
+                    </button>
+                </div>
+
+                <div id="feedbackArea" style="display: none;"></div>
+
+                <div class="btn-group" id="nextBtnGroup" style="display: none;">
+                    <button class="action-btn btn-primary" onclick="nextPhrase()">
+                        Siguiente <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL 5: Results -->
+        <div class="panel" id="panel5">
+            <div class="panel-body">
+                <div class="complete-content">
+                    <div class="complete-icon"><i class="fas fa-trophy"></i></div>
+                    <h2 class="complete-title">Ejercicio Completado</h2>
+                    
+                    <div class="complete-stats">
+                        <div class="complete-stat">
+                            <div class="complete-stat-value" id="finalCorrect">0</div>
+                            <div class="complete-stat-label">Correctas</div>
+                        </div>
+                        <div class="complete-stat">
+                            <div class="complete-stat-value" id="finalIncorrect">0</div>
+                            <div class="complete-stat-label">Incorrectas</div>
+                        </div>
+                        <div class="complete-stat">
+                            <div class="complete-stat-value" id="finalAccuracy">0%</div>
+                            <div class="complete-stat-label">Precision</div>
+                        </div>
+                    </div>
+
+                    <p style="color: var(--text-secondary); margin-bottom: 25px;" id="finalMessage">
+                        Buen trabajo, sigue practicando!
+                    </p>
+
+                    <div class="btn-group">
+                        <button class="action-btn btn-secondary" onclick="resetAll()">
+                            <i class="fas fa-redo"></i> Nuevo ejercicio
+                        </button>
+                        <button class="action-btn btn-primary" onclick="retryGame()">
+                            <i class="fas fa-undo"></i> Repetir
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // State
+        const state = {
+            phrases: [],
+            currentIndex: 0,
+            correctAnswers: 0,
+            incorrectAnswers: 0,
+            hints: 3,
+            timeMode: 'normal',
+            gameMode: 'selection',
+            timeLimit: 60,
+            timer: null,
+            currentTime: 0,
+            currentBlankIndex: null,
+            answeredBlanks: {}
+        };
+
+        // Stop words
+        const stopWords = new Set([
+            'el','la','los','las','un','una','unos','unas','de','del','en','y','a','para','por','con','sin',
+            'sobre','entre','hacia','hasta','desde','que','cual','quien','donde','cuando','como',
+            'este','ese','aquel','esta','esa','aquella','esto','eso','aquello','su','sus','al','lo','le','les',
+            'me','te','se','nos','os','mi','tu','muy','más','mas','menos','tan','tanto','poco','mucho',
+            'si','no','tambien','también','ni','pero','aunque','porque','pues','ya','o','es','son','fue','fueron',
+            'era','eran','ha','han','habia','había','ser','estar','está','estan','están','tener','tiene','tienen',
+            'e','u','o','ni','bien','mal','así','asi','aun','aún','sí','no','durante','mediante','según','segun'
+        ]);
+
+        // Theme
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+
+        // Normalize text for comparison (remove accents, lowercase)
+        function normalizeText(text) {
+            return text.toLowerCase()
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                .trim();
+        }
+
+        // Navigation between steps
+        function goToStep1() {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('panel1').classList.add('active');
+        }
+
+        function goToStep2() {
+            const text = document.getElementById('sourceText').value.trim();
+            if (text.length < 200) {
+                alert('Por favor ingresa al menos 200 caracteres.');
+                return;
+            }
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('panel2').classList.add('active');
+        }
+
+        function goToStep2FromStep3() {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('panel2').classList.add('active');
+            // Reset selections
+            document.querySelectorAll('#panel3 .mode-card').forEach(c => c.classList.remove('selected'));
+            document.getElementById('startBtn').disabled = true;
+        }
+
+        function goToStep3() {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('panel3').classList.add('active');
+        }
+
+        // Mode selection
+        function selectTimeMode(mode) {
+            state.timeMode = mode;
+            document.querySelectorAll('#panel2 .mode-card').forEach(c => c.classList.remove('selected'));
+            document.querySelector('#panel2 .mode-card[data-mode="' + mode + '"]').classList.add('selected');
+            
+            const timeConfig = document.getElementById('timeConfig');
+            timeConfig.style.display = mode === 'exam' ? 'block' : 'none';
+            
+            document.getElementById('step2Next').disabled = false;
+        }
+
+        function selectGameMode(mode) {
+            state.gameMode = mode;
+            document.querySelectorAll('#panel3 .mode-card').forEach(c => c.classList.remove('selected'));
+            document.querySelector('#panel3 .mode-card[data-mode="' + mode + '"]').classList.add('selected');
+            document.getElementById('startBtn').disabled = false;
+        }
+
+        // Process text
+        function processText(text, phraseCount, blankCount) {
+            const sentences = text.match(/[^.!?]+[.!?]+/g) || [];
+            const phrases = [];
+
+            sentences.forEach(function(sentence) {
+                const clean = sentence.trim();
+                if (clean.length < 30) return;
+                
+                const words = clean.split(/\s+/);
+                if (words.length < 8) return;
+
+                const blankableWords = [];
+                words.forEach(function(word, index) {
+                    const cleanWord = word.replace(/[.,;:!?()""'']/g, '');
+                    const lower = cleanWord.toLowerCase();
+                    
+                    if (!stopWords.has(lower) && cleanWord.length > 3 && /^[a-záéíóúñA-ZÁÉÍÓÚÑ]/.test(cleanWord)) {
+                        blankableWords.push({
+                            index: index,
+                            original: word,
+                            clean: cleanWord
+                        });
+                    }
+                });
+
+                if (blankableWords.length >= blankCount) {
+                    phrases.push({
+                        text: clean,
+                        words: words,
+                        blankableWords: blankableWords
+                    });
+                }
+            });
+
+            const shuffled = phrases.sort(() => Math.random() - 0.5);
+            const selected = shuffled.slice(0, phraseCount);
+
+            selected.forEach(function(phrase) {
+                const numBlanks = Math.min(blankCount, phrase.blankableWords.length);
+                const shuffledBlanks = [...phrase.blankableWords].sort(() => Math.random() - 0.5);
+                phrase.blanks = shuffledBlanks.slice(0, numBlanks).map(b => ({
+                    index: b.index,
+                    answer: b.clean,
+                    original: b.original
+                }));
+            });
+
+            return selected;
+        }
+
+        // Generate options for a specific blank
+        function generateOptionsForBlank(phrase, blankIndex) {
+            const correctAnswer = phrase.blanks[blankIndex].answer;
+            const options = [correctAnswer];
+            
+            // Get other words from all phrases
+            const otherWords = [];
+            state.phrases.forEach(function(p) {
+                p.blankableWords.forEach(function(b) {
+                    const normalized = normalizeText(b.clean);
+                    const normalizedCorrect = normalizeText(correctAnswer);
+                    if (normalized !== normalizedCorrect && !otherWords.some(w => normalizeText(w) === normalized)) {
+                        otherWords.push(b.clean);
+                    }
+                });
+            });
+
+            // Shuffle and add 3-4 wrong options
+            const shuffled = otherWords.sort(() => Math.random() - 0.5);
+            const wrongCount = Math.min(4, shuffled.length);
+            for (let i = 0; i < wrongCount; i++) {
+                options.push(shuffled[i]);
+            }
+
+            return options.sort(() => Math.random() - 0.5);
+        }
+
+        // Start game
+        function startGame() {
+            const text = document.getElementById('sourceText').value.trim();
+            const phraseCount = parseInt(document.getElementById('phraseCount').value) || 10;
+            const blankCount = parseInt(document.getElementById('blankCount').value) || 3;
+            state.timeLimit = parseInt(document.getElementById('timeLimit').value) || 60;
+
+            state.phrases = processText(text, phraseCount, blankCount);
+
+            if (state.phrases.length === 0) {
+                alert('No se pudieron extraer frases. Intenta con un texto mas largo.');
+                return;
+            }
+
+            state.currentIndex = 0;
+            state.correctAnswers = 0;
+            state.incorrectAnswers = 0;
+            state.hints = 3;
+
+            showGamePanel();
+            loadPhrase();
+        }
+
+        function showGamePanel() {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('panel4').classList.add('active');
+
+            const timerContainer = document.getElementById('timerContainer');
+            timerContainer.style.display = state.timeMode === 'exam' ? 'block' : 'none';
+        }
+
+        // Load phrase
+        function loadPhrase() {
+            const phrase = state.phrases[state.currentIndex];
+            state.answeredBlanks = {};
+            state.currentBlankIndex = null;
+
+            // Update stats
+            document.getElementById('currentPhrase').textContent = state.currentIndex + 1;
+            document.getElementById('correctCount').textContent = state.correctAnswers;
+            document.getElementById('hintsLeft').textContent = state.hints;
+            document.getElementById('hintCount').textContent = state.hints;
+
+            // Progress
+            const progress = (state.currentIndex / state.phrases.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = `Frase ${state.currentIndex + 1} de ${state.phrases.length}`;
+            
+            const total = state.correctAnswers + state.incorrectAnswers;
+            const accuracy = total > 0 ? Math.round((state.correctAnswers / total) * 100) : 0;
+            document.getElementById('accuracyText').textContent = `Precision: ${accuracy}%`;
+
+            // Build phrase
+            const phraseText = document.getElementById('phraseText');
+            phraseText.innerHTML = '';
+
+            phrase.words.forEach(function(word, index) {
+                const blankData = phrase.blanks.find(b => b.index === index);
+                
+                if (blankData) {
+                    const span = document.createElement('span');
+                    span.className = 'blank-space';
+                    span.dataset.index = index;
+                    span.dataset.answer = blankData.answer;
+                    span.dataset.blankIndex = phrase.blanks.indexOf(blankData);
+                    span.textContent = '_____';
+                    span.id = 'blank-' + index;
+                    
+                    if (state.gameMode === 'selection') {
+                        span.onclick = function() { selectBlank(index); };
+                    }
+                    
+                    phraseText.appendChild(span);
+                } else {
+                    phraseText.appendChild(document.createTextNode(word + ' '));
+                }
+            });
+
+            // Setup areas
+            const selectionArea = document.getElementById('selectionArea');
+            const writingArea = document.getElementById('writingArea');
+            const checkBtn = document.getElementById('checkBtn');
+            const feedbackArea = document.getElementById('feedbackArea');
+            const nextBtnGroup = document.getElementById('nextBtnGroup');
+
+            selectionArea.style.display = 'none';
+            writingArea.style.display = 'none';
+            checkBtn.style.display = 'none';
+            feedbackArea.style.display = 'none';
+            nextBtnGroup.style.display = 'none';
+
+            if (state.gameMode === 'selection') {
+                selectionArea.style.display = 'block';
+                document.getElementById('optionsPopup').style.display = 'none';
+            } else {
+                writingArea.style.display = 'block';
+                checkBtn.style.display = 'inline-flex';
+                setupWritingMode(phrase);
+            }
+
+            if (state.timeMode === 'exam') {
+                startTimer();
+            }
+        }
+
+        // Setup writing mode
+        function setupWritingMode(phrase) {
+            const writingInputs = document.getElementById('writingInputs');
+            writingInputs.innerHTML = '';
+
+            phrase.blanks.forEach(function(blank, i) {
+                const group = document.createElement('div');
+                group.className = 'input-group';
+                
+                const label = document.createElement('div');
+                label.className = 'input-label';
+                label.textContent = 'Palabra ' + (i + 1);
+                
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'word-input';
+                input.placeholder = 'Escribe...';
+                input.dataset.answer = blank.answer;
+                input.dataset.blankIndex = i;
+                input.id = 'input-' + i;
+                
+                group.appendChild(label);
+                group.appendChild(input);
+                writingInputs.appendChild(group);
+            });
+        }
+
+        // Select blank (selection mode)
+        function selectBlank(blankIndex) {
+            const blank = document.getElementById('blank-' + blankIndex);
+            if (blank.classList.contains('filled')) return;
+
+            // Remove active from all
+            document.querySelectorAll('.blank-space').forEach(b => b.classList.remove('active'));
+            blank.classList.add('active');
+            
+            state.currentBlankIndex = blankIndex;
+            
+            // Show options for this blank
+            const phrase = state.phrases[state.currentIndex];
+            const blankData = phrase.blanks.find(b => b.index === blankIndex);
+            const blankArrayIndex = phrase.blanks.indexOf(blankData);
+            
+            const options = generateOptionsForBlank(phrase, blankArrayIndex);
+            const optionsGrid = document.getElementById('optionsGrid');
+            optionsGrid.innerHTML = '';
+
+            options.forEach(function(option) {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = option;
+                btn.onclick = function() { selectOption(option, blankIndex); };
+                optionsGrid.appendChild(btn);
+            });
+
+            document.getElementById('optionsPopup').style.display = 'block';
+        }
+
+        // Select option
+        function selectOption(option, blankIndex) {
+            const blank = document.getElementById('blank-' + blankIndex);
+            const correctAnswer = blank.dataset.answer;
+            
+            // Store answer
+            state.answeredBlanks[blankIndex] = option;
+            
+            // Fill blank
+            blank.textContent = option;
+            blank.classList.add('filled');
+            blank.classList.remove('active');
+
+            // Check if correct (immediate feedback)
+            const isCorrect = normalizeText(option) === normalizeText(correctAnswer);
+            
+            if (isCorrect) {
+                blank.classList.add('correct');
+            } else {
+                blank.classList.add('incorrect');
+                // Show correct answer
+                setTimeout(() => {
+                    blank.textContent = correctAnswer;
+                    blank.classList.remove('incorrect');
+                    blank.classList.add('correct');
+                }, 1000);
+            }
+
+            // Hide options
+            document.getElementById('optionsPopup').style.display = 'none';
+
+            // Check if all blanks filled
+            const phrase = state.phrases[state.currentIndex];
+            const allFilled = phrase.blanks.every(b => 
+                document.getElementById('blank-' + b.index).classList.contains('filled')
+            );
+
+            if (allFilled) {
+                stopTimer();
+                calculateResults();
+            }
+        }
+
+        // Check writing answers
+        function checkAllAnswers() {
+            stopTimer();
+            
+            const phrase = state.phrases[state.currentIndex];
+            let allCorrect = true;
+
+            phrase.blanks.forEach(function(blank, i) {
+                const input = document.getElementById('input-' + i);
+                const span = document.getElementById('blank-' + blank.index);
+                const userAnswer = input.value.trim();
+                const correctAnswer = blank.answer;
+
+                const isCorrect = normalizeText(userAnswer) === normalizeText(correctAnswer);
+
+                if (isCorrect) {
+                    input.classList.add('correct');
+                    span.classList.add('filled', 'correct');
+                    span.textContent = correctAnswer;
+                } else {
+                    input.classList.add('incorrect');
+                    span.classList.add('filled', 'incorrect');
+                    span.textContent = correctAnswer;
+                    allCorrect = false;
+                }
+
+                state.answeredBlanks[blank.index] = userAnswer || '---';
+            });
+
+            calculateResults();
+        }
+
+        // Calculate results
+        function calculateResults() {
+            const phrase = state.phrases[state.currentIndex];
+            let correctCount = 0;
+
+            phrase.blanks.forEach(function(blank) {
+                const span = document.getElementById('blank-' + blank.index);
+                if (span.classList.contains('correct')) {
+                    correctCount++;
+                }
+            });
+
+            const isAllCorrect = correctCount === phrase.blanks.length;
+
+            if (isAllCorrect) {
+                state.correctAnswers++;
+            } else {
+                state.incorrectAnswers++;
+            }
+
+            document.getElementById('correctCount').textContent = state.correctAnswers;
+
+            // Show feedback
+            const feedbackArea = document.getElementById('feedbackArea');
+            feedbackArea.style.display = 'block';
+            feedbackArea.className = 'feedback ' + (isAllCorrect ? 'success' : 'error');
+            feedbackArea.innerHTML = isAllCorrect 
+                ? '<i class="fas fa-check-circle"></i> Correcto!'
+                : '<i class="fas fa-times-circle"></i> Algunas respuestas incorrectas';
+
+            document.getElementById('nextBtnGroup').style.display = 'flex';
+            document.getElementById('checkBtn').style.display = 'none';
+            document.getElementById('hintBtn').disabled = true;
+        }
+
+        // Use hint
+        function useHint() {
+            if (state.hints <= 0) return;
+
+            const phrase = state.phrases[state.currentIndex];
+            
+            // Find first unfilled blank
+            const unfilledBlank = phrase.blanks.find(function(b) {
+                const span = document.getElementById('blank-' + b.index);
+                return !span.classList.contains('filled');
+            });
+
+            if (unfilledBlank) {
+                if (state.gameMode === 'writing') {
+                    const blankArrayIndex = phrase.blanks.indexOf(unfilledBlank);
+                    const input = document.getElementById('input-' + blankArrayIndex);
+                    input.value = unfilledBlank.answer;
+                    input.classList.add('correct');
+                } else {
+                    const span = document.getElementById('blank-' + unfilledBlank.index);
+                    span.textContent = unfilledBlank.answer;
+                    span.classList.add('filled', 'correct');
+                    state.answeredBlanks[unfilledBlank.index] = unfilledBlank.answer;
+
+                    document.getElementById('optionsPopup').style.display = 'none';
+                }
+
+                state.hints--;
+                document.getElementById('hintsLeft').textContent = state.hints;
+                document.getElementById('hintCount').textContent = state.hints;
+
+                // Check if all filled
+                const allFilled = phrase.blanks.every(b => 
+                    document.getElementById('blank-' + b.index).classList.contains('filled')
+                );
+                if (allFilled) {
+                    stopTimer();
+                    calculateResults();
+                }
+            }
+        }
+
+        // Next phrase
+        function nextPhrase() {
+            state.currentIndex++;
+            document.getElementById('hintBtn').disabled = false;
+
+            if (state.currentIndex >= state.phrases.length) {
+                showResults();
+            } else {
+                loadPhrase();
+            }
+        }
+
+        // Timer
+        function startTimer() {
+            state.currentTime = state.timeLimit;
+            updateTimerDisplay();
+            
+            state.timer = setInterval(function() {
+                state.currentTime--;
+                updateTimerDisplay();
+
+                if (state.currentTime <= 0) {
+                    stopTimer();
+                    // Auto-submit
+                    if (state.gameMode === 'writing') {
+                        checkAllAnswers();
+                    } else {
+                        // Fill remaining blanks as incorrect
+                        const phrase = state.phrases[state.currentIndex];
+                        phrase.blanks.forEach(function(b) {
+                            const span = document.getElementById('blank-' + b.index);
+                            if (!span.classList.contains('filled')) {
+                                span.textContent = b.answer;
+                                span.classList.add('filled', 'incorrect');
+                            }
+                        });
+                        calculateResults();
+                    }
+                }
+            }, 1000);
+        }
+
+        function stopTimer() {
+            if (state.timer) {
+                clearInterval(state.timer);
+                state.timer = null;
+            }
+        }
+
+        function updateTimerDisplay() {
+            const display = document.getElementById('timerDisplay');
+            display.textContent = state.currentTime;
+            display.classList.remove('warning', 'danger');
+            
+            if (state.currentTime <= 10) {
+                display.classList.add('danger');
+            } else if (state.currentTime <= 20) {
+                display.classList.add('warning');
+            }
+        }
+
+        // Results
+        function showResults() {
+            stopTimer();
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('panel5').classList.add('active');
+
+            const total = state.correctAnswers + state.incorrectAnswers;
+            const accuracy = total > 0 ? Math.round((state.correctAnswers / total) * 100) : 0;
+
+            document.getElementById('finalCorrect').textContent = state.correctAnswers;
+            document.getElementById('finalIncorrect').textContent = state.incorrectAnswers;
+            document.getElementById('finalAccuracy').textContent = accuracy + '%';
+
+            let message = '';
+            if (accuracy >= 90) message = 'Excelente! Dominas el tema perfectamente!';
+            else if (accuracy >= 70) message = 'Muy bien! Sigues mejorando!';
+            else if (accuracy >= 50) message = 'Buen intento! Practica un poco mas.';
+            else message = 'Necesitas repasar el tema. No te rindas!';
+
+            document.getElementById('finalMessage').textContent = message;
+        }
+
+        function retryGame() {
+            state.currentIndex = 0;
+            state.correctAnswers = 0;
+            state.incorrectAnswers = 0;
+            state.hints = 3;
+
+            // Re-shuffle blanks
+            state.phrases.forEach(function(phrase) {
+                const shuffledBlanks = [...phrase.blankableWords].sort(() => Math.random() - 0.5);
+                const blankCount = phrase.blanks.length;
+                phrase.blanks = shuffledBlanks.slice(0, blankCount).map(b => ({
+                    index: b.index,
+                    answer: b.clean,
+                    original: b.original
+                }));
+            });
+
+            showGamePanel();
+            loadPhrase();
+        }
+
+        function resetAll() {
+            stopTimer();
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('panel1').classList.add('active');
+            document.getElementById('sourceText').value = '';
+            
+            // Reset all selections
+            document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('selected'));
+            document.getElementById('step2Next').disabled = true;
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('timeConfig').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
