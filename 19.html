@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Leitner - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --accent-1: #e74c3c; --accent-2: #3498db; --accent-3: #27ae60;
+            --accent-4: #9b59b6; --accent-5: #e67e22;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1300px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-hover); }
+
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, var(--accent-3) 0%, #1e8449 100%);
+            color: white; padding: 40px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 300px; height: 100%;
+            background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.15) 0%, transparent 60%);
+        }
+        .hero-text { flex: 1; z-index: 1; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.8rem;
+            font-weight: 600; margin-bottom: 15px;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.5rem;
+            margin-bottom: 12px; line-height: 1.2;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.9; max-width: 500px; }
+        .hero-visual {
+            width: 180px; height: 220px; background: rgba(255,255,255,0.1);
+            border-radius: 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 8px;
+            position: relative; z-index: 1; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .hero-visual i { font-size: 3rem; opacity: 0.8; }
+
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white;
+        }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #c0392b); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-2), #2980b9); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-3), #1e8449); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-4), #7d3c98); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-5), #d35400); }
+        .icon-brown { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+
+        /* Visual Board Simulation */
+        .card-board {
+            grid-column: span 12;
+        }
+        .leitner-board {
+            display: flex; gap: 15px; margin-top: 20px;
+            overflow-x: auto; padding-bottom: 10px;
+        }
+        .l-box {
+            flex: 1; min-width: 150px; background: var(--bg-tertiary);
+            border-radius: 15px; padding: 15px; text-align: center;
+            border-top: 5px solid; transition: all 0.3s;
+        }
+        .l-box:hover { transform: translateY(-5px); box-shadow: 0 5px 15px var(--shadow); }
+        
+        /* Box Colors */
+        .l-box.b1 { border-color: var(--accent-1); }
+        .l-box.b2 { border-color: var(--accent-5); }
+        .l-box.b3 { border-color: var(--primary); }
+        .l-box.b4 { border-color: var(--accent-2); }
+        .l-box.b5 { border-color: var(--accent-3); }
+
+        .l-box h3 { font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: 5px; }
+        .l-box.b1 h3 { color: var(--accent-1); }
+        .l-box.b2 h3 { color: var(--accent-5); }
+        .l-box.b3 h3 { color: var(--primary); }
+        .l-box.b4 h3 { color: var(--accent-2); }
+        .l-box.b5 h3 { color: var(--accent-3); }
+
+        .l-badge {
+            display: inline-block; padding: 4px 10px; background: var(--bg-secondary);
+            border-radius: 20px; font-size: 0.75rem; font-weight: 600;
+            color: var(--text-secondary); margin-bottom: 10px;
+        }
+        .l-desc { font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 10px; }
+        .l-cards {
+            display: flex; flex-direction: column; gap: 5px;
+        }
+        .l-card-item {
+            background: var(--bg-secondary); padding: 8px;
+            border-radius: 6px; font-size: 0.75rem;
+            box-shadow: 0 2px 4px var(--shadow);
+        }
+
+        /* Logic Flow */
+        .card-logic {
+            grid-column: span 6;
+            grid-row: span 2;
+        }
+        .flow-container {
+            margin-top: 20px;
+        }
+        .flow-item {
+            display: flex; align-items: center; gap: 15px;
+            margin-bottom: 15px; padding: 15px;
+            background: var(--bg-tertiary); border-radius: 12px;
+        }
+        .flow-icon {
+            width: 40px; height: 40px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: white; flex-shrink: 0; font-size: 1rem;
+        }
+        .flow-success { background: var(--accent-3); }
+        .flow-fail { background: var(--accent-1); }
+        .flow-text h4 { font-size: 0.95rem; color: var(--primary-dark); }
+        .flow-text p { font-size: 0.8rem; color: var(--text-secondary); margin: 0; }
+
+        /* Schedule Table */
+        .card-schedule {
+            grid-column: span 6;
+        }
+        .schedule-table {
+            width: 100%; border-collapse: collapse;
+            margin-top: 15px; font-size: 0.9rem;
+        }
+        .schedule-table th, .schedule-table td {
+            padding: 12px; text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .schedule-table th { color: var(--primary-dark); font-weight: 600; background: var(--bg-tertiary); }
+        .schedule-table tr:last-child td { border-bottom: none; }
+        .status-tag {
+            display: inline-block; padding: 3px 8px; border-radius: 4px;
+            font-size: 0.7rem; font-weight: 600;
+        }
+
+        /* Tips & Tools */
+        .card-tools {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-2) 0%, #2980b9 100%);
+            color: white;
+        }
+        .card-tools .card-title { color: white; }
+        .tool-list { margin-top: 15px; display: grid; gap: 10px; }
+        .tool-item {
+            display: flex; align-items: center; gap: 10px;
+            background: rgba(255,255,255,0.1); padding: 10px;
+            border-radius: 8px; font-size: 0.9rem;
+        }
+
+        .card-tips {
+            grid-column: span 6;
+            background: var(--bg-tertiary);
+        }
+        .tip-box {
+            display: flex; gap: 10px; margin-bottom: 15px;
+            align-items: flex-start;
+        }
+        .tip-icon {
+            width: 30px; height: 30px; background: var(--primary);
+            border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; color: white; flex-shrink: 0;
+        }
+        .tip-content h5 { font-size: 0.9rem; color: var(--primary-dark); }
+        .tip-content p { font-size: 0.8rem; color: var(--text-secondary); margin: 0; }
+
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 30px;
+            background: var(--bg-tertiary);
+        }
+        .footer-text {
+            font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 5px;
+        }
+
+        @media (max-width: 1100px) {
+            .leitner-board { flex-direction: column; }
+            .l-box { min-width: auto; }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-hero, .card-board, .card-logic, .card-schedule,
+            .card-tools, .card-tips, .card-footer { grid-column: span 12; }
+            .hero-text h1 { font-size: 1.8rem; }
+            .card-hero { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-layer-group"></i> Sistema Leitner</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-redo"></i> Repeticion Espaciada</span>
+                    <h1>El Sistema Leitner</h1>
+                    <p>Transforma el estudio memorístico en un juego de estrategia. Olvídate de repasar lo que ya sabes y concéntrate en lo que se te olvida. Un sistema inteligente diseñado por un científico alemán para hackear la curva del olvido.</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-sort-amount-up"></i>
+                    <span style="font-size: 0.85rem; font-weight: 600;">Frecuencia Inteligente</span>
+                </div>
+            </article>
+
+            <!-- EL TABLERO VISUAL -->
+            <article class="card card-board">
+                <div class="card-header">
+                    <div class="card-icon icon-green"><i class="fas fa-th-large"></i></div>
+                    <h2 class="card-title">El Tablero de Juego (5 Compartimentos)</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Imagina 5 cajas físicas. Cada tarjeta "viaja" según tu éxito. El objetivo es que las tarjetas lleguen a la Caja 5 (Maestría).</p>
+                
+                <div class="leitner-board">
+                    <div class="l-box b1">
+                        <h3>Caja 1</h3>
+                        <div class="l-badge">CADA DIA</div>
+                        <div class="l-desc">Nuevas o muy difíciles. Repaso diario.</div>
+                        <div class="l-cards">
+                            <div class="l-card-item">Fórmula Error</div>
+                            <div class="l-card-item">Fecha Olvidada</div>
+                        </div>
+                    </div>
+                    <div class="l-box b2">
+                        <h3>Caja 2</h3>
+                        <div class="l-badge">CADA 2-3 DIAS</div>
+                        <div class="l-desc">Empezando a entender. Repaso frecuente.</div>
+                        <div class="l-cards">
+                            <div class="l-card-item">Concepto Clave</div>
+                        </div>
+                    </div>
+                    <div class="l-box b3">
+                        <h3>Caja 3</h3>
+                        <div class="l-badge">CADA SEMANA</div>
+                        <div class="l-desc">Familiaridad media. Repaso semanal.</div>
+                        <div class="l-cards">
+                            <div class="l-card-item">Definición</div>
+                        </div>
+                    </div>
+                    <div class="l-box b4">
+                        <h3>Caja 4</h3>
+                        <div class="l-badge">CADA 2 SEMANAS</div>
+                        <div class="l-desc">Casi dominado. Repaso quincenal.</div>
+                        <div class="l-cards">
+                            <!-- Empty for visual variety -->
+                        </div>
+                    </div>
+                    <div class="l-box b5">
+                        <h3>Caja 5</h3>
+                        <div class="l-badge">CADA MES</div>
+                        <div class="l-desc">Maestría. Solo mantenimiento.</div>
+                        <div class="l-cards">
+                            <div class="l-card-item" style="border-left: 3px solid var(--accent-3);">Datos Maestros</div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- LOGICA DE MOVIMIENTO -->
+            <article class="card card-logic">
+                <div class="card-header">
+                    <div class="card-icon icon-orange"><i class="fas fa-exchange-alt"></i></div>
+                    <h2 class="card-title">Reglas de Movimiento</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">El sistema se basa en recompensar el éxito y castigar el olvido activo. Solo mueves la tarjeta si te autoevalúas honestamente.</p>
+                
+                <div class="flow-container">
+                    <div class="flow-item">
+                        <div class="flow-icon flow-success"><i class="fas fa-arrow-up"></i></div>
+                        <div class="flow-text">
+                            <h4>Si aciertas (Éxito)</h4>
+                            <p>La tarjeta sube un nivel: de Caja 1 a Caja 2. Como la repasas menos veces, ahorras tiempo.</p>
+                        </div>
+                    </div>
+                    <div class="flow-item">
+                        <div class="flow-icon flow-fail"><i class="fas fa-arrow-down"></i></div>
+                        <div class="flow-text">
+                            <h4>Si fallas (Fracaso)</h4>
+                            <p>La tarjeta vuelve al inicio: a la Caja 1. No te preocupes, volverás a verla mañana. El error es parte del aprendizaje.</p>
+                        </div>
+                    </div>
+                    <div class="flow-item">
+                        <div class="flow-icon" style="background: var(--accent-2);"><i class="fas fa-home"></i></div>
+                        <div class="flow-text">
+                            <h4>Si estás en Caja 5 y fallas</h4>
+                            <p>Vuelves a Caja 1 o Caja 2. Nunca confíes demasiado en tu memoria a largo plazo sin refuerzo.</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- CALENDARIO -->
+            <article class="card card-schedule">
+                <div class="card-header">
+                    <div class="card-icon icon-blue"><i class="fas fa-calendar-alt"></i></div>
+                    <h2 class="card-title">Rutina de Estudio</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Un ejemplo de cómo organizar tu semana con el sistema clásico de 3 cajas (simplificado para empezar):</p>
+                
+                <table class="schedule-table">
+                    <thead>
+                        <tr>
+                            <th>Día</th>
+                            <th>Cajas a Repasar</th>
+                            <th>Enfoque</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Lunes</td>
+                            <td><span class="status-tag" style="background: var(--accent-1); color: white;">Caja 1</span></td>
+                            <td>Material nuevo y difícil.</td>
+                        </tr>
+                        <tr>
+                            <td>Martes</td>
+                            <td><span class="status-tag" style="background: var(--accent-1); color: white;">C1</span> <span class="status-tag" style="background: var(--accent-5); color: white;">C2</span></td>
+                            <td>Mezcla de nuevo y reciente.</td>
+                        </tr>
+                        <tr>
+                            <td>Miércoles</td>
+                            <td><span class="status-tag" style="background: var(--accent-1); color: white;">C1</span></td>
+                            <td>Solo lo más urgente.</td>
+                        </tr>
+                        <tr>
+                            <td>Jueves</td>
+                            <td><span class="status-tag" style="background: var(--accent-1); color: white;">C1</span> <span class="status-tag" style="background: var(--accent-5); color: white;">C2</span> <span class="status-tag" style="background: var(--primary); color: white;">C3</span></td>
+                            <td>Repaso general ("Examen").</td>
+                        </tr>
+                        <tr>
+                            <td>Viernes</td>
+                            <td><span class="status-tag" style="background: var(--accent-1); color: white;">C1</span></td>
+                            <td>Cerrar la semana.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </article>
+
+            <!-- HERRAMIENTAS -->
+            <article class="card card-tools">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-mobile-alt"></i></div>
+                    <h2 class="card-title">Herramientas Modernas</h2>
+                </div>
+                <p style="font-size: 0.9rem; opacity: 0.9;">Aunque el sistema original es con tarjetas físicas, hoy la tecnología lo automatiza.</p>
+                <div class="tool-list">
+                    <div class="tool-item">
+                        <i class="fas fa-robot"></i>
+                        <span><strong>Anki:</strong> La app más potente. Algoritmos SRS (Repetición Espaciada) que automatizan las cajas.</span>
+                    </div>
+                    <div class="tool-item">
+                        <i class="fas fa-quidditch"></i>
+                        <span><strong>Quizlet:</strong> Modo "Aprender" que prioriza las tarjetas difíciles.</span>
+                    </div>
+                    <div class="tool-item">
+                        <i class="fas fa-boxes"></i>
+                        <span><strong>Physical Boxes:</strong> Cajas de zapatos reales con tarjetas de cartulina. Lo mejor para kinestésicos.</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- TIPS -->
+            <article class="card card-tips">
+                <div class="card-header">
+                    <div class="card-icon icon-red"><i class="fas fa-lightbulb"></i></div>
+                    <h2 class="card-title">Consejos Clave</h2>
+                </div>
+                <div style="margin-top: 15px;">
+                    <div class="tip-box">
+                        <div class="tip-icon"><i class="fas fa-check"></i></div>
+                        <div class="tip-content">
+                            <h5>Honestidad Brutal</h5>
+                            <p>No te engañes. Si dudas, es un fallo. Si "casi" lo sabes, es un fallo. Solo mueve la tarjeta si la respuesta fue inmediata.</p>
+                        </div>
+                    </div>
+                    <div class="tip-box">
+                        <div class="tip-icon"><i class="fas fa-check"></i></div>
+                        <div class="tip-content">
+                            <h5>Las Cajas no son Estáticas</h5>
+                            <p>Una tarjeta puede ir de Caja 5 a Caja 1 en un segundo si la olvidaste. Acepta el viaje.</p>
+                        </div>
+                    </div>
+                    <div class="tip-box">
+                        <div class="tip-icon"><i class="fas fa-check"></i></div>
+                        <div class="tip-content">
+                            <h5>Empieza Pequeño</h5>
+                            <p>No llenes la Caja 1 con 100 tarjetas el primer día. Empieza con 5 o 10 nuevas al día.</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-text">El sistema Leitner convierte la memoria en un juego de estrategia: gestiona tus recursos (tiempo) donde son necesarios (tus debilidades).</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+    </script>
+</body>
+</html>
