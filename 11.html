@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clasificacion de Apuntes - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --accent-1: #e74c3c; --accent-2: #3498db; --accent-3: #27ae60;
+            --accent-4: #9b59b6; --accent-5: #e67e22;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1300px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-hover); }
+
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white; padding: 40px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 300px; height: 100%;
+            background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.15) 0%, transparent 60%);
+        }
+        .hero-text { flex: 1; z-index: 1; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.8rem;
+            font-weight: 600; margin-bottom: 15px;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.5rem;
+            margin-bottom: 12px; line-height: 1.2;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.9; max-width: 500px; }
+        .hero-visual {
+            width: 180px; height: 220px; background: rgba(255,255,255,0.1);
+            border-radius: 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 8px;
+            position: relative; z-index: 1; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .hero-visual i { font-size: 3rem; opacity: 0.8; }
+
+        .card-method {
+            grid-column: span 7;
+            grid-row: span 2;
+        }
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white;
+        }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #c0392b); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-2), #2980b9); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-3), #1e8449); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-4), #7d3c98); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-5), #d35400); }
+        .icon-brown { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+        .card-content p { margin-bottom: 15px; font-size: 0.95rem; color: var(--text-primary); }
+        .card-content strong { color: var(--primary-dark); }
+
+        .hierarchy-box {
+            background: var(--bg-tertiary); border-radius: 15px;
+            padding: 20px; margin-top: 20px;
+        }
+        .hierarchy-level {
+            display: flex; align-items: center; gap: 15px;
+            padding: 12px; margin-bottom: 10px;
+            background: var(--bg-secondary); border-radius: 10px;
+            border-left: 4px solid var(--gray);
+        }
+        .hierarchy-level.l1 { border-color: var(--accent-1); }
+        .hierarchy-level.l2 { border-color: var(--accent-2); margin-left: 20px; width: calc(100% - 20px); }
+        .hierarchy-level.l3 { border-color: var(--accent-3); margin-left: 40px; width: calc(100% - 40px); }
+        
+        .level-badge {
+            width: 30px; height: 30px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 700; font-size: 0.85rem; flex-shrink: 0;
+        }
+        .l1 .level-badge { background: var(--accent-1); }
+        .l2 .level-badge { background: var(--accent-2); }
+        .l3 .level-badge { background: var(--accent-3); }
+        
+        .level-info h4 { font-size: 0.9rem; color: var(--primary-dark); margin-bottom: 2px; }
+        .level-info p { font-size: 0.8rem; color: var(--text-secondary); margin: 0; }
+
+        .card-physical {
+            grid-column: span 5;
+            background: var(--bg-tertiary);
+        }
+        .binder-visual {
+            display: flex; gap: 10px; margin-top: 20px; justify-content: center;
+        }
+        .binder-item {
+            width: 60px; height: 80px; border-radius: 5px;
+            display: flex; align-items: flex-end; justify-content: center;
+            padding-bottom: 5px; color: white; font-weight: 700;
+            font-size: 0.7rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .card-types {
+            grid-column: span 6;
+        }
+        .types-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr);
+            gap: 10px; margin-top: 15px;
+        }
+        .type-badge {
+            padding: 10px; background: var(--bg-tertiary);
+            border-radius: 8px; display: flex; align-items: center; gap: 10px;
+        }
+        .type-badge i { font-size: 1rem; }
+        .type-badge span { font-size: 0.85rem; font-weight: 500; }
+
+        .card-tags {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-5) 0%, #d35400 100%);
+            color: white;
+        }
+        .card-tags .card-title { color: white; }
+        .tag-example {
+            display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap;
+        }
+        .tag {
+            background: rgba(255,255,255,0.2); padding: 5px 12px;
+            border-radius: 20px; font-size: 0.8rem; font-weight: 500;
+        }
+
+        .card-maintenance {
+            grid-column: span 6;
+        }
+        .timeline {
+            position: relative; padding-left: 20px; margin-top: 20px;
+        }
+        .timeline::before {
+            content: ''; position: absolute; left: 0; top: 5px;
+            width: 3px; height: calc(100% - 10px);
+            background: var(--primary); border-radius: 3px;
+        }
+        .time-item {
+            position: relative; margin-bottom: 15px;
+        }
+        .time-item::before {
+            content: ''; position: absolute; left: -24px; top: 5px;
+            width: 11px; height: 11px; background: var(--primary);
+            border-radius: 50%; border: 2px solid var(--bg-secondary);
+        }
+        .time-item strong { display: block; color: var(--primary-dark); font-size: 0.9rem; }
+        .time-item p { font-size: 0.8rem; color: var(--text-secondary); margin: 0; }
+
+        .card-mistakes {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-1) 0%, #c0392b 100%);
+            color: white;
+        }
+        .card-mistakes .card-title { color: white; }
+        .mistake-list { margin-top: 15px; }
+        .mistake-item {
+            display: flex; gap: 10px; margin-bottom: 10px;
+            background: rgba(255,255,255,0.1); padding: 10px;
+            border-radius: 8px; font-size: 0.85rem;
+        }
+
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 30px;
+            background: var(--bg-tertiary);
+        }
+        .footer-text {
+            font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 5px;
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-hero, .card-method, .card-physical, .card-types,
+            .card-tags, .card-maintenance, .card-mistakes, .card-footer { grid-column: span 12; }
+            .hierarchy-level.l2, .hierarchy-level.l3 { margin-left: 10px; width: calc(100% - 10px); }
+            .hero-text h1 { font-size: 1.8rem; }
+            .card-hero { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-tags"></i> Clasificacion por Materia</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-sitemap"></i> Sistema Jerarquico</span>
+                    <h1>Metodo de Clasificacion Triple</h1>
+                    <p>Un sistema simple pero poderoso para organizar tus apuntes. Se basa en tres niveles de profundidad que te permiten encontrar cualquier tema en segundos, ya sea en papel o en digital.</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-object-group"></i>
+                    <span style="font-size: 0.85rem; font-weight: 600;">3 Niveles</span>
+                </div>
+            </article>
+
+            <!-- EL METODO -->
+            <article class="card card-method">
+                <div class="card-header">
+                    <div class="card-icon icon-purple"><i class="fas fa-layer-group"></i></div>
+                    <h2 class="card-title">La Jerarquia Triple</h2>
+                </div>
+                <div class="card-content">
+                    <p>El error comun es guardar todo junto o separarlo de mas. Este metodo encuentra el equilibrio perfecto. Imagina filtros que se van haciendo mas pequenos.</p>
+                </div>
+                <div class="hierarchy-box">
+                    <div class="hierarchy-level l1">
+                        <div class="level-badge">1</div>
+                        <div class="level-info">
+                            <h4>Nivel Macro: Materia</h4>
+                            <p>Ejemplo: Anatomia, Historia, Algebra. Una carpeta o cuaderno por materia.</p>
+                        </div>
+                    </div>
+                    <div class="hierarchy-level l2">
+                        <div class="level-badge">2</div>
+                        <div class="level-info">
+                            <h4>Nivel Meso: Unidad / Tema</h4>
+                            <p>Ejemplo: "Unidad 3: Sistema Nervioso". Usa separadores de colores aqui.</p>
+                        </div>
+                    </div>
+                    <div class="hierarchy-level l3">
+                        <div class="level-badge">3</div>
+                        <div class="level-info">
+                            <h4>Nivel Micro: Tipo de Documento</h4>
+                            <p>Ejemplo: "Clase 12", "Guia de repaso", "Examen parcial".</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- VISUAL FISICO -->
+            <article class="card card-physical">
+                <div class="card-header">
+                    <div class="card-icon icon-orange"><i class="fas fa-book-open"></i></div>
+                    <h2 class="card-title">Aplicacion Fisica</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Usa una carpeta de palanca grande por materia (Nivel 1). Dentro, separadores plásticos para cada Unidad (Nivel 2).</p>
+                <div class="binder-visual">
+                    <div class="binder-item" style="background: var(--accent-1);">Mate</div>
+                    <div class="binder-item" style="background: var(--accent-2);">Historia</div>
+                    <div class="binder-item" style="background: var(--accent-3);">Bio</div>
+                </div>
+                <p style="font-size: 0.8rem; margin-top: 15px; text-align: center; color: var(--text-secondary);">Asigna un color fijo a cada carpeta.</p>
+            </article>
+
+            <!-- TIPOS DE DOCUMENTOS -->
+            <article class="card card-types">
+                <div class="card-header">
+                    <div class="card-icon icon-blue"><i class="fas fa-file-alt"></i></div>
+                    <h2 class="card-title">Clasificacion por Tipo</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">En el Nivel 3, ordena tus hojas por tipo para encontrarlas rapido:</p>
+                <div class="types-grid">
+                    <div class="type-badge">
+                        <i class="fas fa-pen" style="color: var(--accent-2);"></i>
+                        <span>Apuntes de Clase</span>
+                    </div>
+                    <div class="type-badge">
+                        <i class="fas fa-book-reader" style="color: var(--accent-4);"></i>
+                        <span>Lecturas</span>
+                    </div>
+                    <div class="type-badge">
+                        <i class="fas fa-tasks" style="color: var(--accent-5);"></i>
+                        <span>Guias/Ejercicios</span>
+                    </div>
+                    <div class="type-badge">
+                        <i class="fas fa-file-signature" style="color: var(--accent-1);"></i>
+                        <span>Examenes Anteriores</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- ETIQUETAS -->
+            <article class="card card-tags">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-tags"></i></div>
+                    <h2 class="card-title">Codigo de Etiquetas</h2>
+                </div>
+                <p style="font-size: 0.9rem; opacity: 0.9;">Si usas carpetas digitales (Notion, Drive, OneNote), usa etiquetas (Tags) para cruzar informacion.</p>
+                <div class="tag-example">
+                    <div class="tag">#Importante</div>
+                    <div class="tag">#Repaso</div>
+                    <div class="tag">#Duda</div>
+                    <div class="tag">#Parcial1</div>
+                    <div class="tag">#Formula</div>
+                </div>
+                <p style="font-size: 0.8rem; margin-top: 10px; opacity: 0.8;">Un archivo puede estar en la carpeta "Historia" pero tener la etiqueta #Importante y #Parcial2.</p>
+            </article>
+
+            <!-- MANTENIMIENTO -->
+            <article class="card card-maintenance">
+                <div class="card-header">
+                    <div class="card-icon icon-green"><i class="fas fa-sync-alt"></i></div>
+                    <h2 class="card-title">Mantenimiento Semanal</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Un sistema desactualizado no sirve. Dedica 10 minutos cada domingo.</p>
+                <div class="timeline">
+                    <div class="time-item">
+                        <strong>Paso 1: Recolectar</strong>
+                        <p>Junta todos los papeles sueltos de la mochila.</p>
+                    </div>
+                    <div class="time-item">
+                        <strong>Paso 2: Perforar</strong>
+                        <p>Agrega los papeles a la carpeta fisica correspondiente.</p>
+                    </div>
+                    <div class="time-item">
+                        <strong>Paso 3: Digitalizar</strong>
+                        <p>Escanea o guarda los PDFs nuevos en su carpeta digital.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- ERRORES -->
+            <article class="card card-mistakes">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-exclamation-triangle"></i></div>
+                    <h2 class="card-title">Errores Comunes</h2>
+                </div>
+                <div class="mistake-list">
+                    <div class="mistake-item">
+                        <i class="fas fa-times-circle"></i>
+                        <span>Mezclar materias en un mismo cuaderno (separa primero).</span>
+                    </div>
+                    <div class="mistake-item">
+                        <i class="fas fa-times-circle"></i>
+                        <span>Guardar hojas sueltas sin perforar (se pierden).</span>
+                    </div>
+                    <div class="mistake-item">
+                        <i class="fas fa-times-circle"></i>
+                        <span>Crear carpetas por fecha en vez de por tema (ej: "Octubre" es malo, "Unidad 4" es bueno).</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-text">Clasificar no es solo ordenar, es crear un mapa que tu cerebro puede leer sin esfuerzo.</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+    </script>
+</body>
+</html>
