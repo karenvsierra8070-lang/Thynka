@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcards - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            
+            --study-color: #e74c3c;
+            --study-bg: #fdecea;
+            --maybe-color: #f39c12;
+            --maybe-bg: #fef5e7;
+            --mastered-color: #27ae60;
+            --mastered-bg: #e8f8f0;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+            --study-bg: rgba(231, 76, 60, 0.15);
+            --maybe-bg: rgba(243, 156, 18, 0.15);
+            --mastered-bg: rgba(39, 174, 96, 0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; }
+
+        /* TOP BAR */
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-success { background: var(--mastered-color); color: white; }
+
+        /* MAIN CONTAINER */
+        .main-container { padding: 90px 30px 40px; max-width: 1100px; margin: 0 auto; }
+
+        /* STATS BAR */
+        .stats-bar {
+            display: flex; justify-content: center; gap: 30px; margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        .stat-box {
+            background: var(--bg-secondary); border-radius: 15px; padding: 12px 20px;
+            text-align: center; min-width: 110px; box-shadow: 0 4px 15px var(--shadow);
+            border: 2px solid transparent; transition: all 0.3s;
+        }
+        .stat-box.study { border-color: var(--study-color); }
+        .stat-box.maybe { border-color: var(--maybe-color); }
+        .stat-box.mastered { border-color: var(--mastered-color); }
+        .stat-number { font-size: 1.8rem; font-weight: 700; font-family: 'Playfair Display', serif; }
+        .stat-box.study .stat-number { color: var(--study-color); }
+        .stat-box.maybe .stat-number { color: var(--maybe-color); }
+        .stat-box.mastered .stat-number { color: var(--mastered-color); }
+        .stat-label { font-size: 0.75rem; color: var(--text-secondary); font-weight: 600; }
+
+        /* PROGRESS BAR */
+        .progress-container {
+            background: var(--bg-secondary); border-radius: 15px; padding: 15px 20px;
+            margin-bottom: 25px; box-shadow: 0 4px 15px var(--shadow);
+        }
+        .progress-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 12px;
+        }
+        .progress-title { font-weight: 700; color: var(--primary-dark); font-size: 0.95rem; }
+        .progress-info { font-size: 0.85rem; color: var(--text-secondary); }
+        .progress-bar {
+            height: 10px; background: var(--bg-tertiary); border-radius: 10px;
+            overflow: hidden; display: flex;
+        }
+        .progress-segment { height: 100%; transition: width 0.5s ease; }
+        .progress-segment.study { background: var(--study-color); }
+        .progress-segment.maybe { background: var(--maybe-color); }
+        .progress-segment.mastered { background: var(--mastered-color); }
+
+        /* PANELS */
+        .panel {
+            background: var(--bg-secondary); border-radius: 20px;
+            box-shadow: 0 4px 20px var(--shadow); overflow: hidden;
+            display: none; animation: fadeIn 0.4s ease;
+        }
+        .panel.active { display: block; }
+        
+        .panel-header {
+            padding: 20px 25px; border-bottom: 1px solid var(--border-color);
+            background: var(--bg-tertiary); display: flex; align-items: center; gap: 15px;
+        }
+        .panel-icon { font-size: 1.5rem; color: var(--primary); }
+        .panel-title { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--primary-dark); }
+        .panel-subtitle { font-size: 0.85rem; color: var(--text-secondary); }
+        .panel-body { padding: 25px; }
+
+        /* FORM ELEMENTS */
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; font-weight: 600; margin-bottom: 8px; color: var(--text-primary); font-size: 0.9rem; }
+        .form-hint { font-size: 0.8rem; color: var(--text-secondary); margin-top: 6px; }
+        
+        textarea {
+            width: 100%; height: 180px; resize: vertical; padding: 12px;
+            border: 2px solid var(--border-color); border-radius: 12px;
+            background: var(--bg-primary); color: var(--text-primary);
+            font-family: inherit; font-size: 0.9rem; line-height: 1.5;
+            transition: border-color 0.3s;
+        }
+        textarea:focus { outline: none; border-color: var(--primary); }
+        
+        select {
+            width: 100%; padding: 10px 12px; border: 2px solid var(--border-color);
+            border-radius: 10px; background: var(--bg-primary); color: var(--text-primary);
+            font-family: inherit; font-size: 0.9rem; cursor: pointer;
+        }
+        select:focus { outline: none; border-color: var(--primary); }
+
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px; }
+
+        /* COLOR PICKER */
+        .color-options { display: flex; gap: 12px; flex-wrap: wrap; }
+        .color-option {
+            width: 36px; height: 36px; border-radius: 10px; cursor: pointer;
+            border: 3px solid transparent; transition: all 0.2s; position: relative;
+        }
+        .color-option:hover { transform: scale(1.1); }
+        .color-option.selected { border-color: var(--text-primary); }
+        .color-option.selected::after {
+            content: '\f00c'; font-family: 'Font Awesome 6 Free'; font-weight: 900;
+            position: absolute; inset: 0; display: flex; align-items: center;
+            justify-content: center; color: white; font-size: 0.9rem;
+        }
+
+        /* FLASHCARD */
+        .flashcard-container {
+            perspective: 1200px; width: 100%; max-width: 650px; margin: 0 auto 20px;
+        }
+        .flashcard {
+            width: 100%; min-height: 380px; position: relative;
+            transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        .flashcard.flipped { transform: rotateY(180deg); }
+        
+        .flashcard-face {
+            position: absolute; inset: 0; backface-visibility: hidden;
+            border-radius: 20px; padding: 35px 40px; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; text-align: center;
+            box-shadow: 0 10px 40px var(--shadow); border: 3px solid;
+            overflow-y: auto;
+        }
+        
+        .flashcard-front { background: var(--bg-secondary); border-color: var(--primary); }
+        .flashcard-back { transform: rotateY(180deg); }
+        
+        .flashcard.study .flashcard-front { border-color: var(--study-color); background: var(--study-bg); }
+        .flashcard.study .flashcard-back { border-color: var(--study-color); background: var(--study-bg); }
+        .flashcard.maybe .flashcard-front { border-color: var(--maybe-color); background: var(--maybe-bg); }
+        .flashcard.maybe .flashcard-back { border-color: var(--maybe-color); background: var(--maybe-bg); }
+        .flashcard.mastered .flashcard-front { border-color: var(--mastered-color); background: var(--mastered-bg); }
+        .flashcard.mastered .flashcard-back { border-color: var(--mastered-color); background: var(--mastered-bg); }
+        
+        .card-badge {
+            position: absolute; top: 12px; right: 15px;
+            padding: 5px 12px; border-radius: 20px; font-size: 0.7rem;
+            font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .flashcard.study .card-badge { background: var(--study-color); color: white; }
+        .flashcard.maybe .card-badge { background: var(--maybe-color); color: white; }
+        .flashcard.mastered .card-badge { background: var(--mastered-color); color: white; }
+        
+        .flashcard-icon { font-size: 2rem; margin-bottom: 15px; opacity: 0.25; }
+        .flashcard-term { 
+            font-size: 1.25rem; font-weight: 700; color: var(--text-primary); 
+            line-height: 1.5; max-width: 100%; word-wrap: break-word;
+        }
+        .flashcard-definition { 
+            font-size: 1.05rem; color: var(--text-secondary); line-height: 1.7;
+            max-width: 100%; word-wrap: break-word;
+        }
+        .flashcard-hint { font-size: 0.8rem; color: var(--text-secondary); margin-top: 15px; opacity: 0.6; }
+        
+        /* ANSWER BUTTONS */
+        .answer-buttons {
+            display: flex; gap: 15px; justify-content: center; margin-top: 20px;
+        }
+        .answer-btn {
+            flex: 1; max-width: 200px; padding: 14px 20px; border: none;
+            border-radius: 12px; cursor: pointer; font-family: inherit;
+            font-weight: 700; font-size: 0.95rem; transition: all 0.2s;
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+        }
+        .answer-btn:hover { transform: translateY(-2px); }
+        .btn-wrong { background: var(--study-bg); color: var(--study-color); border: 2px solid var(--study-color); }
+        .btn-wrong:hover { background: var(--study-color); color: white; }
+        .btn-correct { background: var(--mastered-bg); color: var(--mastered-color); border: 2px solid var(--mastered-color); }
+        .btn-correct:hover { background: var(--mastered-color); color: white; }
+        .answer-btn span { font-size: 0.7rem; font-weight: 500; opacity: 0.75; }
+
+        /* FEEDBACK OVERLAY */
+        .feedback-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+            display: none; justify-content: center; align-items: center;
+            z-index: 2000;
+        }
+        .feedback-overlay.show { display: flex; }
+        
+        .feedback-card {
+            padding: 50px 70px; border-radius: 25px; text-align: center;
+            animation: popIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .feedback-card.correct { background: var(--mastered-bg); border: 3px solid var(--mastered-color); }
+        .feedback-card.incorrect { background: var(--study-bg); border: 3px solid var(--study-color); }
+        
+        .feedback-icon { font-size: 4rem; margin-bottom: 15px; }
+        .feedback-card.correct .feedback-icon { color: var(--mastered-color); }
+        .feedback-card.incorrect .feedback-icon { color: var(--study-color); }
+        
+        .feedback-text { font-size: 2.2rem; font-weight: 700; font-family: 'Playfair Display', serif; }
+        .feedback-card.correct .feedback-text { color: var(--mastered-color); }
+        .feedback-card.incorrect .feedback-text { color: var(--study-color); }
+        
+        .feedback-sub { font-size: 1rem; color: var(--text-secondary); margin-top: 10px; }
+
+        /* BUTTONS */
+        .btn-group { display: flex; gap: 12px; justify-content: center; margin-top: 25px; flex-wrap: wrap; }
+
+        /* LOADING */
+        .loading-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+            display: none; justify-content: center; align-items: center; z-index: 3000;
+        }
+        .loading-overlay.show { display: flex; }
+        .loading-spinner {
+            background: var(--bg-secondary); padding: 35px 50px;
+            border-radius: 20px; text-align: center;
+        }
+        .spinner {
+            width: 45px; height: 45px; border: 4px solid var(--border-color);
+            border-top-color: var(--primary); border-radius: 50%;
+            animation: spin 1s linear infinite; margin: 0 auto 12px;
+        }
+
+        /* Session complete */
+        .complete-container { text-align: center; padding: 30px 15px; }
+        .complete-icon { font-size: 4rem; color: var(--mastered-color); margin-bottom: 15px; }
+        .complete-title { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--primary-dark); margin-bottom: 10px; }
+        .complete-subtitle { font-size: 1rem; color: var(--text-secondary); margin-bottom: 25px; }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .main-container { padding: 80px 15px 20px; }
+            .stats-bar { gap: 12px; }
+            .stat-box { min-width: 90px; padding: 10px 12px; }
+            .flashcard-container { max-width: 100%; }
+            .flashcard { min-height: 350px; }
+            .flashcard-term { font-size: 1.1rem; }
+            .flashcard-definition { font-size: 0.95rem; }
+            .answer-buttons { flex-direction: column; }
+            .answer-btn { max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP BAR -->
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-layer-group"></i> Flashcards</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- FEEDBACK OVERLAY -->
+    <div class="feedback-overlay" id="feedbackOverlay">
+        <div class="feedback-card" id="feedbackCard">
+            <div class="feedback-icon" id="feedbackIcon"></div>
+            <div class="feedback-text" id="feedbackText"></div>
+            <div class="feedback-sub" id="feedbackSub"></div>
+        </div>
+    </div>
+
+    <!-- LOADING OVERLAY -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p style="font-weight: 600; color: var(--text-primary);">Creando flashcards...</p>
+        </div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <main class="main-container">
+
+        <!-- STATS BAR -->
+        <div class="stats-bar" id="statsBar" style="display: none;">
+            <div class="stat-box study">
+                <div class="stat-number" id="studyCount">0</div>
+                <div class="stat-label">Estudio</div>
+            </div>
+            <div class="stat-box maybe">
+                <div class="stat-number" id="maybeCount">0</div>
+                <div class="stat-label">Tal vez</div>
+            </div>
+            <div class="stat-box mastered">
+                <div class="stat-number" id="masteredCount">0</div>
+                <div class="stat-label">Dominado</div>
+            </div>
+        </div>
+
+        <!-- PROGRESS BAR -->
+        <div class="progress-container" id="progressContainer" style="display: none;">
+            <div class="progress-header">
+                <span class="progress-title" id="progressTitle">Sesion de estudio</span>
+                <span class="progress-info" id="progressInfo">Carta 1 de 10</span>
+            </div>
+            <div class="progress-bar" id="progressBar">
+                <div class="progress-segment study" id="progStudy"></div>
+                <div class="progress-segment maybe" id="progMaybe"></div>
+                <div class="progress-segment mastered" id="progMastered"></div>
+            </div>
+        </div>
+
+        <!-- PANEL 1: INPUT -->
+        <div class="panel active" id="panel1">
+            <div class="panel-header">
+                <i class="fas fa-file-alt panel-icon"></i>
+                <div>
+                    <h2 class="panel-title">Crea tus Flashcards</h2>
+                    <p class="panel-subtitle">El sistema corta inteligentemente en puntos clave</p>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="form-label">Contenido a estudiar</label>
+                    <textarea id="sourceText" placeholder="Pega aqui tu texto...
+
+El sistema detectara automaticamente:
+- Verbos de definicion (es, son, fue, significa...)
+- Fechas y anos importantes
+- Nombres de personas
+- Frases 'es decir' 
+- Paises y lugares
+- Leyes, normas y articulos
+- Formulas matematicas"></textarea>
+                    <p class="form-hint"><i class="fas fa-lightbulb"></i> Minimo 50 caracteres</p>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Cantidad de tarjetas</label>
+                        <select id="cardCount">
+                            <option value="5">5 tarjetas</option>
+                            <option value="10" selected>10 tarjetas</option>
+                            <option value="15">15 tarjetas</option>
+                            <option value="20">20 tarjetas</option>
+                            <option value="30">30 tarjetas</option>
+                            <option value="40">40 tarjetas</option>
+                            <option value="50">50 tarjetas (maximo)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Color de estudio</label>
+                        <div class="color-options" id="studyColorPicker">
+                            <div class="color-option selected" style="background: #e74c3c;" data-color="#e74c3c"></div>
+                            <div class="color-option" style="background: #9b59b6;" data-color="#9b59b6"></div>
+                            <div class="color-option" style="background: #3498db;" data-color="#3498db"></div>
+                            <div class="color-option" style="background: #1abc9c;" data-color="#1abc9c"></div>
+                            <div class="color-option" style="background: #e67e22;" data-color="#e67e22"></div>
+                            <div class="color-option" style="background: #c0392b;" data-color="#c0392b"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="btn-group">
+                    <button class="action-btn btn-primary" onclick="generateCards()">
+                        <i class="fas fa-magic"></i> Generar Flashcards
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL 2: STUDY -->
+        <div class="panel" id="panel2">
+            <div class="panel-body" style="text-align: center;">
+                <div class="flashcard-container">
+                    <div class="flashcard study" id="flashcard" onclick="flipCard()">
+                        <div class="flashcard-face flashcard-front">
+                            <span class="card-badge" id="cardBadge">Estudio</span>
+                            <i class="fas fa-lightbulb flashcard-icon"></i>
+                            <div class="flashcard-term" id="cardTerm">Termino...</div>
+                            <div class="flashcard-hint"><i class="fas fa-hand-pointer"></i> Toca para ver la respuesta</div>
+                        </div>
+                        <div class="flashcard-face flashcard-back">
+                            <i class="fas fa-check-circle flashcard-icon"></i>
+                            <div class="flashcard-definition" id="cardDefinition">Definicion completa aqui.</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="answer-buttons" id="answerButtons">
+                    <button class="answer-btn btn-wrong" onclick="answerCard(false)">
+                        <i class="fas fa-times"></i> Incorrecto
+                        <span>Volver a estudiar</span>
+                    </button>
+                    <button class="answer-btn btn-correct" onclick="answerCard(true)">
+                        <i class="fas fa-check"></i> Correcto
+                        <span>Avanzar nivel</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL 3: COMPLETE -->
+        <div class="panel" id="panel3">
+            <div class="panel-body">
+                <div class="complete-container">
+                    <i class="fas fa-trophy complete-icon"></i>
+                    <h2 class="complete-title">Sesion completada</h2>
+                    <p class="complete-subtitle" id="completeMessage">Has estudiado todas las tarjetas</p>
+                    
+                    <div class="stats-bar" style="margin: 25px 0;">
+                        <div class="stat-box study">
+                            <div class="stat-number" id="finalStudy">0</div>
+                            <div class="stat-label">Siguen en estudio</div>
+                        </div>
+                        <div class="stat-box maybe">
+                            <div class="stat-number" id="finalMaybe">0</div>
+                            <div class="stat-label">En tal vez</div>
+                        </div>
+                        <div class="stat-box mastered">
+                            <div class="stat-number" id="finalMastered">0</div>
+                            <div class="stat-label">Dominadas</div>
+                        </div>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button class="action-btn btn-secondary" onclick="newSession()">
+                            <i class="fas fa-plus"></i> Nuevo contenido
+                        </button>
+                        <button class="action-btn btn-success" onclick="continueStudy()">
+                            <i class="fas fa-redo"></i> Continuar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // ==================== MESSAGES ====================
+        const SUCCESS_MSG = [
+            'CORRECT', 'EXCELLENT', 'PERFECT', 'BRILLIANT', 'AMAZING', 'SUCCESSFUL', 'AWESOME', 'GREAT JOB', 'WELL DONE', 'FANTASTIC'
+        ];
+        const FAIL_MSG = [
+            'OOPS', 'NOT QUITE', 'ALMOST', 'INCORRECT', 'WRONG', 'OH NO', "DON'T GIVE UP", 'TRY AGAIN', 'KEEP GOING', 'SO CLOSE'
+        ];
+
+        // ==================== STATE ====================
+        const state = {
+            cards: [],
+            currentIndex: 0,
+            sessionRound: 0,
+            sessionQueue: [],
+            studyColor: '#e74c3c'
+        };
+
+        // ==================== THEME ====================
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+
+        // ==================== COLOR PICKER ====================
+        (function setupColorPicker() {
+            const options = document.querySelectorAll('.color-option');
+            options.forEach(function(opt) {
+                opt.addEventListener('click', function() {
+                    options.forEach(function(o) { o.classList.remove('selected'); });
+                    opt.classList.add('selected');
+                    state.studyColor = opt.getAttribute('data-color');
+                    applyStudyColor(state.studyColor);
+                });
+            });
+        })();
+
+        function applyStudyColor(color) {
+            document.documentElement.style.setProperty('--study-color', color);
+            document.documentElement.style.setProperty('--study-bg', color + '18');
+        }
+
+        // ==================== SMART TEXT EXTRACTION ====================
+        function extractConcepts(text, maxCards) {
+            const allCandidates = [];
+            
+            // Split by sentences
+            const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+            
+            sentences.forEach(function(sentence) {
+                const s = sentence.trim();
+                if (s.length < 25) return; // Filter very short
+                
+                const result = smartCut(s);
+                if (result) {
+                    // Calculate quality score
+                    const score = calculateQualityScore(result, s);
+                    allCandidates.push({
+                        term: result.term,
+                        definition: result.definition,
+                        state: 'study',
+                        correctCount: 0,
+                        score: score
+                    });
+                }
+            });
+            
+            // Sort by quality score (higher = better)
+            allCandidates.sort(function(a, b) { return b.score - a.score; });
+            
+            // Remove duplicates (similar terms)
+            const uniqueCards = removeDuplicates(allCandidates);
+            
+            // Return only the requested amount (max 50)
+            return uniqueCards.slice(0, Math.min(maxCards, 50));
+        }
+
+        function calculateQualityScore(result, originalText) {
+            let score = 0;
+            
+            // Longer definitions are better (more complete)
+            score += Math.min(result.definition.length / 10, 30);
+            
+            // Good cut points increase score
+            if (result.term.includes('...')) score += 15;
+            if (result.term.includes(':')) score += 10;
+            if (result.term.includes('=')) score += 10;
+            
+            // Dates/years are important
+            if (/\d{4}/.test(originalText)) score += 20;
+            
+            // Names are important (capitalized words)
+            if (/[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+\s+[A-ZÁÉÍÓÚÑ]/.test(originalText)) score += 15;
+            
+            // Definition verbs are important
+            const defVerbs = ['es', 'son', 'fue', 'significa', 'consiste', 'representa'];
+            defVerbs.forEach(function(v) {
+                if (originalText.toLowerCase().includes(' ' + v + ' ')) score += 12;
+            });
+            
+            // Penalize very short content
+            if (result.definition.length < 40) score -= 15;
+            
+            // Penalize repetitive content
+            if (result.definition.split(' ').length < 5) score -= 10;
+            
+            return score;
+        }
+
+        function removeDuplicates(candidates) {
+            const seen = new Set();
+            return candidates.filter(function(card) {
+                // Normalize term for comparison
+                const normalized = card.term.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 30);
+                if (seen.has(normalized)) return false;
+                seen.add(normalized);
+                return true;
+            });
+        }
+
+        function smartCut(text) {
+            let cleanText = text.replace(/\s+/g, ' ').trim();
+            
+            // Pattern 1: Definition verbs
+            const defVerbs = ['es', 'son', 'fue', 'fueron', 'significa', 'consiste en', 'representa', 'se define como', 'se caracteriza por'];
+            for (let i = 0; i < defVerbs.length; i++) {
+                const verb = defVerbs[i];
+                const regex = new RegExp('(.+?)\\s+' + escapeRegex(verb) + '\\s+', 'i');
+                const match = cleanText.match(regex);
+                if (match && match[1].length > 3) {
+                    const cutPoint = cleanText.toLowerCase().indexOf(' ' + verb + ' ') + verb.length + 1;
+                    if (cutPoint > 10 && cutPoint < cleanText.length - 20) {
+                        return {
+                            term: cleanText.substring(0, cutPoint).trim() + '...',
+                            definition: cleanText
+                        };
+                    }
+                }
+            }
+            
+            // Pattern 2: Dates/years
+            const yearMatch = cleanText.match(/(.+?\s+en\s+)(\d{4})/i);
+            if (yearMatch) {
+                const cutPoint = yearMatch[1].length;
+                if (cutPoint > 15 && cutPoint < cleanText.length - 30) {
+                    return {
+                        term: cleanText.substring(0, cutPoint).trim() + '...',
+                        definition: cleanText
+                    };
+                }
+            }
+            
+            // Pattern 3: "es decir"
+            if (cleanText.toLowerCase().includes('es decir')) {
+                const parts = cleanText.split(/[.!?]+/);
+                if (parts.length >= 2) {
+                    const firstPart = parts[0].trim();
+                    if (firstPart.toLowerCase().includes('es decir')) {
+                        return {
+                            term: firstPart + ':',
+                            definition: cleanText
+                        };
+                    }
+                }
+            }
+            
+            // Pattern 4: Countries
+            const countries = ['Estados Unidos', 'Mexico', 'Espana', 'Argentina', 'Colombia', 'Chile', 'Peru', 'Venezuela', 'Ecuador', 'Bolivia', 'Cuba', 'Uruguay', 'Paraguay', 'Nicaragua', 'Guatemala', 'Honduras', 'El Salvador', 'Costa Rica', 'Panama', 'Francia', 'Italia', 'Alemania', 'Reino Unido', 'China', 'Japon', 'India', 'Rusia', 'Union Sovietica', 'Corea', 'Brasil', 'Canada', 'Australia'];
+            for (let i = 0; i < countries.length; i++) {
+                const country = countries[i];
+                const pos = cleanText.indexOf(country);
+                if (pos > 20 && pos < cleanText.length - 30) {
+                    const beforeCountry = cleanText.substring(0, pos).trim();
+                    const lastSpace = beforeCountry.lastIndexOf(' ');
+                    if (lastSpace > 15) {
+                        return {
+                            term: beforeCountry.substring(0, lastSpace) + '...',
+                            definition: cleanText
+                        };
+                    }
+                }
+            }
+            
+            // Pattern 5: Laws/Articles
+            const lawMatch = cleanText.match(/(.+?)\s+(Ley|Articulo|Art\.|Norma|Codigo|Decreto|Resolucion)\s+[\w\d]+/i);
+            if (lawMatch && lawMatch[1].length > 20) {
+                const cutPoint = lawMatch[1].lastIndexOf(' ');
+                if (cutPoint > 15) {
+                    return {
+                        term: lawMatch[1].substring(0, cutPoint) + '...',
+                        definition: cleanText
+                    };
+                }
+            }
+            
+            // Pattern 6: Formulas
+            if (/[\d+\-*/=()^%]/.test(cleanText) && cleanText.length > 50) {
+                const formulaMatch = cleanText.match(/(.+?)\s*[:=]\s*(.+)/);
+                if (formulaMatch) {
+                    return {
+                        term: formulaMatch[1].trim() + ' =',
+                        definition: cleanText
+                    };
+                }
+            }
+            
+            // Pattern 7: Person names
+            const personMatch = cleanText.match(/^([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+)*)\s+(fue|es|son|escribio|creo|invento|descubrio)/);
+            if (personMatch) {
+                const cutPoint = cleanText.indexOf(personMatch[2]) + personMatch[2].length;
+                return {
+                    term: personMatch[1] + ' ' + personMatch[2] + '...',
+                    definition: cleanText
+                };
+            }
+            
+            // Pattern 8: Colon
+            const colonMatch = cleanText.match(/^([^:]{3,50}):\s*(.+)$/);
+            if (colonMatch) {
+                return {
+                    term: colonMatch[1].trim() + ':',
+                    definition: cleanText
+                };
+            }
+            
+            // Default: split at middle
+            if (cleanText.length > 60) {
+                const midPoint = Math.floor(cleanText.length / 2);
+                let cutPoint = cleanText.lastIndexOf(' ', midPoint);
+                if (cutPoint < 20) cutPoint = cleanText.indexOf(' ', midPoint);
+                if (cutPoint > 20 && cutPoint < cleanText.length - 20) {
+                    return {
+                        term: cleanText.substring(0, cutPoint) + '...',
+                        definition: cleanText
+                    };
+                }
+            }
+            
+            return {
+                term: cleanText.substring(0, Math.min(50, cleanText.length)) + (cleanText.length > 50 ? '...' : ''),
+                definition: cleanText
+            };
+        }
+
+        function escapeRegex(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        // ==================== GENERATION ====================
+        function generateCards() {
+            const text = document.getElementById('sourceText').value.trim();
+            if (text.length < 50) {
+                alert('Por favor ingresa al menos 50 caracteres.');
+                return;
+            }
+
+            const maxCards = parseInt(document.getElementById('cardCount').value) || 10;
+
+            document.getElementById('loadingOverlay').classList.add('show');
+
+            setTimeout(function() {
+                state.cards = extractConcepts(text, maxCards);
+                
+                if (state.cards.length === 0) {
+                    document.getElementById('loadingOverlay').classList.remove('show');
+                    alert('No se pudieron extraer conceptos del texto. Intenta con un texto mas largo.');
+                    return;
+                }
+
+                state.currentIndex = 0;
+                state.sessionRound = 0;
+                
+                buildSessionQueue();
+                
+                document.getElementById('loadingOverlay').classList.remove('show');
+                showStudyPanel();
+            }, 1500);
+        }
+
+        // ==================== SESSION ====================
+        function buildSessionQueue() {
+            const studyCards = state.cards.filter(function(c) { return c.state === 'study'; });
+            const maybeCards = state.cards.filter(function(c) { return c.state === 'maybe'; });
+            const masteredCards = state.cards.filter(function(c) { return c.state === 'mastered'; });
+
+            const roundType = state.sessionRound % 3;
+
+            if (roundType === 0) {
+                state.sessionQueue = shuffleArray(studyCards);
+            } else if (roundType === 1) {
+                state.sessionQueue = shuffleArray(studyCards.concat(maybeCards));
+            } else {
+                state.sessionQueue = shuffleArray(masteredCards);
+            }
+
+            if (state.sessionQueue.length === 0) {
+                state.sessionQueue = shuffleArray(state.cards.slice());
+            }
+
+            state.currentIndex = 0;
+        }
+
+        function shuffleArray(arr) {
+            const array = arr.slice();
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                const temp = array[i];
+                array[i] = array[j];
+                array[j] = temp;
+            }
+            return array;
+        }
+
+        // ==================== UI ====================
+        function showStudyPanel() {
+            document.getElementById('statsBar').style.display = 'flex';
+            document.getElementById('progressContainer').style.display = 'block';
+            
+            document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
+            document.getElementById('panel2').classList.add('active');
+            
+            updateStats();
+            showCurrentCard();
+        }
+
+        function updateStats() {
+            const study = state.cards.filter(function(c) { return c.state === 'study'; }).length;
+            const maybe = state.cards.filter(function(c) { return c.state === 'maybe'; }).length;
+            const mastered = state.cards.filter(function(c) { return c.state === 'mastered'; }).length;
+            const total = state.cards.length;
+
+            document.getElementById('studyCount').textContent = study;
+            document.getElementById('maybeCount').textContent = maybe;
+            document.getElementById('masteredCount').textContent = mastered;
+
+            const studyW = total > 0 ? (study / total * 100) : 0;
+            const maybeW = total > 0 ? (maybe / total * 100) : 0;
+            const masteredW = total > 0 ? (mastered / total * 100) : 0;
+
+            document.getElementById('progStudy').style.width = studyW + '%';
+            document.getElementById('progMaybe').style.width = maybeW + '%';
+            document.getElementById('progMastered').style.width = masteredW + '%';
+
+            const curr = state.currentIndex + 1;
+            const queueLen = state.sessionQueue.length;
+            document.getElementById('progressInfo').textContent = 'Carta ' + curr + ' de ' + queueLen;
+            
+            const roundNames = ['Solo Estudio', 'Estudio + Tal vez', 'Repaso Dominadas'];
+            document.getElementById('progressTitle').textContent = 'Ronda ' + (state.sessionRound + 1) + ': ' + roundNames[state.sessionRound % 3];
+        }
+
+        function showCurrentCard() {
+            if (state.currentIndex >= state.sessionQueue.length) {
+                endSession();
+                return;
+            }
+
+            const card = state.sessionQueue[state.currentIndex];
+            const flashcard = document.getElementById('flashcard');
+            
+            flashcard.classList.remove('flipped');
+            flashcard.className = 'flashcard ' + card.state;
+            
+            document.getElementById('cardTerm').textContent = card.term;
+            document.getElementById('cardDefinition').textContent = card.definition;
+            
+            const badges = { study: 'Estudio', maybe: 'Tal vez', mastered: 'Dominado' };
+            document.getElementById('cardBadge').textContent = badges[card.state];
+
+            updateStats();
+        }
+
+        function flipCard() {
+            document.getElementById('flashcard').classList.toggle('flipped');
+        }
+
+        function answerCard(correct) {
+            const card = state.sessionQueue[state.currentIndex];
+            showFeedback(correct);
+
+            if (correct) {
+                card.correctCount++;
+                card.state = card.correctCount >= 2 ? 'mastered' : 'maybe';
+            } else {
+                card.correctCount = 0;
+                card.state = 'study';
+            }
+
+            setTimeout(function() {
+                state.currentIndex++;
+                
+                if (state.currentIndex >= state.sessionQueue.length) {
+                    state.sessionRound++;
+                    buildSessionQueue();
+                    
+                    const mastered = state.cards.filter(function(c) { return c.state === 'mastered'; }).length;
+                    if (mastered === state.cards.length) {
+                        showComplete();
+                    } else {
+                        showCurrentCard();
+                    }
+                } else {
+                    showCurrentCard();
+                }
+            }, 1500);
+        }
+
+        function showFeedback(correct) {
+            const overlay = document.getElementById('feedbackOverlay');
+            const card = document.getElementById('feedbackCard');
+            const icon = document.getElementById('feedbackIcon');
+            const text = document.getElementById('feedbackText');
+            const sub = document.getElementById('feedbackSub');
+
+            if (correct) {
+                card.className = 'feedback-card correct';
+                icon.innerHTML = '<i class="fas fa-check-circle"></i>';
+                text.textContent = SUCCESS_MSG[Math.floor(Math.random() * SUCCESS_MSG.length)];
+                sub.textContent = 'Muy bien, sigue asi!';
+            } else {
+                card.className = 'feedback-card incorrect';
+                icon.innerHTML = '<i class="fas fa-times-circle"></i>';
+                text.textContent = FAIL_MSG[Math.floor(Math.random() * FAIL_MSG.length)];
+                sub.textContent = 'Esta carta volvera al bloque de estudio';
+            }
+
+            overlay.classList.add('show');
+            setTimeout(function() { overlay.classList.remove('show'); }, 1200);
+        }
+
+        function endSession() {
+            state.sessionRound++;
+            buildSessionQueue();
+            showCurrentCard();
+        }
+
+        function showComplete() {
+            document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
+            document.getElementById('panel3').classList.add('active');
+            document.getElementById('statsBar').style.display = 'none';
+            document.getElementById('progressContainer').style.display = 'none';
+
+            const study = state.cards.filter(function(c) { return c.state === 'study'; }).length;
+            const maybe = state.cards.filter(function(c) { return c.state === 'maybe'; }).length;
+            const mastered = state.cards.filter(function(c) { return c.state === 'mastered'; }).length;
+
+            document.getElementById('finalStudy').textContent = study;
+            document.getElementById('finalMaybe').textContent = maybe;
+            document.getElementById('finalMastered').textContent = mastered;
+
+            let msg = 'Has dominado ' + mastered + ' de ' + state.cards.length + ' tarjetas.';
+            msg += mastered === state.cards.length ? ' Excelente trabajo!' : ' Sigue practicando!';
+            document.getElementById('completeMessage').textContent = msg;
+        }
+
+        function newSession() {
+            state.cards = [];
+            state.currentIndex = 0;
+            state.sessionRound = 0;
+            state.sessionQueue = [];
+            
+            document.getElementById('sourceText').value = '';
+            document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
+            document.getElementById('panel1').classList.add('active');
+            document.getElementById('statsBar').style.display = 'none';
+            document.getElementById('progressContainer').style.display = 'none';
+        }
+
+        function continueStudy() {
+            state.sessionRound = 0;
+            buildSessionQueue();
+            showStudyPanel();
+        }
+    </script>
+</body>
+</html>
