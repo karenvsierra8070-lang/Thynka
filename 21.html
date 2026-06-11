@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metodo Feynman - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --accent-1: #e74c3c; --accent-2: #3498db; --accent-3: #27ae60;
+            --accent-4: #9b59b6; --accent-5: #e67e22;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1300px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-hover); }
+
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, var(--accent-1) 0%, #c0392b 100%);
+            color: white; padding: 40px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 300px; height: 100%;
+            background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.15) 0%, transparent 60%);
+        }
+        .hero-text { flex: 1; z-index: 1; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.8rem;
+            font-weight: 600; margin-bottom: 15px;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.5rem;
+            margin-bottom: 12px; line-height: 1.2;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.9; max-width: 500px; }
+        .hero-visual {
+            width: 180px; height: 220px; background: rgba(255,255,255,0.1);
+            border-radius: 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 8px;
+            position: relative; z-index: 1; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .hero-visual i { font-size: 3rem; opacity: 0.8; }
+
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white;
+        }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #c0392b); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-2), #2980b9); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-3), #1e8449); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-4), #7d3c98); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-5), #d35400); }
+        .icon-brown { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+
+        /* Intro Deep Card */
+        .card-intro {
+            grid-column: span 12;
+            background: var(--bg-tertiary);
+        }
+        .intro-quote {
+            font-family: 'Playfair Display', serif; font-size: 1.1rem;
+            color: var(--primary-dark); font-style: italic;
+            border-left: 4px solid var(--primary); padding-left: 20px;
+            margin-bottom: 20px;
+        }
+        .intro-content { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .intro-text p { margin-bottom: 15px; font-size: 0.95rem; color: var(--text-primary); }
+        .feynman-stats {
+            display: flex; flex-direction: column; gap: 15px;
+            justify-content: center; background: var(--bg-secondary);
+            padding: 20px; border-radius: 12px;
+        }
+        .stat-item { display: flex; align-items: center; gap: 10px; }
+        .stat-item i { color: var(--accent-1); font-size: 1.2rem; }
+
+        /* The 4 Steps Detailed */
+        .card-steps-deep {
+            grid-column: span 12;
+        }
+        .steps-accordion {
+            display: flex; flex-direction: column; gap: 15px; margin-top: 20px;
+        }
+        .step-block {
+            background: var(--bg-tertiary); border-radius: 15px;
+            padding: 20px; border-left: 5px solid;
+            transition: all 0.3s;
+        }
+        .step-block:hover { transform: translateX(5px); }
+        .step-1 { border-color: var(--accent-2); }
+        .step-2 { border-color: var(--accent-5); }
+        .step-3 { border-color: var(--accent-1); }
+        .step-4 { border-color: var(--accent-3); }
+
+        .step-header {
+            display: flex; align-items: center; gap: 15px; margin-bottom: 15px;
+        }
+        .step-num-big {
+            font-family: 'Playfair Display', serif; font-size: 2.5rem;
+            font-weight: 700; opacity: 0.3;
+        }
+        .step-1 .step-num-big { color: var(--accent-2); }
+        .step-2 .step-num-big { color: var(--accent-5); }
+        .step-3 .step-num-big { color: var(--accent-1); }
+        .step-4 .step-num-big { color: var(--accent-3); }
+
+        .step-body h4 { font-size: 1.1rem; color: var(--primary-dark); margin-bottom: 8px; }
+        .step-body p { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 10px; }
+        .step-tip {
+            background: var(--bg-secondary); padding: 10px;
+            border-radius: 8px; font-size: 0.85rem;
+            display: flex; align-items: flex-start; gap: 10px;
+        }
+        .step-tip i { color: var(--primary); margin-top: 3px; }
+
+        /* The Gap Analysis */
+        .card-gap {
+            grid-column: span 6;
+            grid-row: span 2;
+        }
+        .gap-visual {
+            margin-top: 20px; background: var(--bg-tertiary);
+            border-radius: 12px; padding: 20px;
+        }
+        .gap-bar {
+            height: 30px; background: var(--border-color);
+            border-radius: 15px; margin-bottom: 10px;
+            position: relative; overflow: hidden;
+        }
+        .gap-fill {
+            height: 100%; background: var(--accent-3);
+            border-radius: 15px; display: flex;
+            align-items: center; justify-content: flex-end;
+            padding-right: 10px; color: white; font-size: 0.7rem;
+            font-weight: 700; transition: width 0.5s;
+        }
+        .gap-hole {
+            position: absolute; top: 0; height: 100%;
+            background: var(--accent-1); opacity: 0.8;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 0.7rem;
+        }
+        .gap-text {
+            margin-top: 15px; font-size: 0.9rem; color: var(--text-primary);
+        }
+
+        /* Complexity Trap */
+        .card-trap {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-5) 0%, #d35400 100%);
+            color: white;
+        }
+        .card-trap .card-title { color: white; }
+        .trap-example {
+            background: rgba(255,255,255,0.1); padding: 15px;
+            border-radius: 10px; margin-top: 15px; font-family: monospace;
+            font-size: 0.85rem;
+        }
+        .trap-bad { text-decoration: line-through; opacity: 0.6; margin-bottom: 10px; }
+        .trap-good { color: #fff; font-weight: 700; }
+
+        /* Analogy Section */
+        .card-analogy {
+            grid-column: span 6;
+        }
+        .analogy-builder {
+            margin-top: 20px; display: grid; gap: 15px;
+        }
+        .analogy-item {
+            display: grid; grid-template-columns: 1fr auto 1fr;
+            gap: 15px; align-items: center; background: var(--bg-tertiary);
+            padding: 15px; border-radius: 10px;
+        }
+        .analogy-left, .analogy-right {
+            text-align: center; font-size: 0.85rem; padding: 10px;
+            background: var(--bg-secondary); border-radius: 8px;
+        }
+        .analogy-arrow { font-size: 1.2rem; color: var(--primary); }
+
+        /* Real World Example */
+        .card-example-full {
+            grid-column: span 6;
+            background: var(--bg-tertiary);
+        }
+        .example-process {
+            margin-top: 15px; border-left: 3px solid var(--primary);
+            padding-left: 15px;
+        }
+        .ex-step { margin-bottom: 15px; }
+        .ex-step strong { color: var(--primary-dark); display: block; margin-bottom: 3px; }
+        .ex-step p { font-size: 0.85rem; color: var(--text-secondary); margin: 0; background: var(--bg-secondary); padding: 8px; border-radius: 5px; }
+
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 30px;
+            background: var(--bg-tertiary);
+        }
+        .footer-text {
+            font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 5px;
+        }
+
+        @media (max-width: 1100px) {
+            .intro-content { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-hero, .card-intro, .card-steps-deep, .card-gap,
+            .card-trap, .card-analogy, .card-example-full, .card-footer { grid-column: span 12; }
+            .hero-text h1 { font-size: 1.8rem; }
+            .card-hero { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-user-graduate"></i> Metodo Feynman</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-medal"></i> El Metodo del Genio</span>
+                    <h1>El Metodo Feynman</h1>
+                    <p>Richard Feynman no era solo un físico galardonado con el Nobel; era "El Gran Explicador". Su verdadero genio no residía en memorizar fórmulas, sino en destriparlas hasta encontrar su esencia más simple. Este método es la navaja suiza del aprendizaje profundo.</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-child"></i>
+                    <span style="font-size: 0.85rem; font-weight: 600;">Explicalo a un Niño</span>
+                </div>
+            </article>
+
+            <!-- INTRO FILOSOFICA -->
+            <article class="card card-intro">
+                <div class="card-header">
+                    <div class="card-icon icon-red"><i class="fas fa-brain"></i></div>
+                    <h2 class="card-title">La Filosofia del "Gran Explicador"</h2>
+                </div>
+                <div class="intro-content">
+                    <div class="intro-text">
+                        <div class="intro-quote">
+                            "Si no puedes explicarlo de forma sencilla, es que no lo entiendes lo suficientemente bien."
+                        </div>
+                        <p>La mayoría de los estudiantes caen en la <strong>"Ilusión de Competencia"</strong>. Leen un texto, lo entienden mientras lo leen, y creen que lo han aprendido. Pero el cerebro solo está reconociendo patrones familiares, no ha construido el conocimiento.</p>
+                        <p>El Método Feynman es una prueba de estrés para tu conocimiento. Te obliga a salir de la zona cómoda de la lectura pasiva y entrar en el terreno de la <strong>producción activa</strong>. No te permite usar "palabras escudo" (jerga técnica) para ocultar tu ignorancia.</p>
+                    </div>
+                    <div class="feynman-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-times-circle"></i>
+                            <span><strong>Error comun:</strong> Memorizar definiciones sin entender el mecanismo.</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span><strong>Meta Feynman:</strong> Reconstruir el concepto desde cero.</span>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- LOS 4 PASOS A FONDO -->
+            <article class="card card-steps-deep">
+                <div class="card-header">
+                    <div class="card-icon icon-blue"><i class="fas fa-list-ol"></i></div>
+                    <h2 class="card-title">Los 4 Pilares del Metodo (Explicados)</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">No es solo "explicar". Es un proceso de ingeniería inversa del conocimiento. Aquí está el "cómo" detallado de cada paso:</p>
+
+                <div class="steps-accordion">
+                    <!-- Paso 1 -->
+                    <div class="step-block step-1">
+                        <div class="step-header">
+                            <div class="step-num-big">01</div>
+                            <div>
+                                <h4>Elige un Concepto (y ponle limites)</h4>
+                            </div>
+                        </div>
+                        <div class="step-body">
+                            <p>No elijas "La Biología". Es demasiado amplio. Elige "La Transcripción del ADN". Escribe el nombre en una hoja en blanco. Este es tu lienzo. Al escribirlo, te comprometes a delimitar el tema.</p>
+                            <div class="step-tip">
+                                <i class="fas fa-lightbulb"></i>
+                                <span><strong>Tip Pro:</strong> Cuanto más específico sea el título, más profundo será tu análisis. "La Fotoeléctrica" es mejor que "Física Cuántica".</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Paso 2 -->
+                    <div class="step-block step-2">
+                        <div class="step-header">
+                            <div class="step-num-big">02</div>
+                            <div>
+                                <h4>Enseñalo a un Niño (La prueba del "Por qué")</h4>
+                            </div>
+                        </div>
+                        <div class="step-body">
+                            <p>Imagina que tienes frente a ti a un niño de 8-10 años. No conoce tu jerga. Si dices "mitosis", no entiende. Debes decir "cómo una célula se parte en dos". Escribe la explicación usando solo palabras del diccionario común.</p>
+                            <div class="step-tip">
+                                <i class="fas fa-lightbulb"></i>
+                                <span><strong>La Regla de Oro:</strong> Si usas una palabra compleja (ej: "entropía"), estás obligado a definirla en términos simples dentro de la misma frase. Si no puedes, no la entiendes.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Paso 3 -->
+                    <div class="step-block step-3">
+                        <div class="step-header">
+                            <div class="step-num-big">03</div>
+                            <div>
+                                <h4>Identifica los Huecos (El momento doloroso)</h4>
+                            </div>
+                        </div>
+                        <div class="step-body">
+                            <p>Aquí es donde ocurre la magia. Llegarás a un punto donde dirás "y luego... pasa algo mágico y..." o te trabarás. ESE es el hueco. Esa sensación de incomodidad es tu cerebro diciéndote: "Aquí es donde no sabes". Marca eso en rojo. No lo saltes.</p>
+                            <div class="step-tip">
+                                <i class="fas fa-lightbulb"></i>
+                                <span><strong>Analisis:</strong> El hueco suele ser uno de dos: o te falta un dato (información) o te falta entender la conexión (lógica). Vuelve a la fuente SOLO para llenar ese hueco específico.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Paso 4 -->
+                    <div class="step-block step-4">
+                        <div class="step-header">
+                            <div class="step-num-big">04</div>
+                            <div>
+                                <h4>Simplifica y Usa Analogias (El puente mental)</h4>
+                            </div>
+                        </div>
+                        <div class="step-body">
+                            <p>Ya tienes la explicación completa. Ahora hazla elegante. Convierte la prosa en una historia. Usa una analogía. "La electricidad es como agua en una tubería". Las analogías conectan lo desconocido con lo conocido en el cerebro, creando una "carretera" neuronal permanente.</p>
+                            <div class="step-tip">
+                                <i class="fas fa-lightbulb"></i>
+                                <span><strong>Refinamiento:</strong> Lee tu explicación en voz alta. ¿Suena robótica? Reescríbela hasta que suene como si se lo contaras a un amigo en un bar.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- VISUALIZACION DEL HUECO -->
+            <article class="card card-gap">
+                <div class="card-header">
+                    <div class="card-icon icon-purple"><i class="fas fa-chart-area"></i></div>
+                    <h2 class="card-title">Anatomia de un Hueco de Conocimiento</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Visualiza cómo creemos saber versus lo que realmente sabemos.</p>
+                
+                <div class="gap-visual">
+                    <h5 style="text-align: center; margin-bottom: 10px; color: var(--primary-dark);">Tu Percepcion vs Realidad</h5>
+                    <div class="gap-bar">
+                        <div class="gap-fill" style="width: 90%;">Creo que se el 90%</div>
+                    </div>
+                    <div class="gap-bar">
+                        <div class="gap-fill" style="width: 60%;">Realidad</div>
+                        <div class="gap-hole" style="left: 65%; width: 20%;">Hueco</div>
+                    </div>
+                </div>
+                <div class="gap-text">
+                    <p>El Método Feynman hace visible ese 20-30% de "hueco" que ignoramos. Esos huecos son los que te hacen fallar los exámenes, no lo que ya sabes. Son silenciosos; solo aparecen cuando intentas explicar.</p>
+                </div>
+            </article>
+
+            <!-- LA TRAMPA DE LA COMPLEJIDAD -->
+            <article class="card card-trap">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-mask"></i></div>
+                    <h2 class="card-title">La Trampa de la Jerga</h2>
+                </div>
+                <p style="font-size: 0.9rem; opacity: 0.9;">El error número uno es usar palabras complejas para ocultar falta de comprensión.</p>
+                
+                <div class="trap-example">
+                    <div class="trap-bad">"El ATP sintasa facilita la síntesis de ATP mediante un gradiente de protones." (Suena bien, pero ¿cómo funciona realmente?)</div>
+                    <div class="trap-good">"Imagina una central hidroeléctrica minúscula. Los protones son como agua que cae por una cascada. Esta cae gira una turbina (la ATP sintasa), y esa turbina fabrica la batería de la célula (ATP)."</div>
+                </div>
+                <p style="font-size: 0.8rem; margin-top: 15px; opacity: 0.8;">La segunda versión demuestra comprensión real. La primera solo demuestra memoria.</p>
+            </article>
+
+            <!-- ANALOGIAS -->
+            <article class="card card-analogy">
+                <div class="card-header">
+                    <div class="card-icon icon-green"><i class="fas fa-random"></i></div>
+                    <h2 class="card-title">El Poder de la Analogia</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Una analogía toma algo abstracto y lo ancla a tu experiencia cotidiana.</p>
+                
+                <div class="analogy-builder">
+                    <div class="analogy-item">
+                        <div class="analogy-left"><strong>Tema: Internet</strong><br>Paquetes de datos, protocolos TCP/IP...</div>
+                        <div class="analogy-arrow"><i class="fas fa-exchange-alt"></i></div>
+                        <div class="analogy-right"><strong>Analogia: Correo Postal</strong><br>Cartas, sobres, dirección, cartero.</div>
+                    </div>
+                    <div class="analogy-item">
+                        <div class="analogy-left"><strong>Tema: Inflación</strong><br>Oferta monetaria, poder adquisitivo...</div>
+                        <div class="analogy-arrow"><i class="fas fa-exchange-alt"></i></div>
+                        <div class="analogy-right"><strong>Analogia: Subasta</strong><br>Si todos tienen más dinero, pujan más alto y todo sube de precio.</div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- EJEMPLO COMPLETO -->
+            <article class="card card-example-full">
+                <div class="card-header">
+                    <div class="card-icon icon-orange"><i class="fas fa-play-circle"></i></div>
+                    <h2 class="card-title">Ejemplo: La Relatividad Especial</h2>
+                </div>
+                <div class="example-process">
+                    <div class="ex-step">
+                        <strong>1. Titulo:</strong> La Relatividad Especial (Velocidad de la luz).
+                    </div>
+                    <div class="ex-step">
+                        <strong>2. Explicacion a Niño:</strong> "Imagina que lanzas una pelota desde un tren en movimiento. La pelota va rápido (velocidad del tren + tu tiro). Pero la luz no funciona así. La luz siempre corre a la misma velocidad, sin importar qué tan rápido vayas. Si vas en una nave espacial muy rápido y enciendes una linterna, la luz sale a la misma velocidad que si estuvieras quieto. Eso es raro, pero así funciona el universo."
+                    </div>
+                    <div class="ex-step">
+                        <strong>3. Huecos detectados:</strong> "¿Por qué pasa eso? ¿Qué pasa con el tiempo entonces? Ahí me perdí."
+                    </div>
+                    <div class="ex-step">
+                        <strong>4. Simplificacion:</strong> "Como la velocidad es fija, para que las matemáticas funcionen, otra cosa debe cambiar: el TIEMPO. El tiempo se estira para que la luz mantenga su velocidad constante."
+                    </div>
+                </div>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-text">La capacidad de simplificar no es simplificar la realidad, es dominarla. Si puedes explicarlo, es tuyo para siempre.</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+    </script>
+</body>
+</html>
