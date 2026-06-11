@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metodo Que, Como y Por Que - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --accent-1: #e74c3c; --accent-2: #3498db; --accent-3: #27ae60;
+            --accent-4: #9b59b6; --accent-5: #e67e22;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1300px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-hover); }
+
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white; padding: 40px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 300px; height: 100%;
+            background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.15) 0%, transparent 60%);
+        }
+        .hero-text { flex: 1; z-index: 1; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.8rem;
+            font-weight: 600; margin-bottom: 15px;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.5rem;
+            margin-bottom: 12px; line-height: 1.2;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.9; max-width: 500px; }
+        .hero-visual {
+            width: 200px; height: 220px; background: rgba(255,255,255,0.1);
+            border-radius: 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 12px;
+            position: relative; z-index: 1; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .hero-visual i { font-size: 3rem; opacity: 0.8; }
+        .hero-icons {
+            display: flex; gap: 15px; margin-top: 10px;
+        }
+        .hero-icons span {
+            width: 45px; height: 45px; background: rgba(255,255,255,0.2);
+            border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-size: 0.9rem; font-weight: 700;
+        }
+
+        .card-what {
+            grid-column: span 7;
+            grid-row: span 2;
+        }
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white;
+        }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #c0392b); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-2), #2980b9); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-3), #1e8449); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-4), #7d3c98); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-5), #d35400); }
+        .icon-brown { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+        .card-content p { margin-bottom: 15px; font-size: 0.95rem; color: var(--text-primary); }
+        .card-content strong { color: var(--primary-dark); }
+
+        .card-origin {
+            grid-column: span 5;
+            background: var(--bg-tertiary);
+        }
+        .origin-content {
+            display: flex; flex-direction: column; gap: 15px;
+        }
+        .origin-item {
+            display: flex; align-items: flex-start; gap: 12px;
+        }
+        .origin-icon {
+            width: 40px; height: 40px; background: var(--primary);
+            border-radius: 10px; display: flex; align-items: center;
+            justify-content: center; color: white; flex-shrink: 0;
+        }
+        .origin-text h4 {
+            font-size: 0.95rem; color: var(--primary-dark); margin-bottom: 3px;
+        }
+        .origin-text p {
+            font-size: 0.85rem; color: var(--text-secondary); margin: 0;
+        }
+
+        .card-diagram {
+            grid-column: span 5;
+            grid-row: span 2;
+            display: flex; flex-direction: column;
+        }
+        .pyramid-container {
+            flex: 1; display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            gap: 8px; margin-top: 15px;
+        }
+        .pyramid-level {
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 600; border-radius: 8px;
+            transition: all 0.3s; cursor: default;
+        }
+        .pyramid-level:hover { transform: scale(1.02); }
+        .level-what {
+            width: 90%; padding: 20px;
+            background: linear-gradient(135deg, var(--accent-2), #2980b9);
+        }
+        .level-how {
+            width: 75%; padding: 18px;
+            background: linear-gradient(135deg, var(--accent-5), #d35400);
+        }
+        .level-why {
+            width: 60%; padding: 16px;
+            background: linear-gradient(135deg, var(--accent-3), #1e8449);
+        }
+        .pyramid-label {
+            display: flex; align-items: center; gap: 8px; font-size: 0.95rem;
+        }
+        .pyramid-desc {
+            font-size: 0.75rem; opacity: 0.9; margin-top: 4px;
+        }
+
+        .card-questions {
+            grid-column: span 7;
+        }
+        .questions-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 15px; margin-top: 20px;
+        }
+        .question-card {
+            background: var(--bg-tertiary); border-radius: 15px;
+            padding: 20px; text-align: center;
+            border: 2px solid transparent; transition: all 0.3s;
+        }
+        .question-card:hover { transform: translateY(-5px); }
+        .question-card.q-what { border-color: var(--accent-2); }
+        .question-card.q-how { border-color: var(--accent-5); }
+        .question-card.q-why { border-color: var(--accent-3); }
+        .question-icon {
+            width: 50px; height: 50px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 12px; font-size: 1.3rem; color: white;
+        }
+        .q-what .question-icon { background: linear-gradient(135deg, var(--accent-2), #2980b9); }
+        .q-how .question-icon { background: linear-gradient(135deg, var(--accent-5), #d35400); }
+        .q-why .question-icon { background: linear-gradient(135deg, var(--accent-3), #1e8449); }
+        .question-card h4 {
+            font-size: 1rem; color: var(--primary-dark); margin-bottom: 8px;
+        }
+        .question-card p {
+            font-size: 0.8rem; color: var(--text-secondary); margin: 0;
+        }
+
+        .card-depth {
+            grid-column: span 4;
+            background: linear-gradient(135deg, var(--accent-4) 0%, #7d3c98 100%);
+            color: white;
+        }
+        .card-depth .card-title { color: white; }
+        .card-depth p { color: rgba(255,255,255,0.9); }
+        .depth-meter {
+            display: flex; align-items: center; gap: 10px;
+            margin-top: 15px; background: rgba(255,255,255,0.15);
+            padding: 15px; border-radius: 10px;
+        }
+        .depth-bar {
+            flex: 1; height: 8px; background: rgba(255,255,255,0.3);
+            border-radius: 4px; overflow: hidden;
+        }
+        .depth-fill {
+            height: 100%; background: white; border-radius: 4px;
+            animation: depthPulse 2s ease-in-out infinite;
+        }
+        @keyframes depthPulse {
+            0%, 100% { width: 85%; }
+            50% { width: 95%; }
+        }
+        .depth-label {
+            font-size: 0.85rem; font-weight: 600;
+        }
+
+        .card-benefit {
+            grid-column: span 4;
+        }
+        .benefit-header {
+            display: flex; align-items: center; gap: 15px; margin-bottom: 15px;
+        }
+        .benefit-icon {
+            width: 50px; height: 50px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem; color: white;
+        }
+        .benefit-title {
+            font-weight: 700; font-size: 1.1rem; color: var(--primary-dark);
+        }
+
+        .card-example {
+            grid-column: span 8;
+            grid-row: span 2;
+        }
+        .example-layout {
+            display: grid; grid-template-columns: 1fr;
+            gap: 15px; margin-top: 20px;
+        }
+        .example-row {
+            display: grid; grid-template-columns: 140px 1fr;
+            gap: 15px; align-items: start;
+        }
+        .example-badge {
+            padding: 12px 15px; border-radius: 10px;
+            font-weight: 700; font-size: 0.9rem; text-align: center;
+            color: white; display: flex; align-items: center;
+            justify-content: center; gap: 8px;
+        }
+        .badge-what { background: linear-gradient(135deg, var(--accent-2), #2980b9); }
+        .badge-how { background: linear-gradient(135deg, var(--accent-5), #d35400); }
+        .badge-why { background: linear-gradient(135deg, var(--accent-3), #1e8449); }
+        .example-content {
+            background: var(--bg-tertiary); border-radius: 12px;
+            padding: 15px;
+        }
+        .example-content h5 {
+            font-size: 0.9rem; color: var(--primary-dark);
+            margin-bottom: 8px;
+        }
+        .example-content p {
+            font-size: 0.85rem; color: var(--text-secondary); margin: 0;
+        }
+        .example-content ul {
+            margin: 8px 0 0 15px; font-size: 0.85rem; color: var(--text-secondary);
+        }
+        .example-content li { margin-bottom: 4px; }
+
+        .card-tips {
+            grid-column: span 4;
+        }
+        .tip-list { margin-top: 15px; }
+        .tip-item {
+            display: flex; gap: 12px; padding: 12px;
+            background: var(--bg-tertiary); border-radius: 10px;
+            margin-bottom: 10px; transition: all 0.2s;
+        }
+        .tip-item:hover { background: var(--beige); }
+        .tip-num {
+            width: 28px; height: 28px; background: var(--primary);
+            color: white; border-radius: 8px; display: flex;
+            align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.8rem; flex-shrink: 0;
+        }
+        .tip-text {
+            font-size: 0.85rem; color: var(--text-primary);
+        }
+        .tip-text strong { color: var(--primary-dark); }
+
+        .card-warning {
+            grid-column: span 4;
+            background: linear-gradient(135deg, var(--accent-1) 0%, #c0392b 100%);
+            color: white;
+        }
+        .card-warning .card-title { color: white; }
+        .card-warning p { color: rgba(255,255,255,0.9); }
+        .warning-icon {
+            font-size: 2.5rem; margin-bottom: 15px; opacity: 0.8;
+        }
+
+        .card-application {
+            grid-column: span 6;
+        }
+        .app-list {
+            margin-top: 15px; display: grid; gap: 10px;
+        }
+        .app-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 15px; background: var(--bg-tertiary);
+            border-radius: 10px; transition: all 0.3s;
+        }
+        .app-item:hover { background: var(--beige); transform: translateX(5px); }
+        .app-item i {
+            width: 35px; height: 35px; background: var(--primary);
+            border-radius: 8px; display: flex; align-items: center;
+            justify-content: center; color: white; font-size: 0.9rem;
+        }
+        .app-item span {
+            font-size: 0.9rem; color: var(--text-primary);
+        }
+
+        .card-mindset {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-3) 0%, #1e8449 100%);
+            color: white;
+        }
+        .card-mindset .card-title { color: white; }
+        .mindset-quote {
+            margin-top: 20px; padding: 20px;
+            background: rgba(255,255,255,0.15); border-radius: 12px;
+            border-left: 4px solid white;
+        }
+        .mindset-quote p {
+            font-style: italic; font-size: 1rem;
+            color: rgba(255,255,255,0.95); margin: 0;
+        }
+        .mindset-quote cite {
+            display: block; margin-top: 10px;
+            font-size: 0.85rem; opacity: 0.8;
+        }
+
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 30px;
+            background: var(--bg-tertiary);
+        }
+        .footer-text {
+            font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 5px;
+        }
+
+        @media (max-width: 1100px) {
+            .card-hero { flex-direction: column; text-align: center; padding: 30px; }
+            .hero-text p { margin: 0 auto; }
+            .hero-visual { width: 150px; height: 180px; }
+            .questions-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-hero, .card-what, .card-origin, .card-diagram,
+            .card-questions, .card-depth, .card-benefit,
+            .card-example, .card-tips, .card-warning, .card-application,
+            .card-mindset, .card-footer { grid-column: span 12; }
+            .card-diagram { grid-row: span 1; }
+            .card-example { grid-row: span 1; }
+            .example-row { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 600px) {
+            .hero-text h1 { font-size: 1.8rem; }
+            .card { padding: 20px; }
+            .pyramid-level { padding: 15px !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-question-circle"></i> Metodo Que, Como, Por Que</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-brain"></i> Aprendizaje Profundo</span>
+                    <h1>El Metodo Que, Como y Por Que</h1>
+                    <p>¿Alguna vez has estudiado algo solo para olvidarlo dias despues? El problema no es tu memoria, es la profundidad de tu aprendizaje. Este metodo transforma la forma en que procesas cualquier tema, llevandote de la memorizacion superficial a la comprension real. Tres simples preguntas que abren las puertas del conocimiento duradero. ¡Prepárate para estudiar de verdad!</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-layer-group"></i>
+                    <span style="font-size: 0.85rem; font-weight: 600;">3 Niveles de Profundidad</span>
+                    <div class="hero-icons">
+                        <span>¿?</span>
+                        <span>¿?</span>
+                        <span>¿?</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- QUE ES -->
+            <article class="card card-what">
+                <div class="card-header">
+                    <div class="card-icon icon-red"><i class="fas fa-question"></i></div>
+                    <h2 class="card-title">Que es Este Metodo</h2>
+                </div>
+                <div class="card-content">
+                    <p>El metodo del Que, Como y Por Que es una estrategia de aprendizaje profundo que te obliga a procesar la información en tres niveles progresivos de complejidad. No basta con saber "de que trata" un tema; necesitas comprender como funciona y por que es relevante. Cada pregunta activa diferentes áreas cognitivas y construye puentes neuronales más fuertes.</p>
+                    <p><strong>¿QUE?</strong> Define el objeto de estudio: conceptos, hechos, definiciones. Es la capa superficial pero necesaria. Aqui identificamos los elementos básicos.</p>
+                    <p><strong>¿COMO?</strong> Explora los procesos, mecanismos y aplicaciones. Como se relacionan las partes? Como funciona en la práctica? Esta capa conecta el conocimiento con la acción.</p>
+                    <p><strong>¿POR QUE?</strong> El nivel más profundo: causas, propositos, implicaciones. Por que ocurre? Por que es importante? Aqui nace la comprension genuina y la capacidad de transferir el conocimiento.</p>
+                    <p style="background: var(--bg-tertiary); padding: 15px; border-radius: 10px; border-left: 4px solid var(--primary); margin-top: 20px;">
+                        <strong>El secreto:</strong> La mayoria de estudiantes se quedan en el "que". Memorizan definiciones pero no entienden procesos ni razones. Este metodo te obliga a ir mas alla, a hacer las preguntas que transforman informacion en conocimiento real y utilizable.
+                    </p>
+                </div>
+            </article>
+
+            <!-- ORIGEN -->
+            <article class="card card-origin">
+                <div class="card-header">
+                    <div class="card-icon icon-blue"><i class="fas fa-lightbulb"></i></div>
+                    <h2 class="card-title">Origen y Fundamento</h2>
+                </div>
+                <div class="origin-content">
+                    <div class="origin-item">
+                        <div class="origin-icon"><i class="fas fa-university"></i></div>
+                        <div class="origin-text">
+                            <h4>Raices Filosoficas</h4>
+                            <p>Basado en la mayéutica socrática y el cuestionamiento sistemático</p>
+                        </div>
+                    </div>
+                    <div class="origin-item">
+                        <div class="origin-icon"><i class="fas fa-flask"></i></div>
+                        <div class="origin-text">
+                            <h4>Validacion Cientifica</h4>
+                            <p>Respaldado por investigaciones sobre aprendizaje profundo y metacognicion</p>
+                        </div>
+                    </div>
+                    <div class="origin-item">
+                        <div class="origin-icon"><i class="fas fa-graduation-cap"></i></div>
+                        <div class="origin-text">
+                            <h4>Aplicacion Universal</h4>
+                            <p>Funciona en cualquier disciplina: ciencias, humanidades, artes</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- DIAGRAMA PIRAMIDE -->
+            <article class="card card-diagram">
+                <div class="card-header">
+                    <div class="card-icon icon-purple"><i class="fas fa-chart-pyramid"></i></div>
+                    <h2 class="card-title">Piramide de Profundidad</h2>
+                </div>
+                <div class="pyramid-container">
+                    <div class="pyramid-level level-what">
+                        <div>
+                            <div class="pyramid-label"><i class="fas fa-eye"></i> QUE - Superficial</div>
+                            <div class="pyramid-desc">Definiciones y hechos</div>
+                        </div>
+                    </div>
+                    <div class="pyramid-level level-how">
+                        <div>
+                            <div class="pyramid-label"><i class="fas fa-cogs"></i> COMO - Procesal</div>
+                            <div class="pyramid-desc">Mecanismos y aplicaciones</div>
+                        </div>
+                    </div>
+                    <div class="pyramid-level level-why">
+                        <div>
+                            <div class="pyramid-label"><i class="fas fa-heart"></i> POR QUE - Profundo</div>
+                            <div class="pyramid-desc">Causas y significado</div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- PREGUNTAS DETALLADAS -->
+            <article class="card card-questions">
+                <div class="card-header">
+                    <div class="card-icon icon-green"><i class="fas fa-search-plus"></i></div>
+                    <h2 class="card-title">Las Tres Preguntas Explicadas</h2>
+                </div>
+                <div class="questions-grid">
+                    <div class="question-card q-what">
+                        <div class="question-icon"><i class="fas fa-info-circle"></i></div>
+                        <h4>¿QUE?</h4>
+                        <p>¿Que es este concepto? ¿Que elementos lo componen? ¿Que caracteristicas tiene? Identifica y define.</p>
+                    </div>
+                    <div class="question-card q-how">
+                        <div class="question-icon"><i class="fas fa-wrench"></i></div>
+                        <h4>¿COMO?</h4>
+                        <p>¿Como funciona? ¿Como se aplica? ¿Como se relaciona con otros conceptos? Conecta y procesa.</p>
+                    </div>
+                    <div class="question-card q-why">
+                        <div class="question-icon"><i class="fas fa-lightbulb"></i></div>
+                        <h4>¿POR QUE?</h4>
+                        <p>¿Por que ocurre? ¿Por que es importante? ¿Por que tiene este diseño? Comprende en profundidad.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- PROFUNDIDAD -->
+            <article class="card card-depth">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-chart-line"></i></div>
+                    <h2 class="card-title">Nivel de Comprension</h2>
+                </div>
+                <p>Quien solo responde "que" comprende un 30%. Quien llega al "por que" alcanza el 90% de retencion a largo plazo.</p>
+                <div class="depth-meter">
+                    <div class="depth-bar">
+                        <div class="depth-fill"></div>
+                    </div>
+                    <span class="depth-label">Profundo</span>
+                </div>
+            </article>
+
+            <!-- BENEFICIO 1 -->
+            <article class="card card-benefit">
+                <div class="benefit-header">
+                    <div class="benefit-icon icon-blue"><i class="fas fa-project-diagram"></i></div>
+                    <div class="benefit-title">Conexiones Reales</div>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Cada nivel de pregunta teje redes entre conceptos. No almacenas datos aislados, construyes un mapa mental interconectado.</p>
+            </article>
+
+            <!-- BENEFICIO 2 -->
+            <article class="card card-benefit">
+                <div class="benefit-header">
+                    <div class="benefit-icon icon-orange"><i class="fas fa-rocket"></i></div>
+                    <div class="benefit-title">Transferencia</div>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Al entender el "como" y "por que", puedes aplicar lo aprendido a situaciones nuevas. El conocimiento se vuelve flexible y util.</p>
+            </article>
+
+            <!-- EJEMPLO PRACTICO -->
+            <article class="card card-example">
+                <div class="card-header">
+                    <div class="card-icon icon-purple"><i class="fas fa-atom"></i></div>
+                    <h2 class="card-title">Ejemplo Practico: La Fotosintesis</h2>
+                </div>
+                <div class="example-layout">
+                    <div class="example-row">
+                        <div class="example-badge badge-what"><i class="fas fa-info-circle"></i> QUE</div>
+                        <div class="example-content">
+                            <h5>Definicion y Elementos</h5>
+                            <p>Proceso mediante el cual las plantas convierten luz solar en energia quimica. Elementos: clorofila, agua, CO2, luz. Productos: glucosa y oxigeno. Ocurre en los cloroplastos de las celulas vegetales.</p>
+                        </div>
+                    </div>
+                    <div class="example-row">
+                        <div class="example-badge badge-how"><i class="fas fa-cogs"></i> COMO</div>
+                        <div class="example-content">
+                            <h5>Proceso y Mecanismo</h5>
+                            <p>1. La clorofila absorbe luz solar</p>
+                            <p>2. El agua se descompone en la fase luminica</p>
+                            <p>3. El CO2 se fija en el ciclo de Calvin</p>
+                            <p>4. Se sintetiza glucosa usando ATP y NADPH</p>
+                        </div>
+                    </div>
+                    <div class="example-row">
+                        <div class="example-badge badge-why"><i class="fas fa-heart"></i> POR QUE</div>
+                        <div class="example-content">
+                            <h5>Causas e Importancia</h5>
+                            <p>Las plantas necesitan energia pero no pueden desplazarse. La fotosintesis les permite producir su propio alimento (autotrofas). Es vital para la vida en la Tierra: genera el oxigeno que respiramos y es la base de la cadena alimenticia.</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- TIPS -->
+            <article class="card card-tips">
+                <div class="card-header">
+                    <div class="card-icon icon-brown"><i class="fas fa-lightbulb"></i></div>
+                    <h2 class="card-title">Consejos Practicos</h2>
+                </div>
+                <div class="tip-list">
+                    <div class="tip-item">
+                        <div class="tip-num">1</div>
+                        <div class="tip-text"><strong>No saltes niveles:</strong> Responde cada pregunta en orden. Cada capa construye sobre la anterior.</div>
+                    </div>
+                    <div class="tip-item">
+                        <div class="tip-num">2</div>
+                        <div class="tip-text"><strong>Sé especifico:</strong> "Por que es importante" debe tener una respuesta concreta, no vaga.</div>
+                    </div>
+                    <div class="tip-item">
+                        <div class="tip-num">3</div>
+                        <div class="tip-text"><strong>Conecta:</strong> El "como" debe vincular el "que" con el "por que".</div>
+                    </div>
+                    <div class="tip-item">
+                        <div class="tip-num">4</div>
+                        <div class="tip-text"><strong>Aplica:</strong> Si no puedes explicar el "como", no lo entiendes de verdad.</div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- WARNING -->
+            <article class="card card-warning">
+                <div class="warning-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                <h3 style="font-size: 1.1rem; margin-bottom: 10px;">Error Frecuente</h3>
+                <p style="font-size: 0.9rem; opacity: 0.9;">Responder "por que" con "porque si" o "porque el profesor lo dijo". Eso no es comprension. El "por que" requiere razonamiento propio, explicaciones logicas y conexiones con otros conocimientos.</p>
+            </article>
+
+            <!-- APLICACIONES -->
+            <article class="card card-application">
+                <div class="card-header">
+                    <div class="card-icon icon-red"><i class="fas fa-th-list"></i></div>
+                    <h2 class="card-title">Donde Aplicarlo</h2>
+                </div>
+                <div class="app-list">
+                    <div class="app-item">
+                        <i class="fas fa-book"></i>
+                        <span>Lectura de textos academicos y articulos</span>
+                    </div>
+                    <div class="app-item">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <span>Durante clases y conferencias</span>
+                    </div>
+                    <div class="app-item">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Preparacion de examenes y presentaciones</span>
+                    </div>
+                    <div class="app-item">
+                        <i class="fas fa-briefcase"></i>
+                        <span>Aprendizaje de nuevas habilidades laborales</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- MINDSET -->
+            <article class="card card-mindset">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-quote-left"></i></div>
+                    <h2 class="card-title">Mentalidad de Aprendizaje</h2>
+                </div>
+                <div class="mindset-quote">
+                    <p>"El estudiante mediocre pregunta 'que'. El buen estudiante pregunta 'como'. El estudiante excepcional pregunta 'por que'."</p>
+                    <cite>- Adaptacion de la filosofia socratica</cite>
+                </div>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-text">El metodo Que-Como-Por Que no es un interrogatorio, es un dialogo contigo mismo. Cuanto mas honesto seas con tus respuestas, mas profundo sera tu aprendizaje.</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+    </script>
+</body>
+</html>
