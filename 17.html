@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portafolio de Evidencias - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --accent-1: #e74c3c; --accent-2: #3498db; --accent-3: #27ae60;
+            --accent-4: #9b59b6; --accent-5: #e67e22;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1300px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-hover); }
+
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white; padding: 40px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 300px; height: 100%;
+            background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.15) 0%, transparent 60%);
+        }
+        .hero-text { flex: 1; z-index: 1; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.8rem;
+            font-weight: 600; margin-bottom: 15px;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.5rem;
+            margin-bottom: 12px; line-height: 1.2;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.9; max-width: 500px; }
+        .hero-visual {
+            width: 180px; height: 220px; background: rgba(255,255,255,0.1);
+            border-radius: 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 8px;
+            position: relative; z-index: 1; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .hero-visual i { font-size: 3rem; opacity: 0.8; }
+
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white;
+        }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #c0392b); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-2), #2980b9); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-3), #1e8449); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-4), #7d3c98); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-5), #d35400); }
+        .icon-brown { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+
+        /* Comparison Split Card */
+        .card-split {
+            grid-column: span 12;
+            background: var(--bg-tertiary);
+        }
+        .split-container {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 30px; margin-top: 20px;
+        }
+        .split-side {
+            background: var(--bg-secondary); border-radius: 15px;
+            padding: 25px; border-top: 5px solid;
+        }
+        .split-physical { border-color: var(--accent-5); }
+        .split-digital { border-color: var(--accent-2); }
+        .split-title {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 1.2rem; margin-bottom: 15px; font-weight: 700;
+        }
+        .split-physical .split-title { color: var(--accent-5); }
+        .split-digital .split-title { color: var(--accent-2); }
+        
+        .feature-list { margin-top: 15px; }
+        .feature-item {
+            display: flex; gap: 10px; margin-bottom: 10px;
+            font-size: 0.9rem; color: var(--text-primary);
+        }
+        .feature-item i { margin-top: 4px; }
+
+        /* Structure Skeleton */
+        .card-structure {
+            grid-column: span 6;
+            grid-row: span 2;
+        }
+        .structure-layers {
+            margin-top: 20px; display: flex; flex-direction: column; gap: 10px;
+        }
+        .layer {
+            background: var(--bg-tertiary); padding: 15px;
+            border-radius: 10px; display: flex; align-items: center;
+            gap: 15px; transition: all 0.2s;
+        }
+        .layer:hover { transform: translateX(5px); background: var(--beige); }
+        .layer-num {
+            width: 35px; height: 35px; background: var(--primary);
+            color: white; border-radius: 8px; display: flex;
+            align-items: center; justify-content: center;
+            font-weight: 700; flex-shrink: 0;
+        }
+        .layer-info h4 { font-size: 0.95rem; color: var(--primary-dark); margin-bottom: 2px; }
+        .layer-info p { font-size: 0.8rem; color: var(--text-secondary); margin: 0; }
+
+        /* Selection Filter */
+        .card-selection {
+            grid-column: span 6;
+        }
+        .filter-box {
+            margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .filter-item {
+            text-align: center; padding: 15px;
+            border: 1px dashed var(--border-color); border-radius: 12px;
+        }
+        .filter-item i { font-size: 1.5rem; color: var(--primary); margin-bottom: 8px; }
+        .filter-item h5 { font-size: 0.9rem; color: var(--primary-dark); }
+        .filter-item p { font-size: 0.75rem; color: var(--text-secondary); }
+
+        /* Reflection Card */
+        .card-reflection {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-4) 0%, #7d3c98 100%);
+            color: white;
+        }
+        .card-reflection .card-title { color: white; }
+        .reflection-example {
+            background: rgba(255,255,255,0.1); padding: 15px;
+            border-radius: 10px; margin-top: 15px;
+            border-left: 4px solid rgba(255,255,255,0.5);
+        }
+        .reflection-example h5 { font-size: 0.9rem; margin-bottom: 5px; }
+        .reflection-example p { font-size: 0.85rem; opacity: 0.9; font-style: italic; }
+
+        /* Maintenance Card */
+        .card-maintenance {
+            grid-column: span 6;
+            background: var(--bg-tertiary);
+        }
+        .timeline-check {
+            margin-top: 20px; position: relative; padding-left: 20px;
+        }
+        .timeline-check::before {
+            content: ''; position: absolute; left: 0; top: 0;
+            bottom: 0; width: 2px; background: var(--primary);
+        }
+        .time-point {
+            position: relative; margin-bottom: 15px;
+            padding-left: 15px;
+        }
+        .time-point::before {
+            content: ''; position: absolute; left: -24px; top: 5px;
+            width: 10px; height: 10px; background: var(--primary);
+            border-radius: 50%; border: 2px solid var(--bg-tertiary);
+        }
+        .time-point strong { display: block; font-size: 0.9rem; color: var(--primary-dark); }
+        .time-point span { font-size: 0.8rem; color: var(--text-secondary); }
+
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 30px;
+            background: var(--bg-tertiary);
+        }
+        .footer-text {
+            font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 5px;
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-hero, .card-split, .card-structure, .card-selection,
+            .card-reflection, .card-maintenance, .card-footer { grid-column: span 12; }
+            .split-container { grid-template-columns: 1fr; }
+            .filter-box { grid-template-columns: 1fr; }
+            .hero-text h1 { font-size: 1.8rem; }
+            .card-hero { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-briefcase"></i> Portafolio de Evidencias</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-user-tie"></i> Trayectoria Profesional</span>
+                    <h1>Construye tu Portafolio</h1>
+                    <p>Un portafolio no es una carpeta de archivos muertos. Es una narrativa curada de tu crecimiento académico y profesional. Aquí aprendrás a estructurar pruebas de tu talento, ya sea en papel o en la nube.</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-folder-open"></i>
+                    <span style="font-size: 0.85rem; font-weight: 600;">Evidencia + Reflexion</span>
+                </div>
+            </article>
+
+            <!-- SPLIT COMPARISON -->
+            <article class="card card-split">
+                <div class="card-header">
+                    <div class="card-icon icon-brown"><i class="fas fa-balance-scale"></i></div>
+                    <h2 class="card-title">Fisico vs Digital: ¿Cual necesito?</h2>
+                </div>
+                <div class="split-container">
+                    <div class="split-side split-physical">
+                        <div class="split-title"><i class="fas fa-box"></i> Portafolio Fisico</div>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary);">Ideal para entrevistas presenciales, revisiones académicas o trabajos artísticos donde la textura importa.</p>
+                        <div class="feature-list">
+                            <div class="feature-item"><i class="fas fa-check-circle" style="color: var(--accent-3);"></i> <span><strong>Tangible:</strong> El examinador puede tocar y hojear.</span></div>
+                            <div class="feature-item"><i class="fas fa-check-circle" style="color: var(--accent-3);"></i> <strong>Sin distracciones:</strong> No hay notificaciones en una carpeta.</div>
+                            <div class="feature-item"><i class="fas fa-times-circle" style="color: var(--accent-1);"></i> <strong>Limitado:</strong> No puedes cargar videos ni audios.</span></div>
+                            <div class="feature-item"><i class="fas fa-times-circle" style="color: var(--accent-1);"></i> <strong>Frágil:</strong> Se pierde, se mancha o se moja.</span></div>
+                        </div>
+                    </div>
+                    <div class="split-side split-digital">
+                        <div class="split-title"><i class="fas fa-cloud"></i> Portafolio Digital</div>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary);">Estándar moderno. Una URL que puedes enviar a cualquier parte del mundo al instante.</p>
+                        <div class="feature-list">
+                            <div class="feature-item"><i class="fas fa-check-circle" style="color: var(--accent-3);"></i> <span><strong>Multimedia:</strong> Videos, audios, enlaces a proyectos.</span></div>
+                            <div class="feature-item"><i class="fas fa-check-circle" style="color: var(--accent-3);"></i> <strong>Alcance global:</strong> Un clic lo envía a 10 empresas.</span></div>
+                            <div class="feature-item"><i class="fas fa-times-circle" style="color: var(--accent-1);"></i> <strong>Curación:</strong> Requiere diseño web o herramientas específicas.</span></div>
+                            <div class="feature-item"><i class="fas fa-times-circle" style="color: var(--accent-1);"></i> <strong>Enlace roto:</strong> Si la web cae, tu portafolio desaparece.</span></div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- ESTRUCTURA (THE SKELETON) -->
+            <article class="card card-structure">
+                <div class="card-header">
+                    <div class="card-icon icon-orange"><i class="fas fa-sitemap"></i></div>
+                    <h2 class="card-title">El Esqueleto (Estructura Basica)</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Un portafolio debe contar una historia. Sigue este orden lógico para que quien lo lea no se pierda:</p>
+                
+                <div class="structure-layers">
+                    <div class="layer">
+                        <div class="layer-num">1</div>
+                        <div class="layer-info">
+                            <h4>Portada / Identidad</h4>
+                            <p>Nombre claro, foto profesional, datos de contacto actualizados y un título que defina tu rol.</p>
+                        </div>
+                    </div>
+                    <div class="layer">
+                        <div class="layer-num">2</div>
+                        <div class="layer-info">
+                            <h4>Indice / Navegación</h4>
+                            <p>Guía clara de qué contiene el portafolio. Ahorra tiempo al evaluador.</p>
+                        </div>
+                    </div>
+                    <div class="layer">
+                        <div class="layer-num">3</div>
+                        <div class="layer-info">
+                            <h4>Introducción o Manifiesto</h4>
+                            <p>¿Quién eres? ¿Qué te apasiona? ¿Cuál es tu filosofía de trabajo? Humaniza tu perfil.</p>
+                        </div>
+                    </div>
+                    <div class="layer">
+                        <div class="layer-num">4</div>
+                        <div class="layer-info">
+                            <h4>Evidencias (El Núcleo)</h4>
+                            <p>Trabajos prácticos, proyectos, investigaciones. Organizados cronológicamente o por competencias.</p>
+                        </div>
+                    </div>
+                    <div class="layer">
+                        <div class="layer-num">5</div>
+                        <div class="layer-info">
+                            <h4>Reflexiones Finales</h4>
+                            <p>Conclusiones sobre tu aprendizaje. ¿Hacia dónde vas? ¿Qué quieres mejorar?</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- SELECCION -->
+            <article class="card card-selection">
+                <div class="card-header">
+                    <div class="card-icon icon-blue"><i class="fas fa-filter"></i></div>
+                    <h2 class="card-title">¿Qué entra y qué se queda?</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">No pongas todo. El 80% de tus trabajos son basura. Muestra solo el 20% que demuestra valor.</p>
+                
+                <div class="filter-box">
+                    <div class="filter-item">
+                        <i class="fas fa-medal"></i>
+                        <h5>Mejores Trabajos</h5>
+                        <p>Calidad sobre cantidad. Un proyecto "10" vale más que cinco "6".</p>
+                    </div>
+                    <div class="filter-item">
+                        <i class="fas fa-seedling"></i>
+                        <h5>Evolución</h5>
+                        <p>Incluye un trabajo inicial y uno final para mostrar progreso.</p>
+                    </div>
+                    <div class="filter-item">
+                        <i class="fas fa-puzzle-piece"></i>
+                        <h5>Variedad</h5>
+                        <p>Demuestra versatilidad: un ensayo, un proyecto grupal, una presentación.</p>
+                    </div>
+                    <div class="filter-item">
+                        <i class="fas fa-heart-broken"></i>
+                        <h5>NO incluyas</h5>
+                        <p>Borradores, tareas sin corregir, cosas que no entiendes o credenciales privadas.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- REFLEXION -->
+            <article class="card card-reflection">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-comment-dots"></i></div>
+                    <h2 class="card-title">La Clave: La Reflexión</h2>
+                </div>
+                <p style="font-size: 0.9rem; opacity: 0.9;">Un portafolio sin reflexión es solo una carpeta. El valor está en explicar el "detrás de cámaras".</p>
+                
+                <div class="reflection-example">
+                    <h5>Mala descripción:</h5>
+                    <p>"Trabajo final de historia. Nota: 9."</p>
+                </div>
+                <div class="reflection-example" style="margin-top: 10px;">
+                    <h5>Buena descripción (Meta-cognición):</h5>
+                    <p>"Ensayo sobre la Revolución Industrial. Me costó estructurar la tesis, pero la investigación en fuentes primarias fue sólida. Aprendí a sintetizar datos económicos. Nota: 9."</p>
+                </div>
+            </article>
+
+            <!-- MANTENIMIENTO -->
+            <article class="card card-maintenance">
+                <div class="card-header">
+                    <div class="card-icon icon-green"><i class="fas fa-sync-alt"></i></div>
+                    <h2 class="card-title">Mantenimiento</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Un portafolio desactualizado da mala imagen. Pon recordatorios en tu calendario.</p>
+                
+                <div class="timeline-check">
+                    <div class="time-point">
+                        <strong>Cada Semestre</strong>
+                        <span>Añade los mejores trabajos nuevos y retira los obsoletos.</span>
+                    </div>
+                    <div class="time-point">
+                        <strong>Cada Año</strong>
+                        <span>Actualiza tu foto de perfil y tus datos de contacto.</span>
+                    </div>
+                    <div class="time-point">
+                        <strong>Antes de Entrevista</strong>
+                        <span>Personaliza el orden. Pon primero lo relevante para ESE trabajo específico.</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-text">Tu portafolio es tu marca personal. Cuidalo como un jardín: riega las plantas nuevas y poda lo que ya no sirve.</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+    </script>
+</body>
+</html>
