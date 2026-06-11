@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metodo Pagina en Blanco - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --accent-1: #e74c3c; --accent-2: #3498db; --accent-3: #27ae60;
+            --accent-4: #9b59b6; --accent-5: #e67e22;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1300px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-hover); }
+
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+            color: var(--text-primary); padding: 40px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px; border: 2px solid var(--border-color);
+        }
+        .hero-text { flex: 1; z-index: 1; }
+        .hero-badge {
+            display: inline-block; background: var(--primary);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.8rem;
+            font-weight: 600; margin-bottom: 15px; color: white;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.5rem;
+            margin-bottom: 12px; line-height: 1.2; color: var(--primary-dark);
+        }
+        .hero-text p { font-size: 1rem; color: var(--text-secondary); max-width: 500px; }
+        .hero-visual {
+            width: 180px; height: 220px; background: var(--bg-primary);
+            border-radius: 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 8px;
+            position: relative; z-index: 1; border: 1px solid var(--border-color);
+            box-shadow: 5px 5px 0px var(--primary);
+        }
+        .hero-visual i { font-size: 3rem; opacity: 0.5; color: var(--gray); }
+
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white;
+        }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #c0392b); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-2), #2980b9); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-3), #1e8449); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-4), #7d3c98); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-5), #d35400); }
+        .icon-brown { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+
+        /* The Core Concept */
+        .card-concept {
+            grid-column: span 7;
+            grid-row: span 2;
+        }
+        .concept-text {
+            font-size: 1rem; color: var(--text-primary); margin-bottom: 20px;
+        }
+        .concept-box {
+            background: var(--bg-tertiary); border-radius: 15px;
+            padding: 20px; margin-top: 20px; border-left: 5px solid var(--accent-1);
+        }
+        .concept-box h3 { color: var(--accent-1); margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+        .concept-box p { font-size: 0.9rem; color: var(--text-secondary); }
+
+        /* The Simulation Visual */
+        .card-simulation {
+            grid-column: span 5;
+            background: var(--bg-primary);
+        }
+        .paper-mockup {
+            background: white; border-radius: 4px;
+            padding: 20px; margin-top: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            font-family: 'Poppins', sans-serif; color: #333;
+            min-height: 200px; position: relative;
+        }
+        .paper-line {
+            height: 10px; background: #eee;
+            margin-bottom: 10px; border-radius: 2px;
+        }
+        .paper-line.filled { background: #333; width: 90%; }
+        .paper-line.partial { background: #333; width: 60%; }
+        .paper-line.error { background: #e74c3c; width: 40%; opacity: 0.5; }
+        .paper-cursor {
+            display: inline-block; width: 2px; height: 15px;
+            background: var(--primary); animation: blink 1s infinite;
+        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        /* Process Steps */
+        .card-process {
+            grid-column: span 6;
+        }
+        .step-timeline {
+            margin-top: 20px; position: relative; padding-left: 20px;
+        }
+        .step-timeline::before {
+            content: ''; position: absolute; left: 0; top: 0;
+            width: 3px; height: 100%; background: var(--border-color);
+        }
+        .step-item {
+            position: relative; margin-bottom: 20px;
+            padding-left: 20px;
+        }
+        .step-item::before {
+            content: ''; position: absolute; left: -24px; top: 5px;
+            width: 11px; height: 11px; background: var(--primary);
+            border-radius: 50%; border: 2px solid var(--bg-secondary);
+        }
+        .step-item h4 { font-size: 1rem; color: var(--primary-dark); margin-bottom: 3px; }
+        .step-item p { font-size: 0.85rem; color: var(--text-secondary); margin: 0; }
+
+        /* Variations */
+        .card-variations {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-4) 0%, #7d3c98 100%);
+            color: white;
+        }
+        .card-variations .card-title { color: white; }
+        .var-list { margin-top: 15px; }
+        .var-item {
+            background: rgba(255,255,255,0.1); padding: 12px;
+            border-radius: 10px; margin-bottom: 10px; display: flex;
+            align-items: center; gap: 10px;
+        }
+        .var-item i { font-size: 1.2rem; }
+
+        /* Fear Section */
+        .card-fear {
+            grid-column: span 6;
+            background: var(--bg-tertiary);
+        }
+        .fear-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 15px; margin-top: 20px;
+        }
+        .fear-card {
+            background: var(--bg-secondary); padding: 15px;
+            border-radius: 10px; text-align: center;
+        }
+        .fear-card i { font-size: 2rem; color: var(--accent-5); margin-bottom: 10px; display: block; }
+        .fear-card h5 { font-size: 0.9rem; color: var(--primary-dark); }
+
+        /* Solution */
+        .card-solution {
+            grid-column: span 6;
+        }
+        .solution-text {
+            margin-top: 15px; font-size: 0.95rem; color: var(--text-primary);
+        }
+        .solution-text li {
+            margin-bottom: 10px; display: flex; align-items: flex-start; gap: 10px;
+        }
+        .solution-text li i { color: var(--accent-3); margin-top: 5px; }
+
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 30px;
+            background: var(--bg-tertiary);
+        }
+        .footer-text {
+            font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 5px;
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-hero, .card-concept, .card-simulation, .card-process,
+            .card-variations, .card-fear, .card-solution, .card-footer { grid-column: span 12; }
+            .fear-grid { grid-template-columns: 1fr; }
+            .hero-text h1 { font-size: 1.8rem; }
+            .card-hero { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-file"></i> Metodo Pagina en Blanco</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-spell-check"></i> Prueba de Fuego</span>
+                    <h1>El Metodo de la Página en Blanco</h1>
+                    <p>El examen definitivo para saber si realmente sabes. No hay trucos, no hay ayudas visuales, solo tú y el papel. Es la herramienta más poderosa para diagnosticar tu conocimiento real.</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-file"></i>
+                </div>
+            </article>
+
+            <!-- CONCEPTO CENTRAL -->
+            <article class="card card-concept">
+                <div class="card-header">
+                    <div class="card-icon icon-red"><i class="fas fa-brain"></i></div>
+                    <h2 class="card-title">¿En qué consiste?</h2>
+                </div>
+                <div class="concept-text">
+                    <p>Consiste en intentar explicar un tema, concepto o proceso completo en una hoja en blanco, de memoria, sin mirar apuntes ni libros. Es la inversa del estudio pasivo: en lugar de leer, produces.</p>
+                    <p>Si puedes escribirlo, lo sabes. Si te trabas, has encontrado tu punto débil. El objetivo no es escribir un libro, sino <strong>externalizar tu estructura mental</strong>.</p>
+                </div>
+                
+                <div class="concept-box">
+                    <h3><i class="fas fa-skull-crossbones"></i> La Regla de Oro</h3>
+                    <p>No puedes hacer trampa. Si te atascas, no abras el libro todavía. Deja el espacio en blanco o escribe lo que crees que es. Esa frustración es donde ocurre el aprendizaje profundo. Luego, al corregir, esa información se grabará a fuego.</p>
+                </div>
+            </article>
+
+            <!-- SIMULACION VISUAL -->
+            <article class="card card-simulation">
+                <div class="card-header">
+                    <div class="card-icon icon-blue"><i class="fas fa-pencil-alt"></i></div>
+                    <h2 class="card-title">Visualización del Intento</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Así se ve una sesión real: avances, bloqueos y correcciones.</p>
+                
+                <div class="paper-mockup">
+                    <p style="font-size: 0.8rem; color: #888; margin-bottom: 5px;">Tema: La Revolución Francesa</p>
+                    <div class="paper-line filled"></div>
+                    <div class="paper-line partial"></div>
+                    <div class="paper-line error"></div> <!-- Bloqueo -->
+                    <p style="font-size: 0.7rem; color: #e74c3c; margin: 5px 0;">(Aquí no recuerdo la fecha exacta... ¿1787?)</p>
+                    <div class="paper-line"></div>
+                    <div class="paper-line partial"></div>
+                    <span class="paper-cursor"></span>
+                </div>
+            </article>
+
+            <!-- PROCESO -->
+            <article class="card card-process">
+                <div class="card-header">
+                    <div class="card-icon icon-orange"><i class="fas fa-list-ol"></i></div>
+                    <h2 class="card-title">Pasos del Método</h2>
+                </div>
+                <div class="step-timeline">
+                    <div class="step-item">
+                        <h4>1. Preparación</h4>
+                        <p>Toma una hoja física o digital. Escribe el tema general arriba como título.</p>
+                    </div>
+                    <div class="step-item">
+                        <h4>2. Volcado (Brain Dump)</h4>
+                        <p>Escribe todo lo que recuerdes. Conceptos, fechas, nombres, fórmulas. Sin orden, sin estructura, solo flujo.</p>
+                    </div>
+                    <div class="step-item">
+                        <h4>3. Estructuración</h4>
+                        <p>Intenta conectar lo que escribiste. Haz flechas, agrupa conceptos. Crea un mapa mental desde cero.</p>
+                    </div>
+                    <div class="step-item">
+                        <h4>4. Confrontación</h4>
+                        <p>Ahora sí, abre tus apuntes. Compara. En rojo, completa lo que faltó y corrige lo erróneo.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- VARIACIONES -->
+            <article class="card card-variations">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-exchange-alt"></i></div>
+                    <h2 class="card-title">Variaciones Útiles</h2>
+                </div>
+                <div class="var-list">
+                    <div class="var-item">
+                        <i class="fas fa-child"></i>
+                        <div><strong>La Técnica Feynman:</strong> Escríbelo como si se lo explicaras a un niño de 5 años. Simplifica al máximo.</div>
+                    </div>
+                    <div class="var-item">
+                        <i class="fas fa-question-circle"></i>
+                        <div><strong>El Examen Simulado:</strong> Escribe tus propias preguntas de examen en la hoja y respóndelas sin ayuda.</div>
+                    </div>
+                    <div class="var-item">
+                        <i class="fas fa-project-diagram"></i>
+                        <div><strong>Mapa en Blanco:</strong> En lugar de texto lineal, dibuja el mapa conceptual de memoria.</div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- MIEDO -->
+            <article class="card card-fear">
+                <div class="card-header">
+                    <div class="card-icon icon-purple"><i class="fas fa-ghost"></i></div>
+                    <h2 class="card-title">El Miedo al Vacío</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">El síndrome de la página en blanco es real. Surge porque tememos fallar.</p>
+                <div class="fear-grid">
+                    <div class="fear-card">
+                        <i class="fas fa-times-circle"></i>
+                        <h5>Síntoma</h5>
+                        <p style="font-size: 0.75rem; color: var(--text-secondary);">Bloqueo mental, ansiedad, postergar el estudio.</p>
+                    </div>
+                    <div class="fear-card">
+                        <i class="fas fa-lightbulb"></i>
+                        <h5>Solución</h5>
+                        <p style="font-size: 0.75rem; color: var(--text-secondary);">Escribe cualquier cosa. "No sé" es un inicio válido. Romper el hielo es el 90% del trabajo.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- SOLUCION PRACTICA -->
+            <article class="card card-solution">
+                <div class="card-header">
+                    <div class="card-icon icon-green"><i class="fas fa-check-double"></i></div>
+                    <h2 class="card-title">¿Cómo superar el bloqueo?</h2>
+                </div>
+                <ul class="solution-text">
+                    <li>
+                        <i class="fas fa-check-circle"></i>
+                        <span><strong>Empieza con el título:</strong> Solo escribir el tema ya activa la memoria asociativa.</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-check-circle"></i>
+                        <span><strong>Usa palabras basura:</strong> Escribe "Estoy intentando recordar sobre X...". Es un calentamiento.</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-check-circle"></i>
+                        <span><strong>Baja la exigencia:</strong> Tu primera página no tiene que ser perfecta, tiene que ser hecha.</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-check-circle"></i>
+                        <span><strong>Temporalizador:</strong> Date 5 minutos. La urgencia a veces mata la perfección paralizante.</span>
+                    </li>
+                </ul>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-text">El papel en blanco no juzga, solo refleja. Si está vacío, es una oportunidad. Si está lleno de errores, es aprendizaje. Si está correcto, es maestría.</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+    </script>
+</body>
+</html>
