@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sopa de Letras - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --found-color: #27ae60;
+            --found-bg: #e8f8f0;
+            --highlight-1: #c0392b;
+            --highlight-2: #2980b9;
+            --highlight-3: #8e44ad;
+            --highlight-4: #d35400;
+            --highlight-5: #16a085;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+            --found-bg: rgba(39, 174, 96, 0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 90px 30px 40px; max-width: 1200px; margin: 0 auto; }
+
+        .panel {
+            background: var(--bg-secondary); border-radius: 20px;
+            box-shadow: 0 4px 20px var(--shadow); overflow: hidden;
+            display: none; animation: fadeIn 0.4s ease;
+        }
+        .panel.active { display: block; }
+        
+        .panel-header {
+            padding: 20px 25px; border-bottom: 1px solid var(--border-color);
+            background: var(--bg-tertiary); display: flex; align-items: center; gap: 15px;
+        }
+        .panel-icon { font-size: 1.5rem; color: var(--primary); }
+        .panel-title { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--primary-dark); }
+        .panel-subtitle { font-size: 0.85rem; color: var(--text-secondary); }
+        .panel-body { padding: 25px; }
+
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; font-weight: 600; margin-bottom: 8px; color: var(--text-primary); font-size: 0.9rem; }
+        .form-hint { font-size: 0.8rem; color: var(--text-secondary); margin-top: 6px; }
+        
+        textarea {
+            width: 100%; height: 200px; resize: vertical; padding: 12px;
+            border: 2px solid var(--border-color); border-radius: 12px;
+            background: var(--bg-primary); color: var(--text-primary);
+            font-family: inherit; font-size: 0.9rem; line-height: 1.6;
+            transition: border-color 0.3s;
+        }
+        textarea:focus { outline: none; border-color: var(--primary); }
+        
+        select {
+            width: 100%; padding: 10px 12px; border: 2px solid var(--border-color);
+            border-radius: 10px; background: var(--bg-primary); color: var(--text-primary);
+            font-family: inherit; font-size: 0.9rem; cursor: pointer;
+        }
+        select:focus { outline: none; border-color: var(--primary); }
+
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
+        .btn-group { display: flex; gap: 12px; justify-content: center; margin-top: 25px; flex-wrap: wrap; }
+
+        .game-container {
+            display: grid; grid-template-columns: 1fr 280px; gap: 25px;
+            align-items: start;
+        }
+
+        .grid-wrapper {
+            background: var(--bg-tertiary); border-radius: 16px; padding: 15px;
+            box-shadow: inset 0 2px 10px var(--shadow); overflow: auto;
+            max-width: 100%;
+        }
+        .word-grid {
+            display: grid; gap: 3px; background: var(--bg-secondary);
+            border-radius: 12px; padding: 12px; user-select: none;
+            margin: 0 auto;
+        }
+        .grid-cell {
+            width: 28px; height: 28px; display: flex; align-items: center;
+            justify-content: center; font-weight: 700; font-size: 0.8rem;
+            background: var(--bg-primary); border-radius: 4px; cursor: pointer;
+            transition: all 0.15s ease; text-transform: uppercase;
+            color: var(--text-primary); border: 2px solid transparent;
+        }
+        .grid-cell:hover { background: var(--beige); transform: scale(1.1); }
+        .grid-cell.selected { background: var(--primary-light); color: white; }
+        .grid-cell.found { background: var(--found-color); color: white; }
+        .grid-cell.found-1 { background: var(--highlight-1); color: white; }
+        .grid-cell.found-2 { background: var(--highlight-2); color: white; }
+        .grid-cell.found-3 { background: var(--highlight-3); color: white; }
+        .grid-cell.found-4 { background: var(--highlight-4); color: white; }
+        .grid-cell.found-5 { background: var(--highlight-5); color: white; }
+
+        .word-list-panel {
+            background: var(--bg-secondary); border-radius: 16px;
+            box-shadow: 0 4px 15px var(--shadow); overflow: hidden;
+        }
+        .word-list-header {
+            background: var(--bg-tertiary); padding: 15px 18px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .word-list-title {
+            font-weight: 700; color: var(--primary-dark); display: flex;
+            align-items: center; gap: 8px;
+        }
+        .word-list-body { padding: 15px; max-height: 450px; overflow-y: auto; }
+        
+        .word-category { margin-bottom: 15px; }
+        .category-title {
+            font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 8px;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .category-dot { width: 8px; height: 8px; border-radius: 50%; }
+        
+        .word-item {
+            padding: 8px 12px; background: var(--bg-primary); border-radius: 8px;
+            margin-bottom: 6px; font-size: 0.85rem; font-weight: 500;
+            display: flex; align-items: center; justify-content: space-between;
+            transition: all 0.2s; border-left: 3px solid transparent;
+        }
+        .word-item:hover { background: var(--beige); }
+        .word-item.found { background: var(--found-bg); text-decoration: line-through; opacity: 0.6; }
+        .word-item.cat-1 { border-left-color: var(--highlight-1); }
+        .word-item.cat-2 { border-left-color: var(--highlight-2); }
+        .word-item.cat-3 { border-left-color: var(--highlight-3); }
+        .word-item.cat-4 { border-left-color: var(--highlight-4); }
+        .word-item.cat-5 { border-left-color: var(--highlight-5); }
+
+        .game-stats {
+            display: flex; gap: 15px; margin-bottom: 20px; justify-content: center;
+        }
+        .stat-item {
+            background: var(--bg-secondary); padding: 12px 20px;
+            border-radius: 12px; text-align: center; box-shadow: 0 4px 12px var(--shadow);
+        }
+        .stat-value { font-size: 1.8rem; font-weight: 700; font-family: 'Playfair Display', serif; color: var(--primary); }
+        .stat-label { font-size: 0.75rem; color: var(--text-secondary); font-weight: 600; }
+
+        .progress-container {
+            background: var(--bg-secondary); border-radius: 12px; padding: 15px;
+            margin-bottom: 20px; box-shadow: 0 4px 12px var(--shadow);
+        }
+        .progress-bar { height: 8px; background: var(--bg-tertiary); border-radius: 10px; overflow: hidden; }
+        .progress-fill {
+            height: 100%; background: linear-gradient(90deg, var(--highlight-1), var(--highlight-2), var(--highlight-5));
+            border-radius: 10px; transition: width 0.5s ease;
+        }
+
+        .loading-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+            display: none; justify-content: center; align-items: center; z-index: 3000;
+        }
+        .loading-overlay.show { display: flex; }
+        .loading-spinner {
+            background: var(--bg-secondary); padding: 35px 50px;
+            border-radius: 20px; text-align: center;
+        }
+        .spinner {
+            width: 45px; height: 45px; border: 4px solid var(--border-color);
+            border-top-color: var(--primary); border-radius: 50%;
+            animation: spin 1s linear infinite; margin: 0 auto 12px;
+        }
+
+        .complete-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+            display: none; justify-content: center; align-items: center; z-index: 2000;
+        }
+        .complete-overlay.show { display: flex; }
+        .complete-card {
+            background: var(--bg-secondary); border-radius: 25px;
+            padding: 40px 50px; text-align: center;
+            animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            max-width: 400px;
+        }
+        .complete-icon { font-size: 4rem; color: var(--found-color); margin-bottom: 15px; }
+        .complete-title { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--primary-dark); margin-bottom: 10px; }
+        .complete-subtitle { color: var(--text-secondary); margin-bottom: 25px; }
+
+        .extracted-preview {
+            background: var(--bg-tertiary); border-radius: 12px; padding: 15px;
+            margin-top: 15px; display: none;
+        }
+        .extracted-preview.show { display: block; }
+        .preview-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 10px; color: var(--primary-dark); }
+        .preview-list { display: flex; flex-wrap: wrap; gap: 8px; max-height: 200px; overflow-y: auto; }
+        .preview-tag {
+            padding: 5px 12px; background: var(--bg-secondary); border-radius: 20px;
+            font-size: 0.8rem; font-weight: 500;
+        }
+        .preview-tag.cat-1 { border-left: 3px solid var(--highlight-1); }
+        .preview-tag.cat-2 { border-left: 3px solid var(--highlight-2); }
+        .preview-tag.cat-3 { border-left: 3px solid var(--highlight-3); }
+        .preview-tag.cat-4 { border-left: 3px solid var(--highlight-4); }
+        .preview-tag.cat-5 { border-left: 3px solid var(--highlight-5); }
+
+        .grid-info {
+            background: var(--bg-tertiary); border-radius: 8px; padding: 10px 15px;
+            margin-top: 15px; font-size: 0.85rem; color: var(--text-secondary);
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @media (max-width: 900px) {
+            .game-container { grid-template-columns: 1fr; }
+            .word-list-panel { order: -1; }
+            .word-list-body { max-height: 200px; }
+        }
+
+        @media (max-width: 600px) {
+            .main-container { padding: 80px 15px 20px; }
+            .grid-cell { width: 24px; height: 24px; font-size: 0.7rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-search"></i> Sopa de Letras</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p style="font-weight: 600; color: var(--text-primary);">Generando sopa de letras...</p>
+        </div>
+    </div>
+
+    <div class="complete-overlay" id="completeOverlay">
+        <div class="complete-card">
+            <div class="complete-icon"><i class="fas fa-trophy"></i></div>
+            <h2 class="complete-title">Felicidades</h2>
+            <p class="complete-subtitle" id="completeMessage">Has encontrado todas las palabras</p>
+            <div class="btn-group">
+                <button class="action-btn btn-secondary" onclick="newGame()">
+                    <i class="fas fa-plus"></i> Nuevo juego
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <main class="main-container">
+
+        <div class="panel active" id="panel1">
+            <div class="panel-header">
+                <i class="fas fa-cog panel-icon"></i>
+                <div>
+                    <h2 class="panel-title">Configura tu Sopa de Letras</h2>
+                    <p class="panel-subtitle">El sistema extraera automaticamente conceptos del texto</p>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="form-label">Texto a analizar</label>
+                    <textarea id="sourceText" placeholder="Pega aqui tu texto educativo...
+
+El sistema detectara automaticamente:
+- Conceptos claves (frases con mayusculas)
+- Nombres propios de autores
+- Paises, ciudades y lugares
+- Conceptos antes de dos puntos
+- Palabras frecuentes (2+ apariciones)"></textarea>
+                    <p class="form-hint"><i class="fas fa-lightbulb"></i> Minimo 50 caracteres. El tamano de la grilla se ajustara automaticamente.</p>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Cantidad de palabras</label>
+                        <select id="wordCount">
+                            <option value="5">5 palabras</option>
+                            <option value="8">8 palabras</option>
+                            <option value="10" selected>10 palabras</option>
+                            <option value="12">12 palabras</option>
+                            <option value="15">15 palabras</option>
+                            <option value="18">18 palabras</option>
+                            <option value="20">20 palabras</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="action-btn btn-secondary" onclick="analyzeText()">
+                        <i class="fas fa-search"></i> Analizar texto
+                    </button>
+                    <button class="action-btn btn-primary" onclick="generateGame()">
+                        <i class="fas fa-play"></i> Generar Sopa
+                    </button>
+                </div>
+
+                <div class="extracted-preview" id="extractedPreview">
+                    <div class="preview-title"><i class="fas fa-check-circle"></i> Palabras seleccionadas (<span id="selectedCount">0</span>):</div>
+                    <div class="preview-list" id="previewList"></div>
+                    <div class="grid-info" id="gridInfo"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel" id="panel2">
+            <div class="panel-body">
+                <div class="game-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="foundCount">0</div>
+                        <div class="stat-label">Encontradas</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalCount">0</div>
+                        <div class="stat-label">Total</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="timerDisplay">0:00</div>
+                        <div class="stat-label">Tiempo</div>
+                    </div>
+                </div>
+
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="game-container">
+                    <div class="grid-wrapper">
+                        <div class="word-grid" id="wordGrid"></div>
+                    </div>
+
+                    <div class="word-list-panel">
+                        <div class="word-list-header">
+                            <div class="word-list-title">
+                                <i class="fas fa-list"></i> Palabras a buscar
+                            </div>
+                        </div>
+                        <div class="word-list-body" id="wordListBody"></div>
+                    </div>
+                </div>
+
+                <div class="btn-group" style="margin-top: 25px;">
+                    <button class="action-btn btn-secondary" onclick="showConfig()">
+                        <i class="fas fa-arrow-left"></i> Nueva configuracion
+                    </button>
+                    <button class="action-btn btn-primary" onclick="resetGame()">
+                        <i class="fas fa-redo"></i> Reiniciar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        const state = {
+            words: [],
+            grid: [],
+            gridSize: 15,
+            foundWords: [],
+            selectedCells: [],
+            isSelecting: false,
+            timer: null,
+            seconds: 0
+        };
+
+        const CATEGORIES = {
+            1: { name: 'Conceptos Clave', color: 'var(--highlight-1)' },
+            2: { name: 'Nombres Propios', color: 'var(--highlight-2)' },
+            3: { name: 'Lugares', color: 'var(--highlight-3)' },
+            4: { name: 'Antes de dos puntos', color: 'var(--highlight-4)' },
+            5: { name: 'Palabras Frecuentes', color: 'var(--highlight-5)' }
+        };
+
+        // Theme
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+
+        // =====================================================
+        // EXTRACCION DE PALABRAS
+        // =====================================================
+        function extractWords(text, maxWords) {
+            const allWords = [];
+            const usedTerms = new Set();
+            
+            const stopWords = new Set([
+                'el','la','los','las','un','una','unos','unas','de','del','en','y','a','para','por','con','sin',
+                'sobre','entre','hacia','hasta','desde','que','cual','quien','donde','cuando','como',
+                'este','ese','aquel','esta','esa','aquella','esto','eso','aquello','yo','tu','el','ella',
+                'nosotros','ustedes','ellos','muy','mas','menos','tan','tanto','poco','mucho','bastante',
+                'suficiente','algo','nada','todo','si','no','tambien','ni','pero','aunque','porque','pues',
+                'ya','mientras','segun','excepto','sino','o','ser','es','son','está','estan','fue','fueron',
+                'era','eran','ha','han','habia','habian','se','su','sus','al','lo','le','les','me','te',
+                'nos','os','mi','tu','nuestro','vuestro','mis','tus','cada','cual','cuales','cuyo','cuyos',
+                'quien','quienes','cuanto','cuantos','cuanta','cuantas','durante','mediante','contra',
+                'también','demás','además','incluso','solo','sus','esta','estas','este','estos','esa','esas',
+                'ese','esos','aquella','aquellas','aquel','aquellos'
+            ]);
+
+            const endWords = new Set([
+                'y','e','o','u','ni','que','como','cuando','donde','cual','quien','cuyo','cuya',
+                'cuyos','cuyas','si','aunque','pero','sino','porque','pues','ya','mientras','según',
+                'excepto','salvo','inclusive','incluso','además','también','asimismo','igualmente',
+                'tal','vez','quizá','quizás','acaso','a','de','en','con','por','para','sin','sobre',
+                'entre','hacia','hasta','desde','durante','mediante','según','contra','también'
+            ]);
+
+            const placesList = [
+                'Mercurio','Venus','Tierra','Marte','Jupiter','Júpiter','Saturno','Urano','Neptuno',
+                'Pluton','Plutón','Ceres','Eris','Makemake','Haumea','Sol','Luna',
+                'Cinturon de Asteroides','Cinturón de Asteroides','Cinturon de Kuiper','Cinturón de Kuiper',
+                'Nube de Oort','Disco Disperso',
+                'Estados Unidos', 'Mexico', 'México', 'Espana', 'España', 'Argentina', 'Colombia', 'Chile', 
+                'Peru', 'Perú', 'Venezuela', 'Ecuador', 'Bolivia', 'Cuba', 'Uruguay', 'Paraguay', 
+                'Nicaragua', 'Guatemala', 'Honduras', 'El Salvador', 'Costa Rica', 'Panama', 'Panamá',
+                'Francia', 'Italia', 'Alemania', 'Reino Unido', 'China', 'Japon', 'Japón', 'India', 
+                'Rusia', 'Union Sovietica', 'Unión Soviética', 'URSS', 'Corea', 'Brasil', 'Canada', 'Canadá', 
+                'Australia', 'Hiroshima', 'Nagasaki', 'Berlin', 'Berlín', 'Paris', 'París', 'Londres', 
+                'Washington', 'Moscu', 'Moscú', 'Pekin', 'Pekín', 'Tokio', 'Roma', 'Madrid', 
+                'Buenos Aires', 'Lima', 'Bogota', 'Bogotá', 'EEUU', 'EE.UU.'
+            ];
+
+            function normalize(str) {
+                return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            }
+
+            function isStartOfSentence(text, position) {
+                if (position === 0) return true;
+                for (let i = position - 1; i >= Math.max(0, position - 10); i--) {
+                    const char = text[i];
+                    if (/[.!?\n"“"]/.test(char)) return true;
+                    if (/[a-zA-ZÁÉÍÓÚÑáéíóúñ]/.test(char)) return false;
+                }
+                return false;
+            }
+
+            function cleanConcept(phrase) {
+                const words = phrase.split(/\s+/);
+                const cleanWords = [];
+                for (let i = 0; i < words.length; i++) {
+                    const word = words[i];
+                    const wordLower = word.toLowerCase();
+                    if (endWords.has(wordLower) && i > 0) break;
+                    if (i > 0 && /^[a-záéíóúñ]/.test(word) && !['de','del','la','el','los','las'].includes(wordLower)) break;
+                    cleanWords.push(word);
+                }
+                return cleanWords.join(' ').trim();
+            }
+
+            // PASO 1: LUGARES
+            placesList.forEach(function(place) {
+                const regex = new RegExp('\\b' + place.replace(/[áéíóúÁÉÍÓÚ]/g, '[aáeéiíoóuú]') + '\\b', 'gi');
+                const matches = text.match(regex);
+                if (matches && matches.length > 0) {
+                    const lower = normalize(place);
+                    if (!usedTerms.has(lower)) {
+                        allWords.push({ word: place, category: 3, priority: 8 });
+                        usedTerms.add(lower);
+                    }
+                }
+            });
+
+            // PASO 2: NOMBRES PROPIOS
+            const nameRegex = /\b([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+)\s+([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+)\b/g;
+            let nameMatch;
+            while ((nameMatch = nameRegex.exec(text)) !== null) {
+                const fullName = nameMatch[0];
+                const lower = normalize(fullName);
+                const position = nameMatch.index;
+                if (isStartOfSentence(text, position)) continue;
+                const orgWords = ['Sociedad', 'Empresa', 'Superintendencia', 'Instituto', 'Ministerio', 
+                    'Secretaria', 'Direccion', 'Departamento', 'Organizacion', 'Naciones', 'Unidas',
+                    'Guerra', 'Segunda', 'Mundial', 'Fria', 'Edad', 'Extremos', 'Age', 'The',
+                    'Cinturon', 'Cinturón', 'Nube', 'Disco', 'Sistema', 'Solar'];
+                const hasOrgWord = orgWords.some(function(ow) { return fullName.includes(ow); });
+                const isPlace = placesList.some(function(p) { return normalize(fullName) === normalize(p); });
+                if (!hasOrgWord && !isPlace && !usedTerms.has(lower)) {
+                    allWords.push({ word: fullName, category: 2, priority: 9 });
+                    usedTerms.add(lower);
+                }
+            }
+
+            // PASO 3: ANTES DE DOS PUNTOS
+            const colonRegex = /(?:[•\-\*]?\s*)([A-ZÁÉÍÓÚÑ][a-záéíóúñA-Z\s]{3,40}):/g;
+            let colonMatch;
+            while ((colonMatch = colonRegex.exec(text)) !== null) {
+                let concept = cleanConcept(colonMatch[1].trim());
+                const lower = normalize(concept);
+                if (concept.length > 3 && !usedTerms.has(lower)) {
+                    allWords.push({ word: concept, category: 4, priority: 7 });
+                    usedTerms.add(lower);
+                }
+            }
+
+            // PASO 4: CONCEPTOS CLAVE
+            const conceptRegex = /\b([A-ZÁÉÍÓÚÑ][a-záéíóúñ]+)((?:\s+(?:de|del|la|el|los|las)\s+[A-ZÁÉÍÓÚÑa-záéíóúñ]+|\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+){0,3})/g;
+            let conceptMatch;
+            while ((conceptMatch = conceptRegex.exec(text)) !== null) {
+                let phrase = cleanConcept(conceptMatch[0].trim());
+                const position = conceptMatch.index;
+                if (isStartOfSentence(text, position)) continue;
+                const lower = normalize(phrase);
+                const firstWord = phrase.split(' ')[0].toLowerCase();
+                const startsWithStop = stopWords.has(firstWord);
+                const isPlace = placesList.some(function(p) { return lower === normalize(p); });
+                const isName = allWords.some(function(w) { return w.category === 2 && normalize(w.word) === lower; });
+                const wordCount = phrase.split(' ').length;
+                if (!startsWithStop && !isPlace && !isName && !usedTerms.has(lower) && wordCount >= 2) {
+                    allWords.push({ word: phrase, category: 1, priority: 10 });
+                    usedTerms.add(lower);
+                }
+            }
+
+            // PASO 5: FRECUENTES
+            const wordFreq = {};
+            const freqRegex = /\b[A-ZÁÉÍÓÚÑa-záéíóúñ]{4,}\b/g;
+            const freqMatches = text.match(freqRegex) || [];
+            freqMatches.forEach(function(w) {
+                const lower = normalize(w);
+                if (!stopWords.has(lower)) wordFreq[lower] = (wordFreq[lower] || 0) + 1;
+            });
+            Object.keys(wordFreq).forEach(function(w) {
+                if (wordFreq[w] >= 2 && !usedTerms.has(w)) {
+                    const display = w.charAt(0).toUpperCase() + w.slice(1);
+                    allWords.push({ word: display, category: 5, priority: 5, frequency: wordFreq[w] });
+                    usedTerms.add(w);
+                }
+            });
+
+            allWords.sort(function(a, b) {
+                if (a.priority !== b.priority) return b.priority - a.priority;
+                return (b.frequency || 0) - (a.frequency || 0);
+            });
+
+            return allWords.slice(0, maxWords);
+        }
+
+        // =====================================================
+        // GRID GENERATION - MEJORADO
+        // =====================================================
+        function generateGrid(words) {
+            if (words.length === 0) return { grid: [], placedWords: [], size: 0 };
+
+            const normalizedWords = words.map(w => ({
+                ...w,
+                normalized: normalizeWord(w.word)
+            }));
+
+            // Calcular tamano - MAS GRANDE para mejor distribucion
+            const maxWordLen = Math.max(...normalizedWords.map(w => w.normalized.length));
+            const totalChars = normalizedWords.reduce((sum, w) => sum + w.normalized.length, 0);
+            
+            // Regla: al menos 2x la palabra mas larga, o raiz cuadrada de chars * 2
+            let size = Math.max(15, maxWordLen * 2);
+            size = Math.max(size, Math.ceil(Math.sqrt(totalChars) * 2));
+            size = Math.min(size, 25); // Maximo 25x25
+
+            // Crear grilla vacia
+            const grid = [];
+            for (let i = 0; i < size; i++) {
+                grid[i] = [];
+                for (let j = 0; j < size; j++) {
+                    grid[i][j] = '';
+                }
+            }
+
+            // 8 direcciones posibles
+            const allDirections = [
+                { dr: 0, dc: 1, name: 'derecha' },
+                { dr: 1, dc: 0, name: 'abajo' },
+                { dr: 1, dc: 1, name: 'diagonal-der-abajo' },
+                { dr: -1, dc: 1, name: 'diagonal-der-arriba' },
+                { dr: 0, dc: -1, name: 'izquierda' },
+                { dr: -1, dc: 0, name: 'arriba' },
+                { dr: -1, dc: -1, name: 'diagonal-izq-arriba' },
+                { dr: 1, dc: -1, name: 'diagonal-izq-abajo' }
+            ];
+
+            const placedWords = [];
+
+            // Ordenar por longitud (largas primero)
+            const sortedWords = [...normalizedWords].sort((a, b) => b.normalized.length - a.normalized.length);
+
+            // Para cada palabra, intentar colocarla
+            sortedWords.forEach(function(wordObj) {
+                const word = wordObj.normalized;
+                if (word.length < 2) return;
+
+                let placed = false;
+                
+                // Mezclar direcciones aleatoriamente
+                const shuffledDirs = [...allDirections].sort(() => Math.random() - 0.5);
+
+                // Intentar cada direccion
+                for (let d = 0; d < shuffledDirs.length && !placed; d++) {
+                    const dir = shuffledDirs[d];
+                    
+                    // Calcular rango valido de posiciones iniciales
+                    let minRow = 0, maxRow = size - 1;
+                    let minCol = 0, maxCol = size - 1;
+
+                    if (dir.dr > 0) maxRow = size - word.length;
+                    if (dir.dr < 0) minRow = word.length - 1;
+                    if (dir.dc > 0) maxCol = size - word.length;
+                    if (dir.dc < 0) minCol = word.length - 1;
+
+                    if (minRow > maxRow || minCol > maxCol) continue;
+
+                    // Generar posiciones aleatorias
+                    const positions = [];
+                    for (let r = minRow; r <= maxRow; r++) {
+                        for (let c = minCol; c <= maxCol; c++) {
+                            positions.push({ row: r, col: c });
+                        }
+                    }
+                    
+                    // Mezclar posiciones
+                    positions.sort(() => Math.random() - 0.5);
+
+                    // Intentar cada posicion
+                    for (let p = 0; p < positions.length && !placed; p++) {
+                        const startRow = positions[p].row;
+                        const startCol = positions[p].col;
+
+                        if (canPlaceWord(grid, word, startRow, startCol, dir.dr, dir.dc, size)) {
+                            placeWord(grid, word, startRow, startCol, dir.dr, dir.dc);
+                            placedWords.push({
+                                ...wordObj,
+                                cleanWord: word,
+                                startRow: startRow,
+                                startCol: startCol,
+                                dr: dir.dr,
+                                dc: dir.dc
+                            });
+                            placed = true;
+                        }
+                    }
+                }
+            });
+
+            // Llenar espacios vacios con letras aleatorias
+            const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            for (let i = 0; i < size; i++) {
+                for (let j = 0; j < size; j++) {
+                    if (grid[i][j] === '') {
+                        grid[i][j] = letters[Math.floor(Math.random() * letters.length)];
+                    }
+                }
+            }
+
+            return { grid: grid, placedWords: placedWords, size: size };
+        }
+
+        function normalizeWord(word) {
+            return word.toUpperCase()
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^A-Z]/g, '');
+        }
+
+        function canPlaceWord(grid, word, row, col, dr, dc, size) {
+            for (let i = 0; i < word.length; i++) {
+                const r = row + i * dr;
+                const c = col + i * dc;
+                if (r < 0 || r >= size || c < 0 || c >= size) return false;
+                if (grid[r][c] !== '' && grid[r][c] !== word[i]) return false;
+            }
+            return true;
+        }
+
+        function placeWord(grid, word, row, col, dr, dc) {
+            for (let i = 0; i < word.length; i++) {
+                const r = row + i * dr;
+                const c = col + i * dc;
+                grid[r][c] = word[i];
+            }
+        }
+
+        // =====================================================
+        // UI
+        // =====================================================
+        function analyzeText() {
+            const text = document.getElementById('sourceText').value.trim();
+            if (text.length < 50) {
+                alert('Por favor ingresa al menos 50 caracteres.');
+                return;
+            }
+
+            const maxWords = parseInt(document.getElementById('wordCount').value) || 10;
+            const extracted = extractWords(text, maxWords);
+
+            const previewList = document.getElementById('previewList');
+            previewList.innerHTML = '';
+            document.getElementById('selectedCount').textContent = extracted.length;
+            
+            extracted.forEach(function(item) {
+                const tag = document.createElement('span');
+                tag.className = 'preview-tag cat-' + item.category;
+                tag.textContent = item.word;
+                previewList.appendChild(tag);
+            });
+
+            const maxLen = Math.max(...extracted.map(w => normalizeWord(w.word).length));
+            const suggestedSize = Math.max(15, maxLen * 2);
+            
+            document.getElementById('gridInfo').innerHTML = 
+                '<i class="fas fa-th"></i> Grilla sugerida: <strong>' + suggestedSize + 'x' + suggestedSize + '</strong>';
+
+            document.getElementById('extractedPreview').classList.add('show');
+        }
+
+        function generateGame() {
+            const text = document.getElementById('sourceText').value.trim();
+            if (text.length < 50) {
+                alert('Por favor ingresa al menos 50 caracteres.');
+                return;
+            }
+
+            const maxWords = parseInt(document.getElementById('wordCount').value) || 10;
+            document.getElementById('loadingOverlay').classList.add('show');
+
+            setTimeout(function() {
+                const extracted = extractWords(text, maxWords);
+                
+                if (extracted.length === 0) {
+                    document.getElementById('loadingOverlay').classList.remove('show');
+                    alert('No se encontraron palabras validas.');
+                    return;
+                }
+
+                const result = generateGrid(extracted);
+                state.words = result.placedWords;
+                state.grid = result.grid;
+                state.gridSize = result.size;
+                state.foundWords = [];
+                state.selectedCells = [];
+                state.seconds = 0;
+
+                renderGrid();
+                renderWordList();
+                startTimer();
+                updateStats();
+
+                document.getElementById('loadingOverlay').classList.remove('show');
+                showGamePanel();
+            }, 500);
+        }
+
+        function renderGrid() {
+            const gridEl = document.getElementById('wordGrid');
+            gridEl.innerHTML = '';
+            gridEl.style.gridTemplateColumns = 'repeat(' + state.gridSize + ', 1fr)';
+
+            for (let i = 0; i < state.gridSize; i++) {
+                for (let j = 0; j < state.gridSize; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'grid-cell';
+                    cell.textContent = state.grid[i][j];
+                    cell.dataset.row = i;
+                    cell.dataset.col = j;
+                    
+                    cell.addEventListener('mousedown', handleMouseDown);
+                    cell.addEventListener('mouseenter', handleMouseEnter);
+                    cell.addEventListener('touchstart', handleTouchStart, { passive: false });
+                    cell.addEventListener('touchmove', handleTouchMove, { passive: false });
+                    
+                    gridEl.appendChild(cell);
+                }
+            }
+
+            document.addEventListener('mouseup', handleMouseUp);
+            document.addEventListener('touchend', handleTouchEnd);
+        }
+
+        function renderWordList() {
+            const listEl = document.getElementById('wordListBody');
+            listEl.innerHTML = '';
+
+            const grouped = {};
+            state.words.forEach(function(w) {
+                if (!grouped[w.category]) grouped[w.category] = [];
+                grouped[w.category].push(w);
+            });
+
+            Object.keys(grouped).sort().forEach(function(cat) {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'word-category';
+                
+                const titleDiv = document.createElement('div');
+                titleDiv.className = 'category-title';
+                titleDiv.innerHTML = '<span class="category-dot" style="background:' + CATEGORIES[cat].color + '"></span>' + CATEGORIES[cat].name;
+                categoryDiv.appendChild(titleDiv);
+
+                grouped[cat].forEach(function(wordObj) {
+                    const item = document.createElement('div');
+                    item.className = 'word-item cat-' + cat;
+                    item.id = 'word-' + wordObj.cleanWord;
+                    item.innerHTML = '<span>' + wordObj.word + '</span><i class="fas fa-circle" style="font-size:0.5rem;opacity:0.3"></i>';
+                    categoryDiv.appendChild(item);
+                });
+
+                listEl.appendChild(categoryDiv);
+            });
+        }
+
+        // Selection handlers
+        function handleMouseDown(e) {
+            state.isSelecting = true;
+            state.selectedCells = [];
+            addCellToSelection(e.target);
+        }
+
+        function handleMouseEnter(e) {
+            if (state.isSelecting && e.target.classList.contains('grid-cell')) {
+                addCellToSelection(e.target);
+            }
+        }
+
+        function handleMouseUp() {
+            if (state.isSelecting) {
+                state.isSelecting = false;
+                checkSelection();
+            }
+        }
+
+        function handleTouchStart(e) {
+            e.preventDefault();
+            state.isSelecting = true;
+            state.selectedCells = [];
+            const touch = e.touches[0];
+            const cell = document.elementFromPoint(touch.clientX, touch.clientY);
+            if (cell && cell.classList.contains('grid-cell')) addCellToSelection(cell);
+        }
+
+        function handleTouchMove(e) {
+            e.preventDefault();
+            if (state.isSelecting) {
+                const touch = e.touches[0];
+                const cell = document.elementFromPoint(touch.clientX, touch.clientY);
+                if (cell && cell.classList.contains('grid-cell')) addCellToSelection(cell);
+            }
+        }
+
+        function handleTouchEnd() {
+            if (state.isSelecting) {
+                state.isSelecting = false;
+                checkSelection();
+            }
+        }
+
+        function addCellToSelection(cell) {
+            if (!cell || !cell.classList.contains('grid-cell')) return;
+            const row = parseInt(cell.dataset.row);
+            const col = parseInt(cell.dataset.col);
+            const exists = state.selectedCells.some(c => c.row === row && c.col === col);
+            if (!exists && (state.selectedCells.length === 0 || isValidLine(row, col))) {
+                state.selectedCells.push({ row: row, col: col, element: cell });
+                cell.classList.add('selected');
+            }
+        }
+
+        function isValidLine(newRow, newCol) {
+            if (state.selectedCells.length < 2) return true;
+            const first = state.selectedCells[0];
+            const last = state.selectedCells[state.selectedCells.length - 1];
+            const dr = Math.sign(last.row - first.row) || Math.sign(newRow - first.row);
+            const dc = Math.sign(last.col - first.col) || Math.sign(newCol - first.col);
+            return newRow === last.row + dr && newCol === last.col + dc;
+        }
+
+        function checkSelection() {
+            let selectedWord = '';
+            state.selectedCells.forEach(c => selectedWord += state.grid[c.row][c.col]);
+            
+            let found = false;
+            state.words.forEach(function(wordObj) {
+                if (wordObj.cleanWord === selectedWord && !state.foundWords.includes(wordObj.cleanWord)) {
+                    found = true;
+                    markAsFound(wordObj);
+                }
+            });
+
+            state.selectedCells.forEach(c => c.element.classList.remove('selected'));
+            state.selectedCells = [];
+            if (found) { updateStats(); checkWin(); }
+        }
+
+        function markAsFound(wordObj) {
+            state.foundWords.push(wordObj.cleanWord);
+            const colorClass = 'found-' + wordObj.category;
+            let row = wordObj.startRow, col = wordObj.startCol;
+            
+            for (let i = 0; i < wordObj.cleanWord.length; i++) {
+                const cell = document.querySelector('.grid-cell[data-row="' + row + '"][data-col="' + col + '"]');
+                if (cell) { cell.classList.remove('selected'); cell.classList.add('found', colorClass); }
+                row += wordObj.dr;
+                col += wordObj.dc;
+            }
+
+            const listItem = document.getElementById('word-' + wordObj.cleanWord);
+            if (listItem) listItem.classList.add('found');
+        }
+
+        function startTimer() {
+            if (state.timer) clearInterval(state.timer);
+            state.seconds = 0;
+            updateTimerDisplay();
+            state.timer = setInterval(() => { state.seconds++; updateTimerDisplay(); }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(state.seconds / 60);
+            const secs = state.seconds % 60;
+            document.getElementById('timerDisplay').textContent = mins + ':' + (secs < 10 ? '0' : '') + secs;
+        }
+
+        function updateStats() {
+            const found = state.foundWords.length, total = state.words.length;
+            document.getElementById('foundCount').textContent = found;
+            document.getElementById('totalCount').textContent = total;
+            document.getElementById('progressFill').style.width = (total > 0 ? (found / total * 100) : 0) + '%';
+        }
+
+        function checkWin() {
+            if (state.foundWords.length === state.words.length) {
+                clearInterval(state.timer);
+                setTimeout(() => document.getElementById('completeOverlay').classList.add('show'), 500);
+            }
+        }
+
+        function showGamePanel() {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('panel2').classList.add('active');
+        }
+
+        function showConfig() {
+            clearInterval(state.timer);
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('panel1').classList.add('active');
+        }
+
+        function resetGame() {
+            state.foundWords = [];
+            state.selectedCells = [];
+            const result = generateGrid(state.words.map(w => ({ word: w.word, category: w.category, priority: w.priority })));
+            state.grid = result.grid;
+            state.gridSize = result.size;
+            state.words = result.placedWords;
+            renderGrid();
+            renderWordList();
+            startTimer();
+            updateStats();
+        }
+
+        function newGame() {
+            document.getElementById('completeOverlay').classList.remove('show');
+            showConfig();
+            document.getElementById('sourceText').value = '';
+            document.getElementById('extractedPreview').classList.remove('show');
+        }
+    </script>
+</body>
+</html>
