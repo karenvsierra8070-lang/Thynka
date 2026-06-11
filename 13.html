@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seleccion de Bibliografia - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --accent-1: #e74c3c; --accent-2: #3498db; --accent-3: #27ae60;
+            --accent-4: #9b59b6; --accent-5: #e67e22;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1300px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-hover); }
+
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white; padding: 40px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 300px; height: 100%;
+            background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.15) 0%, transparent 60%);
+        }
+        .hero-text { flex: 1; z-index: 1; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.8rem;
+            font-weight: 600; margin-bottom: 15px;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.5rem;
+            margin-bottom: 12px; line-height: 1.2;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.9; max-width: 600px; }
+        .hero-visual {
+            width: 180px; height: 220px; background: rgba(255,255,255,0.1);
+            border-radius: 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 8px;
+            position: relative; z-index: 1; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .hero-visual i { font-size: 3rem; opacity: 0.8; }
+
+        .card-intro {
+            grid-column: span 12;
+            background: var(--bg-tertiary);
+        }
+        .intro-quote {
+            font-family: 'Playfair Display', serif; font-size: 1.1rem;
+            color: var(--primary-dark); font-style: italic;
+            border-left: 4px solid var(--primary); padding-left: 20px;
+        }
+
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white;
+        }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #c0392b); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-2), #2980b9); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-3), #1e8449); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-4), #7d3c98); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-5), #d35400); }
+        .icon-brown { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+
+        /* Comparison Table Style */
+        .card-comparison {
+            grid-column: span 12;
+        }
+        .comparison-table {
+            width: 100%; border-collapse: separate;
+            border-spacing: 0; margin-top: 20px; border-radius: 12px;
+            overflow: hidden;
+        }
+        .comparison-table th {
+            padding: 15px; text-align: left; color: white;
+            font-weight: 600; font-size: 0.9rem;
+        }
+        .comparison-table th:first-child { background: var(--bg-tertiary); color: var(--text-primary); width: 20%; }
+        .comparison-table th:nth-child(2) { background: var(--accent-2); }
+        .comparison-table th:nth-child(3) { background: var(--accent-4); }
+        
+        .comparison-table td {
+            padding: 15px; border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem; color: var(--text-primary);
+            vertical-align: top;
+        }
+        .comparison-table tr:last-child td { border-bottom: none; }
+        .comparison-table tr:hover td { background: var(--bg-tertiary); }
+        
+        .table-icon { display: block; margin-bottom: 5px; font-size: 1.2rem; }
+
+        .card-study {
+            grid-column: span 6;
+            grid-row: span 2;
+        }
+        .criteria-list { margin-top: 15px; }
+        .criteria-item {
+            display: flex; gap: 15px; margin-bottom: 20px;
+            padding-bottom: 15px; border-bottom: 1px dashed var(--border-color);
+        }
+        .criteria-item:last-child { border-bottom: none; margin-bottom: 0; }
+        .criteria-num {
+            width: 30px; height: 30px; background: var(--accent-2);
+            color: white; border-radius: 8px; display: flex;
+            align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.85rem; flex-shrink: 0;
+        }
+        .criteria-text h4 { font-size: 0.95rem; color: var(--primary-dark); margin-bottom: 4px; }
+        .criteria-text p { font-size: 0.85rem; color: var(--text-secondary); margin: 0; }
+
+        .card-research {
+            grid-column: span 6;
+            grid-row: span 2;
+        }
+        .card-research .criteria-num { background: var(--accent-4); }
+
+        .card-verification {
+            grid-column: span 8;
+            background: var(--bg-tertiary);
+        }
+        .steps-flow {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            margin-top: 20px; position: relative;
+        }
+        .steps-flow::before {
+            content: ''; position: absolute; top: 25px; left: 50px;
+            right: 50px; height: 2px; background: var(--primary); opacity: 0.3;
+        }
+        .flow-step {
+            text-align: center; width: 22%; position: relative; z-index: 1;
+        }
+        .flow-circle {
+            width: 50px; height: 50px; background: var(--bg-secondary);
+            border: 3px solid var(--primary); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 10px; font-size: 1.2rem; color: var(--primary);
+        }
+        .flow-step h5 { font-size: 0.85rem; color: var(--primary-dark); margin-bottom: 3px; }
+        .flow-step p { font-size: 0.75rem; color: var(--text-secondary); margin: 0; }
+
+        .card-checklist {
+            grid-column: span 4;
+            background: linear-gradient(135deg, var(--accent-5) 0%, #d35400 100%);
+            color: white;
+        }
+        .card-checklist .card-title { color: white; }
+        .checklist-box { margin-top: 15px; }
+        .check-item {
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 10px; font-size: 0.9rem;
+        }
+        .check-item i { width: 20px; }
+
+        .card-authority {
+            grid-column: span 6;
+        }
+        .authority-example {
+            background: var(--bg-tertiary); padding: 15px;
+            border-radius: 10px; margin-top: 15px; display: flex;
+            align-items: center; gap: 15px;
+        }
+        .auth-badge {
+            width: 50px; height: 50px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; background: var(--bg-secondary);
+        }
+        .auth-info strong { display: block; font-size: 0.9rem; }
+        .auth-info span { font-size: 0.8rem; color: var(--text-secondary); }
+
+        .card-dates {
+            grid-column: span 6;
+        }
+        .timeline-years {
+            display: flex; justify-content: space-between;
+            margin-top: 20px; position: relative;
+        }
+        .year-block {
+            text-align: center; flex: 1;
+            padding: 10px; border-radius: 8px;
+            background: var(--bg-tertiary); margin: 0 5px;
+        }
+        .year-block h3 { font-size: 1.2rem; color: var(--primary); }
+        .year-block p { font-size: 0.75rem; color: var(--text-secondary); }
+        .year-block.outdated { opacity: 0.5; }
+        .year-block.current { background: rgba(39, 174, 96, 0.1); border: 1px solid var(--accent-3); }
+
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 30px;
+            background: var(--bg-tertiary);
+        }
+        .footer-text {
+            font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 5px;
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-hero, .card-intro, .card-comparison, .card-study,
+            .card-research, .card-verification, .card-checklist,
+            .card-authority, .card-dates, .card-footer { grid-column: span 12; }
+            .card-study, .card-research { grid-row: span 1; }
+            .steps-flow { flex-direction: column; gap: 20px; align-items: center; }
+            .steps-flow::before { display: none; }
+            .flow-step { width: 100%; text-align: left; display: flex; align-items: center; gap: 15px; }
+            .flow-step p { text-align: left; }
+            .comparison-table { display: block; overflow-x: auto; }
+            .hero-text h1 { font-size: 1.8rem; }
+            .card-hero { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-book-open"></i> Seleccion de Bibliografia</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-search"></i> Curacion de Contenido</span>
+                    <h1>Como Seleccionar Libros Clave</h1>
+                    <p>No todos los libros son iguales. Elegir bien tu bibliografía es la diferencia entre pasar semanas confundido y entender un tema a la primera. Aquí aprenderás a distinguir una fuente divulgativa de una académica, y cuándo usar cada una.</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-book-reader"></i>
+                    <span style="font-size: 0.85rem; font-weight: 600;">Calidad sobre Cantidad</span>
+                </div>
+            </article>
+
+            <!-- INTRO -->
+            <article class="card card-intro">
+                <div class="intro-quote">
+                    "La vida es demasiado corta para leer libros malos. Un mal libro no solo te hace perder el tiempo que pasas leyéndolo, sino que además te confunde con información inexacta o sesgada."
+                </div>
+                <p style="margin-top: 15px; font-size: 0.9rem; color: var(--text-secondary);">
+                    Antes de comprar o descargar, haz un "diagnóstico" rápido. No te guíes solo por la portada bonita o el título llamativo.
+                </p>
+            </article>
+
+            <!-- COMPARISON TABLE -->
+            <article class="card card-comparison">
+                <div class="card-header">
+                    <div class="card-icon icon-brown"><i class="fas fa-balance-scale"></i></div>
+                    <h2 class="card-title">Dos Objetivos, Dos Tipos de Libros</h2>
+                </div>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Aspecto</th>
+                            <th><i class="fas fa-graduation-cap table-icon"></i>Para Estudiar (Carrera)</th>
+                            <th><i class="fas fa-microscope table-icon"></i>Para Investigar (Tesis/Trabajo)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Objetivo Principal</strong></td>
+                            <td>Aprender conceptos básicos, pasar exámenes, comprender la estructura general de la materia.</td>
+                            <td>Profundizar en un nicho específico, encontrar huecos en el conocimiento, respaldar hipótesis con datos.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Tipo de Libro</strong></td>
+                            <td><strong>Manuales y Textos Académicos:</strong> "Introducción a...", "Fundamentos de...". Suelen ser generales y pedagógicos.</td>
+                            <td><strong>Monografías y Artículos:</strong> Tratados específicos sobre un tema reducido. Ensayos académicos con bibliografía extensa.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Fecha de Edición</strong></td>
+                            <td>Importante pero no crítica. Los fundamentos de la física no cambian tanto (aunque revisa que no sean obsoletos).</td>
+                            <td><strong>CRÍTICO.</strong> Debes buscar lo más reciente posible (últimos 5-10 años) para ver el estado del arte actual.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Autoridad</strong></td>
+                            <td>Que sea un profesor reconocido o una editorial universitaria de prestigio.</td>
+                            <td>Verificar las citas. ¿Cuántos otros autores citan este libro? (Google Scholar te lo dice).</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </article>
+
+            <!-- PARA ESTUDIAR DETALLE -->
+            <article class="card card-study">
+                <div class="card-header">
+                    <div class="card-icon icon-blue"><i class="fas fa-graduation-cap"></i></div>
+                    <h2 class="card-title">Criterios para Libros de Estudio</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Si necesitas un libro para cursar una materia, busca estos elementos pedagógicos:</p>
+                
+                <div class="criteria-list">
+                    <div class="criteria-item">
+                        <div class="criteria-num">1</div>
+                        <div class="criteria-text">
+                            <h4>Pedagogia Visual</h4>
+                            <p>¿Tiene diagramas, esquemas y negritas? Un buen libro de estudio te "muestra" el conocimiento, no solo lo narra. Evita los muros de texto sin descanso visual.</p>
+                        </div>
+                    </div>
+                    <div class="criteria-item">
+                        <div class="criteria-num">2</div>
+                        <div class="criteria-text">
+                            <h4>Ejercicios Resueltos</h4>
+                            <p>Fundamental en materias exactas (Matemáticas, Física). Ver el desarrollo paso a paso es mejor que solo tener la respuesta final. En humanidades, busca "Preguntas de reflexión" al final del capítulo.</p>
+                        </div>
+                    </div>
+                    <div class="criteria-item">
+                        <div class="criteria-num">3</div>
+                        <div class="criteria-text">
+                            <h4>Indices Claros y Glosarios</h4>
+                            <p>El índice debe ser tu mapa. Si los títulos de los capítulos son confusos, el libro probablemente también lo será. El glosario es vital para materias con mucho vocabulario técnico nuevo.</p>
+                        </div>
+                    </div>
+                    <div class="criteria-item">
+                        <div class="criteria-num">4</div>
+                        <div class="criteria-text">
+                            <h4>Bibliografía Comentada</h4>
+                            <p>Al final de cada capítulo, ¿recomienda otros libros? Eso denota generosidad académica y te da una ruta si te quedaste con dudas.</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- PARA INVESTIGAR DETALLE -->
+            <article class="card card-research">
+                <div class="card-header">
+                    <div class="card-icon icon-purple"><i class="fas fa-microscope"></i></div>
+                    <h2 class="card-title">Criterios para Investigacion</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Para trabajos finales o tesis, el rigor científico manda. Aquí el peligro es la falta de fuentes.</p>
+                
+                <div class="criteria-list">
+                    <div class="criteria-item">
+                        <div class="criteria-num">1</div>
+                        <div class="criteria-text">
+                            <h4>El "Peer Review" (Revisión de Pares)</h4>
+                            <p>¿Es una editorial universitaria (Eudeba, Oxford, etc.) o una revista científica? Eso garantiza que otros expertos validaron el texto antes de publicarlo. Evita editoriales "vanity" o de auto-publicación.</p>
+                        </div>
+                    </div>
+                    <div class="criteria-item">
+                        <div class="criteria-num">2</div>
+                        <div class="criteria-text">
+                            <h4>Densidad Bibliográfica</h4>
+                            <p>Revisa las páginas finales. ¿Hay una lista larga de referencias? Un libro de investigación no se inventa datos, se construye sobre otros. Si no cita fuentes, es opinión, no investigación.</p>
+                        </div>
+                    </div>
+                    <div class="criteria-item">
+                        <div class="criteria-num">3</div>
+                        <div class="criteria-text">
+                            <h4>Especificidad del Tema</h4>
+                            <p>Para investigar, los libros generales ("Historia del Arte") sirven solo como introducción. Necesitas libros específicos ("El uso del color en la etapa azul de Picasso"). Busca el "nicho".</p>
+                        </div>
+                    </div>
+                    <div class="criteria-item">
+                        <div class="criteria-num">4</div>
+                        <div class="criteria-text">
+                            <h4>ISBN y Datos de Catalogación</h4>
+                            <p>Verifica que tenga ISBN. Es el DNI del libro. Te permite citarlo correctamente y asegura que está registrado en el sistema bibliográfico mundial.</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- METODO DE VERIFICACION -->
+            <article class="card card-verification">
+                <div class="card-header">
+                    <div class="card-icon icon-orange"><i class="fas fa-stopwatch"></i></div>
+                    <h2 class="card-title">Tecnica de los 10 Minutos</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">No leas el libro entero para decidir si sirve. Usa este método rápido en la biblioteca o librería:</p>
+                
+                <div class="steps-flow">
+                    <div class="flow-step">
+                        <div class="flow-circle"><i class="fas fa-eye"></i></div>
+                        <h5>1. Ojeada (2 min)</h5>
+                        <p>Lee el índice general. ¿La estructura del libro cubre lo que tú necesitas? ¿Te sirve el enfoque?</p>
+                    </div>
+                    <div class="flow-step">
+                        <div class="flow-circle"><i class="fas fa-user"></i></div>
+                        <h5>2. Autor (2 min)</h5>
+                        <p>Googlea al autor. ¿Es catedrático? ¿Tiene prestigio? ¿O es un periodista sin formación en el tema?</p>
+                    </div>
+                    <div class="flow-step">
+                        <div class="flow-circle"><i class="fas fa-random"></i></div>
+                        <h5>3. Muestreo (4 min)</h5>
+                        <p>Abre un capítulo al azar (no el primero). ¿Entiendes el lenguaje? ¿Es denso o claro? Ese es el tono real del libro.</p>
+                    </div>
+                    <div class="flow-step">
+                        <div class="flow-circle"><i class="fas fa-calendar"></i></div>
+                        <h5>4. Fecha (2 min)</h5>
+                        <p>Revisa el año de edición. Para ciencias, ¿es muy viejo? Para humanidades, ¿es una edición revisada y actualizada?</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- CHECKLIST RAPIDO -->
+            <article class="card card-checklist">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-tasks"></i></div>
+                    <h2 class="card-title">Checklist Rápido</h2>
+                </div>
+                <div class="checklist-box">
+                    <div class="check-item"><i class="fas fa-check-circle"></i> <span>¿El título describe el contenido real?</span></div>
+                    <div class="check-item"><i class="fas fa-check-circle"></i> <span>¿La editorial es reconocida o universitaria?</span></div>
+                    <div class="check-item"><i class="fas fa-check-circle"></i> <span>¿Tiene bibliografía al final?</span></div>
+                    <div class="check-item"><i class="fas fa-check-circle"></i> <span>¿El índice es lógico y ordenado?</span></div>
+                    <div class="check-item"><i class="fas fa-check-circle"></i> <span>¿Está citado en Google Scholar (+50 citas)?</span></div>
+                </div>
+            </article>
+
+            <!-- AUTORIDAD -->
+            <article class="card card-authority">
+                <div class="card-header">
+                    <div class="card-icon icon-red"><i class="fas fa-user-shield"></i></div>
+                    <h2 class="card-title">¿Quién es el Autor?</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">La credibilidad depende de quién firma. Aprende a distinguir:</p>
+                
+                <div class="authority-example">
+                    <div class="auth-badge" style="color: var(--accent-3);"><i class="fas fa-user-graduate"></i></div>
+                    <div class="auth-info">
+                        <strong style="color: var(--accent-3);">Experto Académico</strong>
+                        <span>Investigador activo, profesor universitario, publica en revistas científicas. <strong>Confiable para tesis.</strong></span>
+                    </div>
+                </div>
+                
+                <div class="authority-example">
+                    <div class="auth-badge" style="color: var(--accent-5);"><i class="fas fa-feather-alt"></i></div>
+                    <div class="auth-info">
+                        <strong style="color: var(--accent-5);">Divulgador / Periodista</strong>
+                        <span>Escribe para el público general. Lenguaje accesible. <strong>Bueno para entender conceptos, malo para citar como fuente científica.</strong></span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- FECHAS -->
+            <article class="card card-dates">
+                <div class="card-header">
+                    <div class="card-icon icon-green"><i class="fas fa-calendar-check"></i></div>
+                    <h2 class="card-title">Vigencia del Contenido</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">No descartes lo viejo, pero prioriza lo nuevo según la materia.</p>
+                
+                <div class="timeline-years">
+                    <div class="year-block outdated">
+                        <h3>< 1990</h3>
+                        <p>Fuentes históricas / primarias. Clásicos inmutables (Filosofía, Literatura).</p>
+                    </div>
+                    <div class="year-block">
+                        <h3>2000-2015</h3>
+                        <p>Base teórica sólida. Revisar si hay nuevas ediciones actualizadas.</p>
+                    </div>
+                    <div class="year-block current">
+                        <h3>2016-2024</h3>
+                        <p>Estado del arte. Imprescindible para Tecnología, Medicina, Derecho y Ciencias Sociales.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-text">Un buen libro te enseña, un mal libro te confunde. Tómate 10 minutos para elegir bien y ahorrarás horas de estudio estéril.</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+    </script>
+</body>
+</html>
