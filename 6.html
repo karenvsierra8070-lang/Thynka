@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metodo Cornell - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --accent-1: #e74c3c; --accent-2: #3498db; --accent-3: #27ae60;
+            --accent-4: #9b59b6; --accent-5: #e67e22;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1300px; margin: 0 auto; }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        /* Cards Base */
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-hover); }
+
+        /* Hero Card - Spans full width */
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white; padding: 40px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 300px; height: 100%;
+            background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.15) 0%, transparent 60%);
+        }
+        .hero-text { flex: 1; z-index: 1; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.8rem;
+            font-weight: 600; margin-bottom: 15px;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.5rem;
+            margin-bottom: 12px; line-height: 1.2;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.9; max-width: 500px; }
+        .hero-visual {
+            width: 180px; height: 220px; background: rgba(255,255,255,0.1);
+            border-radius: 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 8px;
+            position: relative; z-index: 1; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .hero-visual i { font-size: 3rem; opacity: 0.8; }
+
+        /* What is Card */
+        .card-what {
+            grid-column: span 7;
+            grid-row: span 2;
+        }
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white;
+        }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #c0392b); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-2), #2980b9); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-3), #1e8449); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-4), #7d3c98); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-5), #d35400); }
+        .icon-brown { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+        .card-content p { margin-bottom: 15px; font-size: 0.95rem; color: var(--text-primary); }
+        .card-content strong { color: var(--primary-dark); }
+
+        /* History Card */
+        .card-history {
+            grid-column: span 5;
+            background: var(--bg-tertiary);
+        }
+        .history-timeline {
+            position: relative; padding-left: 25px;
+        }
+        .history-timeline::before {
+            content: ''; position: absolute; left: 0; top: 5px;
+            width: 3px; height: calc(100% - 10px);
+            background: var(--primary); border-radius: 3px;
+        }
+        .history-item {
+            position: relative; padding: 10px 0;
+        }
+        .history-item::before {
+            content: ''; position: absolute; left: -29px; top: 15px;
+            width: 11px; height: 11px; background: var(--primary);
+            border-radius: 50%; border: 2px solid var(--bg-tertiary);
+        }
+        .history-year {
+            font-weight: 700; color: var(--primary); font-size: 0.85rem;
+        }
+        .history-text {
+            font-size: 0.9rem; color: var(--text-secondary);
+        }
+
+        /* Cornell Diagram Card */
+        .card-diagram {
+            grid-column: span 5;
+            grid-row: span 2;
+            display: flex; flex-direction: column;
+        }
+        .diagram-container {
+            flex: 1; display: grid;
+            grid-template-columns: 35% 65%;
+            grid-template-rows: 1fr auto;
+            gap: 4px; background: var(--border-color);
+            border-radius: 15px; overflow: hidden; margin-top: 15px;
+        }
+        .diagram-section {
+            background: var(--bg-primary); padding: 15px;
+            display: flex; flex-direction: column; justify-content: center;
+        }
+        .diagram-cues { border-right: 3px dashed var(--primary); }
+        .diagram-notes { }
+        .diagram-summary {
+            grid-column: 1 / -1;
+            border-top: 3px dashed var(--primary);
+        }
+        .diagram-label {
+            font-weight: 700; font-size: 0.85rem;
+            color: var(--primary); margin-bottom: 6px;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .diagram-desc { font-size: 0.75rem; color: var(--text-secondary); }
+        .diagram-percent {
+            display: inline-block; background: var(--primary);
+            color: white; padding: 2px 8px; border-radius: 10px;
+            font-size: 0.7rem; margin-top: 8px;
+        }
+
+        /* Steps Card */
+        .card-steps {
+            grid-column: span 7;
+        }
+        .steps-grid {
+            display: grid; grid-template-columns: repeat(5, 1fr);
+            gap: 10px; margin-top: 20px;
+        }
+        .step-item {
+            text-align: center; padding: 15px 10px;
+            background: var(--bg-tertiary); border-radius: 12px;
+            transition: all 0.3s;
+        }
+        .step-item:hover { background: var(--beige); transform: translateY(-3px); }
+        .step-num {
+            width: 32px; height: 32px; background: var(--primary);
+            color: white; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center;
+            margin: 0 auto 10px; font-weight: 700; font-size: 0.9rem;
+        }
+        .step-item h4 {
+            font-size: 0.85rem; color: var(--primary-dark);
+            margin-bottom: 5px;
+        }
+        .step-item p {
+            font-size: 0.75rem; color: var(--text-secondary); margin: 0;
+        }
+
+        /* Benefits Cards */
+        .card-benefits-intro {
+            grid-column: span 4;
+            background: linear-gradient(135deg, var(--accent-3) 0%, #1e8449 100%);
+            color: white;
+        }
+        .card-benefits-intro .card-title { color: white; }
+        .card-benefits-intro p { color: rgba(255,255,255,0.9); }
+
+        .card-benefit {
+            grid-column: span 4;
+        }
+        .benefit-header {
+            display: flex; align-items: center; gap: 15px; margin-bottom: 15px;
+        }
+        .benefit-icon {
+            width: 50px; height: 50px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem; color: white;
+        }
+        .benefit-title {
+            font-weight: 700; font-size: 1.1rem; color: var(--primary-dark);
+        }
+
+        /* Example Card */
+        .card-example {
+            grid-column: span 8;
+            grid-row: span 2;
+        }
+        .example-layout {
+            display: grid; grid-template-columns: 200px 1fr;
+            gap: 15px; margin-top: 20px;
+        }
+        .example-cues-col {
+            background: var(--bg-tertiary); border-radius: 12px;
+            padding: 15px; border-left: 4px solid var(--accent-2);
+        }
+        .example-notes-col {
+            background: var(--bg-primary); border-radius: 12px;
+            padding: 15px;
+        }
+        .example-summary-row {
+            grid-column: 1 / -1;
+            background: var(--beige); border-radius: 12px;
+            padding: 15px; border-left: 4px solid var(--accent-3);
+        }
+        .example-label {
+            font-size: 0.75rem; font-weight: 700;
+            color: var(--primary); text-transform: uppercase;
+            margin-bottom: 10px; letter-spacing: 1px;
+        }
+        .example-item {
+            padding: 8px 0; border-bottom: 1px dashed var(--border-color);
+            font-size: 0.85rem;
+        }
+        .example-item:last-child { border-bottom: none; }
+        .example-item strong { color: var(--primary-dark); }
+
+        /* Tips Card */
+        .card-tips {
+            grid-column: span 4;
+        }
+        .tip-list { margin-top: 15px; }
+        .tip-item {
+            display: flex; gap: 12px; padding: 12px;
+            background: var(--bg-tertiary); border-radius: 10px;
+            margin-bottom: 10px; transition: all 0.2s;
+        }
+        .tip-item:hover { background: var(--beige); }
+        .tip-num {
+            width: 28px; height: 28px; background: var(--primary);
+            color: white; border-radius: 8px; display: flex;
+            align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.8rem; flex-shrink: 0;
+        }
+        .tip-text {
+            font-size: 0.85rem; color: var(--text-primary);
+        }
+        .tip-text strong { color: var(--primary-dark); }
+
+        /* Warning Card */
+        .card-warning {
+            grid-column: span 4;
+            background: linear-gradient(135deg, var(--accent-5) 0%, #d35400 100%);
+            color: white;
+        }
+        .card-warning .card-title { color: white; }
+        .card-warning p { color: rgba(255,255,255,0.9); }
+        .warning-icon {
+            font-size: 2.5rem; margin-bottom: 15px; opacity: 0.8;
+        }
+
+        /* Comparison Card */
+        .card-comparison {
+            grid-column: span 6;
+        }
+        .comparison-mini {
+            margin-top: 15px;
+        }
+        .comparison-row {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 10px; margin-bottom: 10px;
+        }
+        .comparison-item {
+            padding: 12px; border-radius: 10px;
+            display: flex; align-items: center; gap: 10px;
+            font-size: 0.85rem;
+        }
+        .comparison-item.bad {
+            background: rgba(231, 76, 60, 0.1);
+            border: 1px solid rgba(231, 76, 60, 0.3);
+        }
+        .comparison-item.good {
+            background: rgba(39, 174, 96, 0.1);
+            border: 1px solid rgba(39, 174, 96, 0.3);
+        }
+        .comparison-item i { font-size: 1rem; }
+        .comparison-item.bad i { color: var(--accent-1); }
+        .comparison-item.good i { color: var(--accent-3); }
+
+        /* Footer */
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 30px;
+            background: var(--bg-tertiary);
+        }
+        .footer-text {
+            font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 5px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1100px) {
+            .card-hero { flex-direction: column; text-align: center; padding: 30px; }
+            .hero-text p { margin: 0 auto; }
+            .hero-visual { width: 150px; height: 180px; }
+            .steps-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-hero, .card-what, .card-history, .card-diagram,
+            .card-steps, .card-benefits-intro, .card-benefit,
+            .card-example, .card-tips, .card-warning, .card-comparison,
+            .card-footer { grid-column: span 12; }
+            .card-diagram { grid-row: span 1; }
+            .card-example { grid-row: span 1; }
+            .steps-grid { grid-template-columns: repeat(5, 1fr); }
+            .example-layout { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 600px) {
+            .steps-grid { grid-template-columns: repeat(2, 1fr); }
+            .hero-text h1 { font-size: 1.8rem; }
+            .card { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-book"></i> Metodo Cornell</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-graduation-cap"></i> Tecnicas de Estudio</span>
+                    <h1>El Metodo Cornell para Tomar Notas</h1>
+                    <p>¡Hola! Qué alegría que estés aquí para descubrir una herramienta que transformará por completo tu forma de aprender. Estudiar no tiene por qué ser aburrido ni estresante; al contrario, puede ser un camino organizado, dinámico y hasta divertido. Hoy vas a conocer un sistema diseñado para liberar tu mente, retener mejor la información y, sobre todo, darte la confianza de que puedes lograr cualquier meta académica que te propongas. ¡Empecemos este viaje juntos hacia un estudio más inteligente y feliz!</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-file-alt"></i>
+                    <span style="font-size: 0.85rem; font-weight: 600;">Divide y Venceras</span>
+                </div>
+            </article>
+
+            <!-- QUE ES -->
+            <article class="card card-what">
+                <div class="card-header">
+                    <div class="card-icon icon-red"><i class="fas fa-question"></i></div>
+                    <h2 class="card-title">Que es el Metodo Cornell</h2>
+                </div>
+                <div class="card-content">
+                    <p>El Método Cornell es una estrategia de organización y estudio activo creada en la Universidad de Cornell, diseñada para estructurar tus apuntes de forma visualmente limpia y altamente efectiva. En lugar de limitarse a transcribir palabras sin parar, este sistema divide la página en secciones estratégicas que te guían a registrar lo esencial, formular preguntas clave y consolidar lo aprendido en un solo lugar. Es el aliado perfecto para transformar folios caóticos en una guía de repaso dinámica que impulsa la memoria y la comprensión real, demostrando que con el orden correcto estudiar se vuelve una experiencia motivadora, fluida y sin estrés.</p>
+                    <p style="background: var(--bg-tertiary); padding: 15px; border-radius: 10px; border-left: 4px solid var(--primary); margin-top: 20px;">
+                        <strong>La clave:</strong> La clave del éxito en este método radica en el estudio activo y la autoevaluación constante, lo que transforma las notas tradicionales en herramientas dinámicas de cuestionamiento y síntesis. En lugar de ser un espectador pasivo que solo transcribe palabras, este sistema te invita a entrar a la cancha y procesar la información de fondo, convirtiendo el repaso en un entrenamiento amigable y eficiente donde tu cerebro resuelve acertijos con sus propios apuntes para fijar el conocimiento a largo plazo sin estrés.
+                    </p>
+                </div>
+            </article>
+
+            <!-- HISTORIA -->
+            <article class="card card-history">
+                <div class="card-header">
+                    <div class="card-icon icon-blue"><i class="fas fa-history"></i></div>
+                    <h2 class="card-title">Historia</h2>
+                </div>
+                <div class="history-timeline">
+                    <div class="history-item">
+                        <div class="history-year">1950s</div>
+                        <div class="history-text">Walter Pauk crea el metodo en la Universidad de Cornell, Nueva York</div>
+                    </div>
+                    <div class="history-item">
+                        <div class="history-year">1962</div>
+                        <div class="history-text">Se publica "How to Study in College", libro que populariza el sistema</div>
+                    </div>
+                    <div class="history-item">
+                        <div class="history-year">Hoy</div>
+                        <div class="history-text">Sigue siendo uno de los metodos mas recomendados en universidades del mundo</div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- DIAGRAMA -->
+            <article class="card card-diagram">
+                <div class="card-header">
+                    <div class="card-icon icon-purple"><i class="fas fa-th-large"></i></div>
+                    <h2 class="card-title">Estructura Visual</h2>
+                </div>
+                <div class="diagram-container">
+                    <div class="diagram-section diagram-cues">
+                        <div class="diagram-label"><i class="fas fa-key"></i> Pistas</div>
+                        <div class="diagram-desc">Preguntas, ideas clave, conceptos</div>
+                        <span class="diagram-percent">~25% ancho</span>
+                    </div>
+                    <div class="diagram-section diagram-notes">
+                        <div class="diagram-label"><i class="fas fa-pen"></i> Notas</div>
+                        <div class="diagram-desc">Informacion principal durante la clase</div>
+                        <span class="diagram-percent">~75% ancho</span>
+                    </div>
+                    <div class="diagram-section diagram-summary">
+                        <div class="diagram-label"><i class="fas fa-compress-alt"></i> Resumen</div>
+                        <div class="diagram-desc">Sintesis de 2-4 lineas con la esencia del tema</div>
+                        <span class="diagram-percent">~15% altura</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- PASOS -->
+            <article class="card card-steps">
+                <div class="card-header">
+                    <div class="card-icon icon-green"><i class="fas fa-list-ol"></i></div>
+                    <h2 class="card-title">5 Pasos para Aplicarlo</h2>
+                </div>
+                <div class="steps-grid">
+                    <div class="step-item">
+                        <div class="step-num">1</div>
+                        <h4>Prepara</h4>
+                        <p>Divide la hoja en 3 zonas</p>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">2</div>
+                        <h4>Registra</h4>
+                        <p>Anota durante la clase</p>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">3</div>
+                        <h4>Procesa</h4>
+                        <p>Crea preguntas (24h despues)</p>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">4</div>
+                        <h4>Resume</h4>
+                        <p>Sintetiza en 2-4 lineas</p>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">5</div>
+                        <h4>Repasa</h4>
+                        <p>Autoevaluate con preguntas</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- BENEFICIOS INTRO -->
+            <article class="card card-benefits-intro">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-star"></i></div>
+                    <h2 class="card-title">Por Que Funciona</h2>
+                </div>
+                <p>Combina tres principios cientificos: repeticion espaciada, recuperacion activa y elaboracion. No es magia, es ciencia aplicada al estudio.</p>
+            </article>
+
+            <!-- BENEFICIO 1 -->
+            <article class="card card-benefit">
+                <div class="benefit-header">
+                    <div class="benefit-icon icon-blue"><i class="fas fa-brain"></i></div>
+                    <div class="benefit-title">Mejora la Retencion</div>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Al reformular la informacion con tus palabras, activas conexiones neuronales mas fuertes y duraderas.</p>
+            </article>
+
+            <!-- BENEFICIO 2 -->
+            <article class="card card-benefit">
+                <div class="benefit-header">
+                    <div class="benefit-icon icon-orange"><i class="fas fa-clock"></i></div>
+                    <div class="benefit-title">Ahorra Tiempo</div>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Las notas ya estan organizadas para repasar. No necesitas reescribir ni buscar entre hojas desordenadas.</p>
+            </article>
+
+            <!-- EJEMPLO -->
+            <article class="card card-example">
+                <div class="card-header">
+                    <div class="card-icon icon-purple"><i class="fas fa-file-alt"></i></div>
+                    <h2 class="card-title">Ejemplo: La Revolucion Francesa</h2>
+                </div>
+                <div class="example-layout">
+                    <div class="example-cues-col">
+                        <div class="example-label">Pistas / Preguntas</div>
+                        <div class="example-item"><strong>Fecha inicio?</strong></div>
+                        <div class="example-item"><strong>Causas?</strong></div>
+                        <div class="example-item"><strong>El Terror?</strong></div>
+                        <div class="example-item"><strong>Resultado?</strong></div>
+                    </div>
+                    <div class="example-notes-col">
+                        <div class="example-label">Area de Notas</div>
+                        <div class="example-item"><strong>Inicio:</strong> 14 julio 1789 - Toma de la Bastilla</div>
+                        <div class="example-item"><strong>Causas:</strong> Crisis economica, desigualdad social, Ilustracion</div>
+                        <div class="example-item"><strong>Terror:</strong> 1793-94, Robespierre, +40,000 victimas</div>
+                        <div class="example-item"><strong>Fin:</strong> 1799, golpe de Napoleon</div>
+                    </div>
+                    <div class="example-summary-row">
+                        <div class="example-label">Resumen</div>
+                        <p style="font-size: 0.9rem; margin: 0;">La Revolucion Francesa (1789-1799) transformo Francia de monarquia a republica. Causada por crisis economica y desigualdad, tuvo su punto mas violento en el Terror. Termino con Napoleon.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- TIPS -->
+            <article class="card card-tips">
+                <div class="card-header">
+                    <div class="card-icon icon-brown"><i class="fas fa-lightbulb"></i></div>
+                    <h2 class="card-title">Consejos Practicos</h2>
+                </div>
+                <div class="tip-list">
+                    <div class="tip-item">
+                        <div class="tip-num">1</div>
+                        <div class="tip-text"><strong>Abreviaturas:</strong> Crea tu propio sistema para escribir mas rapido</div>
+                    </div>
+                    <div class="tip-item">
+                        <div class="tip-num">2</div>
+                        <div class="tip-text"><strong>No transcribas:</strong> Escucha, comprende y anota IDEAS</div>
+                    </div>
+                    <div class="tip-item">
+                        <div class="tip-num">3</div>
+                        <div class="tip-text"><strong>Mismo dia:</strong> Procesa las preguntas en 24 horas maximo</div>
+                    </div>
+                    <div class="tip-item">
+                        <div class="tip-num">4</div>
+                        <div class="tip-text"><strong>Preguntas profundas:</strong> "Por que" y "Como" > "Que es"</div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- WARNING -->
+            <article class="card card-warning">
+                <div class="warning-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                <h3 style="font-size: 1.1rem; margin-bottom: 10px;">Error Comun</h3>
+                <p style="font-size: 0.9rem; opacity: 0.9;">Muchos escriben las preguntas DURANTE la clase. Incorrecto. El procesamiento debe hacerse DESPUES, cuando reflexionas. Ahi ocurre el aprendizaje profundo.</p>
+            </article>
+
+            <!-- COMPARISON -->
+            <article class="card card-comparison">
+                <div class="card-header">
+                    <div class="card-icon icon-red"><i class="fas fa-balance-scale"></i></div>
+                    <h2 class="card-title">Cornell vs Tradicional</h2>
+                </div>
+                <div class="comparison-mini">
+                    <div class="comparison-row">
+                        <div class="comparison-item bad"><i class="fas fa-times-circle"></i> Notas desordenadas</div>
+                        <div class="comparison-item good"><i class="fas fa-check-circle"></i> Estructura clara</div>
+                    </div>
+                    <div class="comparison-row">
+                        <div class="comparison-item bad"><i class="fas fa-times-circle"></i> Releer todo para repasar</div>
+                        <div class="comparison-item good"><i class="fas fa-check-circle"></i> Preguntas listas</div>
+                    </div>
+                    <div class="comparison-row">
+                        <div class="comparison-item bad"><i class="fas fa-times-circle"></i> Solo transcripcion</div>
+                        <div class="comparison-item good"><i class="fas fa-check-circle"></i> Reflexion obligatoria</div>
+                    </div>
+                    <div class="comparison-row">
+                        <div class="comparison-item bad"><i class="fas fa-times-circle"></i> Sin sintesis</div>
+                        <div class="comparison-item good"><i class="fas fa-check-circle"></i> Resumen integrado</div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-text">El metodo Cornell es una herramienta, no una camisa de fuerza. Adapta las proporciones segun el tipo de contenido que estudias.</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+    </script>
+</body>
+</html>
