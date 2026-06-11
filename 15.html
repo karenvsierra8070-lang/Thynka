@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion de Lecturas PDF - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --accent-1: #e74c3c; --accent-2: #3498db; --accent-3: #27ae60;
+            --accent-4: #9b59b6; --accent-5: #e67e22;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1300px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-hover); }
+
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, var(--accent-2) 0%, #2980b9 100%);
+            color: white; padding: 40px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 300px; height: 100%;
+            background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.15) 0%, transparent 60%);
+        }
+        .hero-text { flex: 1; z-index: 1; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.8rem;
+            font-weight: 600; margin-bottom: 15px;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.5rem;
+            margin-bottom: 12px; line-height: 1.2;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.9; max-width: 500px; }
+        .hero-visual {
+            width: 180px; height: 220px; background: rgba(255,255,255,0.1);
+            border-radius: 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 8px;
+            position: relative; z-index: 1; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .hero-visual i { font-size: 3rem; opacity: 0.8; }
+
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white;
+        }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #c0392b); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-2), #2980b9); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-3), #1e8449); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-4), #7d3c98); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-5), #d35400); }
+        .icon-brown { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+
+        /* Problem Visualization */
+        .card-problem {
+            grid-column: span 12;
+            background: var(--bg-tertiary);
+        }
+        .problem-visual {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 30px; align-items: center; margin-top: 20px;
+        }
+        .file-list-mockup {
+            background: var(--bg-secondary); border-radius: 10px;
+            padding: 20px; font-family: monospace; font-size: 0.8rem;
+            border: 1px solid var(--border-color);
+        }
+        .file-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border-color); color: var(--text-secondary); }
+        .file-item:last-child { border-bottom: none; }
+        .file-item i { color: var(--accent-1); }
+        .file-item.highlight { background: rgba(231, 76, 60, 0.1); border-radius: 5px; padding: 8px; margin: 0 -8px; }
+
+        /* Naming System */
+        .card-naming {
+            grid-column: span 6;
+            grid-row: span 2;
+        }
+        .naming-rules {
+            margin-top: 20px; display: flex; flex-direction: column; gap: 15px;
+        }
+        .rule-block {
+            background: var(--bg-tertiary); padding: 15px;
+            border-radius: 12px; border-left: 4px solid var(--accent-2);
+        }
+        .rule-block h4 { font-size: 0.95rem; color: var(--primary-dark); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .rule-code {
+            background: var(--bg-secondary); padding: 10px;
+            border-radius: 6px; font-family: monospace;
+            font-size: 0.85rem; color: var(--accent-4);
+            border: 1px solid var(--border-color);
+        }
+
+        /* Folders Structure */
+        .card-folders {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-4) 0%, #7d3c98 100%);
+            color: white;
+        }
+        .card-folders .card-title { color: white; }
+        .folder-tree {
+            margin-top: 20px; background: rgba(0,0,0,0.2);
+            border-radius: 10px; padding: 15px;
+        }
+        .ft-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 8px 0; font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .ft-item:last-child { border-bottom: none; }
+        .ft-item i { width: 20px; text-align: center; }
+        .ft-indent { margin-left: 20px; }
+
+        /* Software Tools */
+        .card-software {
+            grid-column: span 6;
+        }
+        .tools-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 15px; margin-top: 20px;
+        }
+        .tool-card {
+            background: var(--bg-tertiary); border-radius: 12px;
+            padding: 15px; text-align: center; transition: all 0.3s;
+        }
+        .tool-card:hover { transform: scale(1.02); box-shadow: 0 4px 15px var(--shadow); }
+        .tool-icon {
+            width: 50px; height: 50px; background: var(--bg-secondary);
+            border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; margin: 0 auto 10px; font-size: 1.5rem;
+            color: var(--primary);
+        }
+        .tool-card h4 { font-size: 0.9rem; color: var(--primary-dark); }
+        .tool-card p { font-size: 0.75rem; color: var(--text-secondary); }
+
+        /* Annotation Layers */
+        .card-annotation {
+            grid-column: span 6;
+        }
+        .layer-diagram {
+            margin-top: 20px; display: flex; flex-direction: column; gap: 10px;
+        }
+        .layer {
+            display: flex; align-items: center; gap: 15px;
+            padding: 12px; border-radius: 10px;
+        }
+        .layer-1 { background: rgba(52, 152, 219, 0.1); border-left: 4px solid var(--accent-2); }
+        .layer-2 { background: rgba(155, 89, 182, 0.1); border-left: 4px solid var(--accent-4); }
+        .layer-3 { background: rgba(39, 174, 96, 0.1); border-left: 4px solid var(--accent-3); }
+        .layer-badge {
+            width: 30px; height: 30px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 700; font-size: 0.8rem;
+        }
+
+        /* Process Flow */
+        .card-process {
+            grid-column: span 12;
+        }
+        .process-line {
+            display: flex; justify-content: space-between; position: relative;
+            margin-top: 30px; padding: 0 20px;
+        }
+        .process-line::before {
+            content: ''; position: absolute; top: 25px; left: 40px; right: 40px;
+            height: 4px; background: var(--border-color); border-radius: 2px; z-index: 0;
+        }
+        .p-step {
+            position: relative; z-index: 1; text-align: center; width: 18%;
+        }
+        .p-circle {
+            width: 50px; height: 50px; background: var(--primary);
+            border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; color: white; font-size: 1.2rem;
+            margin: 0 auto 10px; border: 4px solid var(--bg-secondary);
+        }
+        .p-step h5 { font-size: 0.9rem; color: var(--primary-dark); }
+        .p-step p { font-size: 0.75rem; color: var(--text-secondary); }
+
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 30px;
+            background: var(--bg-tertiary);
+        }
+        .footer-text {
+            font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 5px;
+        }
+
+        @media (max-width: 1100px) {
+            .problem-visual { grid-template-columns: 1fr; }
+            .process-line { flex-direction: column; align-items: center; gap: 20px; }
+            .process-line::before { display: none; }
+            .p-step { width: 100%; text-align: left; display: flex; align-items: center; gap: 15px; }
+            .p-circle { margin: 0; }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-hero, .card-problem, .card-naming, .card-folders,
+            .card-software, .card-annotation, .card-process, .card-footer { grid-column: span 12; }
+            .tools-grid { grid-template-columns: 1fr; }
+            .hero-text h1 { font-size: 1.8rem; }
+            .card-hero { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-file-pdf"></i> Gestion de Lecturas PDF</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-book-reader"></i> Biblioteca Digital</span>
+                    <h1>Domina tus Lecturas PDF</h1>
+                    <p>La carpeta "Descargas" es el cementerio del conocimiento. Un PDF perdido es tiempo perdido. Aprende a gestionar tu biblioteca digital para encontrar cualquier lectura en 5 segundos y, más importante, recordar por qué la guardaste.</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-folder-open"></i>
+                    <span style="font-size: 0.85rem; font-weight: 600;">Orden en el Caos</span>
+                </div>
+            </article>
+
+            <!-- PROBLEMA VISUAL -->
+            <article class="card card-problem">
+                <div class="card-header">
+                    <div class="card-icon icon-red"><i class="fas fa-exclamation-triangle"></i></div>
+                    <h2 class="card-title">El Sindrome del "Document49.pdf"</h2>
+                </div>
+                <div class="problem-visual">
+                    <div class="file-list-mockup">
+                        <div class="file-item highlight"><i class="fas fa-file-pdf"></i> Document49.pdf</div>
+                        <div class="file-item"><i class="fas fa-file-pdf"></i> articulo_interesante.pdf</div>
+                        <div class="file-item highlight"><i class="fas fa-file-pdf"></i> download_feb12.pdf</div>
+                        <div class="file-item"><i class="fas fa-file-pdf"></i> texto_base_datos.pdf</div>
+                        <div class="file-item highlight"><i class="fas fa-file-pdf"></i> scan001.pdf</div>
+                    </div>
+                    <div>
+                        <h3 style="color: var(--accent-1); margin-bottom: 10px;">El Problema</h3>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary);">
+                            Los nombres genéricos rompan cualquier sistema de búsqueda. Si no recuerdas el nombre del autor ni el título exacto, el archivo desaparece en el olvido digital.
+                        </p>
+                        <h3 style="color: var(--accent-3); margin: 20px 0 10px;">La Solución</h3>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary);">
+                            Adoptar un estándar de <strong>Nombre + Año + Tema</strong>. Un archivo renombrado es un archivo encontrado.
+                        </p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- NOMENCLATURA ACADEMICA -->
+            <article class="card card-naming">
+                <div class="card-header">
+                    <div class="card-icon icon-blue"><i class="fas fa-spell-check"></i></div>
+                    <h2 class="card-title">Nomenclatura Académica</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">A diferencia de los apuntes de clase, los artículos científicos y PDFs se rigen por el autor. Usa este formato estándar:</p>
+                
+                <div class="naming-rules">
+                    <div class="rule-block">
+                        <h4><i class="fas fa-user"></i> Formato Estándar</h4>
+                        <div class="rule-code">ApellidoAño_TemaClave.pdf</div>
+                        <p style="font-size: 0.8rem; margin-top: 8px; color: var(--text-secondary);">Ejemplo: <strong>Garcia2020_MetodologiaInvestigacion.pdf</strong></p>
+                    </div>
+                    
+                    <div class="rule-block">
+                        <h4><i class="fas fa-users"></i> Multiples Autores</h4>
+                        <div class="rule-code">Apellido1yApellido2_Año_Tema.pdf</div>
+                        <p style="font-size: 0.8rem; margin-top: 8px; color: var(--text-secondary);">Ejemplo: <strong>PerezY Lopez_2018_EconomiaCircular.pdf</strong></p>
+                    </div>
+                    
+                    <div class="rule-block">
+                        <h4><i class="fas fa-calendar-check"></i> Versiones y Estados</h4>
+                        <div class="rule-code">Titulo_AÑO_[ESTADO].pdf</div>
+                        <p style="font-size: 0.8rem; margin-top: 8px; color: var(--text-secondary);">Estados útiles: <strong>[LEER]</strong>, <strong>[LEIDO]</strong>, <strong>[USAR_TESIS]</strong>.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- CARPETAS TEMATICAS -->
+            <article class="card card-folders">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-folder-tree"></i></div>
+                    <h2 class="card-title">Estructura de Biblioteca</h2>
+                </div>
+                <p style="font-size: 0.9rem; opacity: 0.9;">No guardes todo en "Mis Documentos". Crea una estructura jerárquica simple.</p>
+                
+                <div class="folder-tree">
+                    <div class="ft-item"><i class="fas fa-folder" style="color: #f1c40f;"></i> <span>Biblioteca Digital</span></div>
+                    <div class="ft-item ft-indent"><i class="fas fa-folder" style="color: #3498db;"></i> <span>01_Articulos_Cientificos</span></div>
+                    <div class="ft-item ft-indent" style="margin-left: 40px;"><i class="fas fa-folder" style="color: #95a5a6;"></i> <span>Tema_Especifico</span></div>
+                    <div class="ft-item ft-indent"><i class="fas fa-folder" style="color: #3498db;"></i> <span>02_Libros_Manuales</span></div>
+                    <div class="ft-item ft-indent"><i class="fas fa-folder" style="color: #3498db;"></i> <span>03_Documentos_Legales_Normas</span></div>
+                    <div class="ft-item ft-indent"><i class="fas fa-folder" style="color: #e74c3c;"></i> <span>04_Bandeja_Entrada (Para Clasificar)</span></div>
+                </div>
+                <p style="font-size: 0.8rem; margin-top: 15px; opacity: 0.8;"><strong>Tip:</strong> La carpeta "Bandeja Entrada" es vital. Ahi van los PDFs recién descargados hasta que les cambies el nombre.</p>
+            </article>
+
+            <!-- SOFTWARE -->
+            <article class="card card-software">
+                <div class="card-header">
+                    <div class="card-icon icon-orange"><i class="fas fa-wrench"></i></div>
+                    <h2 class="card-title">Herramientas Especializadas</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">No uses solo Adobe Reader. Necesitas gestores que extraigan metadatos automáticamente.</p>
+                
+                <div class="tools-grid">
+                    <div class="tool-card">
+                        <div class="tool-icon"><i class="fas fa-book-medical"></i></div>
+                        <h4>Zotero</h4>
+                        <p>Gratis. Detecta metadatos automáticamente. Genera citas bibliográficas.</p>
+                    </div>
+                    <div class="tool-card">
+                        <div class="tool-icon"><i class="fas fa-highlighter"></i></div>
+                        <h4>PDF Expert</h4>
+                        <p>Mejor experiencia de lectura y anotación en Mac/iPad.</p>
+                    </div>
+                    <div class="tool-card">
+                        <div class="tool-icon"><i class="fas fa-university"></i></div>
+                        <h4>Mendeley</h4>
+                        <p>Red social para investigadores + gestor de PDFs.</p>
+                    </div>
+                    <div class="tool-card">
+                        <div class="tool-icon"><i class="fas fa-brain"></i></div>
+                        <h4>Notion / Obsidian</h4>
+                        <p>Para crear un "Segundo Cerebro" indexando tus PDFs.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- CAPAS DE ANOTACION -->
+            <article class="card card-annotation">
+                <div class="card-header">
+                    <div class="card-icon icon-green"><i class="fas fa-layer-group"></i></div>
+                    <h2 class="card-title">Sistema de Lectura en Capas</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Un PDF sin anotaciones es pasivo. Hazlo activo usando un código de colores consistente para tus resaltados.</p>
+                
+                <div class="layer-diagram">
+                    <div class="layer layer-1">
+                        <div class="layer-badge" style="background: var(--accent-2);">1</div>
+                        <div>
+                            <strong style="color: var(--accent-2);">Amarillo: Definiciones / Conceptos</strong>
+                            <p style="font-size: 0.8rem; margin: 0;">Lo básico que necesito memorizar o entender.</p>
+                        </div>
+                    </div>
+                    <div class="layer layer-2">
+                        <div class="layer-badge" style="background: var(--accent-4);">2</div>
+                        <div>
+                            <strong style="color: var(--accent-4);">Rosa/Morado: Citas Textuales</strong>
+                            <p style="font-size: 0.8rem; margin: 0;">Frases exactas que puedo usar en mis trabajos (copiar/pegar).</p>
+                        </div>
+                    </div>
+                    <div class="layer layer-3">
+                        <div class="layer-badge" style="background: var(--accent-3);">3</div>
+                        <div>
+                            <strong style="color: var(--accent-3);">Verde: Ideas Propias / Conexiones</strong>
+                            <p style="font-size: 0.8rem; margin: 0;">"Esto se relaciona con..." o "No estoy de acuerdo".</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- FLUJO DE TRABAJO -->
+            <article class="card card-process">
+                <div class="card-header">
+                    <div class="card-icon icon-brown"><i class="fas fa-route"></i></div>
+                    <h2 class="card-title">Flujo de Trabajo Semanal (PDF Zero)</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Dedica 20 minutos cada domingo a procesar tu carpeta de "Descargas" o "Bandeja de Entrada".</p>
+                
+                <div class="process-line">
+                    <div class="p-step">
+                        <div class="p-circle"><i class="fas fa-download"></i></div>
+                        <div>
+                            <h5>Descargar</h5>
+                            <p>Guardar en carpeta temporal "Bandeja".</p>
+                        </div>
+                    </div>
+                    <div class="p-step">
+                        <div class="p-circle"><i class="fas fa-tags"></i></div>
+                        <div>
+                            <h5>Renombrar</h5>
+                            <p>Aplicar formato Autor_Año.</p>
+                        </div>
+                    </div>
+                    <div class="p-step">
+                        <div class="p-circle"><i class="fas fa-book-open"></i></div>
+                        <div>
+                            <h5>Escaneo Rapido</h5>
+                            <p>Leer abstract/introducción.</p>
+                        </div>
+                    </div>
+                    <div class="p-step">
+                        <div class="p-circle"><i class="fas fa-highlighter"></i></div>
+                        <div>
+                            <h5>Anotar</h5>
+                            <p>Resaltar ideas clave (código colores).</p>
+                        </div>
+                    </div>
+                    <div class="p-step">
+                        <div class="p-circle"><i class="fas fa-archive"></i></div>
+                        <div>
+                            <h5>Archivar</h5>
+                            <p>Mover a carpeta final temática.</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-text">Un PDF renombrado y anotado es oro puro. Un PDF perdido es basura digital. Tómate el tiempo de organizar tu biblioteca.</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+    </script>
+</body>
+</html>
