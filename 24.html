@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acrónimos y Mnemotecnia - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --accent-1: #e74c3c; --accent-2: #3498db; --accent-3: #27ae60;
+            --accent-4: #9b59b6; --accent-5: #e67e22;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1300px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-hover); }
+
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, var(--accent-5) 0%, #d35400 100%);
+            color: white; padding: 40px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 300px; height: 100%;
+            background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.15) 0%, transparent 60%);
+        }
+        .hero-text { flex: 1; z-index: 1; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.8rem;
+            font-weight: 600; margin-bottom: 15px;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.5rem;
+            margin-bottom: 12px; line-height: 1.2;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.9; max-width: 500px; }
+        .hero-visual {
+            width: 180px; height: 220px; background: rgba(255,255,255,0.1);
+            border-radius: 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 8px;
+            position: relative; z-index: 1; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .hero-visual i { font-size: 3rem; opacity: 0.8; }
+
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white;
+        }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #c0392b); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-2), #2980b9); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-3), #1e8449); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-4), #7d3c98); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-5), #d35400); }
+        .icon-brown { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+
+        /* Comparison Split */
+        .card-comparison {
+            grid-column: span 12;
+        }
+        .comparison-split {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 20px; margin-top: 20px;
+        }
+        .comp-box {
+            background: var(--bg-tertiary); border-radius: 15px;
+            padding: 20px; border-top: 5px solid;
+        }
+        .comp-acronym { border-color: var(--accent-2); }
+        .comp-acrostic { border-color: var(--accent-4); }
+        
+        .comp-head { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+        .comp-acronym .comp-head i { color: var(--accent-2); font-size: 1.5rem; }
+        .comp-acrostic .comp-head i { color: var(--accent-4); font-size: 1.5rem; }
+        
+        .comp-example {
+            background: var(--bg-secondary); padding: 15px;
+            border-radius: 10px; margin-top: 15px; font-family: monospace;
+        }
+        .comp-letter {
+            display: inline-block; width: 25px; height: 25px;
+            background: var(--primary); color: white; text-align: center;
+            line-height: 25px; border-radius: 4px; font-weight: 700;
+            margin-right: 5px;
+        }
+
+        /* Step Builder */
+        .card-builder {
+            grid-column: span 6;
+            grid-row: span 2;
+        }
+        .builder-steps {
+            margin-top: 20px; counter-reset: step;
+        }
+        .build-step {
+            position: relative; padding-left: 50px; margin-bottom: 20px;
+        }
+        .build-step::before {
+            counter-increment: step;
+            content: counter(step);
+            position: absolute; left: 0; top: 0;
+            width: 35px; height: 35px; background: var(--accent-5);
+            border-radius: 50%; color: white; display: flex;
+            align-items: center; justify-content: center;
+            font-weight: 700;
+        }
+        .build-step h4 { color: var(--primary-dark); margin-bottom: 5px; }
+        .build-step p { font-size: 0.9rem; color: var(--text-secondary); margin: 0; }
+
+        /* Examples Grid */
+        .card-examples {
+            grid-column: span 6;
+        }
+        .ex-tabs {
+            display: flex; gap: 10px; margin-bottom: 15px;
+        }
+        .tab-btn {
+            padding: 8px 15px; border: none; background: var(--bg-tertiary);
+            border-radius: 20px; cursor: pointer; font-weight: 600;
+            font-family: inherit; font-size: 0.8rem; color: var(--text-secondary);
+            transition: all 0.3s;
+        }
+        .tab-btn.active { background: var(--primary); color: white; }
+        
+        .tab-content { display: none; animation: fadeIn 0.3s; }
+        .tab-content.active { display: block; }
+        
+        .ex-item {
+            background: var(--bg-tertiary); padding: 12px;
+            border-radius: 10px; margin-bottom: 10px;
+            border-left: 3px solid var(--primary);
+        }
+        .ex-title { font-weight: 700; color: var(--primary-dark); font-size: 0.9rem; }
+        .ex-desc { font-size: 0.85rem; color: var(--text-secondary); }
+        .ex-mnemonic { font-weight: 700; color: var(--accent-1); font-size: 0.85rem; margin-top: 5px; }
+
+        /* Rules */
+        .card-rules {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-3) 0%, #1e8449 100%);
+            color: white;
+        }
+        .card-rules .card-title { color: white; }
+        .rules-list {
+            margin-top: 15px;
+        }
+        .rule-item {
+            display: flex; align-items: center; gap: 10px;
+            background: rgba(255,255,255,0.1); padding: 10px;
+            border-radius: 8px; margin-bottom: 8px; font-size: 0.9rem;
+        }
+
+        /* Chunking & Rhymes */
+        .card-chunking {
+            grid-column: span 6;
+        }
+        .chunk-demo {
+            display: flex; justify-content: center; gap: 10px;
+            margin-top: 20px; font-family: monospace; font-size: 1.5rem;
+        }
+        .chunk-block {
+            background: var(--bg-tertiary); padding: 10px 15px;
+            border-radius: 8px; letter-spacing: 2px; font-weight: 700;
+        }
+        .rhyme-box {
+            margin-top: 20px; background: var(--bg-tertiary);
+            padding: 15px; border-radius: 12px; text-align: center;
+            font-style: italic;
+        }
+
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 30px;
+            background: var(--bg-tertiary);
+        }
+        .footer-text {
+            font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 5px;
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-hero, .card-comparison, .card-builder, .card-examples,
+            .card-rules, .card-chunking, .card-footer { grid-column: span 12; }
+            .comparison-split { grid-template-columns: 1fr; }
+            .hero-text h1 { font-size: 1.8rem; }
+            .card-hero { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-spell-check"></i> Mnemotecnia</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-key"></i> Codificacion Eficiente</span>
+                    <h1>Acrónimos y Reglas Mnemotécnicas</h1>
+                    <p>La mnemotecnia es el arte de transformar datos aburridos en información inolvidable. No se trata de tener "buena memoria", sino de usar el código correcto para guardar los archivos en tu cerebro.</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-puzzle-piece"></i>
+                    <span style="font-size: 0.85rem; font-weight: 600;">Encaja las Piezas</span>
+                </div>
+            </article>
+
+            <!-- COMPARISON -->
+            <article class="card card-comparison">
+                <div class="card-header">
+                    <div class="card-icon icon-blue"><i class="fas fa-not-equal"></i></div>
+                    <h2 class="card-title">Acrónimo vs Acróstico</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">A menudo se confunden, pero son herramientas distintas. Usa el que mejor se adapte a tu información.</p>
+                
+                <div class="comparison-split">
+                    <div class="comp-box comp-acronym">
+                        <div class="comp-head">
+                            <i class="fas fa-font"></i>
+                            <h3 style="font-size: 1.1rem;">Acrónimo (PALABRA)</h3>
+                        </div>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary);">Formas una <strong>nueva palabra</strong> real o inventada uniendo las primeras letras.</p>
+                        <div class="comp-example">
+                            <span class="comp-letter">C</span>asa<br>
+                            <span class="comp-letter">A</span>mor<br>
+                            <span class="comp-letter">S</span>ol<br>
+                            <span class="comp-letter">A</span>mistad<br>
+                            <strong style="margin-left: 30px;">= CASA</strong>
+                        </div>
+                        <p style="font-size: 0.8rem; margin-top: 10px; color: var(--primary-dark);"><strong>Ideal para:</strong> Listas cortas donde las letras forman algo pronunciable.</p>
+                    </div>
+                    
+                    <div class="comp-box comp-acrostic">
+                        <div class="comp-head">
+                            <i class="fas fa-align-left"></i>
+                            <h3 style="font-size: 1.1rem;">Acróstico (FRASE)</h3>
+                        </div>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary);">Creas una <strong>frase con sentido</strong> donde cada palabra empieza con la letra clave.</p>
+                        <div class="comp-example">
+                            <span class="comp-letter">M</span>aría<br>
+                            <span class="comp-letter">A</span>hora<br>
+                            <span class="comp-letter">R</span>ecoge<br>
+                            <span class="comp-letter">I</span>gual<br>
+                            <span class="comp-letter">A</span>yer<br>
+                        </div>
+                        <p style="font-size: 0.8rem; margin-top: 10px; color: var(--primary-dark);"><strong>Ideal para:</strong> Listas largas o cuando las letras no forman una palabra fácil.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- COMO CREARLOS -->
+            <article class="card card-builder">
+                <div class="card-header">
+                    <div class="card-icon icon-orange"><i class="fas fa-hammer"></i></div>
+                    <h2 class="card-title">Como Crear tu Propio Mnemotecnico</h2>
+                </div>
+                <div class="builder-steps">
+                    <div class="build-step">
+                        <h4>1. Aisla las Claves</h4>
+                        <p>Reduce cada concepto a su palabra más importante. "La Revolución Industrial comenzó en Inglaterra" → INGLATERRA.</p>
+                    </div>
+                    <div class="build-step">
+                        <h4>2. Extrae la Inicial</h4>
+                        <p>Toma la primera letra de cada clave. Si tienes "Mercurio, Venus, Tierra...", toma M, V, T...</p>
+                    </div>
+                    <div class="build-step">
+                        <h4>3. Juega con las Letras</h4>
+                        <p>Intenta formar una palabra real. Si no se puede, busca palabras que empiecen con esas letras para armar una frase absurda.</p>
+                    </div>
+                    <div class="build-step">
+                        <h4>4. Hazlo Memorizable</h4>
+                        <p>La frase o palabra debe ser <strong>extraña, graciosa o personal</strong>. "Mi Vieja Tía María" se recuerda mejor que "Mercurio Venus Tierra Marte".</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- EJEMPLOS PRÁCTICOS -->
+            <article class="card card-examples">
+                <div class="card-header">
+                    <div class="card-icon icon-green"><i class="fas fa-flask"></i></div>
+                    <h2 class="card-title">Ejemplos Clásicos por Materia</h2>
+                </div>
+                
+                <div class="ex-tabs">
+                    <button class="tab-btn active" onclick="showTab(event, 'tab-cien')">Ciencias</button>
+                    <button class="tab-btn" onclick="showTab(event, 'tab-hist')">Historia</button>
+                    <button class="tab-btn" onclick="showTab(event, 'tab-gram')">Lenguaje</button>
+                </div>
+
+                <div id="tab-cien" class="tab-content active">
+                    <div class="ex-item">
+                        <div class="ex-title">Orden de los Planetas</div>
+                        <div class="ex-desc">Mercurio, Venus, Tierra, Marte, Júpiter, Saturno, Urano, Neptuno.</div>
+                        <div class="ex-mnemonic">"Mi Vieja Tía María Jamás Supo Usar Neumáticos"</div>
+                    </div>
+                    <div class="ex-item">
+                        <div class="ex-title">Orden Operaciones Matemáticas</div>
+                        <div class="ex-desc">Paréntesis, Exponentes, Multiplicación/División, Adición/Sustracción.</div>
+                        <div class="ex-mnemonic">PEMDAS: "Papá Está Muy Divertido Amando Siempre"</div>
+                    </div>
+                </div>
+
+                <div id="tab-hist" class="tab-content">
+                    <div class="ex-item">
+                        <div class="ex-title">Primeros Emperadores Romanos</div>
+                        <div class="ex-desc">Augusto, Tiberio, Calígula, Claudio, Nerón.</div>
+                        <div class="ex-mnemonic">"A Tía Clara, Claudio No"</div>
+                    </div>
+                    <div class="ex-item">
+                        <div class="ex-title">Los 7 Pecados Capitales</div>
+                        <div class="ex-desc">Soberbia, Avaricia, Lujuria, Ira, Gula, Envidia, Pereza.</div>
+                        <div class="ex-mnemonic">SALIGIA (Acrónimo en latín) o "SALI GUEP" (Soberbia Avaricia Lujuria Ira, Gula Envidia Pereza).</div>
+                    </div>
+                </div>
+
+                <div id="tab-gram" class="tab-content">
+                    <div class="ex-item">
+                        <div class="ex-title">Adjetivos Demostrativos</div>
+                        <div class="ex-desc">Este, Ese, Aquel (cerca, medio, lejos).</div>
+                        <div class="ex-mnemonic">"Este chico, Ese perro, Aquel elefante" (Tamaño visual de la distancia).</div>
+                    </div>
+                    <div class="ex-item">
+                        <div class="ex-title">Palabras con H intercalada</div>
+                        <div class="ex-desc">Huevo, Hueso, Huevo, etc.</div>
+                        <div class="ex-mnemonic">"Huevos, Huesos y Hierro se Hincan"</div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- REGLAS DE ORO -->
+            <article class="card card-rules">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-crown"></i></div>
+                    <h2 class="card-title">Reglas de Oro</h2>
+                </div>
+                <p style="font-size: 0.9rem; opacity: 0.9;">Un mal mnemotécnico es peor que ninguno. Asegúrate de seguir estas reglas:</p>
+                
+                <div class="rules-list">
+                    <div class="rule-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span><strong>Visualiza:</strong> La frase debe evocar una imagen mental clara.</span>
+                    </div>
+                    <div class="rule-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span><strong>Emociona:</strong> Usa cosas graciosas, escandalosas o personales.</span>
+                    </div>
+                    <div class="rule-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span><strong>Simplifica:</strong> No uses palabras difíciles dentro del truco.</span>
+                    </div>
+                    <div class="rule-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span><strong>Practica:</strong> El truco es solo el gancho; necesitas repasar la asociación.</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- CHUNKING & RIMAS -->
+            <article class="card card-chunking">
+                <div class="card-header">
+                    <div class="card-icon icon-purple"><i class="fas fa-cut"></i></div>
+                    <h2 class="card-title">Otras Técnicas: Chunking y Rimas</h2>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">
+                    <div>
+                        <h4 style="color: var(--primary-dark); font-size: 1rem; margin-bottom: 10px;">Chunking (Fragmentación)</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 10px;">Dividir números largos en bloques pequeños. La memoria de trabajo solo retiene 7 items +/- 2.</p>
+                        <div class="chunk-demo">
+                            <div class="chunk-block">555</div>
+                            <div class="chunk-block">123</div>
+                            <div class="chunk-block">9876</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--primary-dark); font-size: 1rem; margin-bottom: 10px;">Rimas</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 10px;">El ritmo ayuda a la recuperación.</p>
+                        <div class="rhyme-box">
+                            "Treinta días trae septiembre,<br>
+                            con abril, junio y noviembre..."
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-text">El esfuerzo que pones en crear un mnemotécnico hoy, te ahorra horas de estudio repetitivo mañana. Invierte tiempo en crear el código.</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+
+        function showTab(evt, tabName) {
+            var i, x, tablinks;
+            x = document.getElementsByClassName("tab-content");
+            for (i = 0; i < x.length; i++) {
+                x[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tab-btn");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+    </script>
+</body>
+</html>
