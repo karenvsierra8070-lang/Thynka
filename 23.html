@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Palacio de la Memoria - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --accent-1: #e74c3c; --accent-2: #3498db; --accent-3: #27ae60;
+            --accent-4: #9b59b6; --accent-5: #e67e22;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1300px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-hover); }
+
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, var(--accent-4) 0%, #7d3c98 100%);
+            color: white; padding: 40px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 300px; height: 100%;
+            background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.15) 0%, transparent 60%);
+        }
+        .hero-text { flex: 1; z-index: 1; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.8rem;
+            font-weight: 600; margin-bottom: 15px;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.5rem;
+            margin-bottom: 12px; line-height: 1.2;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.9; max-width: 500px; }
+        .hero-visual {
+            width: 180px; height: 220px; background: rgba(255,255,255,0.1);
+            border-radius: 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 8px;
+            position: relative; z-index: 1; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .hero-visual i { font-size: 3rem; opacity: 0.8; }
+
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white;
+        }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #c0392b); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-2), #2980b9); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-3), #1e8449); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-4), #7d3c98); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-5), #d35400); }
+        .icon-brown { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+
+        /* History & Science */
+        .card-history {
+            grid-column: span 12;
+            background: var(--bg-tertiary);
+        }
+        .history-content {
+            display: grid; grid-template-columns: 1fr 2fr;
+            gap: 30px; align-items: center;
+        }
+        .history-visual {
+            background: var(--bg-secondary); border-radius: 15px;
+            padding: 20px; text-align: center;
+            border: 1px solid var(--border-color);
+        }
+        .history-visual i { font-size: 4rem; color: var(--accent-4); margin-bottom: 10px; }
+        .history-text h3 { color: var(--primary-dark); margin-bottom: 10px; }
+        .science-box {
+            background: var(--bg-secondary); padding: 15px;
+            border-radius: 10px; margin-top: 15px; border-left: 4px solid var(--accent-2);
+        }
+        .science-box strong { color: var(--accent-2); }
+
+        /* Step by Step Guide */
+        .card-guide {
+            grid-column: span 7;
+            grid-row: span 3;
+        }
+        .guide-step {
+            display: flex; gap: 20px; margin-bottom: 25px;
+            padding-bottom: 25px; border-bottom: 1px dashed var(--border-color);
+        }
+        .guide-step:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .step-badge {
+            width: 50px; height: 50px; background: var(--primary);
+            border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; color: white; font-weight: 700;
+            font-size: 1.2rem; flex-shrink: 0;
+        }
+        .step-content h4 { font-size: 1.1rem; color: var(--primary-dark); margin-bottom: 5px; }
+        .step-content p { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 10px; }
+        .tip-inline {
+            background: var(--bg-tertiary); padding: 10px;
+            border-radius: 8px; font-size: 0.8rem; display: flex;
+            align-items: center; gap: 10px;
+        }
+        .tip-inline i { color: var(--accent-5); }
+
+        /* Interactive Map Simulation */
+        .card-simulation {
+            grid-column: span 5;
+            background: var(--bg-primary);
+        }
+        .sim-map {
+            position: relative; background: var(--bg-tertiary);
+            border-radius: 15px; height: 350px;
+            margin-top: 15px; border: 2px solid var(--border-color);
+            overflow: hidden;
+        }
+        .room-box {
+            position: absolute; background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px; padding: 8px; text-align: center;
+            transition: all 0.3s; cursor: pointer;
+            width: 45%;
+        }
+        .room-box:hover { border-color: var(--accent-3); transform: scale(1.05); z-index: 10; }
+        .room-box.active { border-color: var(--accent-1); box-shadow: 0 0 10px rgba(231, 76, 60, 0.3); }
+        .room-name { font-size: 0.7rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 2px; }
+        .room-item { font-size: 0.6rem; color: var(--text-secondary); }
+        .room-num {
+            position: absolute; top: -8px; left: -8px;
+            width: 20px; height: 20px; background: var(--accent-1);
+            color: white; border-radius: 50%; font-size: 0.7rem;
+            display: flex; align-items: center; justify-content: center;
+        }
+        
+        .path-line {
+            position: absolute; border-top: 2px dashed var(--primary);
+            width: 60%; left: 20%; opacity: 0.5;
+        }
+
+        /* Visualization Rules */
+        .card-rules {
+            grid-column: span 6;
+        }
+        .rules-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 15px; margin-top: 20px;
+        }
+        .rule-card {
+            background: var(--bg-tertiary); padding: 15px;
+            border-radius: 12px; text-align: center;
+        }
+        .rule-card i { font-size: 2rem; color: var(--accent-4); margin-bottom: 8px; }
+        .rule-card h5 { font-size: 0.95rem; color: var(--primary-dark); margin-bottom: 3px; }
+        .rule-card p { font-size: 0.8rem; color: var(--text-secondary); margin: 0; }
+
+        /* Palaces List */
+        .card-palaces {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-3) 0%, #1e8449 100%);
+            color: white;
+        }
+        .card-palaces .card-title { color: white; }
+        .palace-list { margin-top: 15px; }
+        .palace-item {
+            display: flex; align-items: center; gap: 15px;
+            background: rgba(255,255,255,0.1); padding: 12px;
+            border-radius: 10px; margin-bottom: 10px;
+        }
+        .palace-item i { font-size: 1.2rem; }
+
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 30px;
+            background: var(--bg-tertiary);
+        }
+        .footer-text {
+            font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 5px;
+        }
+
+        @media (max-width: 1100px) {
+            .history-content { grid-template-columns: 1fr; }
+            .rules-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-hero, .card-history, .card-guide, .card-simulation,
+            .card-rules, .card-palaces, .card-footer { grid-column: span 12; }
+            .hero-text h1 { font-size: 1.8rem; }
+            .card-hero { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-archway"></i> Palacio de la Memoria</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-landmark"></i> Metodo Loci</span>
+                    <h1>El Palacio de la Memoria</h1>
+                    <p>La técnica de memoria más poderosa de la historia, usada desde la antigua Grecia hasta los campeones mundiales de memorización actuales. No es magia, es arquitectura mental.</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-door-open"></i>
+                    <span style="font-size: 0.85rem; font-weight: 600;">Tu Mente, Tu Casa</span>
+                </div>
+            </article>
+
+            <!-- HISTORIA Y CIENCIA -->
+            <article class="card card-history">
+                <div class="card-header">
+                    <div class="card-icon icon-brown"><i class="fas fa-scroll"></i></div>
+                    <h2 class="card-title">Origen y Ciencia</h2>
+                </div>
+                <div class="history-content">
+                    <div class="history-visual">
+                        <i class="fas fa-user-tie"></i>
+                        <p style="font-size: 0.9rem; font-weight: 600; color: var(--primary-dark);">Simónides de Ceos</p>
+                        <p style="font-size: 0.75rem; color: var(--text-secondary);">Poeta Griego (s. V a.C.)</p>
+                    </div>
+                    <div class="history-text">
+                        <h3>El banquete derrumbado</h3>
+                        <p>La leyenda cuenta que Simónides salió de un banquete justo antes de que el techo colapsara, matando a todos. Los cuerpos eran irreconocibles, pero Simónides pudo identificar a cada uno recordando exactamente dónde estaban sentados. Así nació el "Arte de la Memoria".</p>
+                        <div class="science-box">
+                            <strong>Neurociencia Moderna:</strong>
+                            <span>El hipocampo (centro de la memoria) también gestiona la navegación espacial. Tenemos "células de lugar" que se activan en ubicaciones específicas. El método Loci hackea este sistema evolutivo para "almacenar" datos abstractos en "ubicaciones" mentales.</span>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- GUIA PASO A PASO -->
+            <article class="card card-guide">
+                <div class="card-header">
+                    <div class="card-icon icon-green"><i class="fas fa-shoe-prints"></i></div>
+                    <h2 class="card-title">Construye tu Primer Palacio (5 Pasos)</h2>
+                </div>
+                
+                <div class="guide-step">
+                    <div class="step-badge">1</div>
+                    <div class="step-content">
+                        <h4>Elige tu Palacio (El Lugar)</h4>
+                        <p>Selecciona un lugar que conozcas de memoria. No tiene que ser un palacio real. Puede ser tu casa actual, la casa de la infancia, tu escuela o incluso el camino al trabajo.</p>
+                        <div class="tip-inline">
+                            <i class="fas fa-lightbulb"></i>
+                            <span><strong>Clave:</strong> Debes poder recorrerlo mentalmente con los ojos cerrados sin tropezar.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="guide-step">
+                    <div class="step-badge">2</div>
+                    <div class="step-content">
+                        <h4>Define la Ruta (El Camino)</h4>
+                        <p>Establece un orden lógico e inamovible. Por ejemplo: Entrada principal -> Sala -> Cocina -> Refrigerador -> Habitación. La ruta siempre debe ser la misma dirección.</p>
+                        <div class="tip-inline">
+                            <i class="fas fa-lightbulb"></i>
+                            <span><strong>Error común:</strong> Cambiar la dirección (ir y venir). Siempre avanza, como en un videojuego lineal.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="guide-step">
+                    <div class="step-badge">3</div>
+                    <div class="step-content">
+                        <h4>Identifica los "Postes" (Loci)</h4>
+                        <p>Los "loci" son los puntos específicos de anclaje. No uses habitaciones enteras, usa objetos dentro de ellas. Ejemplo: La manija de la puerta, el sofá, la mesa de centro, el grifo.</p>
+                        <div class="tip-inline">
+                            <i class="fas fa-lightbulb"></i>
+                            <span>Un palacio efectivo tiene 5-10 "postes" por habitación para no saturar el espacio.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="guide-step">
+                    <div class="step-badge">4</div>
+                    <div class="step-content">
+                        <h4>Codifica la Información (La Imagen)</h4>
+                        <p>Toma el concepto abstracto (ej: "ADN") y conviértelo en una imagen visual concreta y absurda (ej: un enanito de jardín bailando con una cadena). Coloca esa imagen interactuando con el poste.</p>
+                        <div class="tip-inline">
+                            <i class="fas fa-lightbulb"></i>
+                            <span><strong>Interacción:</strong> La imagen no debe estar "sobre" el mueble, debe interactuar: rompiéndolo, quemándolo, oliéndolo.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="guide-step">
+                    <div class="step-badge">5</div>
+                    <div class="step-content">
+                        <h4>Recorre el Palacio (Recuperación)</h4>
+                        <p>Para recordar, cierra los ojos y camina mentalmente por tu ruta. Al llegar a cada poste, tu cerebro detonará la imagen absurda que colocaste ahí. Extrae el concepto.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- SIMULACION VISUAL -->
+            <article class="card card-simulation">
+                <div class="card-header">
+                    <div class="card-icon icon-blue"><i class="fas fa-map-marked-alt"></i></div>
+                    <h2 class="card-title">Simulación Visual</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Ejemplo: Lista de compras (Leche, Manzanas, Pan, Jabón).</p>
+                
+                <div class="sim-map">
+                    <!-- Path Lines -->
+                    <div class="path-line" style="top: 30%; left: 15%; width: 40%;"></div>
+                    <div class="path-line" style="top: 75%; left: 40%; width: 30%;"></div>
+
+                    <!-- Room 1 -->
+                    <div class="room-box active" style="top: 15%; left: 5%;">
+                        <div class="room-num">1</div>
+                        <div class="room-name">Puerta Principal</div>
+                        <div class="room-item"><i class="fas fa-tint"></i> Leche</div>
+                        <div class="room-item" style="font-size: 0.6rem; font-style: italic;">(Imagine milk flooding the entryway)</div>
+                    </div>
+
+                    <!-- Room 2 -->
+                    <div class="room-box" style="top: 15%; right: 5%;">
+                        <div class="room-num">2</div>
+                        <div class="room-name">Sofá (Sala)</div>
+                        <div class="room-item"><i class="fas fa-apple-alt"></i> Manzanas</div>
+                        <div class="room-item" style="font-size: 0.6rem; font-style: italic;">(Apples crushing the sofa)</div>
+                    </div>
+
+                    <!-- Room 3 -->
+                    <div class="room-box" style="bottom: 15%; left: 35%;">
+                        <div class="room-num">3</div>
+                        <div class="room-name">Mesa Cocina</div>
+                        <div class="room-item"><i class="fas fa-bread-slice"></i> Pan</div>
+                        <div class="room-item" style="font-size: 0.6rem; font-style: italic;">(Bread tower on the table)</div>
+                    </div>
+
+                    <!-- Room 4 -->
+                    <div class="room-box" style="bottom: 15%; right: 5%;">
+                        <div class="room-num">4</div>
+                        <div class="room-name">Lavabo Baño</div>
+                        <div class="room-item"><i class="fas fa-soap"></i> Jabón</div>
+                        <div class="room-item" style="font-size: 0.6rem; font-style: italic;">(Foam explosion in sink)</div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- REGLAS DE VISUALIZACION -->
+            <article class="card card-rules">
+                <div class="card-header">
+                    <div class="card-icon icon-orange"><i class="fas fa-eye"></i></div>
+                    <h2 class="card-title">Reglas de Visualización</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Una imagen mental débil se desvanece. Hazla indestructible aplicando estas reglas:</p>
+                
+                <div class="rules-grid">
+                    <div class="rule-card">
+                        <i class="fas fa-expand-arrows-alt"></i>
+                        <h5>Exageración</h5>
+                        <p>Haz los objetos enormes o minúsculos.</p>
+                    </div>
+                    <div class="rule-card">
+                        <i class="fas fa-walking"></i>
+                        <h5>Acción</h5>
+                        <p>Que se muevan, salten o persigan.</p>
+                    </div>
+                    <div class="rule-card">
+                        <i class="fas fa-palette"></i>
+                        <h5>Color</h5>
+                        <p>Usa colores neón o imposibles.</p>
+                    </div>
+                    <div class="rule-card">
+                        <i class="fas fa-laugh-beam"></i>
+                        <h5>Absurdo</h5>
+                        <p>Lo lógico se olvida; lo ridículo se queda.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- IDEAS DE PALACIOS -->
+            <article class="card card-palaces">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-key"></i></div>
+                    <h2 class="card-title">Ideas de Palacios</h2>
+                </div>
+                <p style="font-size: 0.9rem; opacity: 0.9;">Tu memoria es ilimitada si tienes suficientes palacios. No repitas el mismo lugar para diferentes temas.</p>
+                
+                <div class="palace-list">
+                    <div class="palace-item">
+                        <i class="fas fa-home"></i>
+                        <span><strong>Tu Casa:</strong> Ideal para listas cortas del día a día.</span>
+                    </div>
+                    <div class="palace-item">
+                        <i class="fas fa-school"></i>
+                        <span><strong>Tu Escuela/Universidad:</strong> Perfecto para exámenes académicos.</span>
+                    </div>
+                    <div class="palace-item">
+                        <i class="fas fa-user-friends"></i>
+                        <span><strong>Casa de un Amigo:</strong> Un lugar familiar pero distinto al tuyo.</span>
+                    </div>
+                    <div class="palace-item">
+                        <i class="fas fa-film"></i>
+                        <span><strong>Película/Juego Favorito:</strong> Recorre los escenarios de una película que conozcas de memoria.</span>
+                    </div>
+                    <div class="palace-item">
+                        <i class="fas fa-body"></i>
+                        <span><strong>Tu Cuerpo:</strong> De los pies a la cabeza (Método del cuerpo).</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-text">El Palacio de la Memoria convierte tu mente en un museo infinito. Empieza pequeño, con una habitación, y pronto tendras una ciudad entera de conocimientos.</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+    </script>
+</body>
+</html>
