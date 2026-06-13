@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espacio de Concentracion - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --accent-1: #e74c3c; --accent-2: #3498db; --accent-3: #27ae60;
+            --accent-4: #9b59b6; --accent-5: #e67e22;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1300px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-hover); }
+
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white; padding: 40px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 300px; height: 100%;
+            background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.15) 0%, transparent 60%);
+        }
+        .hero-text { flex: 1; z-index: 1; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.8rem;
+            font-weight: 600; margin-bottom: 15px;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.5rem;
+            margin-bottom: 12px; line-height: 1.2;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.9; max-width: 500px; }
+        .hero-visual {
+            width: 180px; height: 220px; background: rgba(255,255,255,0.1);
+            border-radius: 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 8px;
+            position: relative; z-index: 1; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .hero-visual i { font-size: 3rem; opacity: 0.8; }
+
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white;
+        }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #c0392b); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-2), #2980b9); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-3), #1e8449); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-4), #7d3c98); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-5), #d35400); }
+        .icon-brown { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+
+        /* The Layers */
+        .card-layers {
+            grid-column: span 12;
+            background: var(--bg-tertiary);
+        }
+        .layers-visual {
+            display: flex; gap: 15px; margin-top: 20px; justify-content: space-between;
+        }
+        .layer-col {
+            flex: 1; background: var(--bg-secondary); padding: 20px;
+            border-radius: 15px; text-align: center; border-top: 5px solid;
+            transition: transform 0.3s;
+        }
+        .layer-col:hover { transform: translateY(-5px); }
+        .l-physical { border-color: var(--accent-5); }
+        .l-digital { border-color: var(--accent-2); }
+        .l-mental { border-color: var(--accent-4); }
+        
+        .l-icon { font-size: 2rem; margin-bottom: 10px; }
+        .l-physical .l-icon { color: var(--accent-5); }
+        .l-digital .l-icon { color: var(--accent-2); }
+        .l-mental .l-icon { color: var(--accent-4); }
+        
+        .l-title { font-weight: 700; color: var(--primary-dark); margin-bottom: 10px; }
+        .l-list { text-align: left; font-size: 0.85rem; color: var(--text-secondary); }
+        .l-list li { margin-bottom: 5px; list-style: none; }
+        .l-list li::before { content: "•"; color: var(--primary); margin-right: 8px; }
+
+        /* Desk Diagram */
+        .card-desk {
+            grid-column: span 6;
+            grid-row: span 2;
+        }
+        .desk-map {
+            position: relative; background: var(--bg-tertiary);
+            border-radius: 15px; height: 300px; margin-top: 20px;
+            border: 1px solid var(--border-color);
+        }
+        .desk-item {
+            position: absolute; background: var(--bg-secondary);
+            padding: 8px 12px; border-radius: 8px; font-size: 0.75rem;
+            box-shadow: 0 2px 8px var(--shadow); border: 1px solid var(--border-color);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .desk-item i { font-size: 1rem; color: var(--primary); }
+        
+        .item-lamp { top: 10px; left: 10px; }
+        .item-monitor { top: 40%; left: 50%; transform: translateX(-50%); width: 40%; justify-content: center; font-weight: 600; }
+        .item-keyboard { top: 65%; left: 50%; transform: translateX(-50%); }
+        .item-shelf { top: 10px; right: 10px; }
+        .item-plant { bottom: 10px; right: 10px; }
+        .item-phone { bottom: 10px; left: 10px; opacity: 0.5; text-decoration: line-through; }
+
+        .desk-label {
+            position: absolute; bottom: 10px; width: 100%; text-align: center;
+            font-size: 0.8rem; color: var(--text-secondary);
+        }
+
+        /* Checklist */
+        .card-checklist {
+            grid-column: span 6;
+        }
+        .checklist-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 10px; margin-top: 20px;
+        }
+        .check-item {
+            background: var(--bg-tertiary); padding: 12px;
+            border-radius: 10px; display: flex; align-items: center; gap: 10px;
+            font-size: 0.85rem; transition: all 0.2s;
+        }
+        .check-item:hover { background: var(--beige); }
+        .check-box {
+            width: 20px; height: 20px; border: 2px solid var(--primary);
+            border-radius: 4px; display: flex; align-items: center; justify-content: center;
+            color: transparent; flex-shrink: 0; cursor: pointer;
+        }
+        .check-item.checked .check-box { background: var(--accent-3); border-color: var(--accent-3); color: white; }
+        .check-item.checked span { text-decoration: line-through; opacity: 0.6; }
+
+        /* Digital Environment */
+        .card-digital {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-2) 0%, #2980b9 100%);
+            color: white;
+        }
+        .card-digital .card-title { color: white; }
+        .d-list { margin-top: 15px; }
+        .d-item {
+            background: rgba(255,255,255,0.1); padding: 10px;
+            border-radius: 8px; margin-bottom: 8px; font-size: 0.9rem;
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        /* Neuro-Architecture */
+        .card-neuro {
+            grid-column: span 6;
+        }
+        .neuro-tip {
+            background: var(--bg-tertiary); padding: 15px;
+            border-radius: 12px; margin-bottom: 15px; display: flex; gap: 15px;
+            align-items: flex-start;
+        }
+        .neuro-icon {
+            width: 40px; height: 40px; background: var(--accent-4);
+            border-radius: 10px; display: flex; align-items: center;
+            justify-content: center; color: white; flex-shrink: 0;
+        }
+        .neuro-text h4 { color: var(--primary-dark); font-size: 0.95rem; }
+        .neuro-text p { font-size: 0.85rem; color: var(--text-secondary); margin: 0; }
+
+        /* Sensory */
+        .card-sensory {
+            grid-column: span 6;
+            background: var(--bg-tertiary);
+        }
+        .sensory-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 10px; margin-top: 15px;
+        }
+        .sense-box {
+            background: var(--bg-secondary); padding: 15px;
+            border-radius: 12px; text-align: center;
+        }
+        .sense-icon { font-size: 1.5rem; color: var(--primary); margin-bottom: 8px; }
+        .sense-title { font-weight: 600; font-size: 0.9rem; color: var(--primary-dark); }
+        .sense-desc { font-size: 0.75rem; color: var(--text-secondary); }
+
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 30px;
+            background: var(--bg-tertiary);
+        }
+        .footer-text {
+            font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 5px;
+        }
+
+        @media (max-width: 1100px) {
+            .layers-visual { flex-direction: column; }
+            .checklist-grid { grid-template-columns: 1fr; }
+            .sensory-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-hero, .card-layers, .card-desk, .card-checklist,
+            .card-digital, .card-neuro, .card-sensory, .card-footer { grid-column: span 12; }
+            .hero-text h1 { font-size: 1.8rem; }
+            .card-hero { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-couch"></i> Espacio de Concentracion</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-warehouse"></i> Arquitectura del Estudio</span>
+                    <h1>Diseña tu Santuario Mental</h1>
+                    <p>Tu entorno dicta tu productividad. Un espacio caótico genera una mente caótica. No necesitas una oficina lujosa, necesitas un sistema que funcione. Aprende a optimizar tu entorno para entrar en "Flow" en minutos, no en horas.</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-campground"></i>
+                    <span style="font-size: 0.85rem; font-weight: 600;">Tu Campamento Base</span>
+                </div>
+            </article>
+
+            <!-- THE 3 LAYERS -->
+            <article class="card card-layers">
+                <div class="card-header">
+                    <div class="card-icon icon-brown"><i class="fas fa-layer-group"></i></div>
+                    <h2 class="card-title">Las 3 Capas del Entorno</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Tu espacio de estudio no es solo un escritorio. Es un ecosistema dividido en tres dimensiones.</p>
+                
+                <div class="layers-visual">
+                    <div class="layer-col l-physical">
+                        <i class="fas fa-chair l-icon"></i>
+                        <div class="l-title">Hardware (Fisico)</div>
+                        <ul class="l-list">
+                            <li>Iluminacion</li>
+                            <li>Ergonomia</li>
+                            <li>Temperatura</li>
+                            <li>Orden visual</li>
+                        </ul>
+                    </div>
+                    <div class="layer-col l-digital">
+                        <i class="fas fa-laptop l-icon"></i>
+                        <div class="l-title">Software (Digital)</div>
+                        <ul class="l-list">
+                            <li>Escritorio limpio</li>
+                            <li>Bloqueadores</li>
+                            <li>Sin pestañas basura</li>
+                            <li>Modo foco</li>
+                        </ul>
+                    </div>
+                    <div class="layer-col l-mental">
+                        <i class="fas fa-brain l-icon"></i>
+                        <div class="l-title">Runtime (Mental)</div>
+                        <ul class="l-list">
+                            <li>Ritual de inicio</li>
+                            <li>Senales ambientales</li>
+                            <li>Solo estudio aqui</li>
+                        </ul>
+                    </div>
+                </div>
+            </article>
+
+            <!-- DESK DIAGRAM -->
+            <article class="card card-desk">
+                <div class="card-header">
+                    <div class="card-icon icon-orange"><i class="fas fa-th"></i></div>
+                    <h2 class="card-title">Anatomia del Escritorio Ideal</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">No se trata de estética, se trata de función. Cada objeto debe tener una razón de ser.</p>
+                
+                <div class="desk-map">
+                    <div class="desk-item item-lamp"><i class="fas fa-lightbulb"></i> Luz lateral (60°)</div>
+                    <div class="desk-item item-monitor"><i class="fas fa-desktop"></i> Monitor a altura de ojos</div>
+                    <div class="desk-item item-keyboard"><i class="fas fa-keyboard"></i> Boca arriba</div>
+                    <div class="desk-item item-shelf"><i class="fas fa-book"></i> Material de referencia</div>
+                    <div class="desk-item item-plant"><i class="fas fa-seedling"></i> Planta (Reduce estres)</div>
+                    <div class="desk-item item-phone"><i class="fas fa-mobile-alt"></i> Telefono (Fuera)</div>
+                    
+                    <div class="desk-label">
+                        Zona Libre de Distracciones: Solo lo esencial.
+                    </div>
+                </div>
+            </article>
+
+            <!-- CHECKLIST -->
+            <article class="card card-checklist">
+                <div class="card-header">
+                    <div class="card-icon icon-green"><i class="fas fa-tasks"></i></div>
+                    <h2 class="card-title">Auditoria Rapida</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Verifica si tu espacio actual cumple con lo básico.</p>
+                
+                <div class="checklist-grid">
+                    <div class="check-item" onclick="toggleCheck(this)">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <span>Luz natural o temp 4000K</span>
+                    </div>
+                    <div class="check-item" onclick="toggleCheck(this)">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <span>Silla con soporte lumbar</span>
+                    </div>
+                    <div class="check-item" onclick="toggleCheck(this)">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <span>Telefono fuera de alcance</span>
+                    </div>
+                    <div class="check-item" onclick="toggleCheck(this)">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <span>Superficie ordenada</span>
+                    </div>
+                    <div class="check-item" onclick="toggleCheck(this)">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <span>Temp ambiente 20-22°C</span>
+                    </div>
+                    <div class="check-item" onclick="toggleCheck(this)">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <span>Agua a mano</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- DIGITAL ENVIRONMENT -->
+            <article class="card card-digital">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-shield-alt"></i></div>
+                    <h2 class="card-title">Entorno Digital (El Firewall)</h2>
+                </div>
+                <p style="font-size: 0.9rem; opacity: 0.9;">Si tu escritorio es impecable pero tu pantalla es un caos, no hay concentración.</p>
+                
+                <div class="d-list">
+                    <div class="d-item">
+                        <i class="fas fa-ban"></i>
+                        <span><strong>Extensiones:</strong> Usa "Cold Turkey" o "Freedom" para bloquear redes.</span>
+                    </div>
+                    <div class="d-item">
+                        <i class="fas fa-folder-minus"></i>
+                        <span><strong>Escritorio Cero:</strong> Cero iconos en el fondo. Usa una carpeta "Temporal".</span>
+                    </div>
+                    <div class="d-item">
+                        <i class="fas fa-bell-slash"></i>
+                        <span><strong>Notificaciones OFF:</strong> Activa "No Molestar" en PC y Móvil.</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- NEURO-ARCHITECTURE -->
+            <article class="card card-neuro">
+                <div class="card-header">
+                    <div class="card-icon icon-purple"><i class="fas fa-neuro"></i></div>
+                    <h2 class="card-title">Neuro-Arquitectura</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Condicionamiento clásico aplicado al estudio.</p>
+                
+                <div style="margin-top: 15px;">
+                    <div class="neuro-tip">
+                        <div class="neuro-icon"><i class="fas fa-link"></i></div>
+                        <div class="neuro-text">
+                            <h4>Regla del "Solo Estudio"</h4>
+                            <p>Si usas tu silla para ver Netflix o comer, tu cerebro desactiva el modo enfoque. Usa otra silla para el ocio.</p>
+                        </div>
+                    </div>
+                    <div class="neuro-tip">
+                        <div class="neuro-icon" style="background: var(--accent-5);"><i class="fas fa-magic"></i></div>
+                        <div class="neuro-text">
+                            <h4>Ritual Gatillo</h4>
+                            <p>Siempre pon música Lo-Fi o enciende una vela antes de empezar. Al cabo de una semana, solo el aroma activará tu concentración.</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- SENSORY INPUTS -->
+            <article class="card card-sensory">
+                <div class="card-header">
+                    <div class="card-icon icon-red"><i class="fas fa-assistive-listening-systems"></i></div>
+                    <h2 class="card-title">Entradas Sensoriales</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Controla lo que entra por tus sentidos.</p>
+                
+                <div class="sensory-grid">
+                    <div class="sense-box">
+                        <i class="fas fa-volume-up sense-icon"></i>
+                        <div class="sense-title">Oido</div>
+                        <div class="sense-desc">Ruido Blanco (foco) o Marrón (relajación). Evita música con letra.</div>
+                    </div>
+                    <div class="sense-box">
+                        <i class="fas fa-eye sense-icon"></i>
+                        <div class="sense-title">Vista</div>
+                        <div class="sense-desc">Colores neutros. Sin posters distractorios. Pared despejada frente a ti.</div>
+                    </div>
+                    <div class="sense-box">
+                        <i class="fas fa-wind sense-icon"></i>
+                        <div class="sense-title">Olfato</div>
+                        <div class="sense-desc">Limon (alerta) o Lavanda (calma). Usa difusores o sprays.</div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-text">Tu entorno es tu aliado o tu enemigo. Diseña un espacio donde sea más fácil estudiar que procrastinar.</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+
+        function toggleCheck(element) {
+            element.classList.toggle('checked');
+        }
+    </script>
+</body>
+</html>
