@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Peligro de Subrayar Todo - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --highlight-yellow: rgba(255, 230, 0, 0.4);
+            --highlight-green: rgba(0, 200, 83, 0.2);
+            --highlight-red: rgba(255, 82, 82, 0.2);
+            --accent-1: #d64545; --accent-2: #45a0d6; --accent-3: #45b088;
+            --accent-4: #8b5cf6; --accent-5: #e8833a;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+            --highlight-yellow: rgba(255, 255, 0, 0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1300px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-hover); }
+
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, #e8833a 0%, #d35400 100%);
+            color: white; padding: 40px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 300px; height: 100%;
+            background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.15) 0%, transparent 60%);
+        }
+        .hero-text { flex: 1; z-index: 1; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.8rem;
+            font-weight: 600; margin-bottom: 15px;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.5rem;
+            margin-bottom: 12px; line-height: 1.2;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.9; max-width: 500px; }
+        .hero-visual {
+            width: 200px; height: 220px; background: rgba(255,255,255,0.1);
+            border-radius: 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 12px;
+            position: relative; z-index: 1; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .hero-visual i { font-size: 3rem; opacity: 0.8; }
+
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white;
+        }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #c0392b); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-2), #2980b9); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-3), #1e8449); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-4), #7d3c98); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-5), #d35400); }
+        .icon-brown { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+
+        /* Specific Modules */
+        .card-visual-demo {
+            grid-column: span 12;
+        }
+        .demo-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 30px; margin-top: 20px;
+        }
+        .demo-page {
+            background: var(--bg-tertiary); padding: 20px;
+            border-radius: 12px; font-family: serif;
+            font-size: 0.9rem; line-height: 1.8;
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+        .demo-label {
+            position: absolute; top: -12px; left: 20px;
+            background: var(--bg-secondary); padding: 0 10px;
+            font-family: 'Poppins', sans-serif; font-weight: 700;
+            font-size: 0.8rem; color: var(--primary-dark);
+        }
+        .demo-bad .line { background: var(--highlight-yellow); display: inline; padding: 2px 0; }
+        .demo-good .line-important { background: var(--highlight-green); display: inline; padding: 2px 0; font-weight: bold; }
+
+        .card-psychology {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-4) 0%, #7d3c98 100%);
+            color: white;
+        }
+        .card-psychology .card-title { color: white; }
+        .psy-box {
+            background: rgba(255,255,255,0.1); padding: 15px;
+            border-radius: 12px; margin-bottom: 15px;
+        }
+        .psy-box h4 { margin-bottom: 5px; }
+
+        .card-contrast {
+            grid-column: span 6;
+        }
+        .contrast-item {
+            display: flex; align-items: flex-start; gap: 15px;
+            margin-bottom: 15px; padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .contrast-item:last-child { border-bottom: none; margin-bottom: 0; }
+        .contrast-icon { font-size: 1.5rem; margin-top: 5px; }
+
+        .card-solution {
+            grid-column: span 6;
+            grid-row: span 2;
+        }
+        .traffic-light {
+            display: flex; flex-direction: column; gap: 15px; margin-top: 20px;
+        }
+        .light-item {
+            display: flex; align-items: center; gap: 15px;
+            padding: 15px; background: var(--bg-tertiary);
+            border-radius: 12px; border-left: 5px solid;
+        }
+        .light-green { border-color: var(--accent-3); }
+        .light-yellow { border-color: var(--accent-5); }
+        .light-red { border-color: var(--accent-1); }
+        .light-item h4 { margin-bottom: 4px; }
+
+        .card-marginalia {
+            grid-column: span 6;
+        }
+        .marginal-example {
+            background: var(--bg-tertiary); padding: 20px;
+            border-radius: 12px; position: relative;
+            margin-top: 15px;
+        }
+        .margin-note {
+            position: absolute; right: -10px; top: -10px;
+            background: var(--accent-5); color: white;
+            padding: 5px 10px; border-radius: 8px;
+            font-size: 0.75rem; font-weight: 600;
+            transform: rotate(5deg);
+        }
+
+        .card-tips {
+            grid-column: span 6;
+        }
+        .tip-pair {
+            display: flex; gap: 20px; margin-top: 15px;
+        }
+        .tip-box {
+            flex: 1; padding: 15px; border-radius: 12px;
+        }
+        .tip-do { background: rgba(69, 176, 136, 0.1); border: 1px solid var(--accent-3); }
+        .tip-dont { background: rgba(214, 69, 69, 0.1); border: 1px solid var(--accent-1); }
+        .tip-box h4 { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 30px;
+            background: var(--bg-tertiary);
+        }
+
+        @media (max-width: 1100px) {
+            .demo-grid { grid-template-columns: 1fr; }
+            .tip-pair { flex-direction: column; }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-hero, .card-visual-demo, .card-psychology, .card-contrast,
+            .card-solution, .card-marginalia, .card-tips, .card-footer { grid-column: span 12; }
+            .card-solution { grid-row: span 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-highlighter"></i> Subrayado Inteligente</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-exclamation-triangle"></i> Error de Estudio Común</span>
+                    <h1>El Síndrome de la Página Amarilla</h1>
+                    <p>Subrayar todo es la forma más elegante de no estudiar nada. Tu cerebro deja de filtrar información importante porque todo parece relevante. Aprende a usar el resaltador como un bisturí, no como una brocha.</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-paintbrush"></i>
+                    <span style="font-size: 0.85rem; font-weight: 600;">Precisión vs Mancha</span>
+                </div>
+            </article>
+
+            <!-- VISUAL DEMO -->
+            <article class="card card-visual-demo">
+                <div class="card-header">
+                    <div class="card-icon icon-orange"><i class="fas fa-eye"></i></div>
+                    <h2 class="card-title">Comparación Visual</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Tu cerebro busca contraste. Si todo brilla, nada destaca.</p>
+                
+                <div class="demo-grid">
+                    <div class="demo-page demo-bad">
+                        <div class="demo-label" style="color: var(--accent-1);">Lectura "Amarilla"</div>
+                        <p><span class="line">La fotosíntesis es un proceso biológico</span> que realizan las plantas, <span class="line">algas y algunas bacterias</span> para transformar la energía luminosa en energía química. <span class="line">Ocurre en los cloroplastos</span> y es fundamental para la vida en la Tierra. <span class="line">La clorofila es el pigmento responsable</span> de absorber la luz solar. <span class="line">Sin este proceso, no habría oxígeno.</span></p>
+                        <p style="margin-top: 10px; font-size: 0.8rem; color: var(--text-secondary); text-align: center;"><i class="fas fa-times-circle"></i> Resultado: Sobrecarga visual. No hay jerarquía.</p>
+                    </div>
+                    <div class="demo-page demo-good">
+                        <div class="demo-label" style="color: var(--accent-3);">Lectura Estratégica</div>
+                        <p>La fotosíntesis es un proceso biológico que realizan las plantas, algas y algunas bacterias para transformar <span class="line-important">energía luminosa en energía química</span>. Ocurre en los cloroplastos y es fundamental para la vida en la Tierra. La clorofila es el pigmento responsable de absorber la luz solar. <span class="line-important">Sin este proceso, no habría oxígeno.</span></p>
+                        <p style="margin-top: 10px; font-size: 0.8rem; color: var(--text-secondary); text-align: center;"><i class="fas fa-check-circle" style="color: var(--accent-3);"></i> Resultado: Ideas clave identificadas.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- PSYCHOLOGY -->
+            <article class="card card-psychology">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-brain"></i></div>
+                    <h2 class="card-title">La Ilusión de Competencia</h2>
+                </div>
+                <div class="psy-box">
+                    <h4>¿Por qué lo hacemos?</h4>
+                    <p style="font-size: 0.9rem; opacity: 0.9; margin: 0;">Subrayar da una sensación inmediata de progreso. "Ya lo marqué, ya lo sé". Es gratificante pero engañoso.</p>
+                </div>
+                <div class="psy-box">
+                    <h4>El efecto real</h4>
+                    <p style="font-size: 0.9rem; opacity: 0.9; margin: 0;">El subrayado excesivo evita que tu cerebro procese la información en profundidad. Sustituye el esfuerzo cognitivo (entender) por un esfuerzo motor (mover la mano).</p>
+                </div>
+            </article>
+
+            <!-- THE CONTRAST -->
+            <article class="card card-contrast">
+                <div class="card-header">
+                    <div class="card-icon icon-brown"><i class="fas fa-balance-scale-left"></i></div>
+                    <h2 class="card-title">La Diferencia Clave</h2>
+                </div>
+                <div class="contrast-item">
+                    <div class="contrast-icon" style="color: var(--accent-1);"><i class="fas fa-paint-roller"></i></div>
+                    <div>
+                        <h4 style="color: var(--primary-dark);">Subrayar como Pintor</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Objetivo: Marcar todo lo que "suena importante". Resultado: Una página inútil para repasar. Te obliga a releer todo.</p>
+                    </div>
+                </div>
+                <div class="contrast-item">
+                    <div class="contrast-icon" style="color: var(--accent-3);"><i class="fas fa-scalpel"></i></div>
+                    <div>
+                        <h4 style="color: var(--primary-dark);">Subrayar como Cirujano</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Objetivo: Extraer solo lo vital. Resultado: Un mapa visual rápido. Al repasar, tus ojos van directo al grano.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- THE SOLUTION: TRAFFIC LIGHT -->
+            <article class="card card-solution">
+                <div class="card-header">
+                    <div class="card-icon icon-green"><i class="fas fa-traffic-light"></i></div>
+                    <h2 class="card-title">Técnica del Semáforo</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Antes de subrayar, clasifica. Usa colores para dar jerarquía, no para decorar.</p>
+                
+                <div class="traffic-light">
+                    <div class="light-item light-green">
+                        <div>
+                            <h4 style="color: var(--accent-3);">Verde: La Idea Central</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Solo la tesis principal o la definición clave. Si tapas lo demás, esto debería tener sentido por sí solo.</p>
+                        </div>
+                    </div>
+                    <div class="light-item light-yellow">
+                        <div>
+                            <h4 style="color: var(--accent-5);">Naranja/Amarillo: Soporte</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Detalles, fechas o ejemplos que explican la idea central. Importante, pero no la esencia.</p>
+                        </div>
+                    </div>
+                    <div class="light-item light-red">
+                        <div>
+                            <h4 style="color: var(--accent-1);">Rojo/Palarita: Peligro/Confusión</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">No para el texto, sino para ti. Marca lo que NO entiendes para preguntar después.</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- MARGINALIA -->
+            <article class="card card-marginalia">
+                <div class="card-header">
+                    <div class="card-icon icon-purple"><i class="fas fa-pencil"></i></div>
+                    <h2 class="card-title">Mejor que Subrayar: Escribir</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Subrayar es pasivo. Escribir en los márgenes (anotación marginal) activa la memoria.</p>
+                
+                <div class="marginal-example">
+                    <div class="margin-note">¿Por qué 1750?</div>
+                    <p style="font-size: 0.9rem; color: var(--text-primary);">
+                        La Revolución Industrial comenzó alrededor de 1750 en Inglaterra...
+                        <br><br>
+                        <span style="font-size: 0.8rem; color: var(--text-secondary);">[Tu nota al margen]: Explicar transición agraria a industrial.</span>
+                    </p>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 10px;">Forzarte a resumir en 3 palabras al margen vale más que subrayar 3 líneas.</p>
+            </article>
+
+            <!-- DO'S AND DON'TS -->
+            <article class="card card-tips">
+                <div class="card-header">
+                    <div class="card-icon icon-blue"><i class="fas fa-check-double"></i></div>
+                    <h2 class="card-title">Reglas de Oro</h2>
+                </div>
+                <div class="tip-pair">
+                    <div class="tip-box tip-do">
+                        <h4 style="color: var(--accent-3);"><i class="fas fa-check"></i> Haz</h4>
+                        <ul style="font-size: 0.85rem; margin-left: 15px; color: var(--text-primary);">
+                            <li>Lee el párrafo entero primero.</li>
+                            <li>Subraya solo después de entender.</li>
+                            <li>Limita el subrayado al 10-15% de la página.</li>
+                        </ul>
+                    </div>
+                    <div class="tip-box tip-dont">
+                        <h4 style="color: var(--accent-1);"><i class="fas fa-times"></i> No Hagas</h4>
+                        <ul style="font-size: 0.85rem; margin-left: 15px; color: var(--text-primary);">
+                            <li>Subrayar mientras lees la primera vez.</li>
+                            <li>Usar un solo color para todo.</li>
+                            <li>Subrayar frases completas si una palabra basta.</li>
+                        </ul>
+                    </div>
+                </div>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-text">Un texto subrayado es un mapa. Si todo el mapa está pintado, te perderás igual que si no tuvieras nada. Menos es más.</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+    </script>
+</body>
+</html>
