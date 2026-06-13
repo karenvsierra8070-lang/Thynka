@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energia Mental y Estudio-Trabajo - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --accent-1: #e74c3c; --accent-2: #3498db; --accent-3: #27ae60;
+            --accent-4: #9b59b6; --accent-5: #e67e22;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1300px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-hover); }
+
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, var(--accent-5) 0%, #d35400 100%);
+            color: white; padding: 40px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 300px; height: 100%;
+            background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.15) 0%, transparent 60%);
+        }
+        .hero-text { flex: 1; z-index: 1; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.8rem;
+            font-weight: 600; margin-bottom: 15px;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.5rem;
+            margin-bottom: 12px; line-height: 1.2;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.9; max-width: 500px; }
+        .hero-visual {
+            width: 180px; height: 220px; background: rgba(255,255,255,0.1);
+            border-radius: 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 8px;
+            position: relative; z-index: 1; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .hero-visual i { font-size: 3rem; opacity: 0.8; }
+
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white;
+        }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #c0392b); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-2), #2980b9); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-3), #1e8449); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-4), #7d3c98); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-5), #d35400); }
+        .icon-brown { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+
+        /* Energy Map */
+        .card-energy {
+            grid-column: span 6;
+        }
+        .energy-graph {
+            margin-top: 20px; height: 200px;
+            display: flex; align-items: flex-end; justify-content: space-between;
+            gap: 8px; padding-bottom: 30px; position: relative;
+            border-bottom: 2px solid var(--border-color);
+        }
+        .e-bar {
+            flex: 1; background: var(--bg-tertiary);
+            border-radius: 8px 8px 0 0; position: relative;
+            transition: height 0.5s ease-out;
+        }
+        .e-bar.high { background: linear-gradient(to top, var(--accent-3), #2ecc71); }
+        .e-bar.mid { background: linear-gradient(to top, var(--accent-5), #f39c12); }
+        .e-bar.low { background: linear-gradient(to top, var(--accent-1), #e74c3c); }
+        .e-label {
+            position: absolute; bottom: -25px; left: 50%; transform: translateX(-50%);
+            font-size: 0.7rem; color: var(--text-secondary);
+        }
+        .energy-legend {
+            display: flex; justify-content: center; gap: 15px; margin-top: 10px;
+        }
+        .leg-item { display: flex; align-items: center; gap: 5px; font-size: 0.8rem; }
+        .leg-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+        /* Chronotype */
+        .card-chrono {
+            grid-column: span 6;
+        }
+        .chrono-types {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 10px; margin-top: 15px;
+        }
+        .ch-type {
+            background: var(--bg-tertiary); padding: 15px;
+            border-radius: 12px; text-align: center; cursor: pointer;
+            border: 2px solid transparent; transition: all 0.3s;
+        }
+        .ch-type.active { border-color: var(--primary); background: var(--beige); }
+        .ch-type h5 { color: var(--primary-dark); margin-bottom: 5px; }
+        .ch-type p { font-size: 0.7rem; color: var(--text-secondary); }
+
+        /* The Reality Grid */
+        .card-reality {
+            grid-column: span 12;
+            background: var(--bg-tertiary);
+        }
+        .reality-schedule {
+            display: flex; flex-wrap: wrap; gap: 5px; margin-top: 20px;
+        }
+        .time-block {
+            height: 60px; border-radius: 6px; display: flex;
+            align-items: center; justify-content: center; color: white;
+            font-size: 0.7rem; font-weight: 600; flex: 1; min-width: 60px;
+            text-align: center; padding: 5px;
+        }
+        .tb-sleep { background: #34495e; flex: 7; }
+        .tb-work { background: #7f8c8d; flex: 9; }
+        .tb-transport { background: #95a5a6; flex: 2; }
+        .tb-class { background: var(--accent-2); flex: 4; }
+        .tb-gap { background: transparent; border: 2px dashed var(--border-color); color: var(--text-secondary); flex: 1; }
+        .schedule-legend {
+            display: flex; flex-wrap: wrap; gap: 15px; margin-top: 15px; justify-content: center;
+        }
+        .sl-item { display: flex; align-items: center; gap: 5px; font-size: 0.8rem; }
+        .sl-dot { width: 12px; height: 12px; border-radius: 3px; }
+
+        /* Survival Strategy */
+        .card-survival {
+            grid-column: span 7;
+            grid-row: span 2;
+        }
+        .strategy-list { margin-top: 20px; }
+        .str-item {
+            display: flex; gap: 15px; margin-bottom: 20px;
+            padding-bottom: 20px; border-bottom: 1px dashed var(--border-color);
+        }
+        .str-item:last-child { border-bottom: none; }
+        .str-icon {
+            width: 50px; height: 50px; background: var(--primary);
+            border-radius: 12px; display: flex; align-items: center;
+            justify-content: center; color: white; font-size: 1.2rem; flex-shrink: 0;
+        }
+        .str-text h4 { font-size: 1rem; color: var(--primary-dark); margin-bottom: 5px; }
+        .str-text p { font-size: 0.85rem; color: var(--text-secondary); margin: 0; }
+
+        /* Micro-Study */
+        .card-micro {
+            grid-column: span 5;
+            background: linear-gradient(135deg, var(--accent-2) 0%, #2980b9 100%);
+            color: white;
+        }
+        .card-micro .card-title { color: white; }
+        .micro-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 10px; margin-top: 15px;
+        }
+        .micro-box {
+            background: rgba(255,255,255,0.1); padding: 12px;
+            border-radius: 10px;
+        }
+        .micro-box strong { display: block; margin-bottom: 3px; }
+        .micro-box p { font-size: 0.8rem; opacity: 0.9; margin: 0; }
+
+        /* Weekend */
+        .card-weekend {
+            grid-column: span 6;
+        }
+        .weekend-visual {
+            background: var(--bg-tertiary); border-radius: 15px;
+            padding: 20px; margin-top: 15px; text-align: center;
+        }
+        .wv-clock {
+            font-size: 3rem; color: var(--primary);
+            font-family: 'Playfair Display', serif; font-weight: 700;
+        }
+
+        /* Logistics */
+        .card-logistics {
+            grid-column: span 6;
+        }
+        .logistics-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 15px; margin-top: 15px;
+        }
+        .log-item {
+            background: var(--bg-tertiary); padding: 15px;
+            border-radius: 12px; display: flex; flex-direction: column;
+            align-items: center; text-align: center;
+        }
+        .log-icon { font-size: 1.5rem; color: var(--primary); margin-bottom: 8px; }
+        .log-title { font-weight: 700; font-size: 0.9rem; color: var(--primary-dark); }
+        .log-desc { font-size: 0.75rem; color: var(--text-secondary); }
+
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 30px;
+            background: var(--bg-tertiary);
+        }
+        .footer-text {
+            font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 5px;
+        }
+
+        @media (max-width: 1100px) {
+            .energy-graph { height: 150px; }
+            .chrono-types { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-hero, .card-energy, .card-chrono, .card-reality,
+            .card-survival, .card-micro, .card-weekend, .card-logistics, .card-footer { grid-column: span 12; }
+            .hero-text h1 { font-size: 1.8rem; }
+            .card-hero { flex-direction: column; text-align: center; }
+            .logistics-grid, .micro-grid { grid-template-columns: 1fr; }
+            .time-block { min-width: 40px; font-size: 0.6rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-battery-full"></i> Energia y Estrategia</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-user-clock"></i> Doble Jornada</span>
+                    <h1>Estudiar, Trabajar y Sobrevivir</h1>
+                    <p>El escenario clásico: 8 horas de trabajo, 2 horas de transporte, 3 horas de clase presencial. ¿Queda tiempo para vivir? Aprende a identificar tu energía mental residual y optimizar cada minuto libre sin quemarte en el intento.</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-balance-scale-right"></i>
+                    <span style="font-size: 0.85rem; font-weight: 600;">Equilibrio Imposible</span>
+                </div>
+            </article>
+
+            <!-- ENERGY MAP -->
+            <article class="card card-energy">
+                <div class="card-header">
+                    <div class="card-icon icon-green"><i class="fas fa-chart-area"></i></div>
+                    <h2 class="card-title">Tus Horas de Oro</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">No todos tienen energía a la misma hora. Identifica tu curva circadiana para poner las tareas difíciles en tus picos.</p>
+                
+                <div class="energy-graph">
+                    <div class="e-bar low" style="height: 30%;"><span class="e-label">6am</span></div>
+                    <div class="e-bar mid" style="height: 70%;"><span class="e-label">9am</span></div>
+                    <div class="e-bar high" style="height: 95%;"><span class="e-label">11am</span></div>
+                    <div class="e-bar low" style="height: 40%;"><span class="e-label">2pm</span></div>
+                    <div class="e-bar mid" style="height: 60%;"><span class="e-label">5pm</span></div>
+                    <div class="e-bar low" style="height: 25%;"><span class="e-label">9pm</span></div>
+                </div>
+                <div class="energy-legend">
+                    <div class="leg-item"><div class="leg-dot" style="background: var(--accent-3);"></div> Pico</div>
+                    <div class="leg-item"><div class="leg-dot" style="background: var(--accent-5);"></div> Medio</div>
+                    <div class="leg-item"><div class="leg-dot" style="background: var(--accent-1);"></div> Bajo</div>
+                </div>
+            </article>
+
+            <!-- CHRONOTYPE -->
+            <article class="card card-chrono">
+                <div class="card-header">
+                    <div class="card-icon icon-purple"><i class="fas fa-user-tag"></i></div>
+                    <h2 class="card-title">¿Cuál es tu Cronotipo?</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Saber cuándo eres más productivo te ayuda a negociar horarios o decidir cuándo hacer la tarea pesada.</p>
+                
+                <div class="chrono-types">
+                    <div class="ch-type">
+                        <h5><i class="fas fa-sun"></i> Mañanero</h5>
+                        <p>Pico 7am-11am. Ideal: Estudiar antes del trabajo.</p>
+                    </div>
+                    <div class="ch-type">
+                        <h5><i class="fas fa-cloud-sun"></i> Intermedio</h5>
+                        <p>Pico 10am-12pm y 4pm-6pm. Flexible.</p>
+                    </div>
+                    <div class="ch-type">
+                        <h5><i class="fas fa-moon"></i> Vespertino</h5>
+                        <p>Pico 6pm-10pm. Ideal: Estudiar tras la clase presencial.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- REALITY SCHEDULE -->
+            <article class="card card-reality">
+                <div class="card-header">
+                    <div class="card-icon icon-red"><i class="fas fa-calendar-week"></i></div>
+                    <h2 class="card-title">La Realidad del Tiempo (Ejemplo 6am - 11pm)</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Un día típico de estudiante trabajador. Nota cuántos bloques "grises" de transporte hay.</p>
+                
+                <div class="reality-schedule">
+                    <div class="time-block tb-sleep">Sueño<br>(6h)</div>
+                    <div class="time-block tb-transport">Transp.<br>(Ida)</div>
+                    <div class="time-block tb-work">Trabajo<br>(8h)</div>
+                    <div class="time-block tb-transport">Transp.<br>(Vuelta)</div>
+                    <div class="time-block tb-class">Clase<br>(Presencial)</div>
+                    <div class="time-block tb-gap">Gap</div>
+                </div>
+                <div class="schedule-legend">
+                    <div class="sl-item"><div class="sl-dot" style="background: #34495e;"></div> Sueño (Sagrado)</div>
+                    <div class="sl-item"><div class="sl-dot" style="background: #7f8c8d;"></div> Trabajo</div>
+                    <div class="sl-item"><div class="sl-dot" style="background: var(--accent-2);"></div> Clase</div>
+                    <div class="sl-item"><div class="sl-dot" style="background: #95a5a6;"></div> Transporte</div>
+                </div>
+                <p style="margin-top: 15px; font-size: 0.85rem; color: var(--accent-1); font-weight: 600;">
+                    <i class="fas fa-exclamation-triangle"></i> El único tiempo "libre" real suele ser el fin de semana o el gap nocturno.
+                </p>
+            </article>
+
+            <!-- SURVIVAL STRATEGIES -->
+            <article class="card card-survival">
+                <div class="card-header">
+                    <div class="card-icon icon-orange"><i class="fas fa-tools"></i></div>
+                    <h2 class="card-title">Estrategias de Supervivencia</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">No intentes "estudiar más", intenta "estudiar mejor" en los huecos que tienes.</p>
+                
+                <div class="strategy-list">
+                    <div class="str-item">
+                        <div class="str-icon"><i class="fas fa-headphones"></i></div>
+                        <div class="str-text">
+                            <h4>El Transporte es Aula Móvil</h4>
+                            <p>45 min de bus = 1 capítulo de audio. Grábate tus propios resúmenes y escúchalos en el metro/bus. No leas (te mareas), escucha.</p>
+                        </div>
+                    </div>
+                    <div class="str-item">
+                        <div class="str-icon"><i class="fas fa-utensils"></i></div>
+                        <div class="str-text">
+                            <h4>Almuerzo Estratégico</h4>
+                            <p>No uses la hora de almuerzo para socializar si estás en examen. Come rápido y dedica 20 mins a flashcards (Anki) en el móvil.</p>
+                        </div>
+                    </div>
+                    <div class="str-item">
+                        <div class="str-icon"><i class="fas fa-bed"></i></div>
+                        <div class="str-text">
+                            <h4>Sueño Sagrado</h4>
+                            <p>Dormir 6 horas bien da más rendimiento que 4 horas y café. Si llegas tarde de clase, cena rápido y duerme. Estudiar cansado es perder el tiempo.</p>
+                        </div>
+                    </div>
+                    <div class="str-item">
+                        <div class="str-icon"><i class="fas fa-briefcase"></i></div>
+                        <div class="str-text">
+                            <h4>El "Gap" Nocturno</h4>
+                            <p>Llegas a las 10pm. No intentes leer teoría compleja. Haz ejercicios mecánicos o repasa apuntes del día. Tu cerebro está frito para aprender cosas nuevas.</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- MICRO STUDY -->
+            <article class="card card-micro">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-clock"></i></div>
+                    <h2 class="card-title">Micro-Estudio en Huecos</h2>
+                </div>
+                <p style="font-size: 0.9rem; opacity: 0.9;">Tareas que puedes hacer en 15 minutos o menos:</p>
+                
+                <div class="micro-grid">
+                    <div class="micro-box">
+                        <strong>Flashcards</strong>
+                        <p>Revisar 10 tarjetas en el ascensor o fila del banco.</p>
+                    </div>
+                    <div class="micro-box">
+                        <strong>Resumen</strong>
+                        <p>Leer solo el abstract/intro de un paper en el bus.</p>
+                    </div>
+                    <div class="micro-box">
+                        <strong>Grabación</strong>
+                        <p>Grabar tu voz leyendo una definición clave.</p>
+                    </div>
+                    <div class="micro-box">
+                        <strong>Planificación</strong>
+                        <p>Definir QUÉ estudiarás el fin de semana.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- WEEKEND STRATEGY -->
+            <article class="card card-weekend">
+                <div class="card-header">
+                    <div class="card-icon icon-blue"><i class="fas fa-calendar-check"></i></div>
+                    <h2 class="card-title">El Fin de Semana es Oro</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Aquí es donde ocurre el estudio profundo (Deep Work).</p>
+                
+                <div class="weekend-visual">
+                    <div class="wv-clock">8h - 12h</div>
+                    <p style="margin-top: 10px; color: var(--text-primary);">Trata de bloquear 4 horas el sábado y 4 el domingo. Es el equivalente a una semana entera de estudio nocturno cansado.</p>
+                </div>
+            </article>
+
+            <!-- LOGISTICS -->
+            <article class="card card-logistics">
+                <div class="card-header">
+                    <div class="card-icon icon-brown"><i class="fas fa-cogs"></i></div>
+                    <h2 class="card-title">Logística y Automatización</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Quita decisiones innecesarias para ahorrar energía mental.</p>
+                
+                <div class="logistics-grid">
+                    <div class="log-item">
+                        <i class="fas fa-tshirt log-icon"></i>
+                        <span class="log-title">Ropa</span>
+                        <span class="log-desc">Prepara la ropa de la semana el domingo.</span>
+                    </div>
+                    <div class="log-item">
+                        <i class="fas fa-hamburger log-icon"></i>
+                        <span class="log-title">Comida</span>
+                        <span class="log-desc">Meal Prep: Cocina el domingo para 3 días.</span>
+                    </div>
+                    <div class="log-item">
+                        <i class="fas fa-backpack log-icon"></i>
+                        <span class="log-title">Mochila</span>
+                        <span class="log-desc">Déjala lista la noche anterior.</span>
+                    </div>
+                    <div class="log-item">
+                        <i class="fas fa-bath log-icon"></i>
+                        <span class="log-title">Ducha</span>
+                        <span class="log-desc">Ducha nocturna: relaja y marca el fin del día.</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-text">Trabajar y estudiar es una maratón, no un sprint. Protege tu sueño y tu salud mental sobre todo. Un semestre intenso no vale un colapso.</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+    </script>
+</body>
+</html>
