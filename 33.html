@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sindrome del Impostor - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #7a6b8a; --primary-light: #9a8baa; --primary-dark: #5a4b6a;
+            --cream: #faf8f9; --beige: #f0eef0; --brown: #4a3b5a;
+            --gray: #8a7a8a; --white: #ffffff;
+            --shadow: rgba(90, 75, 106, 0.1); --shadow-hover: rgba(90, 75, 106, 0.2);
+            --text-primary: #3a2b4a; --text-secondary: #6a5b7a;
+            --bg-primary: #faf8f9; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0eef0; --border-color: #e0dde8;
+            --accent-truth: #4a90a0; --accent-reality: #e8a04c; 
+            --accent-growth: #60a070; --accent-warning: #d07060;
+            --gradient-impostor: linear-gradient(135deg, #7a6b8a 0%, #5a4b6a 100%);
+        }
+
+        [data-theme="dark"] {
+            --primary: #9a8baa; --primary-light: #b0a0c0; --primary-dark: #7a6b8a;
+            --cream: #2a2530; --beige: #3a3540; --brown: #d0c0d8;
+            --gray: #a090a0; --white: #1a151d;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d8e8; --text-secondary: #a090a8;
+            --bg-primary: #1a151d; --bg-secondary: #2a2530;
+            --bg-tertiary: #3a3540; --border-color: #3a3540;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; overflow-x: hidden; }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        
+        .card { animation: fadeInUp 0.6s ease-out backwards; }
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+        .card:nth-child(4) { animation-delay: 0.4s; }
+        .card:nth-child(5) { animation-delay: 0.5s; }
+        .card:nth-child(6) { animation-delay: 0.6s; }
+        .card:nth-child(7) { animation-delay: 0.7s; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; transform: translateX(-5px); }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1400px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 12px 40px var(--shadow-hover); }
+
+        /* Hero */
+        .card-hero {
+            grid-column: span 12;
+            background: var(--gradient-impostor);
+            color: white; padding: 45px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px; min-height: 280px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: -50%; right: -10%;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            border-radius: 50%;
+        }
+        .hero-text { flex: 1; z-index: 1; max-width: 600px; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 8px 18px; border-radius: 25px; font-size: 0.85rem;
+            font-weight: 600; margin-bottom: 18px; backdrop-filter: blur(10px);
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.6rem;
+            margin-bottom: 15px; line-height: 1.15;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.92; line-height: 1.7; }
+        .hero-visual {
+            width: 220px; height: 220px; background: rgba(255,255,255,0.12);
+            border-radius: 50%; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 10px;
+            position: relative; z-index: 1; border: 3px solid rgba(255,255,255,0.3);
+        }
+        .hero-visual i { font-size: 4rem; opacity: 0.9; animation: float 4s ease-in-out infinite; }
+        .hero-stat { font-size: 1.2rem; font-weight: 600; text-align: center; opacity: 0.9; }
+
+        .card-header {
+            display: flex; align-items: center; gap: 14px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 48px; height: 48px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem; color: white;
+            transition: transform 0.3s;
+        }
+        .card:hover .card-icon { transform: scale(1.1) rotate(-5deg); }
+        .icon-purple { background: var(--gradient-impostor); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-truth), #3a7080); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-reality), #c88030); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-growth), #4a8050); }
+        .icon-red { background: linear-gradient(135deg, var(--accent-warning), #b05040); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.45rem;
+            color: var(--primary-dark);
+        }
+
+        /* Cycle Diagram */
+        .card-cycle { grid-column: span 12; }
+        .cycle-visual {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: 25px; gap: 10px; flex-wrap: wrap;
+        }
+        .cycle-step {
+            flex: 1; min-width: 150px; text-align: center;
+            padding: 20px 15px; background: var(--bg-tertiary);
+            border-radius: 16px; position: relative;
+        }
+        .cycle-step::after {
+            content: '\f061'; font-family: 'Font Awesome 6 Free'; font-weight: 900;
+            position: absolute; right: -15px; top: 50%;
+            transform: translateY(-50%); color: var(--primary);
+            font-size: 1rem;
+        }
+        .cycle-step:last-child::after { display: none; }
+        .cycle-step i { font-size: 2rem; color: var(--primary); margin-bottom: 10px; display: block; }
+        .cycle-step h4 { font-size: 0.95rem; color: var(--primary-dark); margin-bottom: 5px; }
+        .cycle-step p { font-size: 0.8rem; color: var(--text-secondary); }
+
+        /* Types Accordion */
+        .card-types { grid-column: span 6; }
+        .types-accordion { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .type-item {
+            background: var(--bg-tertiary); border-radius: 14px;
+            overflow: hidden; transition: all 0.3s;
+        }
+        .type-header {
+            padding: 16px 20px; display: flex; align-items: center;
+            justify-content: space-between; cursor: pointer;
+            font-weight: 600; font-size: 0.95rem;
+        }
+        .type-header:hover { background: var(--beige); }
+        .type-item.active .type-header { background: var(--primary); color: white; }
+        .type-icon { transition: transform 0.3s; }
+        .type-item.active .type-icon { transform: rotate(180deg); }
+        .type-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+        .type-item.active .type-content { max-height: 200px; }
+        .type-text { padding: 0 20px 16px; font-size: 0.9rem; color: var(--text-secondary); }
+
+        /* Reframing Thoughts */
+        .card-reframe { grid-column: span 6; }
+        .reframe-grid { margin-top: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .reframe-row {
+            display: flex; gap: 15px; align-items: stretch;
+        }
+        .thought-box {
+            flex: 1; padding: 18px; border-radius: 14px;
+            font-size: 0.9rem; display: flex; flex-direction: column; gap: 8px;
+        }
+        .thought-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .thought-impostor { background: rgba(208, 112, 96, 0.1); border-left: 4px solid var(--accent-warning); }
+        .thought-impostor .thought-label { color: var(--accent-warning); }
+        .thought-reality { background: rgba(74, 144, 160, 0.1); border-left: 4px solid var(--accent-truth); }
+        .thought-reality .thought-label { color: var(--accent-truth); }
+        .thought-arrow {
+            display: flex; align-items: center; color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        /* Evidence Checklist */
+        .card-evidence { grid-column: span 6; }
+        .evidence-list { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .evidence-item {
+            display: flex; align-items: center; gap: 15px;
+            padding: 14px 18px; background: var(--bg-tertiary);
+            border-radius: 12px; cursor: pointer;
+            transition: all 0.3s; border: 2px solid transparent;
+        }
+        .evidence-item:hover { border-color: var(--primary); }
+        .evidence-item.checked { background: rgba(96, 160, 112, 0.1); border-color: var(--accent-growth); }
+        .evidence-checkbox {
+            width: 26px; height: 26px; border-radius: 8px;
+            border: 2px solid var(--primary); display: flex;
+            align-items: center; justify-content: center;
+            transition: all 0.3s; flex-shrink: 0;
+        }
+        .evidence-item.checked .evidence-checkbox { background: var(--accent-growth); border-color: var(--accent-growth); }
+        .evidence-checkbox i { color: white; font-size: 0.8rem; opacity: 0; transition: opacity 0.2s; }
+        .evidence-item.checked .evidence-checkbox i { opacity: 1; }
+        .evidence-text { font-size: 0.95rem; }
+
+        /* Strategies */
+        .card-strategies { grid-column: span 6; background: var(--gradient-impostor); color: white; }
+        .card-strategies .card-title { color: white; }
+        .strategies-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .strategy-item {
+            background: rgba(255,255,255,0.1); padding: 20px;
+            border-radius: 14px; transition: all 0.3s;
+        }
+        .strategy-item:hover { background: rgba(255,255,255,0.2); transform: scale(1.02); }
+        .strategy-item i { font-size: 1.5rem; margin-bottom: 10px; display: block; opacity: 0.9; }
+        .strategy-item h4 { font-size: 1rem; margin-bottom: 5px; }
+        .strategy-item p { font-size: 0.85rem; opacity: 0.8; }
+
+        /* Reality Check */
+        .card-reality { grid-column: span 12; text-align: center; padding: 40px; background: var(--bg-tertiary); }
+        .reality-stat { font-size: 3.5rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 5px; }
+        .reality-label { font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 15px; }
+        .reality-text { font-size: 0.95rem; color: var(--text-primary); max-width: 700px; margin: 0 auto; }
+
+        /* Footer */
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 40px;
+            background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--beige) 100%);
+        }
+        .footer-quote {
+            font-family: 'Playfair Display', serif; font-size: 1.5rem;
+            color: var(--primary-dark); margin-bottom: 10px; font-style: italic;
+        }
+        .footer-author { font-size: 0.9rem; color: var(--text-secondary); }
+
+        @media (max-width: 1100px) {
+            .cycle-visual { flex-direction: column; }
+            .cycle-step::after { content: '\f063'; position: static; transform: none; margin: 10px 0; }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-hero, .card-cycle, .card-types, .card-reframe,
+            .card-evidence, .card-strategies, .card-reality, .card-footer { grid-column: span 12; }
+            .hero-text h1 { font-size: 2rem; }
+            .card-hero { flex-direction: column; text-align: center; min-height: auto; padding: 35px 25px; }
+            .strategies-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-masks-theater"></i> Sindrome del Impostor</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-theater-masks"></i> Psicologia del Aprendizaje</span>
+                    <h1>Combate el Sindrome del Impostor</h1>
+                    <p>Sientes que no mereces estar donde estas? Que pronto "descubriran" que no sabes tanto? Es el sindrome del impostor. Afecta al 70% de las personas exitosas. Aqui aprenderas a distinguir entre humildad y autodesprecio.</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-user-secret"></i>
+                    <div class="hero-stat">"Estoy fingiendo"</div>
+                </div>
+            </article>
+
+            <!-- THE CYCLE -->
+            <article class="card card-cycle">
+                <div class="card-header">
+                    <div class="card-icon icon-purple"><i class="fas fa-arrows-rotate"></i></div>
+                    <h2 class="card-title">El Ciclo del Impostor</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Como se alimenta a si mismo este sentimiento. Reconocer el patron es el primer paso para romperlo.</p>
+                
+                <div class="cycle-visual">
+                    <div class="cycle-step">
+                        <i class="fas fa-briefcase"></i>
+                        <h4>Nuevo Exito</h4>
+                        <p>Logras algo bueno o entras a un nuevo nivel.</p>
+                    </div>
+                    <div class="cycle-step">
+                        <i class="fas fa-ghost"></i>
+                        <h4>La Duda</h4>
+                        <p>"Fue suerte", "No soy tan bueno", "Se equivocaron conmigo".</p>
+                    </div>
+                    <div class="cycle-step">
+                        <i class="fas fa-hammer"></i>
+                        <h4>Sobre-esfuerzo</h4>
+                        <p>Trabajas el doble para "cubrir" tu supuesta ineptitud.</p>
+                    </div>
+                    <div class="cycle-step">
+                        <i class="fas fa-medal"></i>
+                        <h4>Nuevo Exito</h4>
+                        <p>El esfuerzo rinde frutos, pero lo atribuyes a suerte... otra vez.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- THE 5 TYPES -->
+            <article class="card card-types">
+                <div class="card-header">
+                    <div class="card-icon icon-orange"><i class="fas fa-users"></i></div>
+                    <h2 class="card-title">5 Tipos de Impostor</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Cual te identifica mas? Haz clic para ver detalles.</p>
+                
+                <div class="types-accordion" id="typesAccordion">
+                    <div class="type-item">
+                        <div class="type-header" onclick="toggleAccordion(this)">
+                            <span>El Perfeccionista</span>
+                            <i class="fas fa-chevron-down type-icon"></i>
+                        </div>
+                        <div class="type-content">
+                            <div class="type-text">Necesitas que todo sea 100% perfecto. Un 99% se siente como un fracaso. Te cuesta celebrar los logros porque siempre ves lo que fallo.</div>
+                        </div>
+                    </div>
+                    <div class="type-item">
+                        <div class="type-header" onclick="toggleAccordion(this)">
+                            <span>El Genio Natural</span>
+                            <i class="fas fa-chevron-down type-icon"></i>
+                        </div>
+                        <div class="type-content">
+                            <div class="type-text">Creias que todo te debia salir facil. Si tienes que esforzarte, sientes que no eres "talentoso". El esfuerzo lo vives como una prueba de que no sirves.</div>
+                        </div>
+                    </div>
+                    <div class="type-item">
+                        <div class="type-header" onclick="toggleAccordion(this)">
+                            <span>El Experto</span>
+                            <i class="fas fa-chevron-down type-icon"></i>
+                        </div>
+                        <div class="type-content">
+                            <div class="type-text">Sientes que nunca sabes suficiente. Antes de empezar un proyecto crees que necesitas leer 5 libros mas. Te paraliza lo que NO sabes.</div>
+                        </div>
+                    </div>
+                    <div class="type-item">
+                        <div class="type-header" onclick="toggleAccordion(this)">
+                            <span>El Soloista</span>
+                            <i class="fas fa-chevron-down type-icon"></i>
+                        </div>
+                        <div class="type-content">
+                            <div class="type-text">"Si pido ayuda, veran que no se". Intentas hacerlo todo solo para evitar ser "descubierto". La colaboracion la ves como debilidad.</div>
+                        </div>
+                    </div>
+                    <div class="type-item">
+                        <div class="type-header" onclick="toggleAccordion(this)">
+                            <span>El Superhumano</span>
+                            <i class="fas fa-chevron-down type-icon"></i>
+                        </div>
+                        <div class="type-content">
+                            <div class="type-text">Mides tu valor por la productividad. Tienes que ser el mejor estudiante, hijo, amigo y trabajador a la vez. Si fallas en uno, te sientes fraude total.</div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- REFRAMING -->
+            <article class="card card-reframe">
+                <div class="card-header">
+                    <div class="card-icon icon-blue"><i class="fas fa-brain"></i></div>
+                    <h2 class="card-title">Reencuadre Cognitivo</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Cambia el dialogo interno. Cada vez que venga el pensamiento, responde con la realidad.</p>
+                
+                <div class="reframe-grid">
+                    <div class="reframe-row">
+                        <div class="thought-box thought-impostor">
+                            <span class="thought-label">Impostor</span>
+                            "Fue pura suerte que pase el examen."
+                        </div>
+                        <div class="thought-arrow"><i class="fas fa-arrows-left-right"></i></div>
+                        <div class="thought-box thought-reality">
+                            <span class="thought-label">Realidad</span>
+                            "La suerte es cuando la preparacion se encuentra con la oportunidad. Estudie para esto."
+                        </div>
+                    </div>
+                    <div class="reframe-row">
+                        <div class="thought-box thought-impostor">
+                            <span class="thought-label">Impostor</span>
+                            "Todos aqui son mas inteligentes que yo."
+                        </div>
+                        <div class="thought-arrow"><i class="fas fa-arrows-left-right"></i></div>
+                        <div class="thought-box thought-reality">
+                            <span class="thought-label">Realidad</span>
+                            "Comparo mi interior con el exterior de otros. Cada uno tiene su ritmo y fortalezas."
+                        </div>
+                    </div>
+                    <div class="reframe-row">
+                        <div class="thought-box thought-impostor">
+                            <span class="thought-label">Impostor</span>
+                            "Si supieran la verdad, me echarian."
+                        </div>
+                        <div class="thought-arrow"><i class="fas fa-arrows-left-right"></i></div>
+                        <div class="thought-box thought-reality">
+                            <span class="thought-label">Realidad</span>
+                            "Estoy aprendiendo. Nadie nace sabiendo. Mi valor esta en mi capacidad de crecer."
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- EVIDENCE CHECKLIST -->
+            <article class="card card-evidence">
+                <div class="card-header">
+                    <div class="card-icon icon-green"><i class="fas fa-clipboard-list"></i></div>
+                    <h2 class="card-title">Tu Hoja de Evidencias</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Los impostores ignoran hechos. Tu no. Marca lo que es VERDAD (porque lo hiciste).</p>
+                
+                <div class="evidence-list">
+                    <div class="evidence-item" onclick="toggleCheck(this)">
+                        <div class="evidence-checkbox"><i class="fas fa-check"></i></div>
+                        <div class="evidence-text">He aprobado examenes o cursos que costaron trabajo.</div>
+                    </div>
+                    <div class="evidence-item" onclick="toggleCheck(this)">
+                        <div class="evidence-checkbox"><i class="fas fa-check"></i></div>
+                        <div class="evidence-text">Alguien alguna vez me pidio ayuda o consejo academico.</div>
+                    </div>
+                    <div class="evidence-item" onclick="toggleCheck(this)">
+                        <div class="evidence-checkbox"><i class="fas fa-check"></i></div>
+                        <div class="evidence-text">He terminado tareas que tenian miedo de empezar.</div>
+                    </div>
+                    <div class="evidence-item" onclick="toggleCheck(this)">
+                        <div class="evidence-checkbox"><i class="fas fa-check"></i></div>
+                        <div class="evidence-text">He aprendido cosas que antes no sabia nada.</div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- STRATEGIES -->
+            <article class="card card-strategies">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-shield-halved"></i></div>
+                    <h2 class="card-title">Estrategias de Combate</h2>
+                </div>
+                <p style="font-size: 0.9rem; opacity: 0.9;">Armas concretas para usar cuando ataque la duda.</p>
+                
+                <div class="strategies-grid">
+                    <div class="strategy-item">
+                        <i class="fas fa-comments"></i>
+                        <h4>Normalizarlo</h4>
+                        <p>Habla con compañeros. El 70% lo siente. Romper el silencio rompe el hechizo.</p>
+                    </div>
+                    <div class="strategy-item">
+                        <i class="fas fa-folder-open"></i>
+                        <h4>Carpeta de Logros</h4>
+                        <p>Guarda correos de elogios, buenas notas, trabajos terminados. Leelos cuando dudes.</p>
+                    </div>
+                    <div class="strategy-item">
+                        <i class="fas fa-scale-balanced"></i>
+                        <h4>Hechos vs Sentimientos</h4>
+                        <p>"Siento" que no sirvo es una emocion. "Aprobe" 5 materias es un hecho. Quedate con el hecho.</p>
+                    </div>
+                    <div class="strategy-item">
+                        <i class="fas fa-hand-holding-heart"></i>
+                        <h4>Compasion</h4>
+                        <p>Tratate como tratarías a tu mejor amigo. No le dirías "eres un fraude", verdad?</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- REALITY CHECK -->
+            <article class="card card-reality">
+                <div class="reality-stat">70%</div>
+                <div class="reality-label">de personas exitosas lo experimentan</div>
+                <p class="reality-text">Maya Angelou, Albert Einstein y Serena Williams lo tuvieron. No es que lo tengas lo que te hace impostor, es creer que eres el unico que lo tiene. El sindrome del impostor es, paradójicamente, una señal de que estas haciendo las cosas bien.</p>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-quote">"El unico impostor es el pensamiento que te dice que lo eres."</p>
+                <p class="footer-author">Tus logros son reales. Tu lugar esta ganado.</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        // --- ACCORDION FUNCTIONALITY ---
+        function toggleAccordion(header) {
+            const item = header.parentElement;
+            const isActive = item.classList.contains('active');
+            
+            // Close all
+            const allItems = document.querySelectorAll('.type-item');
+            allItems.forEach(function(el) {
+                el.classList.remove('active');
+            });
+            
+            // Open clicked if it wasn't active
+            if (!isActive) {
+                item.classList.add('active');
+            }
+        }
+
+        // --- CHECKLIST FUNCTIONALITY ---
+        function toggleCheck(element) {
+            element.classList.toggle('checked');
+        }
+
+        // --- THEME TOGGLE ---
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // Load saved theme
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+    </script>
+</body>
+</html>
