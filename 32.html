@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vencer la Procrastinacion - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6b8e7a; --primary-light: #8fae9a; --primary-dark: #4a6b5a;
+            --cream: #f6f9f7; --beige: #e8f0ea; --brown: #3a5a40;
+            --gray: #8a9a8e; --white: #ffffff;
+            --shadow: rgba(58, 90, 64, 0.1); --shadow-hover: rgba(58, 90, 64, 0.2);
+            --text-primary: #2d3d32; --text-secondary: #6a7a6e;
+            --bg-primary: #f6f9f7; --bg-secondary: #ffffff;
+            --bg-tertiary: #e8f0ea; --border-color: #d8e8da;
+            --accent-action: #e07a5f; --accent-focus: #3d85c6; 
+            --accent-success: #6b9b5a; --accent-warning: #e8a838;
+            --gradient-action: linear-gradient(135deg, #e07a5f 0%, #c65d45 100%);
+            --gradient-start: linear-gradient(135deg, #6b8e7a 0%, #4a6b5a 100%);
+        }
+
+        [data-theme="dark"] {
+            --primary: #8fae9a; --primary-light: #a8c8b0; --primary-dark: #6b8e7a;
+            --cream: #222a25; --beige: #323a35; --brown: #c8d8ca;
+            --gray: #8a9a8e; --white: #1a201c;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #d8e8da; --text-secondary: #9aaa9e;
+            --bg-primary: #1a201c; --bg-secondary: #222a25;
+            --bg-tertiary: #323a35; --border-color: #3a4a3e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; overflow-x: hidden; }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 0.5; }
+            50% { transform: scale(1.05); opacity: 0.2; }
+            100% { transform: scale(0.95); opacity: 0.5; }
+        }
+        
+        .card { animation: fadeInUp 0.6s ease-out backwards; }
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+        .card:nth-child(4) { animation-delay: 0.4s; }
+        .card:nth-child(5) { animation-delay: 0.5s; }
+        .card:nth-child(6) { animation-delay: 0.6s; }
+        .card:nth-child(7) { animation-delay: 0.7s; }
+        .card:nth-child(8) { animation-delay: 0.8s; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; transform: translateX(-5px); }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1400px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 12px 40px var(--shadow-hover); }
+
+        /* Hero Card */
+        .card-hero {
+            grid-column: span 12;
+            background: var(--gradient-action);
+            color: white; padding: 45px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px; min-height: 280px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: -50%; right: -10%;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            border-radius: 50%;
+        }
+        .hero-text { flex: 1; z-index: 1; max-width: 600px; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 8px 18px; border-radius: 25px; font-size: 0.85rem;
+            font-weight: 600; margin-bottom: 18px; backdrop-filter: blur(10px);
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.6rem;
+            margin-bottom: 15px; line-height: 1.15;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.92; line-height: 1.7; }
+        .hero-visual {
+            width: 220px; height: 220px; background: rgba(255,255,255,0.12);
+            border-radius: 50%; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 10px;
+            position: relative; z-index: 1; border: 3px solid rgba(255,255,255,0.3);
+        }
+        .hero-visual i { font-size: 4rem; opacity: 0.9; }
+
+        .card-header {
+            display: flex; align-items: center; gap: 14px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 48px; height: 48px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem; color: white;
+            transition: transform 0.3s;
+        }
+        .card:hover .card-icon { transform: scale(1.1) rotate(-5deg); }
+        .icon-action { background: var(--gradient-action); }
+        .icon-focus { background: linear-gradient(135deg, var(--accent-focus), #2a65a0); }
+        .icon-success { background: linear-gradient(135deg, var(--accent-success), #4a7b3a); }
+        .icon-warning { background: linear-gradient(135deg, var(--accent-warning), #c88820); }
+        .icon-primary { background: var(--gradient-start); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.45rem;
+            color: var(--primary-dark);
+        }
+
+        /* Rule of 5 Minutes - FIXED */
+        .card-rule {
+            grid-column: span 12;
+            background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--beige) 100%);
+        }
+        .rule-container {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 40px; align-items: center; margin-top: 20px;
+        }
+        .rule-explanation h3 { font-size: 1.3rem; color: var(--primary-dark); margin-bottom: 15px; }
+        .rule-explanation p { font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 15px; }
+        .rule-steps { display: flex; flex-direction: column; gap: 12px; }
+        .rule-step {
+            display: flex; align-items: center; gap: 15px;
+            padding: 15px; background: var(--bg-secondary);
+            border-radius: 12px; transition: all 0.3s;
+        }
+        .rule-step:hover { transform: translateX(10px); }
+        .rule-step-num {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: var(--accent-action); color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; flex-shrink: 0;
+        }
+        
+        /* Timer Styles */
+        .rule-visual {
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; position: relative; padding: 20px;
+        }
+        .timer-circle-wrapper {
+            position: relative; width: 220px; height: 220px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .timer-circle-bg {
+            position: absolute; width: 100%; height: 100%;
+            border-radius: 50%; background: var(--bg-secondary);
+            box-shadow: 0 10px 40px var(--shadow);
+        }
+        .timer-ring {
+            position: absolute; width: 100%; height: 100%;
+            border-radius: 50%; border: 6px solid var(--border-color);
+        }
+        .timer-ring-active {
+            position: absolute; width: 100%; height: 100%;
+            border-radius: 50%; border: 6px solid var(--accent-action);
+            clip-path: inset(0 0 0 0); /* Controlled by JS */
+            transition: clip-path 1s linear;
+        }
+        .timer-display {
+            font-size: 4rem; font-weight: 700;
+            font-family: 'Poppins', monospace; color: var(--primary-dark);
+            position: relative; z-index: 2;
+        }
+        .timer-label { font-size: 0.9rem; color: var(--text-secondary); margin-top: 10px; text-align: center; }
+        
+        .timer-controls { display: flex; gap: 15px; margin-top: 25px; }
+        .timer-btn {
+            padding: 14px 30px; border-radius: 30px; font-weight: 600;
+            cursor: pointer; font-family: inherit; font-size: 1rem;
+            transition: all 0.3s; border: 2px solid var(--primary);
+            background: var(--bg-secondary); color: var(--primary);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .timer-btn:hover { background: var(--primary); color: white; }
+        .timer-btn.start { background: var(--primary); color: white; }
+        .timer-btn.stop { border-color: var(--accent-action); color: var(--accent-action); }
+        .timer-btn.stop:hover { background: var(--accent-action); color: white; }
+
+        /* Why We Procrastinate */
+        .card-why { grid-column: span 6; }
+        .reasons-accordion { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .reason-item {
+            background: var(--bg-tertiary); border-radius: 14px;
+            overflow: hidden; transition: all 0.3s;
+        }
+        .reason-header {
+            padding: 16px 20px; display: flex; align-items: center;
+            justify-content: space-between; cursor: pointer;
+            font-weight: 600; font-size: 0.95rem;
+            transition: background 0.3s;
+        }
+        .reason-header:hover { background: var(--beige); }
+        .reason-item.active .reason-header { background: var(--primary); color: white; }
+        .reason-icon { transition: transform 0.3s; }
+        .reason-item.active .reason-icon { transform: rotate(180deg); }
+        .reason-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+        .reason-item.active .reason-content { max-height: 200px; }
+        .reason-text { padding: 0 20px 16px; font-size: 0.9rem; color: var(--text-secondary); }
+
+        /* Universal Breakdown (Replaces Generator) */
+        .card-breakdown { grid-column: span 6; }
+        .breakdown-intro { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 20px; }
+        .breakdown-steps {}
+        .breakdown-step {
+            display: flex; gap: 15px; margin-bottom: 15px;
+            padding: 18px; background: var(--bg-tertiary);
+            border-radius: 14px; align-items: flex-start;
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s;
+        }
+        .breakdown-step:hover { transform: translateX(5px); background: var(--beige); }
+        .step-number {
+            min-width: 30px; height: 30px; border-radius: 50%;
+            background: var(--primary); color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.9rem;
+        }
+        .step-content h4 { font-size: 1rem; color: var(--primary-dark); margin-bottom: 4px; }
+        .step-content p { font-size: 0.85rem; color: var(--text-secondary); margin: 0; }
+
+        /* Quick Start Checklist */
+        .card-checklist { grid-column: span 6; }
+        .prep-checklist { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .prep-item {
+            display: flex; align-items: center; gap: 15px;
+            padding: 14px 18px; background: var(--bg-tertiary);
+            border-radius: 12px; cursor: pointer;
+            transition: all 0.3s; border: 2px solid transparent;
+        }
+        .prep-item:hover { border-color: var(--primary); }
+        .prep-item.checked { background: rgba(107, 155, 90, 0.15); border-color: var(--accent-success); }
+        .prep-checkbox {
+            width: 26px; height: 26px; border-radius: 8px;
+            border: 2px solid var(--primary); display: flex;
+            align-items: center; justify-content: center;
+            transition: all 0.3s; flex-shrink: 0;
+        }
+        .prep-item.checked .prep-checkbox { background: var(--accent-success); border-color: var(--accent-success); }
+        .prep-checkbox i { color: white; font-size: 0.8rem; opacity: 0; transition: opacity 0.2s; }
+        .prep-item.checked .prep-checkbox i { opacity: 1; }
+        .prep-progress { margin-top: 20px; text-align: center; }
+        .progress-bar-container { height: 10px; background: var(--bg-tertiary); border-radius: 10px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: var(--gradient-start); border-radius: 10px; transition: width 0.5s ease-out; }
+
+        /* Environment */
+        .card-environment {
+            grid-column: span 6;
+            background: var(--gradient-start); color: white;
+        }
+        .card-environment .card-title { color: white; }
+        .env-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 20px; }
+        .env-item {
+            background: rgba(255,255,255,0.1); padding: 18px;
+            border-radius: 14px; text-align: center;
+            transition: all 0.3s; cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .env-item:hover { background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.3); }
+        .env-item i { font-size: 1.8rem; margin-bottom: 8px; opacity: 0.9; }
+        .env-item span { font-size: 0.85rem; font-weight: 500; display: block; }
+
+        /* Distraction Fixes */
+        .card-distractions { grid-column: span 12; }
+        .distraction-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-top: 20px; }
+        .distraction-card {
+            background: var(--bg-tertiary); padding: 20px;
+            border-radius: 16px; text-align: center;
+            transition: all 0.3s; cursor: pointer;
+            border-bottom: 4px solid transparent;
+        }
+        .distraction-card:hover { transform: translateY(-5px); border-bottom-color: var(--accent-action); }
+        .distraction-card i { font-size: 2.2rem; color: var(--accent-action); margin-bottom: 12px; }
+        .distraction-card h4 { font-size: 1rem; color: var(--primary-dark); margin-bottom: 8px; }
+        .distraction-card p { font-size: 0.8rem; color: var(--text-secondary); }
+
+        /* Footer */
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 40px;
+            background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--beige) 100%);
+        }
+        .footer-stat { display: flex; justify-content: center; gap: 50px; margin-bottom: 25px; flex-wrap: wrap; }
+        .stat-item { text-align: center; }
+        .stat-value { font-size: 2.5rem; font-weight: 700; color: var(--primary-dark); }
+        .stat-label { font-size: 0.85rem; color: var(--text-secondary); }
+        .footer-quote {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark); margin-bottom: 10px; font-style: italic;
+        }
+
+        @media (max-width: 1100px) {
+            .rule-container { grid-template-columns: 1fr; }
+            .distraction-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-hero, .card-rule, .card-why, .card-breakdown,
+            .card-checklist, .card-environment, .card-distractions, .card-footer { grid-column: span 12; }
+            .hero-text h1 { font-size: 2rem; }
+            .card-hero { flex-direction: column; text-align: center; min-height: auto; padding: 35px 25px; }
+            .timer-display { font-size: 3rem; }
+            .env-grid { grid-template-columns: 1fr; }
+            .distraction-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-rocket"></i> Vencer Procrastinacion</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-bolt"></i> Accion Inmediata</span>
+                    <h1>Como Empezar a Estudiar en 5 Minutos (Aunque No Quieras)</h1>
+                    <p>La procrastinacion no es pereza, es avoidance emocional. Tu cerebro evita el malestar. La solucion no es motivacion, es accion. Esta guia te da herramientas concretas para hackear ese bloqueo y empezar YA.</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-stopwatch"></i>
+                </div>
+            </article>
+
+            <!-- THE 5-MINUTE RULE WITH TIMER -->
+            <article class="card card-rule">
+                <div class="card-header">
+                    <div class="card-icon icon-action"><i class="fas fa-hourglass-start"></i></div>
+                    <h2 class="card-title">La Regla de los 5 Minutos</h2>
+                </div>
+                
+                <div class="rule-container">
+                    <div class="rule-explanation">
+                        <h3>El truco que hackea tu cerebro</h3>
+                        <p>Le dices a tu cerebro: "Solo 5 minutos. Luego puedo parar". Eso baja la barrera de entrada. Usa el temporizador de la derecha para aplicar esto ahora mismo.</p>
+                        
+                        <div class="rule-steps">
+                            <div class="rule-step">
+                                <div class="rule-step-num">1</div>
+                                <span>Elige UNA tarea pequena (no todo el tema)</span>
+                            </div>
+                            <div class="rule-step">
+                                <div class="rule-step-num">2</div>
+                                <span>Pon el temporizador aqui al lado</span>
+                            </div>
+                            <div class="rule-step">
+                                <div class="rule-step-num">3</div>
+                                <span>Dite: "Solo 5 minutos, despues decido si sigo"</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="rule-visual">
+                        <div class="timer-circle-wrapper">
+                            <div class="timer-circle-bg"></div>
+                            <div class="timer-ring"></div>
+                            <div class="timer-display" id="timerDisplay">5:00</div>
+                        </div>
+                        <div class="timer-controls">
+                            <button class="timer-btn start" id="timerBtn" onclick="toggleTimer()">
+                                <i class="fas fa-play"></i> Iniciar
+                            </button>
+                            <button class="timer-btn" onclick="resetTimer()">
+                                <i class="fas fa-redo"></i>
+                            </button>
+                        </div>
+                        <div class="timer-label" id="timerStatus">Listo para comenzar</div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- WHY WE PROCRASTINATE -->
+            <article class="card card-why">
+                <div class="card-header">
+                    <div class="card-icon icon-warning"><i class="fas fa-brain"></i></div>
+                    <h2 class="card-title">Por Que Procrastinamos</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Haz clic para entender la raiz del problema.</p>
+                
+                <div class="reasons-accordion" id="accordion">
+                    <div class="reason-item">
+                        <div class="reason-header" onclick="toggleAccordion(this)">
+                            <span>Miedo al fracaso</span>
+                            <i class="fas fa-chevron-down reason-icon"></i>
+                        </div>
+                        <div class="reason-content">
+                            <div class="reason-text">Si no intento, no fallo. Tu cerebro protege tu ego evitando la posibilidad de no hacerlo bien. Solucion: Redefine "exito" como "empezar", no "terminar perfecto".</div>
+                        </div>
+                    </div>
+                    <div class="reason-item">
+                        <div class="reason-header" onclick="toggleAccordion(this)">
+                            <span>Tarea parece demasiado grande</span>
+                            <i class="fas fa-chevron-down reason-icon"></i>
+                        </div>
+                        <div class="reason-content">
+                            <div class="reason-text">Ver "Estudiar todo el capitulo" abruma. El cerebro lo interpreta como amenaza. Solucion: Dividelo en pasos tan pequenos que sea imposible no hacerlos.</div>
+                        </div>
+                    </div>
+                    <div class="reason-item">
+                        <div class="reason-header" onclick="toggleAccordion(this)">
+                            <span>Perfeccionismo paralizante</span>
+                            <i class="fas fa-chevron-down reason-icon"></i>
+                        </div>
+                        <div class="reason-content">
+                            <div class="reason-text">"Si no puedo hacerlo bien, mejor no hacerlo". Falso. Mejor hecho que perfecto. Un borrador malo es editable; una pagina en blanco no.</div>
+                        </div>
+                    </div>
+                    <div class="reason-item">
+                        <div class="reason-header" onclick="toggleAccordion(this)">
+                            <span>Busqueda de "momento ideal"</span>
+                            <i class="fas fa-chevron-down reason-icon"></i>
+                        </div>
+                        <div class="reason-content">
+                            <div class="reason-text">"Cuando tenga mas energia". Ese momento nunca llega. La motivacion viene DESPUES de la accion, no antes.</div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- UNIVERSAL TASK BREAKDOWN (Replaces Generator) -->
+            <article class="card card-breakdown">
+                <div class="card-header">
+                    <div class="card-icon icon-success"><i class="fas fa-list-check"></i></div>
+                    <h2 class="card-title">Desglose Universal de Tareas</h2>
+                </div>
+                <p class="breakdown-intro">No importa la materia, este desglose reduce cualquier tarea gigante a algo manejable. Siguelo al pie de la letra.</p>
+                
+                <div class="breakdown-steps">
+                    <div class="breakdown-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>El paso fisico (30 segundos)</h4>
+                            <p>Saca el libro, abre el cuaderno o enciende la computadora. No leas nada, solo prepara el espacio fisico.</p>
+                        </div>
+                    </div>
+                    <div class="breakdown-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>El paso de reconocimiento (2 minutos)</h4>
+                            <p>Lee SOLO los titulos y subtitulos. No intentes entender el contenido, solo entiende la estructura.</p>
+                        </div>
+                    </div>
+                    <div class="breakdown-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>El paso ridculo (1 minuto)</h4>
+                            <p>Escribe tu nombre en la hoja, o copia el primer enunciado del ejercicio. Accion mecanica sin pensamiento.</p>
+                        </div>
+                    </div>
+                    <div class="breakdown-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>El paso de inercia</h4>
+                            <p>Ya estas ahi. El cerebro ya gasto la energia de arranque. Ahora si, da el primer paso real.</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- QUICK START CHECKLIST -->
+            <article class="card card-checklist">
+                <div class="card-header">
+                    <div class="card-icon icon-primary"><i class="fas fa-clipboard-check"></i></div>
+                    <h2 class="card-title">Checklist de Arranque Rapido</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Completa esto ANTES de justificar por que no puedes empezar.</p>
+                
+                <div class="prep-checklist" id="prepChecklist">
+                    <div class="prep-item" onclick="toggleCheckItem(this)">
+                        <div class="prep-checkbox"><i class="fas fa-check"></i></div>
+                        <div class="prep-text">Celular en otro cuarto o modo avion</div>
+                    </div>
+                    <div class="prep-item" onclick="toggleCheckItem(this)">
+                        <div class="prep-checkbox"><i class="fas fa-check"></i></div>
+                        <div class="prep-text">Agua o bebida al alcance</div>
+                    </div>
+                    <div class="prep-item" onclick="toggleCheckItem(this)">
+                        <div class="prep-checkbox"><i class="fas fa-check"></i></div>
+                        <div class="prep-text">Materiales listos (no abiertos, solo listos)</div>
+                    </div>
+                    <div class="prep-item" onclick="toggleCheckItem(this)">
+                        <div class="prep-checkbox"><i class="fas fa-check"></i></div>
+                        <div class="prep-text">Timer iniciado (los 5 minutos de arriba)</div>
+                    </div>
+                </div>
+                
+                <div class="prep-progress">
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="progressBar" style="width: 0%;"></div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- ENVIRONMENT -->
+            <article class="card card-environment">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-couch"></i></div>
+                    <h2 class="card-title">Prepara el Ambiente</h2>
+                </div>
+                <p style="font-size: 0.9rem; opacity: 0.9;">Tu entorno puede ayudarte o sabotear. Ajusta esto en 2 minutos:</p>
+                
+                <div class="env-grid">
+                    <div class="env-item"><i class="fas fa-lightbulb"></i><span>Luz natural o blanca</span></div>
+                    <div class="env-item"><i class="fas fa-volume-off"></i><span>Silencio o ruido blanco</span></div>
+                    <div class="env-item"><i class="fas fa-desktop"></i><span>Solo pestañas necesarias</span></div>
+                    <div class="env-item"><i class="fas fa-temperature-low"></i><span>Temperatura fresca</span></div>
+                </div>
+            </article>
+
+            <!-- DISTRACTION FIXES -->
+            <article class="card card-distractions">
+                <div class="card-header">
+                    <div class="card-icon icon-action"><i class="fas fa-bug"></i></div>
+                    <h2 class="card-title">Soluciones Rapidas a Distracciones</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Cuando aparezcan, tienes 30 segundos para contraatacar.</p>
+                
+                <div class="distraction-grid">
+                    <div class="distraction-card">
+                        <i class="fas fa-mobile-screen-button"></i>
+                        <h4>Urgencia de Celular</h4>
+                        <p>Lanzalo literalmente a la cama. Lejos de la vista.</p>
+                    </div>
+                    <div class="distraction-card">
+                        <i class="fas fa-utensils"></i>
+                        <h4>Hambre Repentina</h4>
+                        <p>Agua primero. Si persiste, 5 min de snack y vuelta.</p>
+                    </div>
+                    <div class="distraction-card">
+                        <i class="fas fa-broom"></i>
+                        <h4>Ganas de Limpiar</h4>
+                        <p>Tipico avoidance. Anotalo y sigue en el timer.</p>
+                    </div>
+                    <div class="distraction-card">
+                        <i class="fas fa-head-side-virus"></i>
+                        <h4>Pensamiento Intrusivo</h4>
+                        <p>Escribelo en un post-it: "Pensar despues".</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <div class="footer-stat">
+                    <div class="stat-item">
+                        <div class="stat-value">90%</div>
+                        <div class="stat-label">del trabajo es empezar</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">2 min</div>
+                        <div class="stat-label">tarda el cerebro en enfocarse</div>
+                    </div>
+                </div>
+                <p class="footer-quote">"El mejor momento para empezar fue ayer. El segundo mejor es ahora mismo."</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        // --- TIMER FUNCTIONALITY (FIXED) ---
+        let timerInterval = null;
+        let timeLeft = 300; // 5 minutes in seconds
+        let isRunning = false;
+
+        const timerDisplay = document.getElementById('timerDisplay');
+        const timerBtn = document.getElementById('timerBtn');
+        const timerStatus = document.getElementById('timerStatus');
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            // Add leading zero to seconds if needed
+            const displaySeconds = seconds < 10 ? '0' + seconds : seconds;
+            timerDisplay.textContent = minutes + ':' + displaySeconds;
+        }
+
+        function toggleTimer() {
+            if (isRunning) {
+                // PAUSE
+                clearInterval(timerInterval);
+                timerInterval = null;
+                isRunning = false;
+                timerBtn.innerHTML = '<i class="fas fa-play"></i> Continuar';
+                timerBtn.classList.remove('stop');
+                timerBtn.classList.add('start');
+                timerStatus.textContent = 'Pausado. Vamos, tu puedes.';
+            } else {
+                // START
+                isRunning = true;
+                timerBtn.innerHTML = '<i class="fas fa-pause"></i> Pausar';
+                timerBtn.classList.remove('start');
+                timerBtn.classList.add('stop');
+                timerStatus.textContent = 'En marcha... No pares ahora.';
+                
+                timerInterval = setInterval(function() {
+                    timeLeft--;
+                    updateTimerDisplay();
+                    
+                    if (timeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        timerInterval = null;
+                        isRunning = false;
+                        timerStatus.textContent = 'Completado! Sigue asi.';
+                        timerBtn.innerHTML = '<i class="fas fa-redo"></i> Otra vez?';
+                        timerBtn.classList.remove('stop');
+                        timerBtn.classList.add('start');
+                        // Optional: Reset automatically or wait for user
+                        timeLeft = 300; 
+                        updateTimerDisplay();
+                    }
+                }, 1000);
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            isRunning = false;
+            timeLeft = 300;
+            updateTimerDisplay();
+            timerBtn.innerHTML = '<i class="fas fa-play"></i> Iniciar';
+            timerBtn.classList.remove('stop');
+            timerBtn.classList.add('start');
+            timerStatus.textContent = 'Listo para comenzar';
+        }
+
+        // --- ACCORDION FUNCTIONALITY ---
+        function toggleAccordion(header) {
+            const item = header.parentElement;
+            const isActive = item.classList.contains('active');
+            
+            // Close all
+            const allItems = document.querySelectorAll('.reason-item');
+            allItems.forEach(function(el) {
+                el.classList.remove('active');
+            });
+            
+            // Open clicked if it wasn't active
+            if (!isActive) {
+                item.classList.add('active');
+            }
+        }
+
+        // --- CHECKLIST FUNCTIONALITY ---
+        function toggleCheckItem(element) {
+            element.classList.toggle('checked');
+            updateProgressBar();
+        }
+
+        function updateProgressBar() {
+            const items = document.querySelectorAll('.prep-item');
+            const checkedItems = document.querySelectorAll('.prep-item.checked');
+            const percentage = (checkedItems.length / items.length) * 100;
+            document.getElementById('progressBar').style.width = percentage + '%';
+        }
+
+        // --- THEME TOGGLE ---
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // Load saved theme
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+    </script>
+</body>
+</html>
