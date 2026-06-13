@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manejo de la Frustración - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #c0785c; --primary-light: #d49a7e; --primary-dark: #9e5a42;
+            --cream: #fdf8f4; --beige: #f5ebe3; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(158, 90, 66, 0.1); --shadow-hover: rgba(158, 90, 66, 0.2);
+            --text-primary: #4a3728; --text-secondary: #8a7a6a;
+            --bg-primary: #fdf8f4; --bg-secondary: #ffffff;
+            --bg-tertiary: #f5ebe3; --border-color: #ebe0d6;
+            --accent-1: #d64545; --accent-2: #45a0d6; --accent-3: #45b088;
+            --accent-4: #8b5cf6; --accent-5: #e8833a; --accent-6: #e8c83a;
+            --gradient-frustration: linear-gradient(135deg, #d64545 0%, #e8833a 100%);
+            --gradient-calm: linear-gradient(135deg, #45b088 0%, #45a0d6 100%);
+        }
+
+        [data-theme="dark"] {
+            --primary: #d49a7e; --primary-light: #e8bda0; --primary-dark: #c0785c;
+            --cream: #2a2320; --beige: #3a322e; --brown: #e8d5c5;
+            --gray: #a09080; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e8d5c5; --text-secondary: #a09080;
+            --bg-primary: #1a1815; --bg-secondary: #2a2320;
+            --bg-tertiary: #3a322e; --border-color: #3a322e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; overflow-x: hidden; }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px) rotate(-1deg); }
+            75% { transform: translateX(5px) rotate(1deg); }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .card { animation: fadeInUp 0.6s ease-out backwards; }
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+        .card:nth-child(4) { animation-delay: 0.4s; }
+        .card:nth-child(5) { animation-delay: 0.5s; }
+        .card:nth-child(6) { animation-delay: 0.6s; }
+        .card:nth-child(7) { animation-delay: 0.7s; }
+        .card:nth-child(8) { animation-delay: 0.8s; }
+        .card:nth-child(9) { animation-delay: 0.9s; }
+        .card:nth-child(10) { animation-delay: 1s; }
+
+        @media (prefers-reduced-motion: reduce) {
+            .card { animation: none; }
+        }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; transform: translateX(-5px); }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1400px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 12px 40px var(--shadow-hover); }
+
+        /* Hero Card */
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, #d64545 0%, #9e3a3a 50%, #7a2e2e 100%);
+            color: white; padding: 45px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px; min-height: 280px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: -50%; right: -20%;
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 60%);
+            border-radius: 50%;
+        }
+        .card-hero::after {
+            content: ''; position: absolute; bottom: -30%; left: 10%;
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(255,200,100,0.1) 0%, transparent 60%);
+            border-radius: 50%;
+        }
+        .hero-text { flex: 1; z-index: 1; max-width: 600px; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 8px 18px; border-radius: 25px; font-size: 0.85rem;
+            font-weight: 600; margin-bottom: 18px; backdrop-filter: blur(10px);
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.8rem;
+            margin-bottom: 15px; line-height: 1.15;
+        }
+        .hero-text p { font-size: 1.05rem; opacity: 0.92; line-height: 1.7; }
+        .hero-visual {
+            width: 200px; height: 240px; background: rgba(255,255,255,0.12);
+            border-radius: 20px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 12px;
+            position: relative; z-index: 1; border: 2px solid rgba(255,255,255,0.25);
+            backdrop-filter: blur(10px);
+        }
+        .hero-visual i { font-size: 3.5rem; opacity: 0.9; animation: float 3s ease-in-out infinite; }
+        .hero-stat {
+            font-size: 2.5rem; font-weight: 700;
+        }
+        .hero-stat-label { font-size: 0.85rem; opacity: 0.8; }
+
+        .card-header {
+            display: flex; align-items: center; gap: 14px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 48px; height: 48px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem; color: white;
+            transition: transform 0.3s;
+        }
+        .card:hover .card-icon { transform: scale(1.1) rotate(5deg); }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #b83535); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-2), #3580a8); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-3), #358868); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-4), #6d3cd6); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-5), #c86d25); }
+        .icon-yellow { background: linear-gradient(135deg, var(--accent-6), #c8a825); }
+        .icon-teal { background: linear-gradient(135deg, #20a090, #1a8070); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.45rem;
+            color: var(--primary-dark);
+        }
+
+        /* Frustration Cycle */
+        .card-cycle {
+            grid-column: span 12;
+        }
+        .cycle-container {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: 25px; gap: 10px; flex-wrap: wrap;
+        }
+        .cycle-step {
+            flex: 1; min-width: 140px; text-align: center;
+            padding: 20px 15px; background: var(--bg-tertiary);
+            border-radius: 16px; position: relative;
+            transition: all 0.3s; cursor: pointer;
+        }
+        .cycle-step:hover { transform: scale(1.05); background: var(--beige); }
+        .cycle-step.active { background: linear-gradient(135deg, var(--accent-1), #b83535); color: white; }
+        .cycle-step.active .step-num { background: white; color: var(--accent-1); }
+        .step-num {
+            width: 35px; height: 35px; border-radius: 50%;
+            background: var(--primary); color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; margin: 0 auto 10px;
+            transition: all 0.3s;
+        }
+        .step-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 5px; }
+        .step-desc { font-size: 0.8rem; opacity: 0.8; }
+        .cycle-arrow {
+            font-size: 1.5rem; color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        /* Breathing Exercise */
+        .card-breathing {
+            grid-column: span 6;
+            grid-row: span 2;
+            background: linear-gradient(135deg, #45b088 0%, #359068 100%);
+            color: white;
+        }
+        .card-breathing .card-title { color: white; }
+        .breathing-container {
+            display: flex; flex-direction: column; align-items: center;
+            margin-top: 20px; gap: 20px;
+        }
+        .breathing-circle {
+            width: 160px; height: 160px; border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            border: 4px solid rgba(255,255,255,0.4);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; font-weight: 600;
+            cursor: pointer; transition: transform 4s ease-in-out;
+            position: relative;
+        }
+        .breathing-circle.breathing { animation: breathe 4s ease-in-out infinite; }
+        .breathing-circle::before {
+            content: ''; position: absolute; inset: -15px;
+            border-radius: 50%; border: 2px dashed rgba(255,255,255,0.3);
+        }
+        .breathing-instruction { font-size: 1rem; text-align: center; opacity: 0.9; min-height: 50px; }
+        .breathing-btn {
+            padding: 12px 30px; border: 2px solid white; background: transparent;
+            color: white; border-radius: 30px; font-weight: 600; cursor: pointer;
+            font-family: inherit; font-size: 0.95rem; transition: all 0.3s;
+        }
+        .breathing-btn:hover { background: white; color: #45b088; }
+        .breathing-counter {
+            font-size: 0.9rem; opacity: 0.8;
+        }
+
+        /* Warning Signs */
+        .card-signs {
+            grid-column: span 6;
+        }
+        .signs-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 12px; margin-top: 20px;
+        }
+        .sign-item {
+            background: var(--bg-tertiary); padding: 15px;
+            border-radius: 14px; display: flex; align-items: center; gap: 12px;
+            transition: all 0.3s; cursor: pointer;
+            border-left: 4px solid transparent;
+        }
+        .sign-item:hover { border-left-color: var(--accent-1); transform: translateX(5px); }
+        .sign-item.warning { border-left-color: var(--accent-5); }
+        .sign-item.danger { border-left-color: var(--accent-1); }
+        .sign-icon {
+            width: 40px; height: 40px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+        }
+        .sign-icon.warning { background: rgba(232, 131, 58, 0.15); color: var(--accent-5); }
+        .sign-icon.danger { background: rgba(214, 69, 69, 0.15); color: var(--accent-1); }
+        .sign-text { font-size: 0.85rem; font-weight: 500; }
+
+        /* Self-Quiz */
+        .card-quiz {
+            grid-column: span 6;
+        }
+        .quiz-container { margin-top: 20px; }
+        .quiz-question {
+            font-size: 1rem; font-weight: 600; color: var(--primary-dark);
+            margin-bottom: 15px;
+        }
+        .quiz-options {
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .quiz-option {
+            padding: 14px 18px; background: var(--bg-tertiary);
+            border-radius: 12px; cursor: pointer; transition: all 0.3s;
+            border: 2px solid transparent; font-size: 0.9rem;
+        }
+        .quiz-option:hover { border-color: var(--primary); background: var(--beige); }
+        .quiz-option.selected { border-color: var(--accent-3); background: rgba(69, 176, 136, 0.1); }
+        .quiz-option.correct { border-color: var(--accent-3); background: rgba(69, 176, 136, 0.2); }
+        .quiz-option.incorrect { border-color: var(--accent-1); background: rgba(214, 69, 69, 0.1); }
+        .quiz-result {
+            margin-top: 15px; padding: 15px; border-radius: 12px;
+            display: none; text-align: center;
+        }
+        .quiz-result.show { display: block; }
+        .quiz-result.good { background: rgba(69, 176, 136, 0.15); color: var(--accent-3); }
+        .quiz-result.bad { background: rgba(214, 69, 69, 0.15); color: var(--accent-1); }
+
+        /* Techniques */
+        .card-techniques {
+            grid-column: span 6;
+        }
+        .tech-tabs {
+            display: flex; gap: 8px; margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .tech-tab {
+            padding: 10px 18px; background: var(--bg-tertiary);
+            border-radius: 25px; cursor: pointer; font-size: 0.85rem;
+            font-weight: 500; transition: all 0.3s; border: none;
+            font-family: inherit; color: var(--text-primary);
+        }
+        .tech-tab:hover { background: var(--beige); }
+        .tech-tab.active { background: var(--primary); color: white; }
+        .tech-content {
+            margin-top: 20px; padding: 20px;
+            background: var(--bg-tertiary); border-radius: 16px;
+            display: none;
+        }
+        .tech-content.active { display: block; animation: fadeInUp 0.4s ease-out; }
+        .tech-title { font-weight: 700; font-size: 1.1rem; color: var(--primary-dark); margin-bottom: 10px; }
+        .tech-desc { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; }
+        .tech-steps { margin-top: 15px; }
+        .tech-step {
+            display: flex; gap: 12px; margin-bottom: 10px; font-size: 0.9rem;
+        }
+        .tech-step-num {
+            width: 26px; height: 26px; border-radius: 50%;
+            background: var(--primary); color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.8rem; font-weight: 600; flex-shrink: 0;
+        }
+
+        /* Reframing */
+        .card-reframe {
+            grid-column: span 6;
+        }
+        .reframe-example {
+            background: var(--bg-tertiary); border-radius: 16px;
+            padding: 20px; margin-top: 20px;
+        }
+        .reframe-row {
+            display: flex; align-items: stretch; gap: 15px; margin-bottom: 15px;
+        }
+        .reframe-row:last-child { margin-bottom: 0; }
+        .reframe-thought {
+            flex: 1; padding: 15px; border-radius: 12px;
+            font-size: 0.9rem;
+        }
+        .reframe-negative {
+            background: rgba(214, 69, 69, 0.1);
+            border-left: 4px solid var(--accent-1);
+        }
+        .reframe-positive {
+            background: rgba(69, 176, 136, 0.1);
+            border-left: 4px solid var(--accent-3);
+        }
+        .reframe-arrow {
+            display: flex; align-items: center;
+            color: var(--primary); font-size: 1.2rem;
+        }
+
+        /* Timer */
+        .card-timer {
+            grid-column: span 6;
+            background: linear-gradient(135deg, #45a0d6 0%, #3570a0 100%);
+            color: white;
+        }
+        .card-timer .card-title { color: white; }
+        .timer-display {
+            font-size: 4rem; font-weight: 700;
+            text-align: center; margin: 20px 0;
+            font-family: 'Poppins', monospace;
+        }
+        .timer-controls {
+            display: flex; justify-content: center; gap: 15px;
+        }
+        .timer-btn {
+            padding: 12px 25px; border: 2px solid white; background: transparent;
+            color: white; border-radius: 30px; font-weight: 600; cursor: pointer;
+            font-family: inherit; font-size: 0.9rem; transition: all 0.3s;
+        }
+        .timer-btn:hover { background: white; color: #45a0d6; }
+        .timer-btn.primary { background: white; color: #45a0d6; }
+        .timer-btn.primary:hover { background: rgba(255,255,255,0.9); }
+        .timer-label { text-align: center; font-size: 0.9rem; opacity: 0.8; margin-top: 10px; }
+
+        /* Quick Actions */
+        .card-actions {
+            grid-column: span 6;
+        }
+        .actions-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr);
+            gap: 12px; margin-top: 20px;
+        }
+        .action-card {
+            background: var(--bg-tertiary); padding: 20px;
+            border-radius: 14px; text-align: center; cursor: pointer;
+            transition: all 0.3s; border: 2px solid transparent;
+        }
+        .action-card:hover { border-color: var(--primary); transform: translateY(-3px); }
+        .action-card i { font-size: 2rem; color: var(--primary); margin-bottom: 10px; }
+        .action-card h4 { font-size: 0.95rem; color: var(--primary-dark); margin-bottom: 5px; }
+        .action-card p { font-size: 0.8rem; color: var(--text-secondary); }
+
+        /* Progress Checklist */
+        .card-checklist {
+            grid-column: span 6;
+        }
+        .checklist { margin-top: 20px; }
+        .check-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 14px; background: var(--bg-tertiary);
+            border-radius: 12px; margin-bottom: 10px;
+            cursor: pointer; transition: all 0.3s;
+        }
+        .check-item:hover { background: var(--beige); }
+        .check-item.checked { background: rgba(69, 176, 136, 0.1); }
+        .check-item.checked .check-box { background: var(--accent-3); border-color: var(--accent-3); }
+        .check-item.checked .check-box i { opacity: 1; }
+        .check-box {
+            width: 26px; height: 26px; border-radius: 8px;
+            border: 2px solid var(--primary); display: flex;
+            align-items: center; justify-content: center;
+            color: white; transition: all 0.3s; flex-shrink: 0;
+        }
+        .check-box i { font-size: 0.8rem; opacity: 0; }
+        .check-text { font-size: 0.9rem; }
+        .check-progress {
+            margin-top: 15px; padding: 15px;
+            background: var(--bg-tertiary); border-radius: 12px;
+        }
+        .progress-bar {
+            height: 8px; background: var(--border-color);
+            border-radius: 10px; overflow: hidden; margin-top: 10px;
+        }
+        .progress-fill {
+            height: 100%; background: linear-gradient(90deg, var(--accent-3), var(--accent-2));
+            border-radius: 10px; transition: width 0.5s ease-out;
+        }
+
+        /* Footer */
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 35px;
+            background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--beige) 100%);
+        }
+        .footer-quote {
+            font-family: 'Playfair Display', serif; font-size: 1.3rem;
+            color: var(--primary-dark); margin-bottom: 10px;
+            font-style: italic;
+        }
+        .footer-author { font-size: 0.9rem; color: var(--text-secondary); }
+        .footer-tips {
+            display: flex; justify-content: center; gap: 30px;
+            margin-top: 25px; flex-wrap: wrap;
+        }
+        .footer-tip {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 0.85rem; color: var(--text-secondary);
+        }
+        .footer-tip i { color: var(--primary); }
+
+        /* Responsive */
+        @media (max-width: 1100px) {
+            .cycle-container { justify-content: center; }
+            .cycle-arrow { display: none; }
+            .signs-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-hero, .card-cycle, .card-breathing, .card-signs,
+            .card-quiz, .card-techniques, .card-reframe,
+            .card-timer, .card-actions, .card-checklist, .card-footer { grid-column: span 12; }
+            .hero-text h1 { font-size: 2rem; }
+            .card-hero { flex-direction: column; text-align: center; min-height: auto; padding: 35px 25px; }
+            .hero-visual { width: 160px; height: 180px; }
+            .cycle-step { min-width: 45%; }
+            .actions-grid { grid-template-columns: 1fr; }
+            .timer-display { font-size: 3rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-heart-crack"></i> Frustración al Estudiar</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-brain"></i> Psicología del Aprendizaje</span>
+                    <h1>Como Manejar la Frustracion en Temas Dificiles</h1>
+                    <p>Estás tratando de entender algo y sientes que golpeas un muro. El corazón se acelera, las manos sudan y quieres tirar todo. Eso es frustración académica, y es completamente normal. Aquí aprenderás a convertirla en tu aliada, no en tu enemiga.</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-fire"></i>
+                    <div class="hero-stat">73%</div>
+                    <div class="hero-stat-label">de estudiantes la sienten semanalmente</div>
+                </div>
+            </article>
+
+            <!-- FRUSTRATION CYCLE -->
+            <article class="card card-cycle">
+                <div class="card-header">
+                    <div class="card-icon icon-red"><i class="fas fa-arrows-rotate"></i></div>
+                    <h2 class="card-title">El Ciclo de la Frustracion</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Haz clic en cada etapa para entender qué pasa en tu cerebro. Reconocer el patrón es el primer paso para romperlo.</p>
+                
+                <div class="cycle-container">
+                    <div class="cycle-step" data-step="1">
+                        <div class="step-num">1</div>
+                        <div class="step-title">Desafio</div>
+                        <div class="step-desc">Te encuentras con algo que no entiendes</div>
+                    </div>
+                    <div class="cycle-arrow"><i class="fas fa-chevron-right"></i></div>
+                    <div class="cycle-step" data-step="2">
+                        <div class="step-num">2</div>
+                        <div class="step-title">Esfuerzo</div>
+                        <div class="step-desc">Intentas una, dos, tres veces...</div>
+                    </div>
+                    <div class="cycle-arrow"><i class="fas fa-chevron-right"></i></div>
+                    <div class="cycle-step" data-step="3">
+                        <div class="step-num">3</div>
+                        <div class="step-title">Bloqueo</div>
+                        <div class="step-desc">El cerebro entra en modo "amenaza"</div>
+                    </div>
+                    <div class="cycle-arrow"><i class="fas fa-chevron-right"></i></div>
+                    <div class="cycle-step" data-step="4">
+                        <div class="step-num">4</div>
+                        <div class="step-title">Frustracion</div>
+                        <div class="step-desc">Emociones negativas te invaden</div>
+                    </div>
+                    <div class="cycle-arrow"><i class="fas fa-chevron-right"></i></div>
+                    <div class="cycle-step" data-step="5">
+                        <div class="step-num">5</div>
+                        <div class="step-title">Rendicion</div>
+                        <div class="step-desc">Abandonas temporalmente</div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- BREATHING EXERCISE -->
+            <article class="card card-breathing">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-wind"></i></div>
+                    <h2 class="card-title">Ejercicio de Respiracion 4-7-8</h2>
+                </div>
+                <p style="font-size: 0.9rem; opacity: 0.9;">Técnica probada para calmar el sistema nervioso en 60 segundos.</p>
+                
+                <div class="breathing-container">
+                    <div class="breathing-circle" id="breathingCircle">
+                        <span id="breathingText">INICIAR</span>
+                    </div>
+                    <div class="breathing-instruction" id="breathingInstruction">
+                        Toca el circulo para comenzar
+                    </div>
+                    <button class="breathing-btn" id="breathingBtn">Comenzar Ejercicio</button>
+                    <div class="breathing-counter" id="breathingCounter"></div>
+                </div>
+            </article>
+
+            <!-- WARNING SIGNS -->
+            <article class="card card-signs">
+                <div class="card-header">
+                    <div class="card-icon icon-orange"><i class="fas fa-triangle-exclamation"></i></div>
+                    <h2 class="card-title">Senales de Alerta</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Tu cuerpo te avisa antes de que explotes. Reconoce estas señales temprano.</p>
+                
+                <div class="signs-grid">
+                    <div class="sign-item warning">
+                        <div class="sign-icon warning"><i class="fas fa-heart-pulse"></i></div>
+                        <div class="sign-text">Corazon acelerado</div>
+                    </div>
+                    <div class="sign-item warning">
+                        <div class="sign-icon warning"><i class="fas fa-hand-fist"></i></div>
+                        <div class="sign-text">Mandibula o puños apretados</div>
+                    </div>
+                    <div class="sign-item danger">
+                        <div class="sign-icon danger"><i class="fas fa-temperature-high"></i></div>
+                        <div class="sign-text">Calor en la cara o cuello</div>
+                    </div>
+                    <div class="sign-item danger">
+                        <div class="sign-icon danger"><i class="fas fa-cloud"></i></div>
+                        <div class="sign-text">Pensamientos nublados</div>
+                    </div>
+                    <div class="sign-item warning">
+                        <div class="sign-icon warning"><i class="fas fa-bolt"></i></div>
+                        <div class="sign-text">Respuestas cortantes</div>
+                    </div>
+                    <div class="sign-item danger">
+                        <div class="sign-icon danger"><i class="fas fa-eye-slash"></i></div>
+                        <div class="sign-text">Ganas de cerrar todo</div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- SELF-QUIZ -->
+            <article class="card card-quiz">
+                <div class="card-header">
+                    <div class="card-icon icon-purple"><i class="fas fa-clipboard-question"></i></div>
+                    <h2 class="card-title">Autoevaluacion Rapida</h2>
+                </div>
+                
+                <div class="quiz-container" id="quizContainer">
+                    <div class="quiz-question" id="quizQuestion">Cuando me frustrro estudiando, usualmente...</div>
+                    <div class="quiz-options" id="quizOptions">
+                        <div class="quiz-option" data-result="avoid">Evito el tema y hago otra cosa</div>
+                        <div class="quiz-option" data-result="persist">Sigo intentando sin cambiar estrategia</div>
+                        <div class="quiz-option" data-result="pause">Hago una pausa y vuelvo despues</div>
+                        <div class="quiz-option" data-result="help">Busco ayuda o otro recurso</div>
+                    </div>
+                    <div class="quiz-result" id="quizResult"></div>
+                </div>
+            </article>
+
+            <!-- TECHNIQUES TABS -->
+            <article class="card card-techniques">
+                <div class="card-header">
+                    <div class="card-icon icon-green"><i class="fas fa-toolbox"></i></div>
+                    <h2 class="card-title">Tecnicas de Regulacion</h2>
+                </div>
+                
+                <div class="tech-tabs">
+                    <button class="tech-tab active" data-tech="pomodoro">Pomodoro Modificado</button>
+                    <button class="tech-tab" data-tech="reframe">Reencuadre</button>
+                    <button class="tech-tab" data-tech="grounding">Grounding 5-4-3-2-1</button>
+                </div>
+                
+                <div class="tech-content active" id="tech-pomodoro">
+                    <div class="tech-title">Tecnica Pomodoro para Frustracion</div>
+                    <div class="tech-desc">Cuando un tema te frustra, el Pomodoro tradicional (25 min) puede ser demasiado. Prueba esta versión adaptada:</div>
+                    <div class="tech-steps">
+                        <div class="tech-step">
+                            <div class="tech-step-num">1</div>
+                            <span>Reduce a <strong>15 minutos</strong> de concentracion máxima</span>
+                        </div>
+                        <div class="tech-step">
+                            <div class="tech-step-num">2</div>
+                            <span>Toma <strong>5 minutos</strong> de pausa activa (no pantalla)</span>
+                        </div>
+                        <div class="tech-step">
+                            <div class="tech-step-num">3</div>
+                            <span>Si a los 3 ciclos no avanzas, <strong>cambia de estrategia</strong></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tech-content" id="tech-reframe">
+                    <div class="tech-title">Reencuadre Cognitivo</div>
+                    <div class="tech-desc">Cambiar cómo interpretas la situación cambia cómo te sientes:</div>
+                    <div class="tech-steps">
+                        <div class="tech-step">
+                            <div class="tech-step-num">1</div>
+                            <span>Identifica el pensamiento: "No puedo con esto"</span>
+                        </div>
+                        <div class="tech-step">
+                            <div class="tech-step-num">2</div>
+                            <span>Cuestiona: "Es que es nuevo, no que sea imposible"</span>
+                        </div>
+                        <div class="tech-step">
+                            <div class="tech-step-num">3</div>
+                            <span>Reformula: "Estoy en proceso de entenderlo"</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tech-content" id="tech-grounding">
+                    <div class="tech-title">Grounding 5-4-3-2-1</div>
+                    <div class="tech-desc">Te ancla al presente cuando la frustración te desconecta:</div>
+                    <div class="tech-steps">
+                        <div class="tech-step">
+                            <div class="tech-step-num">5</div>
+                            <span>cosas que puedes <strong>ver</strong> a tu alrededor</span>
+                        </div>
+                        <div class="tech-step">
+                            <div class="tech-step-num">4</div>
+                            <span>cosas que puedes <strong>tocar</strong></span>
+                        </div>
+                        <div class="tech-step">
+                            <div class="tech-step-num">3</div>
+                            <span>cosas que puedes <strong>escuchar</strong></span>
+                        </div>
+                        <div class="tech-step">
+                            <div class="tech-step-num">2</div>
+                            <span>cosas que puedes <strong>oler</strong></span>
+                        </div>
+                        <div class="tech-step">
+                            <div class="tech-step-num">1</div>
+                            <span>cosa que puedes <strong>saborear</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- REFRAMING EXAMPLES -->
+            <article class="card card-reframe">
+                <div class="card-header">
+                    <div class="card-icon icon-yellow"><i class="fas fa-lightbulb"></i></div>
+                    <h2 class="card-title">Cambio de Perspectiva</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Ejemplos de cómo reencuadrar pensamientos frustrantes:</p>
+                
+                <div class="reframe-example">
+                    <div class="reframe-row">
+                        <div class="reframe-thought reframe-negative">
+                            "Soy muy tonto para esto"
+                        </div>
+                        <div class="reframe-arrow"><i class="fas fa-arrow-right"></i></div>
+                        <div class="reframe-thought reframe-positive">
+                            "Este tema requiere mas practica, no mas capacidad"
+                        </div>
+                    </div>
+                    <div class="reframe-row">
+                        <div class="reframe-thought reframe-negative">
+                            "Nunca voy a entenderlo"
+                        </div>
+                        <div class="reframe-arrow"><i class="fas fa-arrow-right"></i></div>
+                        <div class="reframe-thought reframe-positive">
+                            "Hoy no lo entiendo, pero cada intento suma"
+                        </div>
+                    </div>
+                    <div class="reframe-row">
+                        <div class="reframe-thought reframe-negative">
+                            "Perdi todo el dia para nada"
+                        </div>
+                        <div class="reframe-arrow"><i class="fas fa-arrow-right"></i></div>
+                        <div class="reframe-thought reframe-positive">
+                            "Identifique qué NO funciona, eso es progreso"
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- TIMER -->
+            <article class="card card-timer">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-stopwatch"></i></div>
+                    <h2 class="card-title">Temporizador de Pausa</h2>
+                </div>
+                <p style="font-size: 0.9rem; opacity: 0.9;">Cuando la frustración suba, toma 5 minutos. De verdad funciona.</p>
+                
+                <div class="timer-display" id="timerDisplay">5:00</div>
+                <div class="timer-controls">
+                    <button class="timer-btn primary" id="timerStart">Iniciar</button>
+                    <button class="timer-btn" id="timerReset">Reiniciar</button>
+                </div>
+                <div class="timer-label" id="timerLabel">Tiempo de descanso recomendado</div>
+            </article>
+
+            <!-- QUICK ACTIONS -->
+            <article class="card card-actions">
+                <div class="card-header">
+                    <div class="card-icon icon-teal"><i class="fas fa-bolt"></i></div>
+                    <h2 class="card-title">Acciones Inmediatas</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Cuando sientas que explotas, elige una:</p>
+                
+                <div class="actions-grid">
+                    <div class="action-card" onclick="showActionTip('water')">
+                        <i class="fas fa-glass-water"></i>
+                        <h4>Agua Fria</h4>
+                        <p>Moja cara y muñecas. Activa el nervio vago.</p>
+                    </div>
+                    <div class="action-card" onclick="showActionTip('stretch')">
+                        <i class="fas fa-person-walking"></i>
+                        <h4>Estira</h4>
+                        <p>Parate y estira los brazos hacia arriba 30 seg.</p>
+                    </div>
+                    <div class="action-card" onclick="showActionTip('write')">
+                        <i class="fas fa-pen-to-square"></i>
+                        <h4>Escribelo</h4>
+                        <p>Descarga en papel lo que sientes. Libera.</p>
+                    </div>
+                    <div class="action-card" onclick="showActionTip('change')">
+                        <i class="fas fa-location-dot"></i>
+                        <h4>Cambia Lugar</h4>
+                        <p>Mudate a otro espacio. El cerebro se resetea.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- CHECKLIST -->
+            <article class="card card-checklist">
+                <div class="card-header">
+                    <div class="card-icon icon-blue"><i class="fas fa-list-check"></i></div>
+                    <h2 class="card-title">Checklist de Recuperacion</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Marca lo que ya aplicaste hoy:</p>
+                
+                <div class="checklist">
+                    <div class="check-item" onclick="toggleCheck(this)">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <div class="check-text">Reconoci que estaba frustrado sin juzgarme</div>
+                    </div>
+                    <div class="check-item" onclick="toggleCheck(this)">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <div class="check-text">Hice al menos una pausa activa</div>
+                    </div>
+                    <div class="check-item" onclick="toggleCheck(this)">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <div class="check-text">Intente otra forma de estudiar el tema</div>
+                    </div>
+                    <div class="check-item" onclick="toggleCheck(this)">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <div class="check-text">Busque un recurso diferente (video, resumen, etc)</div>
+                    </div>
+                    <div class="check-item" onclick="toggleCheck(this)">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <div class="check-text">Me hidrate y estire el cuerpo</div>
+                    </div>
+                </div>
+                
+                <div class="check-progress">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                        <span>Progreso de hoy</span>
+                        <span id="progressPercent">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-quote">"La frustracion es el combustible de la resiliencia. Sin ella, no habria aprendizaje profundo."</p>
+                <p class="footer-author">— Adaptado de Carol Dweck</p>
+                <div class="footer-tips">
+                    <div class="footer-tip"><i class="fas fa-clock"></i> 5 min de pausa > 1 hora golpeando la misma puerta</div>
+                    <div class="footer-tip"><i class="fas fa-heart"></i> Ser amable contigo no es debilidad</div>
+                    <div class="footer-tip"><i class="fas fa-arrow-trend-up"></i> El progreso no es lineal</div>
+                </div>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+
+        // Cycle Steps
+        const cycleSteps = document.querySelectorAll('.cycle-step');
+        cycleSteps.forEach(step => {
+            step.addEventListener('click', function() {
+                cycleSteps.forEach(s => s.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Breathing Exercise
+        let breathingInterval = null;
+        let breathingActive = false;
+        let breathCount = 0;
+        const breathingCircle = document.getElementById('breathingCircle');
+        const breathingText = document.getElementById('breathingText');
+        const breathingInstruction = document.getElementById('breathingInstruction');
+        const breathingBtn = document.getElementById('breathingBtn');
+        const breathingCounter = document.getElementById('breathingCounter');
+
+        breathingBtn.addEventListener('click', function() {
+            if (breathingActive) {
+                stopBreathing();
+            } else {
+                startBreathing();
+            }
+        });
+
+        breathingCircle.addEventListener('click', function() {
+            if (breathingActive) {
+                stopBreathing();
+            } else {
+                startBreathing();
+            }
+        });
+
+        function startBreathing() {
+            breathingActive = true;
+            breathCount = 0;
+            breathingBtn.textContent = 'Detener';
+            breathingCircle.classList.add('breathing');
+            runBreathingCycle();
+        }
+
+        function stopBreathing() {
+            breathingActive = false;
+            breathingBtn.textContent = 'Comenzar Ejercicio';
+            breathingCircle.classList.remove('breathing');
+            breathingText.textContent = 'INICIAR';
+            breathingInstruction.textContent = 'Toca el circulo para comenzar';
+            breathingCounter.textContent = '';
+            if (breathingInterval) {
+                clearInterval(breathingInterval);
+                breathingInterval = null;
+            }
+        }
+
+        function runBreathingCycle() {
+            if (!breathingActive) return;
+            
+            const phases = [
+                { text: '4', instruction: 'Inhala profundamente...', duration: 4000 },
+                { text: '7', instruction: 'Mantén el aire...', duration: 7000 },
+                { text: '8', instruction: 'Exhala lentamente...', duration: 8000 }
+            ];
+            let phaseIndex = 0;
+
+            function nextPhase() {
+                if (!breathingActive) return;
+                
+                const phase = phases[phaseIndex];
+                breathingText.textContent = phase.text;
+                breathingInstruction.textContent = phase.instruction;
+                
+                breathingInterval = setTimeout(() => {
+                    phaseIndex++;
+                    if (phaseIndex >= phases.length) {
+                        phaseIndex = 0;
+                        breathCount++;
+                        breathingCounter.textContent = `Ciclos completados: ${breathCount}`;
+                        if (breathCount >= 3) {
+                            stopBreathing();
+                            breathingInstruction.textContent = 'Excelente. Sientes la diferencia?';
+                            return;
+                        }
+                    }
+                    nextPhase();
+                }, phase.duration);
+            }
+
+            nextPhase();
+        }
+
+        // Quiz
+        const quizOptions = document.querySelectorAll('.quiz-option');
+        const quizResult = document.getElementById('quizResult');
+
+        const quizFeedback = {
+            avoid: {
+                type: 'bad',
+                text: 'Evitar puede dar alivio temporal, pero el tema seguira ahi. Prueba hacer una pausa corta y volver con otra estrategia.'
+            },
+            persist: {
+                type: 'bad',
+                text: 'Insistir sin cambiar estrategia refuerza la frustracion. Si algo no funciona tras 3 intentos, cambia de enfoque.'
+            },
+            pause: {
+                type: 'good',
+                text: 'Excelente. Las pausas permiten que tu cerebro procese en segundo plano. Es la estrategia mas efectiva.'
+            },
+            help: {
+                type: 'good',
+                text: 'Perfecto. Buscar otra perspectiva (video, explicacion diferente, compañero) es senal de inteligencia adaptativa.'
+            }
+        };
+
+        quizOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                quizOptions.forEach(o => o.classList.remove('selected', 'correct', 'incorrect'));
+                
+                const result = this.dataset.result;
+                const feedback = quizFeedback[result];
+                
+                this.classList.add('selected');
+                this.classList.add(feedback.type === 'good' ? 'correct' : 'incorrect');
+                
+                quizResult.textContent = feedback.text;
+                quizResult.className = 'quiz-result show ' + feedback.type;
+            });
+        });
+
+        // Technique Tabs
+        const techTabs = document.querySelectorAll('.tech-tab');
+        const techContents = document.querySelectorAll('.tech-content');
+
+        techTabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const techId = this.dataset.tech;
+                
+                techTabs.forEach(t => t.classList.remove('active'));
+                techContents.forEach(c => c.classList.remove('active'));
+                
+                this.classList.add('active');
+                document.getElementById('tech-' + techId).classList.add('active');
+            });
+        });
+
+        // Timer
+        let timerInterval = null;
+        let timerSeconds = 300; // 5 minutes
+        let timerRunning = false;
+        const timerDisplay = document.getElementById('timerDisplay');
+        const timerStart = document.getElementById('timerStart');
+        const timerReset = document.getElementById('timerReset');
+        const timerLabel = document.getElementById('timerLabel');
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(timerSeconds / 60);
+            const secs = timerSeconds % 60;
+            timerDisplay.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        timerStart.addEventListener('click', function() {
+            if (timerRunning) {
+                timerRunning = false;
+                clearInterval(timerInterval);
+                timerInterval = null;
+                this.textContent = 'Continuar';
+                timerLabel.textContent = 'Pausa activa - Respira y estira';
+            } else {
+                timerRunning = true;
+                this.textContent = 'Pausar';
+                timerLabel.textContent = 'Tiempo corriendo...';
+                
+                timerInterval = setInterval(() => {
+                    timerSeconds--;
+                    updateTimerDisplay();
+                    
+                    if (timerSeconds <= 0) {
+                        timerRunning = false;
+                        clearInterval(timerInterval);
+                        timerInterval = null;
+                        timerStart.textContent = 'Iniciar';
+                        timerLabel.textContent = 'Listo para volver con energia renovada!';
+                        timerSeconds = 300;
+                        updateTimerDisplay();
+                    }
+                }, 1000);
+            }
+        });
+
+        timerReset.addEventListener('click', function() {
+            timerRunning = false;
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            timerSeconds = 300;
+            updateTimerDisplay();
+            timerStart.textContent = 'Iniciar';
+            timerLabel.textContent = 'Tiempo de descanso recomendado';
+        });
+
+        // Checklist
+        function toggleCheck(element) {
+            element.classList.toggle('checked');
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const items = document.querySelectorAll('.check-item');
+            const checked = document.querySelectorAll('.check-item.checked');
+            const percent = Math.round((checked.length / items.length) * 100);
+            
+            document.getElementById('progressPercent').textContent = percent + '%';
+            document.getElementById('progressFill').style.width = percent + '%';
+        }
+
+        // Action Tips
+        function showActionTip(type) {
+            const tips = {
+                water: 'El agua fria en la cara estimula el reflejo de inmersion, reduciendo el ritmo cardiaco instantaneamente.',
+                stretch: 'Estirar libera tension muscular acumulada y mejora la circulacion cerebral.',
+                write: 'Escribir "descarga" emocional reduce la activacion de la amigdala en un 40% segun estudios.',
+                change: 'Cambiar de espacio rompe patrones mentales y permite un "reset" cognitivo.'
+            };
+            
+            alert(tips[type]);
+        }
+    </script>
+</body>
+</html>
