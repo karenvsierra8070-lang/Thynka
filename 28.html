@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Musica para Estudiar - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --accent-1: #e74c3c; --accent-2: #3498db; --accent-3: #27ae60;
+            --accent-4: #9b59b6; --accent-5: #e67e22;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1300px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-hover); }
+
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, var(--accent-4) 0%, #7d3c98 100%);
+            color: white; padding: 40px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 300px; height: 100%;
+            background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.15) 0%, transparent 60%);
+        }
+        .hero-text { flex: 1; z-index: 1; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.8rem;
+            font-weight: 600; margin-bottom: 15px;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.5rem;
+            margin-bottom: 12px; line-height: 1.2;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.9; max-width: 500px; }
+        .hero-visual {
+            width: 180px; height: 220px; background: rgba(255,255,255,0.1);
+            border-radius: 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 8px;
+            position: relative; z-index: 1; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .hero-visual i { font-size: 3rem; opacity: 0.8; }
+        .music-waves {
+            display: flex; gap: 4px; align-items: flex-end; height: 30px;
+        }
+        .wave-bar { width: 4px; background: rgba(255,255,255,0.6); border-radius: 2px; animation: wave 1s ease-in-out infinite; }
+        .wave-bar:nth-child(2) { height: 60%; animation-delay: 0.2s; }
+        .wave-bar:nth-child(1) { height: 30%; animation-delay: 0.4s; }
+        .wave-bar:nth-child(3) { height: 80%; animation-delay: 0.1s; }
+        @keyframes wave { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(0.6); } }
+
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white;
+        }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #c0392b); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-2), #2980b9); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-3), #1e8449); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-4), #7d3c98); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-5), #d35400); }
+        .icon-brown { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+
+        /* Science Section */
+        .card-science {
+            grid-column: span 12;
+            background: var(--bg-tertiary);
+        }
+        .science-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 30px; margin-top: 20px; align-items: center;
+        }
+        .science-visual {
+            background: var(--bg-secondary); padding: 20px;
+            border-radius: 15px; text-align: center;
+        }
+        .brain-graph {
+            height: 120px; display: flex; align-items: center;
+            justify-content: center; gap: 10px; margin-bottom: 15px;
+        }
+        .bg-bar {
+            width: 30px; border-radius: 5px;
+            background: linear-gradient(to top, var(--accent-3), var(--accent-2));
+            animation: growBar 2s infinite alternate;
+        }
+        .bg-bar:nth-child(1) { height: 40%; animation-delay: 0s; }
+        .bg-bar:nth-child(2) { height: 70%; animation-delay: 0.2s; }
+        .bg-bar:nth-child(3) { height: 55%; animation-delay: 0.4s; }
+        .bg-bar:nth-child(4) { height: 85%; animation-delay: 0.1s; }
+        @keyframes growBar { 0% { opacity: 0.5; } 100% { opacity: 1; } }
+
+        /* Genre Cards */
+        .card-genres {
+            grid-column: span 8;
+        }
+        .genre-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr);
+            gap: 15px; margin-top: 20px;
+        }
+        .genre-card {
+            background: var(--bg-tertiary); border-radius: 15px;
+            padding: 20px; display: flex; gap: 15px;
+            border-left: 5px solid; transition: transform 0.2s;
+        }
+        .genre-card:hover { transform: translateX(5px); }
+        .g-lofi { border-color: var(--accent-5); }
+        .g-classical { border-color: var(--accent-2); }
+        .g-gaming { border-color: var(--accent-3); }
+        .g-ambient { border-color: var(--accent-4); }
+        
+        .genre-icon {
+            width: 50px; height: 50px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem; color: white; flex-shrink: 0;
+        }
+        .g-lofi .genre-icon { background: var(--accent-5); }
+        .g-classical .genre-icon { background: var(--accent-2); }
+        .g-gaming .genre-icon { background: var(--accent-3); }
+        .g-ambient .genre-icon { background: var(--accent-4); }
+        
+        .genre-info h4 { color: var(--primary-dark); margin-bottom: 3px; }
+        .genre-info p { font-size: 0.8rem; color: var(--text-secondary); margin: 0; }
+        .genre-tag {
+            display: inline-block; font-size: 0.7rem;
+            background: var(--bg-secondary); padding: 2px 8px;
+            border-radius: 10px; margin-top: 8px; font-weight: 600;
+        }
+
+        /* Rules */
+        .card-rules {
+            grid-column: span 4;
+        }
+        .rules-list {
+            margin-top: 15px;
+        }
+        .rule-item {
+            background: var(--bg-tertiary); padding: 12px;
+            border-radius: 10px; margin-bottom: 10px;
+            display: flex; align-items: center; gap: 10px; font-size: 0.9rem;
+        }
+        .rule-item i { color: var(--primary); font-size: 1.1rem; }
+
+        /* Warning */
+        .card-warning {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-1) 0%, #c0392b 100%);
+            color: white;
+        }
+        .card-warning .card-title { color: white; }
+        .warning-visual {
+            display: flex; align-items: center; gap: 15px;
+            background: rgba(255,255,255,0.1); padding: 15px;
+            border-radius: 10px; margin-top: 15px;
+        }
+        .wv-icon { font-size: 2rem; }
+        .wv-text { font-size: 0.9rem; }
+
+        /* Silence vs Noise */
+        .card-context {
+            grid-column: span 6;
+        }
+        .context-table {
+            width: 100%; margin-top: 15px; border-collapse: collapse;
+        }
+        .context-table th, .context-table td {
+            padding: 10px; text-align: left; border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+        .context-table th { background: var(--bg-tertiary); color: var(--primary-dark); width: 40%; }
+        .status-yes { color: var(--accent-3); font-weight: 700; }
+        .status-no { color: var(--accent-1); font-weight: 700; }
+
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 30px;
+            background: var(--bg-tertiary);
+        }
+        .footer-text {
+            font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 5px;
+        }
+
+        @media (max-width: 1100px) {
+            .science-grid { grid-template-columns: 1fr; }
+            .genre-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-hero, .card-science, .card-genres, .card-rules,
+            .card-warning, .card-context, .card-footer { grid-column: span 12; }
+            .hero-text h1 { font-size: 1.8rem; }
+            .card-hero { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-headphones-alt"></i> Musica y Estudio</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-sliders-h"></i> Audio Cognitivo</span>
+                    <h1>Música para Estudiar: ¿Sí o No?</h1>
+                    <p>La música puede ser un potenciador del flujo o una distracción mortal. La clave no es la canción, sino el tipo de procesamiento cerebral que exige. Aprende a elegir la banda sonora de tu productividad.</p>
+                </div>
+                <div class="hero-visual">
+                    <div class="music-waves">
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                    </div>
+                    <span style="font-size: 0.85rem; font-weight: 600;">Frecuencia Foco</span>
+                </div>
+            </article>
+
+            <!-- SCIENCE -->
+            <article class="card card-science">
+                <div class="card-header">
+                    <div class="card-icon icon-brown"><i class="fas fa-brain"></i></div>
+                    <h2 class="card-title">La Ciencia del "Efecto Mozart"</h2>
+                </div>
+                <div class="science-grid">
+                    <div class="science-visual">
+                        <div class="brain-graph">
+                            <div class="bg-bar"></div>
+                            <div class="bg-bar"></div>
+                            <div class="bg-bar"></div>
+                            <div class="bg-bar"></div>
+                        </div>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary);">
+                            La música activa la corteza auditiva. Si la música tiene letra, activa el área de Broca (lenguaje), compitiendo por recursos con tu lectura.
+                        </p>
+                    </div>
+                    <div>
+                        <h3 style="color: var(--primary-dark); margin-bottom: 10px;">¿Por qué ayuda?</h3>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 10px;">
+                            La música sin letras eleva el estado de ánimo (dopamina) y crea un "muro sonoro" que bloquea distracciones externas. Esto reduce el "ruido mental" y facilita entrar en el estado de Flow.
+                        </p>
+                        <div style="background: var(--bg-secondary); padding: 15px; border-radius: 10px; border-left: 4px solid var(--accent-2);">
+                            <strong>Dato clave:</strong> El volumen ideal es aquel que permite conversar sin alzar la voz. Si está muy alto, tu cerebro gasta energía en filtrarlo.
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- GENRES -->
+            <article class="card card-genres">
+                <div class="card-header">
+                    <div class="card-icon icon-green"><i class="fas fa-compact-disc"></i></div>
+                    <h2 class="card-title">Géneros Recomendados (La Lista Blanca)</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">La regla de oro: Sin letras, repetitivo, sin cambios bruscos de tempo.</p>
+                
+                <div class="genre-grid">
+                    <div class="genre-card g-lofi">
+                        <div class="genre-icon"><i class="fas fa-headphones"></i></div>
+                        <div class="genre-info">
+                            <h4>Lo-Fi Hip Hop</h4>
+                            <p>Beats lentos y repetitivos. Diseñado específicamente para estudiar. Bajo estrés cognitivo.</p>
+                            <span class="genre-tag" style="color: var(--accent-5);">Mejor opción general</span>
+                        </div>
+                    </div>
+                    <div class="genre-card g-classical">
+                        <div class="genre-icon"><i class="fas fa-music"></i></div>
+                        <div class="genre-info">
+                            <h4>Clásica / Barroca</h4>
+                            <p>Especialmente Vivaldi o Bach. Tempo de 60 BPM sincroniza con ondas cerebrales.</p>
+                            <span class="genre-tag" style="color: var(--accent-2);">Alta concentración</span>
+                        </div>
+                    </div>
+                    <div class="genre-card g-gaming">
+                        <div class="genre-icon"><i class="fas fa-gamepad"></i></div>
+                        <div class="genre-info">
+                            <h4>Videojuegos</h4>
+                            <p>Compuesta para mantenerte enfocado en una tarea durante horas sin aburrirte.</p>
+                            <span class="genre-tag" style="color: var(--accent-3);">Tareas largas</span>
+                        </div>
+                    </div>
+                    <div class="genre-card g-ambient">
+                        <div class="genre-icon"><i class="fas fa-cloud"></i></div>
+                        <div class="genre-info">
+                            <h4>Ambient / Drone</h4>
+                            <p>Texturas sonoras sin melodía. Invisible para el cerebro después de 5 minutos.</p>
+                            <span class="genre-tag" style="color: var(--accent-4);">Máximo aislamiento</span>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- RULES -->
+            <article class="card card-rules">
+                <div class="card-header">
+                    <div class="card-icon icon-orange"><i class="fas fa-list-check"></i></div>
+                    <h2 class="card-title">Reglas de Oro</h2>
+                </div>
+                <div class="rules-list">
+                    <div class="rule-item">
+                        <i class="fas fa-volume-down"></i>
+                        <span><strong>Bajo Volumen:</strong> Música de fondo, no concierto.</span>
+                    </div>
+                    <div class="rule-item">
+                        <i class="fas fa-microphone-slash"></i>
+                        <span><strong>Sin Letra:</strong> Tu cerebro intentará procesar las palabras.</span>
+                    </div>
+                    <div class="rule-item">
+                        <i class="fas fa-heartbeat"></i>
+                        <span><strong>BPM Bajos:</strong> Tempos lentos (50-80) calman la ansiedad.</span>
+                    </div>
+                    <div class="rule-item">
+                        <i class="fas fa-redo"></i>
+                        <span><strong>Repetición:</strong> Listas largas evitan que busques canciones.</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- WARNING -->
+            <article class="card card-warning">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-bomb"></i></div>
+                    <h2 class="card-title">Zona Peligrosa: Las Letras</h2>
+                </div>
+                <p style="font-size: 0.9rem; opacity: 0.9;">Si escuchas tus canciones favoritas de Spotify, estás saboteando tu estudio.</p>
+                
+                <div class="warning-visual">
+                    <i class="fas fa-microphone wv-icon"></i>
+                    <div class="wv-text">
+                        <strong>Prohibido:</strong> Pop, Rock, Reggaeton, Rap.<br>
+                        <span style="opacity: 0.8;">Activa el "Bucle Fonológico" y llena tu memoria de trabajo con la letra, dejando sin espacio para los datos del estudio.</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- CONTEXT -->
+            <article class="card card-context">
+                <div class="card-header">
+                    <div class="card-icon icon-blue"><i class="fas fa-table"></i></div>
+                    <h2 class="card-title">¿Cuándo Usar Música?</h2>
+                </div>
+                <table class="context-table">
+                    <thead>
+                        <tr>
+                            <th>Actividad</th>
+                            <th>¿Música?</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Memorizar datos nuevos</td>
+                            <td class="status-no">SILENCIO</td>
+                        </tr>
+                        <tr>
+                            <td>Hacer ejercicios repetitivos</td>
+                            <td class="status-yes">SÍ</td>
+                        </tr>
+                        <tr>
+                            <td>Escribir un ensayo</td>
+                            <td class="status-yes">SÍ (Instrumental)</td>
+                        </tr>
+                        <tr>
+                            <td>Resolver problemas matemáticos</td>
+                            <td class="status-no">BAJO VOLUMEN</td>
+                        </tr>
+                        <tr>
+                            <td>Lectura comprensiva</td>
+                            <td class="status-no">SILENCIO</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-text">La música es una herramienta, no una alfombra mágica. Úsala para gestionar tu energía, no para evitar el silencio incómodo del pensamiento profundo.</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+    </script>
+</body>
+</html>
