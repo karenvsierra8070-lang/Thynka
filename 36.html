@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lectura Critica vs Pasiva - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --accent-1: #d64545; --accent-2: #45a0d6; --accent-3: #45b088;
+            --accent-4: #8b5cf6; --accent-5: #e8833a;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1300px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-hover); }
+
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, #5a4032 0%, #3a2a20 100%);
+            color: white; padding: 40px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 300px; height: 100%;
+            background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.15) 0%, transparent 60%);
+        }
+        .hero-text { flex: 1; z-index: 1; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.8rem;
+            font-weight: 600; margin-bottom: 15px;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.5rem;
+            margin-bottom: 12px; line-height: 1.2;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.9; max-width: 500px; }
+        .hero-visual {
+            width: 200px; height: 220px; background: rgba(255,255,255,0.1);
+            border-radius: 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 12px;
+            position: relative; z-index: 1; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .hero-visual i { font-size: 3rem; opacity: 0.8; }
+
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white;
+        }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #c0392b); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-2), #2980b9); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-3), #1e8449); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-4), #7d3c98); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-5), #d35400); }
+        .icon-brown { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+
+        /* Specific Modules */
+        .card-comparison {
+            grid-column: span 12;
+        }
+        .comparison-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 30px; margin-top: 20px;
+        }
+        .comp-col {
+            background: var(--bg-tertiary); border-radius: 16px;
+            padding: 25px; border-top: 6px solid;
+        }
+        .col-passive { border-color: var(--gray); opacity: 0.8; }
+        .col-critical { border-color: var(--primary); }
+        
+        .comp-item {
+            display: flex; gap: 10px; margin-bottom: 15px;
+            font-size: 0.9rem; align-items: flex-start;
+        }
+        .comp-item i { margin-top: 4px; }
+        .col-passive i { color: var(--gray); }
+        .col-critical i { color: var(--primary); }
+
+        .card-process {
+            grid-column: span 6;
+            grid-row: span 2;
+        }
+        .process-step {
+            display: flex; gap: 15px; margin-bottom: 20px;
+            padding-bottom: 20px; border-bottom: 1px solid var(--border-color);
+        }
+        .process-step:last-child { border-bottom: none; margin-bottom: 0; }
+        .step-num {
+            width: 40px; height: 40px; background: var(--primary);
+            color: white; border-radius: 10px; display: flex;
+            align-items: center; justify-content: center;
+            font-weight: 700; flex-shrink: 0;
+        }
+        .step-content h4 { color: var(--primary-dark); margin-bottom: 5px; }
+        .step-content p { font-size: 0.9rem; color: var(--text-secondary); margin: 0; }
+
+        .card-questions {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-2) 0%, #2980b9 100%);
+            color: white;
+        }
+        .card-questions .card-title { color: white; }
+        .question-list { margin-top: 20px; }
+        .q-item {
+            background: rgba(255,255,255,0.1); padding: 12px;
+            border-radius: 10px; margin-bottom: 10px; font-size: 0.95rem;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .q-item i { opacity: 0.8; }
+
+        .card-evidence {
+            grid-column: span 4;
+        }
+        .evidence-box {
+            background: var(--bg-tertiary); padding: 15px;
+            border-radius: 12px; margin-bottom: 10px;
+        }
+        .evidence-box strong { color: var(--primary-dark); display: block; margin-bottom: 4px; }
+        .evidence-box p { font-size: 0.85rem; color: var(--text-secondary); margin: 0; }
+
+        .card-pitfalls {
+            grid-column: span 8;
+            background: var(--bg-tertiary);
+        }
+        .pitfall-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr);
+            gap: 15px; margin-top: 15px;
+        }
+        .pitfall-item {
+            background: var(--bg-secondary); padding: 15px;
+            border-radius: 12px; border-left: 4px solid var(--accent-1);
+        }
+        .pitfall-item h5 { color: var(--accent-1); margin-bottom: 5px; font-size: 0.95rem; }
+        .pitfall-item p { font-size: 0.8rem; color: var(--text-secondary); margin: 0; }
+
+        .card-annotation {
+            grid-column: span 6;
+        }
+        .annot-visual {
+            background: var(--bg-tertiary); padding: 20px;
+            border-radius: 12px; margin-top: 15px;
+            font-family: serif; font-style: italic; position: relative;
+            border: 1px dashed var(--border-color);
+        }
+        .annot-visual::before {
+            content: 'NOTA'; position: absolute; top: -10px; left: 20px;
+            background: var(--bg-secondary); padding: 0 10px;
+            font-family: 'Poppins', sans-serif; font-style: normal;
+            font-weight: 600; font-size: 0.7rem; color: var(--primary);
+        }
+        .highlight { background: rgba(139, 107, 71, 0.3); padding: 0 4px; border-radius: 3px; }
+        .underline { text-decoration: underline; text-decoration-color: var(--accent-3); text-decoration-thickness: 2px; }
+
+        .card-mindset {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-3) 0%, #1e8449 100%);
+            color: white;
+        }
+        .card-mindset .card-title { color: white; }
+        .mindset-grid {
+            display: flex; gap: 20px; margin-top: 20px;
+        }
+        .mind-item { flex: 1; text-align: center; opacity: 0.9; }
+        .mind-item i { font-size: 1.5rem; margin-bottom: 8px; display: block; }
+
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 30px;
+            background: var(--bg-tertiary);
+        }
+        .footer-text { font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 5px; }
+
+        @media (max-width: 1100px) {
+            .comparison-grid { grid-template-columns: 1fr; }
+            .pitfall-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-hero, .card-comparison, .card-process, .card-questions,
+            .card-evidence, .card-pitfalls, .card-annotation, .card-mindset,
+            .card-footer { grid-column: span 12; }
+            .card-process { grid-row: span 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-book-open"></i> Lectura Critica</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-search"></i> Comprension Profunda</span>
+                    <h1>De Lector Pasivo a Critico</h1>
+                    <p>Leer pasivamente es como ver caer la lluvia: el agua resbala y no deja huella. Leer críticamente es como construir una represa: atrapas el agua, la analizas y la usas para generar energia. Deja de consumir palabras y empieza a interrogarlas.</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-magnifying-glass-chart"></i>
+                    <span style="font-size: 0.85rem; font-weight: 600;">Analisis vs Consumo</span>
+                </div>
+            </article>
+
+            <!-- COMPARISON -->
+            <article class="card card-comparison">
+                <div class="card-header">
+                    <div class="card-icon icon-brown"><i class="fas fa-scale-balanced"></i></div>
+                    <h2 class="card-title">El Cambio de Mentalidad</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">El lector critico no es mas inteligente, es mas desconfiado. No asume, verifica.</p>
+                
+                <div class="comparison-grid">
+                    <div class="comp-col col-passive">
+                        <h3 style="margin-bottom: 15px; color: var(--gray);"><i class="fas fa-user"></i> Lector Pasivo</h3>
+                        <div class="comp-item"><i class="fas fa-arrow-right"></i><span>Lee para terminar el texto.</span></div>
+                        <div class="comp-item"><i class="fas fa-arrow-right"></i><span>Acepta lo que dice el autor como verdad.</span></div>
+                        <div class="comp-item"><i class="fas fa-arrow-right"></i><span>Busca "la respuesta correcta" en el texto.</span></div>
+                        <div class="comp-item"><i class="fas fa-arrow-right"></i><span>Memoriza hechos aislados.</span></div>
+                        <div class="comp-item"><i class="fas fa-arrow-right"></i><span>Piensa: "Que significa esto?"</span></div>
+                    </div>
+                    <div class="comp-col col-critical">
+                        <h3 style="margin-bottom: 15px; color: var(--primary-dark);"><i class="fas fa-user-secret"></i> Lector Critico</h3>
+                        <div class="comp-item"><i class="fas fa-arrow-right"></i><span>Lee para entender la estructura y el proposito.</span></div>
+                        <div class="comp-item"><i class="fas fa-arrow-right"></i><span>Cuestiona los argumentos y la evidencia.</span></div>
+                        <div class="comp-item"><i class="fas fa-arrow-right"></i><span>Busca conexiones, contradicciones y vacios.</span></div>
+                        <div class="comp-item"><i class="fas fa-arrow-right"></i><span>Evalua la validez de las afirmaciones.</span></div>
+                        <div class="comp-item"><i class="fas fa-arrow-right"></i><span>Piensa: "Por que dice esto y que pretende?"</span></div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- THE 3 KEY QUESTIONS -->
+            <article class="card card-questions">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-question"></i></div>
+                    <h2 class="card-title">Las 3 Preguntas Clave</h2>
+                </div>
+                <p style="font-size: 0.9rem; opacity: 0.9;">Antes de creerte algo, responde esto:</p>
+                <div class="question-list">
+                    <div class="q-item"><i class="fas fa-user-pen"></i> <strong>QUIEN:</strong> Quien escribio esto? Cual es su sesgo o interes?</div>
+                    <div class="q-item"><i class="fas fa-bullseye"></i> <strong>PARA QUE:</strong> Cual es el objetivo? Persuadir, informar o vender?</div>
+                    <div class="q-item"><i class="fas fa-file-contract"></i> <strong>CON QUE:</strong> Que pruebas ofrece? Son hechos o opiniones?</div>
+                </div>
+            </article>
+
+            <!-- STEP BY STEP PROCESS -->
+            <article class="card card-process">
+                <div class="card-header">
+                    <div class="card-icon icon-purple"><i class="fas fa-route"></i></div>
+                    <h2 class="card-title">Proceso de Lectura Critica</h2>
+                </div>
+                
+                <div class="process-step">
+                    <div class="step-num">1</div>
+                    <div class="step-content">
+                        <h4>Pre-lectura (El Reconocimiento)</h4>
+                        <p>Antes de leer, mira titulos, subtitulos, negritas y fecha. Preguntate de que crees que tratara. Activa tus conocimientos previos.</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-num">2</div>
+                    <div class="step-content">
+                        <h4>Lectura Interrogativa (El Interrogatorio)</h4>
+                        <p>No leas para "saber", lee para "preguntar". Convierte cada titulo en una pregunta. Ej: "La Revolucion Industrial" -> "Que causo la Revolucion Industrial?"</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-num">3</div>
+                    <div class="step-content">
+                        <h4>Analisis Estructural (La Autopsia)</h4>
+                        <p>Identifica la tesis central (el punto principal). Luego, busca los argumentos de apoyo y la evidencia. Esqueleto el texto.</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-num">4</div>
+                    <div class="step-content">
+                        <h4>Evaluacion (El Veredicto)</h4>
+                        <p>Los argumentos convencen? La evidencia es solida? Falta informacion? Compara con otras fuentes.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- EVIDENCE CHECK -->
+            <article class="card card-evidence">
+                <div class="card-header">
+                    <div class="card-icon icon-green"><i class="fas fa-gavel"></i></div>
+                    <h2 class="card-title">Juzga la Evidencia</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">No todo lo que brilla es argumento solido.</p>
+                <div class="evidence-box">
+                    <strong><i class="fas fa-check-circle" style="color: var(--accent-3);"></i> Evidencia Solida</strong>
+                    <p>Datos estadisticos, estudios revisados, ejemplos representativos, citas de expertos en el tema.</p>
+                </div>
+                <div class="evidence-box">
+                    <strong><i class="fas fa-times-circle" style="color: var(--accent-1);"></i> Evidencia Debil</strong>
+                    <p>Casos aislados ("mi vecino..."), generalizaciones, opiniones sin fundamento, "dicen que".</p>
+                </div>
+            </article>
+
+            <!-- ANNOTATION TECHNIQUE -->
+            <article class="card card-annotation">
+                <div class="card-header">
+                    <div class="card-icon icon-orange"><i class="fas fa-pen-fancy"></i></div>
+                    <h2 class="card-title">Tecnica de Anotacion Activa</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Un texto limpio es una mente vacia. Marca con sistema:</p>
+                <div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+                    <span style="font-size: 0.8rem; background: var(--bg-tertiary); padding: 4px 8px; border-radius: 4px;"><strong>?</strong> Duda/Confusion</span>
+                    <span style="font-size: 0.8rem; background: var(--bg-tertiary); padding: 4px 8px; border-radius: 4px;"><strong>!</strong> Idea clave</span>
+                    <span style="font-size: 0.8rem; background: var(--bg-tertiary); padding: 4px 8px; border-radius: 4px;"><strong>X</strong> Discrepancia</span>
+                </div>
+                <div class="annot-visual">
+                    "El autor sostiene que <span class="highlight">el cambio climatico es irreversible</span> en el corto plazo, basandose en informes de la ONU <strong>(?)</strong>. Sin embargo, <span class="underline">no menciona soluciones locales</span> <strong>(X)</strong> que podrian mitigar el efecto..."
+                </div>
+            </article>
+
+            <!-- PITFALLS -->
+            <article class="card card-pitfalls">
+                <div class="card-header">
+                    <div class="card-icon icon-red"><i class="fas fa-triangle-exclamation"></i></div>
+                    <h2 class="card-title">Errores Cognitiveos Comunes</h2>
+                </div>
+                <div class="pitfall-grid">
+                    <div class="pitfall-item">
+                        <h5>Sesgo de Confirmacion</h5>
+                        <p>Crees automaticamente lo que coincide con lo que ya pensabas y rechazas lo contrario.</p>
+                    </div>
+                    <div class="pitfall-item">
+                        <h5>Argumento de Autoridad</h5>
+                        <p>Aceptas algo solo porque lo dijo alguien famoso o con titulo, sin revisar el contenido.</p>
+                    </div>
+                    <div class="pitfall-item">
+                        <h5>Falsa Causalidad</h5>
+                        <p>Asumir que porque B ocurrió despues de A, A causó B. Correlacion no es causalidad.</p>
+                    </div>
+                    <div class="pitfall-item">
+                        <h5>Generalizacion Apresurada</h5>
+                        <p>Sacar conclusiones de todo un grupo basandote en un solo ejemplo o caso.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- MINDSET -->
+            <article class="card card-mindset">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-brain"></i></div>
+                    <h2 class="card-title">Tu Nuevo Moto</h2>
+                </div>
+                <p style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 15px;">La lectura critica requiere humildad y curiosidad.</p>
+                <div class="mindset-grid">
+                    <div class="mind-item">
+                        <i class="fas fa-detective"></i>
+                        <strong>Desconfianza<br>Sana</strong>
+                    </div>
+                    <div class="mind-item">
+                        <i class="fas fa-puzzle-piece"></i>
+                        <strong>Busqueda de<br>Conexion</strong>
+                    </div>
+                    <div class="mind-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <strong>Apertura a<br>Cambiar de Opinion</strong>
+                    </div>
+                </div>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-text">Un lector critico no es un lector negativo, es un lector libre. No permitas que el texto te arrastre; tu llevas el timon.</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+    </script>
+</body>
+</html>
