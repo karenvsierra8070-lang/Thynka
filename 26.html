@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aprendizaje Basado en Problemas - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --accent-1: #e74c3c; --accent-2: #3498db; --accent-3: #27ae60;
+            --accent-4: #9b59b6; --accent-5: #e67e22;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1300px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-hover); }
+
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, var(--accent-2) 0%, #2980b9 100%);
+            color: white; padding: 40px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 300px; height: 100%;
+            background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.15) 0%, transparent 60%);
+        }
+        .hero-text { flex: 1; z-index: 1; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.8rem;
+            font-weight: 600; margin-bottom: 15px;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.5rem;
+            margin-bottom: 12px; line-height: 1.2;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.9; max-width: 500px; }
+        .hero-visual {
+            width: 180px; height: 220px; background: rgba(255,255,255,0.1);
+            border-radius: 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 8px;
+            position: relative; z-index: 1; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .hero-visual i { font-size: 3rem; opacity: 0.8; }
+
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white;
+        }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #c0392b); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-2), #2980b9); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-3), #1e8449); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-4), #7d3c98); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-5), #d35400); }
+        .icon-brown { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+
+        /* Mains vs Tradition */
+        .card-concept {
+            grid-column: span 12;
+            background: var(--bg-tertiary);
+        }
+        .concept-split {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 30px; align-items: center;
+        }
+        .concept-visual {
+            background: var(--bg-secondary); padding: 25px;
+            border-radius: 15px; text-align: center;
+        }
+        .c-icon { font-size: 3rem; color: var(--primary); margin-bottom: 10px; }
+
+        /* The Cycle */
+        .card-cycle {
+            grid-column: span 6;
+            grid-row: span 2;
+        }
+        .cycle-wrapper {
+            position: relative; width: 100%; padding-top: 100%; margin-top: 20px;
+        }
+        .cycle-diagram {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        }
+        .cycle-step {
+            position: absolute; background: var(--bg-tertiary);
+            width: 45%; padding: 15px; border-radius: 15px;
+            text-align: center; box-shadow: 0 4px 10px var(--shadow);
+            transition: all 0.3s; cursor: default;
+        }
+        .cycle-step:hover { transform: scale(1.05); z-index: 10; background: var(--beige); }
+        .step-s { top: 0; left: 27.5%; border-top: 4px solid var(--accent-1); }
+        .step-a { top: 35%; right: 0; border-top: 4px solid var(--accent-5); }
+        .step-r { bottom: 0; left: 27.5%; border-top: 4px solid var(--accent-2); }
+        .step-i { top: 35%; left: 0; border-top: 4px solid var(--accent-3); }
+        
+        .cycle-num {
+            width: 30px; height: 30px; background: var(--primary);
+            color: white; border-radius: 50%; display: inline-flex;
+            align-items: center; justify-content: center; font-weight: 700;
+            margin-bottom: 5px;
+        }
+        .cycle-step h5 { font-size: 0.9rem; color: var(--primary-dark); margin: 0; }
+        .cycle-step p { font-size: 0.7rem; color: var(--text-secondary); margin: 5px 0 0 0; }
+
+        /* Strategies for Complexity */
+        .card-strategies {
+            grid-column: span 6;
+        }
+        .strat-item {
+            background: var(--bg-tertiary); padding: 15px;
+            border-radius: 12px; margin-bottom: 12px;
+            border-left: 4px solid var(--primary);
+        }
+        .strat-head { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+        .strat-head i { color: var(--primary); }
+        .strat-head strong { color: var(--primary-dark); }
+        .strat-body { font-size: 0.85rem; color: var(--text-secondary); padding-left: 28px; }
+
+        /* Techniques */
+        .card-techniques {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-4) 0%, #7d3c98 100%);
+            color: white;
+        }
+        .card-techniques .card-title { color: white; }
+        .tech-list { margin-top: 15px; }
+        .tech-item {
+            background: rgba(255,255,255,0.1); padding: 12px;
+            border-radius: 10px; margin-bottom: 10px; font-size: 0.9rem;
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        /* Mental Tools */
+        .card-tools {
+            grid-column: span 6;
+        }
+        .tool-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 10px; margin-top: 15px;
+        }
+        .tool-box {
+            background: var(--bg-tertiary); padding: 15px;
+            border-radius: 12px; text-align: center;
+        }
+        .tool-box i { font-size: 1.8rem; color: var(--accent-5); margin-bottom: 8px; }
+        .tool-box h5 { font-size: 0.9rem; color: var(--primary-dark); margin-bottom: 3px; }
+        .tool-box p { font-size: 0.75rem; color: var(--text-secondary); margin: 0; }
+
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 30px;
+            background: var(--bg-tertiary);
+        }
+        .footer-text { font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 5px; }
+
+        @media (max-width: 1100px) {
+            .concept-split { grid-template-columns: 1fr; }
+            .cycle-wrapper { padding-top: 120%; }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-hero, .card-concept, .card-cycle, .card-strategies,
+            .card-techniques, .card-tools, .card-footer { grid-column: span 12; }
+            .tool-grid { grid-template-columns: 1fr; }
+            .hero-text h1 { font-size: 1.8rem; }
+            .card-hero { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-puzzle-piece"></i> Aprendizaje Basado en Problemas</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-user-cog"></i> Metodologia Activa</span>
+                    <h1>Aprendizaje Basado en Problemas (ABP)</h1>
+                    <p>Olvida leer capítulos enteros sin propósito. El ABP pone el problema al inicio, no al final. Aprenderás buscando soluciones reales a desafíos complejos, tal como funciona el mundo profesional.</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-tools"></i>
+                    <span style="font-size: 0.85rem; font-weight: 600;">Aprender Haciendo</span>
+                </div>
+            </article>
+
+            <!-- CONCEPTO -->
+            <article class="card card-concept">
+                <div class="card-header">
+                    <div class="card-icon icon-brown"><i class="fas fa-exchange-alt"></i></div>
+                    <h2 class="card-title">El Cambio de Paradigma</h2>
+                </div>
+                <div class="concept-split">
+                    <div>
+                        <h3 style="color: var(--accent-1); margin-bottom: 10px;">Estudio Tradicional (Pasivo)</h3>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 15px;">
+                            1. Leer teoría.<br>
+                            2. Memorizar conceptos.<br>
+                            3. Ver ejemplos resueltos.<br>
+                            4. Intentar ejercicios (a menudo fáciles).<br>
+                            <strong>Resultado:</strong> Sabes la teoría, pero te bloqueas ante problemas nuevos.
+                        </p>
+                    </div>
+                    <div class="concept-visual">
+                        <div class="c-icon"><i class="fas fa-flask"></i></div>
+                        <h3 style="color: var(--accent-3);">ABP (Activo)</h3>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 10px;">
+                            1. Recibir un problema complejo.<br>
+                            2. Identificar qué NO sabes (Gaps).<br>
+                            3. Investigar teoría dirigida a la solución.<br>
+                            4. Aplicar y resolver.<br>
+                            <strong>Resultado:</strong> Construyes conocimiento útil y duradero.
+                        </p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- CICLO ABP -->
+            <article class="card card-cycle">
+                <div class="card-header">
+                    <div class="card-icon icon-blue"><i class="fas fa-sync-alt"></i></div>
+                    <h2 class="card-title">El Ciclo ABP (4 Pasos)</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Sigue este ciclo cada vez que enfrentes un tema difícil. No saltes pasos.</p>
+                
+                <div class="cycle-wrapper">
+                    <div class="cycle-diagram">
+                        <div class="cycle-step step-s">
+                            <div class="cycle-num">1</div>
+                            <h5>SITUACIÓN</h5>
+                            <p>Lee y entiende el problema. ¿Qué piden?</p>
+                        </div>
+                        <div class="cycle-step step-i">
+                            <div class="cycle-num">2</div>
+                            <h5>IDENTIFICAR</h5>
+                            <p>¿Qué sé? ¿Qué NO sé? (Gaps de conocimiento).</p>
+                        </div>
+                        <div class="cycle-step step-a">
+                            <div class="cycle-num">3</div>
+                            <h5>APRENDER</h5>
+                            <p>Investiga solo lo necesario para avanzar.</p>
+                        </div>
+                        <div class="cycle-step step-r">
+                            <div class="cycle-num">4</div>
+                            <h5>RESOLVER</h5>
+                            <p>Aplica la información y sintetiza.</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- ESTRATEGIAS PARA PROBLEMAS COMPLEJOS -->
+            <article class="card card-strategies">
+                <div class="card-header">
+                    <div class="card-icon icon-red"><i class="fas fa-brain"></i></div>
+                    <h2 class="card-title">Estrategias para la Complejidad</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Un problema complejo no se resuelve de un golpe. Usa estas tácticas:</p>
+                
+                <div style="margin-top: 15px;">
+                    <div class="strat-item">
+                        <div class="strat-head">
+                            <i class="fas fa-cut"></i>
+                            <strong>Desglose Sistemático (Divide y Vencerás)</strong>
+                        </div>
+                        <div class="strat-body">Divide el problema grande en micro-problemas. Si tienes un caso clínico con 5 síntomas, analiza uno a uno. No intentes ver el todo antes que las partes.</div>
+                    </div>
+                    <div class="strat-item">
+                        <div class="strat-head">
+                            <i class="fas fa-project-diagram"></i>
+                            <strong>Mapa de Variables</strong>
+                        </div>
+                        <div class="strat-body">En problemas de física o economía, dibuja qué variables afectan a qué. Visualizar las relaciones reduce la carga mental.</div>
+                    </div>
+                    <div class="strat-item">
+                        <div class="strat-head">
+                            <i class="fas fa-undo"></i>
+                            <strong>Ingeniería Inversa</strong>
+                        </div>
+                        <div class="strat-body">Si el problema es imposible, busca la solución final y trabaja hacia atrás. Entender "cómo se llegó ahí" es tan valioso como intentarlo uno mismo.</div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- TÉCNICAS MENTALES -->
+            <article class="card card-techniques">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-head-side-virus"></i></div>
+                    <h2 class="card-title">Herramientas Mentales</h2>
+                </div>
+                <p style="font-size: 0.9rem; opacity: 0.9;">Técnicas probadas para destrabar la mente.</p>
+                
+                <div class="tech-list">
+                    <div class="tech-item">
+                        <i class="fas fa-duck"></i>
+                        <span><strong>Rubber Ducking:</strong> Explica el problema en voz alta a un objeto. Al verbalizar, tu cerebro organiza el caos.</span>
+                    </div>
+                    <div class="tech-item">
+                        <i class="fas fa-question"></i>
+                        <span><strong>Los "5 Porqués":</strong> Pregúntate "¿por qué?" 5 veces seguidas hasta llegar a la raíz del problema.</span>
+                    </div>
+                    <div class="tech-item">
+                        <i class="fas fa-atom"></i>
+                        <span><strong>First Principles:</strong> Desarma el problema en verdades básicas indiscutibles y reconstrúyelo desde cero.</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- HERRAMIENTAS DE APOYO -->
+            <article class="card card-tools">
+                <div class="card-header">
+                    <div class="card-icon icon-orange"><i class="fas fa-toolbox"></i></div>
+                    <h2 class="card-title">Herramientas de Apoyo</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Qué usar cuando te atasques.</p>
+                
+                <div class="tool-grid">
+                    <div class="tool-box">
+                        <i class="fas fa-file-alt"></i>
+                        <h5>Hoja de Gaps</h5>
+                        <p>Apunta todo lo que desconoces. Es tu lista de compras de estudio.</p>
+                    </div>
+                    <div class="tool-box">
+                        <i class="fas fa-drafting-compass"></i>
+                        <h5>Bosquejos</h5>
+                        <p>Dibuja el problema. Lo visual entra más rápido que lo textual.</p>
+                    </div>
+                    <div class="tool-box">
+                        <i class="fas fa-users"></i>
+                        <h5>Grupos ABP</h5>
+                        <p>Discute con otros. Diferentes perspectivas rompen bloqueos.</p>
+                    </div>
+                    <div class="tool-box">
+                        <i class="fas fa-robot"></i>
+                        <h5>IA como Tutor</h5>
+                        <p>Pide a ChatGPT que actúe como mentor, no que te dé la respuesta.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-text">No estudies para saber, estudia para resolver. El conocimiento sin aplicación es solo información muerta.</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+    </script>
+</body>
+</html>
