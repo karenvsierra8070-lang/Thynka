@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulacros de Examen - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --accent-1: #e74c3c; --accent-2: #3498db; --accent-3: #27ae60;
+            --accent-4: #9b59b6; --accent-5: #e67e22;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1300px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-hover); }
+
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, var(--accent-1) 0%, #c0392b 100%);
+            color: white; padding: 40px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 300px; height: 100%;
+            background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.15) 0%, transparent 60%);
+        }
+        .hero-text { flex: 1; z-index: 1; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.8rem;
+            font-weight: 600; margin-bottom: 15px;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.5rem;
+            margin-bottom: 12px; line-height: 1.2;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.9; max-width: 500px; }
+        .hero-visual {
+            width: 180px; height: 220px; background: rgba(255,255,255,0.1);
+            border-radius: 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 8px;
+            position: relative; z-index: 1; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .hero-visual i { font-size: 3rem; opacity: 0.8; }
+
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white;
+        }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #c0392b); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-2), #2980b9); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-3), #1e8449); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-4), #7d3c98); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-5), #d35400); }
+        .icon-brown { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+
+        /* Progressive Method */
+        .card-progressive {
+            grid-column: span 12;
+            background: var(--bg-tertiary);
+        }
+        .progression-visual {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-top: 25px; position: relative; padding: 0 20px;
+        }
+        .prog-line {
+            position: absolute; top: 50%; left: 40px; right: 40px;
+            height: 4px; background: var(--border-color); z-index: 0;
+        }
+        .prog-step {
+            position: relative; z-index: 1; text-align: center;
+            background: var(--bg-secondary); padding: 10px;
+            border-radius: 10px; width: 18%;
+            box-shadow: 0 4px 10px var(--shadow);
+        }
+        .prog-time {
+            font-family: 'Playfair Display', serif; font-size: 1.5rem;
+            font-weight: 700; color: var(--primary);
+        }
+        .prog-label { font-size: 0.75rem; color: var(--text-secondary); }
+        .prog-arrow { color: var(--primary); font-size: 1.2rem; margin-top: -10px; }
+        
+        .analysis-box {
+            margin-top: 25px; display: grid;
+            grid-template-columns: 1fr 1fr; gap: 20px;
+        }
+        .analysis-card {
+            background: var(--bg-secondary); padding: 20px;
+            border-radius: 12px; border-left: 4px solid var(--accent-3);
+        }
+        .analysis-card h4 { color: var(--primary-dark); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .analysis-card p { font-size: 0.9rem; color: var(--text-secondary); margin: 0; }
+
+        /* Subject Strategies */
+        .card-subjects {
+            grid-column: span 8;
+            grid-row: span 3;
+        }
+        .subject-accordion {
+            display: flex; flex-direction: column; gap: 10px; margin-top: 20px;
+        }
+        .sub-item {
+            background: var(--bg-tertiary); border-radius: 12px;
+            overflow: hidden;
+        }
+        .sub-header {
+            display: flex; align-items: center; gap: 15px; padding: 15px;
+            cursor: pointer; transition: background 0.3s;
+        }
+        .sub-header:hover { background: var(--beige); }
+        .sub-icon {
+            width: 40px; height: 40px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 1rem;
+        }
+        .sub-title { flex: 1; font-weight: 600; color: var(--primary-dark); }
+        .sub-toggle { color: var(--primary); transition: transform 0.3s; }
+        .sub-item.open .sub-toggle { transform: rotate(180deg); }
+        
+        .sub-content {
+            max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out;
+            background: var(--bg-secondary);
+        }
+        .sub-content-inner { padding: 15px; border-top: 1px solid var(--border-color); }
+        .sub-strategy { margin-bottom: 10px; }
+        .sub-strategy strong { color: var(--primary-dark); }
+        .time-badge {
+            display: inline-block; background: var(--accent-1); color: white;
+            padding: 2px 8px; border-radius: 4px; font-size: 0.7rem;
+            margin-left: 5px;
+        }
+
+        /* Tools & Construction */
+        .card-tools {
+            grid-column: span 4;
+        }
+        .tool-list { margin-top: 15px; }
+        .tool-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px; background: var(--bg-tertiary);
+            border-radius: 10px; margin-bottom: 10px;
+        }
+        .tool-icon {
+            width: 35px; height: 35px; background: var(--primary);
+            border-radius: 8px; display: flex; align-items: center;
+            justify-content: center; color: white;
+        }
+        .tool-text h5 { font-size: 0.9rem; color: var(--primary-dark); }
+        .tool-text p { font-size: 0.75rem; color: var(--text-secondary); margin: 0; }
+
+        /* Tips */
+        .card-tips {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-5) 0%, #d35400 100%);
+            color: white;
+        }
+        .card-tips .card-title { color: white; }
+        .tip-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 10px; margin-top: 15px;
+        }
+        .tip-box {
+            background: rgba(255,255,255,0.1); padding: 10px;
+            border-radius: 8px; font-size: 0.85rem;
+        }
+
+        /* Measurement */
+        .card-measurement {
+            grid-column: span 6;
+        }
+        .measure-stats {
+            display: flex; gap: 15px; margin-top: 20px;
+        }
+        .stat-box {
+            flex: 1; background: var(--bg-tertiary); padding: 15px;
+            border-radius: 12px; text-align: center;
+        }
+        .stat-value { font-size: 1.8rem; font-weight: 700; color: var(--primary); }
+        .stat-label { font-size: 0.75rem; color: var(--text-secondary); }
+
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 30px;
+            background: var(--bg-tertiary);
+        }
+        .footer-text {
+            font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 5px;
+        }
+
+        @media (max-width: 1100px) {
+            .progression-visual { flex-direction: column; gap: 15px; align-items: stretch; }
+            .prog-line { display: none; }
+            .prog-step { width: 100%; }
+            .analysis-box { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-hero, .card-progressive, .card-subjects, .card-tools,
+            .card-tips, .card-measurement, .card-footer { grid-column: span 12; }
+            .tip-grid { grid-template-columns: 1fr; }
+            .hero-text h1 { font-size: 1.8rem; }
+            .card-hero { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-stopwatch"></i> Simulacros de Examen</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-heartbeat"></i> Entrenamiento de Alto Rendimiento</span>
+                    <h1>Simulacros Bajo Presión</h1>
+                    <p>Estudiar y saber son cosas distintas. Saber y aprobar un examen en tiempo límite son mundos diferentes. Aquí aprenderás a construir tu propio simulacro y usar el método progresivo para ganar velocidad sin sacrificar precisión.</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span style="font-size: 0.85rem; font-weight: 600;">Velocidad + Precision</span>
+                </div>
+            </article>
+
+            <!-- METODO PROGRESIVO -->
+            <article class="card card-progressive">
+                <div class="card-header">
+                    <div class="card-icon icon-green"><i class="fas fa-chart-line"></i></div>
+                    <h2 class="card-title">¿Funciona el Método Progresivo? (60 -> 45 min)</h2>
+                </div>
+                <p style="font-size: 0.95rem; color: var(--text-primary);">
+                    <strong>Respuesta corta: SÍ.</strong> Es una técnica probada de "Sobrecarga Cognitiva". Funciona igual que el entrenamiento atlético de altura: si acostumbras a tu cerebro a funcionar con menos tiempo y más estrés, cuando llegue el examen real con tiempo completo, te sentirás "flotando", tranquilo y con sobrada capacidad.
+                </p>
+                
+                <div class="progression-visual">
+                    <div class="prog-line"></div>
+                    <div class="prog-step">
+                        <div class="prog-time">60m</div>
+                        <div class="prog-label">Linea Base</div>
+                    </div>
+                    <div class="prog-step">
+                        <i class="fas fa-arrow-right prog-arrow"></i>
+                        <div class="prog-time">55m</div>
+                        <div class="prog-label">Ligera Tension</div>
+                    </div>
+                    <div class="prog-step">
+                        <i class="fas fa-arrow-right prog-arrow"></i>
+                        <div class="prog-time">50m</div>
+                        <div class="prog-label">Forzando Velocidad</div>
+                    </div>
+                    <div class="prog-step">
+                        <i class="fas fa-arrow-right prog-arrow"></i>
+                        <div class="prog-time">45m</div>
+                        <div class="prog-label">Dominio</div>
+                    </div>
+                </div>
+
+                <div class="analysis-box">
+                    <div class="analysis-card">
+                        <h4><i class="fas fa-check-circle" style="color: var(--accent-3);"></i> Por qué funciona</h4>
+                        <p>Obliga a tu cerebro a optimizar rutas neuronales. Elimina los "vuelcos mentales" (pensar en lo que harás mañana) y te fuerza a tomar decisiones rápidas: "¿No sé esta? Saltar".</p>
+                    </div>
+                    <div class="analysis-card" style="border-color: var(--accent-1);">
+                        <h4><i class="fas fa-exclamation-triangle" style="color: var(--accent-1);"></i> La Trampa</h4>
+                        <p>Solo funciona si <strong>ya dominas el contenido</strong>. Reducir tiempo sin saber la materia solo genera pánico y refuerza el error. No intentes correr un maratón si no sabes caminar.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- ESTRATEGIAS POR ASIGNATURA -->
+            <article class="card card-subjects">
+                <div class="card-header">
+                    <div class="card-icon icon-blue"><i class="fas fa-graduation-cap"></i></div>
+                    <h2 class="card-title">Estrategias por Tipo de Asignatura</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">No todos los exámenes se simulan igual. Aquí la estrategia específica para 5 tipos comunes:</p>
+                
+                <div class="subject-accordion">
+                    <!-- 1. MATEMATICAS -->
+                    <div class="sub-item" onclick="toggleAccordion(this)">
+                        <div class="sub-header">
+                            <div class="sub-icon" style="background: var(--accent-2);"><i class="fas fa-square-root-alt"></i></div>
+                            <div class="sub-title">1. Ciencias Exactas (Matemáticas, Física, Química)</div>
+                            <i class="fas fa-chevron-down sub-toggle"></i>
+                        </div>
+                        <div class="sub-content">
+                            <div class="sub-content-inner">
+                                <div class="sub-strategy">
+                                    <strong>Enfoque de Simulacro:</strong> Problemas de dificultad mixta.
+                                    <span class="time-badge">50% Calculo / 50% Teoria</span>
+                                </div>
+                                <p style="font-size: 0.85rem; color: var(--text-secondary);">
+                                    <strong>Medición de Tiempo:</strong> No cronometres el examen entero. Cronometra <strong>por problema</strong>. Si un problema te toma más de 3 minutos, estás atascado. Simula la regla del "salto". El simulacro debe entrenarte a detectar cuándo rendirte en un ejercicio para salvar el resto del examen.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. ENSAYO -->
+                    <div class="sub-item" onclick="toggleAccordion(this)">
+                        <div class="sub-header">
+                            <div class="sub-icon" style="background: var(--accent-4);"><i class="fas fa-feather-alt"></i></div>
+                            <div class="sub-title">2. Ensayo / Humanidades (Historia, Literatura, Derecho)</div>
+                            <i class="fas fa-chevron-down sub-toggle"></i>
+                        </div>
+                        <div class="sub-content">
+                            <div class="sub-content-inner">
+                                <div class="sub-strategy">
+                                    <strong>Enfoque de Simulacro:</strong> "Skeleton Method" (Método Esqueleto).
+                                </div>
+                                <p style="font-size: 0.85rem; color: var(--text-secondary);">
+                                    Primero, haz un simulacro donde SOLO escribes el esquema (introducción, puntos clave, conclusión) en 10 minutos. Luego, haz simulacros completos. El objetivo es estructurar el pensamiento rápido. No intentes escribir bonito, intenta escribir lógico. Usa un cronómetro visible para verificar cuánto te toma redactar 500 palabras.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. MULTIPLE CHOICE -->
+                    <div class="sub-item" onclick="toggleAccordion(this)">
+                        <div class="sub-header">
+                            <div class="sub-icon" style="background: var(--accent-5);"><i class="fas fa-list-ul"></i></div>
+                            <div class="sub-title">3. Opción Múltiple (Test / Estandarizados)</div>
+                            <i class="fas fa-chevron-down sub-toggle"></i>
+                        </div>
+                        <div class="sub-content">
+                            <div class="sub-content-inner">
+                                <div class="sub-strategy">
+                                    <strong>Enfoque:</strong> Velocidad de descarte y "Two-Pass" (Dos pasadas).
+                                </div>
+                                <p style="font-size: 0.85rem; color: var(--text-secondary);">
+                                    <strong>Pasada 1:</strong> Responde lo fácil y marca lo dudoso con un círculo. <strong>Pasada 2:</strong> Vuelve solo a los marcados. Mide el tiempo por pregunta (ej: 1 min/pregunta). El simulacro progresivo aquí es Rey: intenta responder 50 preguntas en 40 minutos, luego en 35.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. IDIOMAS -->
+                    <div class="sub-item" onclick="toggleAccordion(this)">
+                        <div class="sub-header">
+                            <div class="sub-icon" style="background: var(--accent-1);"><i class="fas fa-language"></i></div>
+                            <div class="sub-title">4. Idiomas (Inglés, Francés, etc.)</div>
+                            <i class="fas fa-chevron-down sub-toggle"></i>
+                        </div>
+                        <div class="sub-content">
+                            <div class="sub-content-inner">
+                                <div class="sub-strategy">
+                                    <strong>Enfoque:</strong> Reading Comprehension bajo presión extrema.
+                                </div>
+                                <p style="font-size: 0.85rem; color: var(--text-secondary);">
+                                    En un examen de idiomas, el cansancio mata. Simula haciendo la sección de lectura AL FINAL de tu sesión de estudio, cuando ya estás cansado. Eso simula la fatiga real del examen. Cronometra tu velocidad de lectura (palabras por minuto) y trata de aumentarla sin perder comprensión.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5. MEMORIA PURA -->
+                    <div class="sub-item" onclick="toggleAccordion(this)">
+                        <div class="sub-header">
+                            <div class="sub-icon" style="background: var(--accent-3);"><i class="fas fa-brain"></i></div>
+                            <div class="sub-title">5. Memoria Pura (Anatomía, Biología, Definiciones)</div>
+                            <i class="fas fa-chevron-down sub-toggle"></i>
+                        </div>
+                        <div class="sub-content">
+                            <div class="sub-content-inner">
+                                <div class="sub-strategy">
+                                    <strong>Enfoque:</strong> "Borrado Progresivo".
+                                </div>
+                                <p style="font-size: 0.85rem; color: var(--text-secondary);">
+                                    Toma una hoja y escribe todo lo que recuerdes de un tema sin mirar (Método Página en Blanco). Cronometra cuánto tardas en "bloquearte". El objetivo no es escribir rápido, sino que el acceso a la memoria sea instantáneo. Si dudaste 5 segundos en qué era "mitosis", no lo sabes. Entrena la velocidad de recuperación.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- HERRAMIENTAS -->
+            <article class="card card-tools">
+                <div class="card-header">
+                    <div class="card-icon icon-orange"><i class="fas fa-tools"></i></div>
+                    <h2 class="card-title">Cómo Crear tu Examen</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">No esperes a que el profesor te dé uno. Constrúyelo.</p>
+                
+                <div class="tool-list">
+                    <div class="tool-item">
+                        <div class="tool-icon"><i class="fas fa-robot"></i></div>
+                        <div class="tool-text">
+                            <h5>ChatGPT / Claude</h5>
+                            <p>Prompt: "Genera un examen de [Materia] estilo [Universidad] con 10 preguntas difíciles y sus respuestas."</p>
+                        </div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-icon"><i class="fas fa-history"></i></div>
+                        <div class="tool-text">
+                            <h5>Exámenes Anteriores</h5>
+                            <p>Mezcla preguntas de 3 años distintos para evitar patrones memorizados.</p>
+                        </div>
+                    </div>
+                    <div class="tool-item">
+                        <div class="tool-icon"><i class="fas fa-random"></i></div>
+                        <div class="tool-text">
+                            <h5>Libro de Texto</h5>
+                            <p>Toma los ejercicios de "Fin de Capítulo" y ponles tiempo límite arbitrario.</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- TIPS -->
+            <article class="card card-tips">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-bolt"></i></div>
+                    <h2 class="card-title">Tips de Velocidad</h2>
+                </div>
+                <div class="tip-grid">
+                    <div class="tip-box"><i class="fas fa-clock"></i> Usa reloj analógico o cronómetro físico (evita mirar el móvil).</div>
+                    <div class="tip-box"><i class="fas fa-ban"></i> Sin pausas al baño. Simula la incomodidad real.</div>
+                    <div class="tip-box"><i class="fas fa-volume-up"></i> Simula ruido ambiental si será un examen masivo.</div>
+                    <div class="tip-box"><i class="fas fa-utensils"></i> Hazlo a la misma hora del examen real para ajustar el ritmo circadiano.</div>
+                </div>
+            </article>
+
+            <!-- MEDICION -->
+            <article class="card card-measurement">
+                <div class="card-header">
+                    <div class="card-icon icon-purple"><i class="fas fa-analytics"></i></div>
+                    <h2 class="card-title">¿Qué medir además de la nota?</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">La nota final es engañosa. Mide el proceso.</p>
+                
+                <div class="measure-stats">
+                    <div class="stat-box">
+                        <div class="stat-value">T/P</div>
+                        <div class="stat-label">Tiempo por Pregunta</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">%</div>
+                        <div class="stat-label">Tasa de Salto</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">Panic</div>
+                        <div class="stat-label">Zona de Bloqueo</div>
+                    </div>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-primary); margin-top: 15px;">
+                    <strong>Análisis Post-Simulacro:</strong> Si terminaste en 45 min pero tienes 5 errores, fuiste rápido pero impreciso. Si terminaste en 60 min y todo bien, necesitas velocidad. El equilibrio está en <strong>acelerar sin perder exactitud</strong>.
+                </p>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-text">Un simulacro no es para demostrar que sabes, es para descubrir lo que no sabes bajo presión. Usa el método progresivo para domar el tiempo.</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+
+        function toggleAccordion(element) {
+            const content = element.querySelector('.sub-content');
+            const isOpen = element.classList.contains('open');
+
+            // Close all others
+            document.querySelectorAll('.sub-item').forEach(item => {
+                item.classList.remove('open');
+                item.querySelector('.sub-content').style.maxHeight = null;
+            });
+
+            // Toggle current
+            if (!isOpen) {
+                element.classList.add('open');
+                content.style.maxHeight = content.scrollHeight + "px";
+            }
+        }
+    </script>
+</body>
+</html>
