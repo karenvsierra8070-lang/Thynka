@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metodo de las Tres Lecturas - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --accent-1: #d64545; --accent-2: #45a0d6; --accent-3: #45b088;
+            --accent-4: #8b5cf6; --accent-5: #e8833a;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1400px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-hover); }
+
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, #6b5538 0%, #5a4032 100%);
+            color: white; padding: 45px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px; min-height: 320px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 400px; height: 100%;
+            background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.15) 0%, transparent 60%);
+        }
+        .hero-text { flex: 1; z-index: 1; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.8rem;
+            font-weight: 600; margin-bottom: 15px;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.8rem;
+            margin-bottom: 12px; line-height: 1.2;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.95; max-width: 600px; line-height: 1.7; }
+        .hero-visual {
+            width: 280px; height: 250px; background: rgba(255,255,255,0.1);
+            border-radius: 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 12px;
+            position: relative; z-index: 1; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .hero-visual i { font-size: 4rem; opacity: 0.9; }
+
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white;
+        }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #c0392b); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-2), #2980b9); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-3), #1e8449); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-4), #7d3c98); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-5), #d35400); }
+        .icon-brown { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+
+        /* Specific Modules */
+        .card-intro {
+            grid-column: span 12;
+            background: var(--bg-tertiary);
+        }
+        .intro-box {
+            display: flex; align-items: center; gap: 20px;
+        }
+        .intro-icon { font-size: 3rem; color: var(--primary); opacity: 0.5; }
+
+        /* Steps Cards */
+        .card-step {
+            grid-column: span 4;
+            border-top: 6px solid;
+            display: flex; flex-direction: column;
+        }
+        .step-1 { border-color: var(--accent-5); }
+        .step-2 { border-color: var(--accent-2); }
+        .step-3 { border-color: var(--accent-3); }
+
+        .step-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 15px;
+        }
+        .step-num {
+            font-size: 4rem; font-weight: 700; line-height: 1;
+            font-family: 'Playfair Display', serif; opacity: 0.15;
+            color: var(--text-primary);
+        }
+        
+        .step-content { flex: 1; }
+        .step-content h3 { font-size: 1.2rem; color: var(--primary-dark); margin-bottom: 10px; }
+        .step-content p { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 15px; }
+        
+        .step-list { list-style: none; }
+        .step-list li {
+            display: flex; align-items: flex-start; gap: 8px;
+            font-size: 0.85rem; color: var(--text-primary); margin-bottom: 8px;
+        }
+        .step-list li i { margin-top: 4px; font-size: 0.7rem; }
+        .step-1 .step-list li i { color: var(--accent-5); }
+        .step-2 .step-list li i { color: var(--accent-2); }
+        .step-3 .step-list li i { color: var(--accent-3); }
+
+        .card-comparison {
+            grid-column: span 7;
+        }
+        .comp-table {
+            width: 100%; border-collapse: collapse;
+            margin-top: 15px;
+        }
+        .comp-table th {
+            text-align: left; padding: 12px; background: var(--bg-tertiary);
+            color: var(--primary-dark); border-radius: 8px;
+        }
+        .comp-table td {
+            padding: 12px; border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem; color: var(--text-secondary);
+        }
+        .comp-table td:first-child { font-weight: 600; color: var(--text-primary); }
+
+        .card-tips {
+            grid-column: span 5;
+            background: linear-gradient(135deg, var(--accent-4) 0%, #7d3c98 100%);
+            color: white;
+        }
+        .card-tips .card-title { color: white; }
+        .tip-item {
+            background: rgba(255,255,255,0.1); padding: 12px;
+            border-radius: 10px; margin-bottom: 10px; font-size: 0.9rem;
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        .card-mistake {
+            grid-column: span 6;
+        }
+        .mistake-box {
+            background: rgba(214, 69, 69, 0.1); padding: 15px;
+            border-radius: 12px; border-left: 4px solid var(--accent-1);
+            margin-bottom: 12px;
+        }
+        .mistake-box h4 { color: var(--accent-1); margin-bottom: 5px; }
+
+        .card-success {
+            grid-column: span 6;
+        }
+        .success-box {
+            background: rgba(69, 176, 136, 0.1); padding: 15px;
+            border-radius: 12px; border-left: 4px solid var(--accent-3);
+            margin-bottom: 12px;
+        }
+        .success-box h4 { color: var(--accent-3); margin-bottom: 5px; }
+
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 40px;
+            background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--beige) 100%);
+        }
+        .footer-quote {
+            font-family: 'Playfair Display', serif; font-size: 1.5rem;
+            color: var(--primary-dark); margin-bottom: 10px; font-style: italic;
+        }
+
+        @media (max-width: 1100px) {
+            .card-step { grid-column: span 12; }
+            .intro-box { flex-direction: column; text-align: center; }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-hero, .card-intro, .card-step, .card-comparison,
+            .card-tips, .card-mistake, .card-success, .card-footer { grid-column: span 12; }
+            .hero-text h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-layer-group"></i> Metodo Tres Lecturas</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-book-reader"></i> Estrategia de Comprension</span>
+                    <h1>El Metodo de las Tres Lecturas</h1>
+                    <p>Leer un texto complejo una sola vez es como intentar beber agua de una manguera a maxima presion: se te escapa todo. Este metodo ralentiza el proceso a proposito para asegurar que no solo "pases los ojos", sino que entiendas, conectes y retengas.</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-tasks"></i>
+                    <span style="font-size: 0.9rem; font-weight: 600;">3 Pasos Maestros</span>
+                </div>
+            </article>
+
+            <!-- INTRO -->
+            <article class="card card-intro">
+                <div class="intro-box">
+                    <div class="intro-icon"><i class="fas fa-brain"></i></div>
+                    <div>
+                        <h2 style="font-size: 1.1rem; color: var(--primary-dark); margin-bottom: 5px;">La Logica del Metodo</h2>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0;">No se trata de leer lento, se trata de leer con proposito. Cada lectura tiene una mision especifica que tu cerebro debe cumplir antes de pasar a la siguiente. Saltarte un paso rompe la cadena de aprendizaje.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- STEP 1: EXPLORACION -->
+            <article class="card card-step step-1">
+                <div class="card-header">
+                    <div class="card-icon icon-orange"><i class="fas fa-search-location"></i></div>
+                    <h2 class="card-title">Lectura 1: Exploracion</h2>
+                </div>
+                <div class="step-header">
+                    <div class="step-num">01</div>
+                </div>
+                <div class="step-content">
+                    <h3>Objetivo: Estructura y Panorama</h3>
+                    <p>Es una lectura rapida (Skimming). No buscas detalles, buscas la "forma" del texto.</p>
+                    <ul class="step-list">
+                        <li><i class="fas fa-circle"></i> Lee solo titulos y subtitulos.</li>
+                        <li><i class="fas fa-circle"></i> Revisa negritas, cursivas y diagramas.</li>
+                        <li><i class="fas fa-circle"></i> Lee el primer y ultimo parrafo.</li>
+                        <li><i class="fas fa-circle"></i> Preguntate: De que trata esto?</li>
+                    </ul>
+                </div>
+            </article>
+
+            <!-- STEP 2: ANALISIS -->
+            <article class="card card-step step-2">
+                <div class="card-header">
+                    <div class="card-icon icon-blue"><i class="fas fa-microscope"></i></div>
+                    <h2 class="card-title">Lectura 2: Analisis</h2>
+                </div>
+                <div class="step-header">
+                    <div class="step-num">02</div>
+                </div>
+                <div class="step-content">
+                    <h3>Objetivo: Comprension Profunda</h3>
+                    <p>Aqui si lees todo, palabra por palabra. Es la lectura tradicional pero con herramientas.</p>
+                    <ul class="step-list">
+                        <li><i class="fas fa-circle"></i> Lee a velocidad normal.</li>
+                        <li><i class="fas fa-circle"></i> Subraya ideas principales (con criterio).</li>
+                        <li><i class="fas fa-circle"></i> Busca palabras desconocidas.</li>
+                        <li><i class="fas fa-circle"></i> Relaciona conceptos nuevos con lo que ya sabes.</li>
+                    </ul>
+                </div>
+            </article>
+
+            <!-- STEP 3: SINTESIS -->
+            <article class="card card-step step-3">
+                <div class="card-header">
+                    <div class="card-icon icon-green"><i class="fas fa-project-diagram"></i></div>
+                    <h2 class="card-title">Lectura 3: Sintesis</h2>
+                </div>
+                <div class="step-header">
+                    <div class="step-num">03</div>
+                </div>
+                <div class="step-content">
+                    <h3>Objetivo: Fijacion y Resumen</h3>
+                    <p>No vuelves a leer el texto original, lees tus notas y reconstruyes.</p>
+                    <ul class="step-list">
+                        <li><i class="fas fa-circle"></i> Haz un resumen con tus propias palabras.</li>
+                        <li><i class="fas fa-circle"></i> Crea un esquema o mapa mental.</li>
+                        <li><i class="fas fa-circle"></i> Responde preguntas clave del texto.</li>
+                        <li><i class="fas fa-circle"></i> Ensena el tema a alguien mas (o a la pared).</li>
+                    </ul>
+                </div>
+            </article>
+
+            <!-- COMPARISON TABLE -->
+            <article class="card card-comparison">
+                <div class="card-header">
+                    <div class="card-icon icon-brown"><i class="fas fa-table"></i></div>
+                    <h2 class="card-title">Comparativa por Lectura</h2>
+                </div>
+                <table class="comp-table">
+                    <thead>
+                        <tr>
+                            <th>Fase</th>
+                            <th>Velocidad</th>
+                            <th>Que hace el cerebro</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Lectura 1 (Exploracion)</td>
+                            <td>Rapida (Skimming)</td>
+                            <td>Activa la curiosidad y prepara el "terreno" mental.</td>
+                        </tr>
+                        <tr>
+                            <td>Lectura 2 (Analisis)</td>
+                            <td>Normal / Lenta</td>
+                            <td>Procesa, conecta y cuestiona la informacion.</td>
+                        </tr>
+                        <tr>
+                            <td>Lectura 3 (Sintesis)</td>
+                            <td>Selectiva</td>
+                            <td>Consolida la memoria y crea redes neuronales.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </article>
+
+            <!-- TIPS -->
+            <article class="card card-tips">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-lightbulb"></i></div>
+                    <h2 class="card-title">Consejos Pro</h2>
+                </div>
+                <div class="tip-item">
+                    <i class="fas fa-coffee"></i>
+                    <span>Haz pausas entre cada lectura. Deja que el cerebro "desfragmente" la informacion.</span>
+                </div>
+                <div class="tip-item">
+                    <i class="fas fa-highlighter"></i>
+                    <span>Solo subraya en la Lectura 2. Si subrayas en la 1, subrayaras basura.</span>
+                </div>
+                <div class="tip-item">
+                    <i class="fas fa-robot"></i>
+                    <span>En la Lectura 3, intenta explicar el tema como si tuvieras 10 años.</span>
+                </div>
+            </article>
+
+            <!-- MISTAKES -->
+            <article class="card card-mistake">
+                <div class="card-header">
+                    <div class="card-icon icon-red"><i class="fas fa-times-circle"></i></div>
+                    <h2 class="card-title">Errores Comunes</h2>
+                </div>
+                <div class="mistake-box">
+                    <h4>Saltarse la Lectura 1</h4>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Crees que ahorras tiempo, pero lees la Lectura 2 sin contexto, lo que te obliga a releer parrafos.</p>
+                </div>
+                <div class="mistake-box">
+                    <h4>Hacer la Lectura 3 mentalmente</h4>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Pensar que ya lo sabes sin escribirlo o decirlo es la "Ilusion de Competencia". Te engañas creyendo que sabes.</p>
+                </div>
+            </article>
+
+            <!-- SUCCESS -->
+            <article class="card card-success">
+                <div class="card-header">
+                    <div class="card-icon icon-green"><i class="fas fa-check-circle"></i></div>
+                    <h2 class="card-title">Resultado Esperado</h2>
+                </div>
+                <div class="success-box">
+                    <h4>Memoria a Largo Plazo</h4>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Al pasar por el texto tres veces con enfoques distintos, la informacion se transfiere de la memoria de trabajo a la memoria a largo plazo.</p>
+                </div>
+                <div class="success-box">
+                    <h4>Capacidad de Sintesis</h4>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Entrenas a tu cerebro para extraer lo importante y desechar lo superficial, habilidad clave para examenes.</p>
+                </div>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-quote">"Leer tres veces no es perder tiempo, es ganar comprension. Un texto leido una vez es un texto visitado; leido tres veces es un texto conquistado."</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+    </script>
+</body>
+</html>
