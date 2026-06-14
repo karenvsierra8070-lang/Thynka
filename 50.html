@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bloqueos Mentales en Examenes - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --accent-1: #d64545; --accent-2: #45a0d6; --accent-3: #45b088;
+            --accent-4: #8b5cf6; --accent-5: #e8833a;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1400px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-hover); }
+
+        /* HERO */
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%);
+            color: white; padding: 45px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px; min-height: 320px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 400px; height: 100%;
+            background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.1) 0%, transparent 60%);
+        }
+        .hero-text { flex: 1; z-index: 1; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 8px 18px; border-radius: 25px; font-size: 0.85rem;
+            font-weight: 600; margin-bottom: 15px;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.8rem;
+            margin-bottom: 12px; line-height: 1.2;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.95; max-width: 600px; line-height: 1.7; }
+        .hero-visual {
+            width: 280px; height: 250px; background: rgba(255,255,255,0.1);
+            border-radius: 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 12px;
+            position: relative; z-index: 1; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .hero-visual i { font-size: 4rem; opacity: 0.9; }
+
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white;
+        }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #c0392b); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-2), #2980b9); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-3), #1e8449); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-4), #7d3c98); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-5), #d35400); }
+        .icon-brown { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+
+        /* SCIENCE MODULE */
+        .card-science {
+            grid-column: span 6;
+            background: var(--bg-tertiary);
+        }
+        .science-visual {
+            display: flex; align-items: center; gap: 20px; margin-top: 20px;
+        }
+        .brain-box {
+            flex: 1; text-align: center; padding: 15px;
+            background: var(--bg-secondary); border-radius: 15px;
+        }
+        .brain-box i { font-size: 2.5rem; margin-bottom: 8px; display: block; }
+        .brain-active i { color: var(--accent-3); }
+        .brain-freeze i { color: var(--accent-1); }
+        .brain-arrow { font-size: 1.5rem; color: var(--primary); }
+
+        /* PROTOCOL */
+        .card-protocol {
+            grid-column: span 6;
+            grid-row: span 2;
+            border: 2px solid var(--accent-1);
+        }
+        .protocol-step {
+            display: flex; gap: 15px; margin-bottom: 20px;
+            padding: 15px; background: var(--bg-tertiary);
+            border-radius: 12px; border-left: 4px solid var(--primary);
+        }
+        .proto-num {
+            font-size: 2rem; font-weight: 700; color: var(--primary);
+            font-family: 'Playfair Display', serif; line-height: 1;
+        }
+        .proto-content h4 { color: var(--primary-dark); margin-bottom: 4px; font-size: 1.05rem; }
+        .proto-content p { font-size: 0.85rem; color: var(--text-secondary); margin: 0; }
+
+        /* TECHNIQUES GRID */
+        .card-techs {
+            grid-column: span 12;
+        }
+        .tech-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 20px; margin-top: 25px;
+        }
+        .tech-box {
+            background: var(--bg-tertiary); padding: 20px;
+            border-radius: 16px; border-top: 5px solid;
+            transition: transform 0.3s;
+        }
+        .tech-box:hover { transform: translateY(-5px); }
+        .tech-box.t-brain { border-color: var(--accent-2); }
+        .tech-box.t-stupid { border-color: var(--accent-5); }
+        .tech-box.t-skip { border-color: var(--accent-3); }
+        
+        .tech-icon { font-size: 2rem; margin-bottom: 10px; display: block; }
+        .tech-title { font-size: 1.1rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 8px; }
+        .tech-desc { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px; }
+        .tech-action {
+            background: rgba(139, 107, 71, 0.1); padding: 10px;
+            border-radius: 8px; font-size: 0.8rem; font-weight: 600;
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        /* DON'TS */
+        .card-donts {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-1) 0%, #c0392b 100%);
+            color: white;
+        }
+        .card-donts .card-title { color: white; }
+        .dont-item {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 12px; background: rgba(255,255,255,0.15);
+            padding: 12px; border-radius: 10px;
+        }
+
+        /* TIMER RESET */
+        .card-timer {
+            grid-column: span 6;
+        }
+        .timer-visual {
+            display: flex; align-items: center; justify-content: center;
+            gap: 15px; margin-top: 20px;
+        }
+        .t-block {
+            width: 60px; height: 60px; background: var(--bg-tertiary);
+            border-radius: 12px; display: flex;
+            align-items: center; justify-content: center;
+            font-weight: 700; font-size: 1.2rem; color: var(--primary-dark);
+            border: 2px solid var(--border-color);
+        }
+        .t-block.active { background: var(--accent-3); color: white; border-color: var(--accent-3); }
+        .t-arrow { color: var(--text-secondary); }
+
+        /* FOOTER */
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 40px;
+            background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--beige) 100%);
+        }
+        .footer-quote {
+            font-family: 'Playfair Display', serif; font-size: 1.5rem;
+            color: var(--primary-dark); margin-bottom: 10px; font-style: italic;
+        }
+
+        @media (max-width: 1100px) {
+            .tech-grid { grid-template-columns: 1fr; }
+            .science-visual { flex-direction: column; }
+            .brain-arrow { transform: rotate(90deg); }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-hero, .card-science, .card-protocol, .card-techs,
+            .card-donts, .card-timer, .card-footer { grid-column: span 12; }
+            .hero-text h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-head-side-virus"></i> Bloqueos Mentales</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-snowflake"></i> Emergencia Cognitiva</span>
+                    <h1>Como Romper un Bloqueo Mental en el Examen</h1>
+                    <p>Te sientas, lees la pregunta y... blanco. Tu mente esta vacía. El panico sube. No es que no sepas, es que tu cerebro ha entrado en "Modo Supervivencia". Aqui tienes el protocolo exacto para hackear tu biología y recuperar el acceso a tu memoria en menos de 60 segundos.</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-unlock"></i>
+                    <span style="font-size: 0.9rem; font-weight: 600;">Acceso Restablecido</span>
+                </div>
+            </article>
+
+            <!-- SCIENCE -->
+            <article class="card card-science">
+                <div class="card-header">
+                    <div class="card-icon icon-blue"><i class="fas fa-brain"></i></div>
+                    <h2 class="card-title">La Causa: Secuestro de la Amigdala</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Tu cerebro piensa que el examen es un león.</p>
+                
+                <div class="science-visual">
+                    <div class="brain-box brain-active">
+                        <i class="fas fa-brain"></i>
+                        <strong>Normal</strong>
+                        <span style="font-size: 0.7rem; color: var(--text-secondary);">Cortex Prefrontal Activo (Logica)</span>
+                    </div>
+                    <div class="brain-arrow"><i class="fas fa-exchange-alt"></i></div>
+                    <div class="brain-box brain-freeze">
+                        <i class="fas fa-brain"></i>
+                        <strong>Bloqueo</strong>
+                        <span style="font-size: 0.7rem; color: var(--text-secondary);">Amigdala Dominante (Panico)</span>
+                    </div>
+                </div>
+                <p style="margin-top: 15px; font-size: 0.85rem; color: var(--text-secondary);">
+                    Cuando la <strong>amigdala</strong> (centro del miedo) se activa, apaga literalmente el cortex prefrontal (tu logica). No eres tonto, estas en "Modo Huida". La solucion es fisica, no mental.
+                </p>
+            </article>
+
+            <!-- EMERGENCY PROTOCOL -->
+            <article class="card card-protocol">
+                <div class="card-header">
+                    <div class="card-icon icon-red"><i class="fas fa-first-aid"></i></div>
+                    <h2 class="card-title">Protocolo de Emergencia (60 Segundos)</h2>
+                </div>
+                
+                <div class="protocol-step">
+                    <div class="proto-num">1</div>
+                    <div class="proto-content">
+                        <h4>STOP. Baja el lapiz (0-10 seg)</h4>
+                        <p>Sueltalo fisicamente. Muestra a tu cerebro que no hay amenaza inmediata. No sigas escribiendo cosas sin sentido.</p>
+                    </div>
+                </div>
+                <div class="protocol-step">
+                    <div class="proto-num">2</div>
+                    <div class="proto-content">
+                        <h4>Respiracion Forzada (10-30 seg)</h4>
+                        <p>Inhala 4 seg, exhala 8 seg. Exhalar largo activa el nervio vago. Es el "freno de emergencia" del estres.</p>
+                    </div>
+                </div>
+                <div class="protocol-step">
+                    <div class="proto-num">3</div>
+                    <div class="proto-content">
+                        <h4>Grounding Sensorial (30-45 seg)</h4>
+                        <p>Mira alrededor. Toca la textura de la mesa. Siente la temperatura del aire. Sal de tu cabeza y entra en tu cuerpo.</p>
+                    </div>
+                </div>
+                <div class="protocol-step">
+                    <div class="proto-num">4</div>
+                    <div class="proto-content">
+                        <h4>El "Brain Dump" (45-60 seg)</h4>
+                        <p>Escribe en una esquina cualquier palabra relacionada con el tema, aunque sea "no se". Escribe para encender el motor.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- TECHNIQUES -->
+            <article class="card card-techs">
+                <div class="card-header">
+                    <div class="card-icon icon-purple"><i class="fas fa-wrench"></i></div>
+                    <h2 class="card-title">Tecnicas de Desbloqueo</h2>
+                </div>
+                
+                <div class="tech-grid">
+                    <div class="tech-box t-brain">
+                        <i class="fas fa-cloud-download-alt" style="color: var(--accent-2);"></i>
+                        <div class="tech-title">Brain Dump (Descarga)</div>
+                        <div class="tech-desc">No intentes recordar la respuesta exacta. Escribe TODAS las palabras clave del tema en una hoja aparte. La respuesta correcta suele estar escondida en esa lista.</div>
+                        <div class="tech-action">
+                            <i class="fas fa-pencil-alt"></i>
+                            <span>Ej: Para Historia, escribe: "1800, Napoleon, Guerra, Paz..."</span>
+                        </div>
+                    </div>
+
+                    <div class="tech-box t-stupid">
+                        <i class="fas faflushed" style="color: var(--accent-5);"></i>
+                        <div class="tech-title">La Respuesta Estupida</div>
+                        <div class="tech-desc">Escribe una respuesta intencionalmente mala o ridicula. Eso baja la presion de "perfeccion" y reactiva tu creatividad.</div>
+                        <div class="tech-action">
+                            <i class="fas fa-laugh"></i>
+                            <span>Ej: "El autor queria decir que..." (aunque sea mentira, empieza el flujo).</span>
+                        </div>
+                    </div>
+
+                    <div class="tech-box t-skip">
+                        <i class="fas fa-forward" style="color: var(--accent-3);"></i>
+                        <div class="tech-title">Salto Estrategico</div>
+                        <div class="tech-desc">Si a los 60 segundos no salio nada, MARCA LA PREGUNTA y pasate a la siguiente. Responder otras preguntas puede "contextualizar" tu cerebro y traerte la respuesta despues.</div>
+                        <div class="tech-action">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Vuelve al final. A veces el cerebro procesa en segundo plano.</span>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- DON'TS -->
+            <article class="card card-donts">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-ban"></i></div>
+                    <h2 class="card-title">Lo que NO debes hacer</h2>
+                </div>
+                
+                <div class="dont-item">
+                    <i class="fas fa-times-circle"></i>
+                    <div><strong>Quedarte mirando la hoja.</strong> El silencio y la inaccion alimentan el panico. Muevete.</div>
+                </div>
+                <div class="dont-item">
+                    <i class="fas fa-times-circle"></i>
+                    <div><strong>Pensar "Se me olvido todo".</strong> Eso es falso. Es un bloqueo de acceso, no de memoria. No te digas eso.</div>
+                </div>
+                <div class="dont-item">
+                    <i class="fas fa-times-circle"></i>
+                    <div><strong>Mirar el reloj cada 10 segundos.</strong> El tiempo corre, pero el panico lo acelera. Ignoralo un minuto.</div>
+                </div>
+            </article>
+
+            <!-- TIMER RESET -->
+            <article class="card card-timer">
+                <div class="card-header">
+                    <div class="card-icon icon-orange"><i class="fas fa-hourglass-start"></i></div>
+                    <h2 class="card-title">Regla de los Bloques de 5 Min</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Divide el tiempo mentalmente. Si te bloqueas, reinicia el contador mental.</p>
+                
+                <div class="timer-visual">
+                    <div class="t-block active">5</div>
+                    <div class="t-arrow"><i class="fas fa-arrow-right"></i></div>
+                    <div class="t-block">5</div>
+                    <div class="t-arrow"><i class="fas fa-arrow-right"></i></div>
+                    <div class="t-block">5</div>
+                    <div class="t-arrow"><i class="fas fa-arrow-right"></i></div>
+                    <div class="t-block">5</div>
+                </div>
+                <p style="margin-top: 15px; font-size: 0.85rem; color: var(--text-secondary); text-align: center;">
+                    Enfocate en el bloque actual. El bloqueo es temporal. Tu proximo bloque de 5 min sera productivo.
+                </p>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-quote">"Un bloqueo mental no es una pared, es una puerta con el cerrojo puesto. La llave es la calma."</p>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Respira. Suelta el lapiz. Empieza de nuevo.</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+    </script>
+</body>
+</html>
