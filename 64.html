@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tecnica de Micropasos - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --accent-1: #c0392b; --accent-2: #27ae60; --accent-3: #2980b9;
+            --accent-4: #d35400; --accent-5: #16a085; --accent-6: #8e44ad;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1300px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-hover); }
+
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, #3498db 0%, #1a5276 100%);
+            color: white; padding: 40px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 300px; height: 100%;
+            background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.08) 0%, transparent 60%);
+        }
+        .hero-text { flex: 1; z-index: 1; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.8rem;
+            font-weight: 600; margin-bottom: 15px;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.5rem;
+            margin-bottom: 12px; line-height: 1.2;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.9; max-width: 550px; }
+        .hero-visual {
+            width: 180px; height: 220px; background: rgba(255,255,255,0.1);
+            border-radius: 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 8px;
+            position: relative; z-index: 1; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .hero-visual i { font-size: 3rem; opacity: 0.8; }
+
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white;
+        }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #922b21); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-2), #1e8449); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-3), #1a5276); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-4), #ba4a00); }
+        .icon-teal { background: linear-gradient(135deg, var(--accent-5), #0e6655); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-6), #6c3483); }
+        .icon-brown { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+
+        /* Interactive Resistance Meter */
+        .card-meter {
+            grid-column: span 6;
+            grid-row: span 2;
+        }
+        .meter-container {
+            margin-top: 25px; text-align: center;
+        }
+        .meter-task {
+            font-size: 1.1rem; font-weight: 600; color: var(--primary-dark);
+            margin-bottom: 20px; padding: 15px; background: var(--bg-tertiary);
+            border-radius: 10px; min-height: 55px; display: flex; align-items: center;
+            justify-content: center; transition: all 0.3s;
+        }
+        .meter-bar-container {
+            position: relative; height: 30px; background: var(--bg-tertiary);
+            border-radius: 15px; overflow: hidden; margin-bottom: 10px;
+        }
+        .meter-bar {
+            height: 100%; transition: width 0.5s ease, background 0.5s ease;
+            border-radius: 15px;
+        }
+        .meter-label {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-weight: 700; font-size: 0.9rem; z-index: 2;
+        }
+        .meter-slider {
+            width: 100%; margin: 20px 0;
+            accent-color: var(--accent-3);
+        }
+        .meter-scale {
+            display: flex; justify-content: space-between;
+            font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 20px;
+        }
+        .meter-message {
+            padding: 20px; border-radius: 12px; font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        .msg-hard { background: rgba(192, 57, 43, 0.1); color: var(--accent-1); border: 1px solid var(--accent-1); }
+        .msg-medium { background: rgba(211, 84, 0, 0.1); color: var(--accent-4); border: 1px solid var(--accent-4); }
+        .msg-easy { background: rgba(39, 174, 96, 0.1); color: var(--accent-2); border: 1px solid var(--accent-2); }
+
+        /* Examples Breakdown */
+        .card-examples {
+            grid-column: span 6;
+        }
+        .example-accordion {
+            margin-top: 20px;
+        }
+        .ex-item {
+            background: var(--bg-tertiary); border-radius: 12px;
+            margin-bottom: 10px; overflow: hidden;
+        }
+        .ex-header {
+            padding: 18px; display: flex; justify-content: space-between;
+            align-items: center; cursor: pointer; transition: all 0.3s;
+        }
+        .ex-header:hover { background: var(--beige); }
+        .ex-title { font-weight: 600; color: var(--primary-dark); }
+        .ex-icon { transition: transform 0.3s; color: var(--accent-3); }
+        .ex-item.open .ex-icon { transform: rotate(180deg); }
+        .ex-body {
+            max-height: 0; overflow: hidden; transition: max-height 0.4s ease;
+            background: var(--bg-secondary); border-top: 1px solid var(--border-color);
+        }
+        .ex-item.open .ex-body { max-height: 500px; }
+        .ex-step-list { padding: 20px; }
+        .ex-step {
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 10px; font-size: 0.9rem;
+        }
+        .ex-step i { color: var(--accent-2); font-size: 0.7rem; }
+        .ex-step.big { color: var(--accent-1); text-decoration: line-through; opacity: 0.6; }
+        .ex-step.big i { color: var(--accent-1); }
+
+        /* Neuro Explanation */
+        .card-neuro {
+            grid-column: span 6;
+        }
+        .neuro-visual {
+            display: flex; align-items: center; justify-content: space-around;
+            margin: 30px 0;
+        }
+        .brain-box {
+            text-align: center; padding: 20px;
+            border-radius: 15px; width: 45%;
+        }
+        .brain-box.scared { background: rgba(192, 57, 43, 0.1); border: 2px solid var(--accent-1); }
+        .brain-box.calmed { background: rgba(39, 174, 96, 0.1); border: 2px solid var(--accent-2); }
+        .brain-icon { font-size: 3rem; margin-bottom: 15px; }
+        .brain-box.scared .brain-icon { color: var(--accent-1); }
+        .brain-box.calmed .brain-icon { color: var(--accent-2); }
+        .brain-title { font-weight: 700; font-size: 1rem; margin-bottom: 5px; }
+        .brain-desc { font-size: 0.8rem; color: var(--text-secondary); }
+        .vs-circle {
+            width: 40px; height: 40px; background: var(--bg-tertiary);
+            border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-weight: 700; font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* Warning */
+        .card-warning {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-4) 0%, #ba4a00 100%);
+            color: white;
+        }
+        .card-warning .card-title { color: white; }
+        .warning-item {
+            background: rgba(255,255,255,0.15); padding: 15px;
+            border-radius: 12px; margin-bottom: 10px;
+        }
+        .warning-item h4 { font-size: 0.95rem; margin-bottom: 5px; }
+        .warning-item p { font-size: 0.85rem; opacity: 0.9; margin: 0; }
+
+        /* Tips */
+        .card-tips {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-2) 0%, #1e8449 100%);
+            color: white;
+        }
+        .card-tips .card-title { color: white; }
+        .tip-item {
+            background: rgba(255,255,255,0.15); padding: 12px 15px;
+            border-radius: 10px; margin-bottom: 8px;
+            display: flex; align-items: center; gap: 12px; font-size: 0.9rem;
+        }
+
+        /* Checklist */
+        .card-checklist {
+            grid-column: span 6;
+        }
+        .checklist-container { margin-top: 15px; }
+        .check-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 15px; background: var(--bg-tertiary);
+            border-radius: 12px; margin-bottom: 10px; cursor: pointer;
+            transition: all 0.3s;
+        }
+        .check-item:hover { background: var(--beige); }
+        .check-box {
+            width: 24px; height: 24px; border: 2px solid var(--primary);
+            border-radius: 6px; display: flex; align-items: center;
+            justify-content: center; transition: all 0.3s; flex-shrink: 0;
+        }
+        .check-item.checked .check-box {
+            background: var(--accent-2); border-color: var(--accent-2);
+        }
+        .check-box i { color: white; font-size: 0.8rem; opacity: 0; }
+        .check-item.checked .check-box i { opacity: 1; }
+        .check-text { font-size: 0.9rem; }
+        .check-item.checked .check-text {
+            text-decoration: line-through; color: var(--text-secondary);
+        }
+
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 30px;
+            background: var(--bg-tertiary);
+        }
+        .footer-text {
+            font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 5px;
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-hero, .card-meter, .card-examples, .card-neuro,
+            .card-warning, .card-tips, .card-checklist, .card-footer { grid-column: span 12; }
+            .hero-text h1 { font-size: 1.8rem; }
+            .card-hero { flex-direction: column; text-align: center; }
+            .neuro-visual { flex-direction: column; gap: 15px; }
+            .brain-box { width: 100%; }
+            .vs-circle { display: none; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-shoe-prints"></i> Tecnica de Micropasos</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-baby"></i> Kaizen Personal</span>
+                    <h1>La Tecnica de los Micropasos</h1>
+                    <p>El cerebro se resiste a los cambios grandes. Es evolucion: gastar energia es peligroso. Pero un paso tan pequeno que parece ridiculo? Eso el cerebro lo permite. Si no puedes empezar, es que el paso es demasiado grande. Hazlo mas pequeno.</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-feather-alt"></i>
+                    <span style="font-size: 0.85rem; font-weight: 600;">Tan facil que no puedes decir no</span>
+                </div>
+            </article>
+
+            <!-- INTERACTIVE METER -->
+            <article class="card card-meter">
+                <div class="card-header">
+                    <div class="card-icon icon-blue"><i class="fas fa-bolt"></i></div>
+                    <h2 class="card-title">Medidor de Resistencia Mental</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary); text-align: center;">Desliza para reducir la tarea y ver como cambia la resistencia.</p>
+                
+                <div class="meter-container">
+                    <div class="meter-task" id="meterTask">Escribir la tesis completa</div>
+                    
+                    <div class="meter-bar-container">
+                        <div class="meter-bar" id="meterBar" style="width: 100%; background: var(--accent-1);"></div>
+                        <div class="meter-label" id="meterLabel">Resistencia: 100%</div>
+                    </div>
+                    
+                    <input type="range" class="meter-slider" id="meterSlider" min="0" max="4" value="0" step="1">
+                    
+                    <div class="meter-scale">
+                        <span>Tesis completa</span>
+                        <span>Un capitulo</span>
+                        <span>Un parrafo</span>
+                        <span>Una frase</span>
+                        <span>Abrir el archivo</span>
+                    </div>
+                    
+                    <div class="meter-message msg-hard" id="meterMessage">
+                        <i class="fas fa-brain"></i> <strong>Amigdala activada:</strong> El cerebro detecta una amenaza grande. Alta probabilidad de procrastinacion.
+                    </div>
+                </div>
+            </article>
+
+            <!-- EXAMPLES -->
+            <article class="card card-examples">
+                <div class="card-header">
+                    <div class="card-icon icon-teal"><i class="fas fa-list-ul"></i></div>
+                    <h2 class="card-title">Ejemplos de Reduccion</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Clic para ver como se descomponen las tareas comunes.</p>
+                
+                <div class="example-accordion">
+                    <div class="ex-item">
+                        <div class="ex-header">
+                            <span class="ex-title"><i class="fas fa-running" style="margin-right: 10px; color: var(--accent-5);"></i>Empezar a hacer ejercicio</span>
+                            <i class="fas fa-chevron-down ex-icon"></i>
+                        </div>
+                        <div class="ex-body">
+                            <div class="ex-step-list">
+                                <div class="ex-step big"><i class="fas fa-times"></i> Ir al gimnasio 1 hora</div>
+                                <div class="ex-step"><i class="fas fa-check"></i> Ponerse la ropa deportiva</div>
+                                <div class="ex-step"><i class="fas fa-check"></i> Hacer 5 minutos de estiramientos</div>
+                                <div class="ex-step"><i class="fas fa-check"></i> Salir a caminar a la vuelta de la manzana</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ex-item">
+                        <div class="ex-header">
+                            <span class="ex-title"><i class="fas fa-book" style="margin-right: 10px; color: var(--accent-6);"></i>Estudiar para el examen</span>
+                            <i class="fas fa-chevron-down ex-icon"></i>
+                        </div>
+                        <div class="ex-body">
+                            <div class="ex-step-list">
+                                <div class="ex-step big"><i class="fas fa-times"></i> Estudiar todo el capitulo</div>
+                                <div class="ex-step"><i class="fas fa-check"></i> Abrir el libro en la pagina correcta</div>
+                                <div class="ex-step"><i class="fas fa-check"></i> Leer solo los titulos</div>
+                                <div class="ex-step"><i class="fas fa-check"></i> Leer un parrafo clave</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ex-item">
+                        <div class="ex-header">
+                            <span class="ex-title"><i class="fas fa-bed" style="margin-right: 10px; color: var(--accent-4);"></i>Ordenar el cuarto</span>
+                            <i class="fas fa-chevron-down ex-icon"></i>
+                        </div>
+                        <div class="ex-body">
+                            <div class="ex-step-list">
+                                <div class="ex-step big"><i class="fas fa-times"></i> Limpiar todo el cuarto</div>
+                                <div class="ex-step"><i class="fas fa-check"></i> Recoger solo 3 cosas del suelo</div>
+                                <div class="ex-step"><i class="fas fa-check"></i> Tirar la basura que este a la vista</div>
+                                <div class="ex-step"><i class="fas fa-check"></i> Hacer la cama (mal, pero hecha)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- NEURO -->
+            <article class="card card-neuro">
+                <div class="card-header">
+                    <div class="card-icon icon-purple"><i class="fas fa-brain"></i></div>
+                    <h2 class="card-title">La Ciencia Detras</h2>
+                </div>
+                
+                <div class="neuro-visual">
+                    <div class="brain-box scared">
+                        <div class="brain-icon"><i class="fas fa-ghost"></i></div>
+                        <div class="brain-title">Tarea Grande</div>
+                        <div class="brain-desc">Activa la amigdala (miedo). El cerebro libera cortisol y busca escape: Netflix, celu, limpiar...</div>
+                    </div>
+                    
+                    <div class="vs-circle">VS</div>
+                    
+                    <div class="brain-box calmed">
+                        <div class="brain-icon"><i class="fas fa-smile-beam"></i></div>
+                        <div class="brain-title">Micropaso</div>
+                        <div class="brain-desc">No activa la alarma. Es tan pequeno que el cerebro lo permite. Una vez empezas, la dopamina te empuja a seguir.</div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- WARNING -->
+            <article class="card card-warning">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-exclamation-triangle"></i></div>
+                    <h2 class="card-title">Errores Frecuentes</h2>
+                </div>
+                
+                <div class="warning-item">
+                    <h4>El paso sigue siendo "grande"</h4>
+                    <p>Si sientes resistencia, no es un micropaso. "Escribir 5 paginas" NO es un micropaso. "Abrir Word" si lo es.</p>
+                </div>
+                <div class="warning-item">
+                    <h4>Subestimar el paso pequeno</h4>
+                    <p>Piensas "que tonteria, eso no sirve de nada". Error. Sirve para ROMPER LA INERCIA. Lo dificil es empezar, no seguir.</p>
+                </div>
+                <div class="warning-item">
+                    <h4>No celebrar el micro-logro</h4>
+                    <p>Hiciste el micropaso? Bien. No lo minimices. Tu cerebro necesita la recompensa para crear el habito.</p>
+                </div>
+            </article>
+
+            <!-- TIPS -->
+            <article class="card card-tips">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-lightbulb"></i></div>
+                    <h2 class="card-title">Claves del Exito</h2>
+                </div>
+                
+                <div class="tip-item">
+                    <i class="fas fa-bullseye"></i>
+                    <span>El objetivo es la consistencia, no la intensidad. Mejor 5 minutos hoy que 2 horas nunca.</span>
+                </div>
+                <div class="tip-item">
+                    <i class="fas fa-stopwatch"></i>
+                    <span>Usa un temporizador: "Solo 2 minutos". Acepta que pararas cuando suene, pero probablemente seguiras.</span>
+                </div>
+                <div class="tip-item">
+                    <i class="fas fa-link"></i>
+                    <span>Anclalo a un habito existente: "Despues de tomar cafe, leere una pagina".</span>
+                </div>
+                <div class="tip-item">
+                    <i class="fas fa-glasses"></i>
+                    <span>Prepara el entorno la noche anterior. Deja el libro abierto en la mesa.</span>
+                </div>
+            </article>
+
+            <!-- CHECKLIST -->
+            <article class="card card-checklist">
+                <div class="card-header">
+                    <div class="card-icon icon-orange"><i class="fas fa-clipboard-check"></i></div>
+                    <h2 class="card-title">Tu Primer Micropaso Hoy</h2>
+                </div>
+                
+                <div class="checklist-container">
+                    <div class="check-item">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <span class="check-text">Elige una tarea que has estado postergando</span>
+                    </div>
+                    <div class="check-item">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <span class="check-text">Reducela hasta que sea ridiculamente facil</span>
+                    </div>
+                    <div class="check-item">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <span class="check-text">Hazlo AHORA (no ma rdena, no en 5 min)</span>
+                    </div>
+                    <div class="check-item">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <span class="check-text">Celebralo: di "bien hecho" en voz alta</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-text">Un viaje de mil kilometros comienza con un solo paso. Pero si ese paso te paraliza, haz un paso mas pequeno. Y otro. Y otro. Lo importante no es el tamano del paso, es la direccion.</p>
+                <p style="font-size: 0.85rem; color: var(--primary); margin-top: 10px; font-weight: 600;">Tan pequeno que el "no" es imposible.</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+
+        // Resistance Meter
+        const meterSlider = document.getElementById('meterSlider');
+        const meterTask = document.getElementById('meterTask');
+        const meterBar = document.getElementById('meterBar');
+        const meterLabel = document.getElementById('meterLabel');
+        const meterMessage = document.getElementById('meterMessage');
+
+        const meterLevels = [
+            { task: "Escribir la tesis completa", resistance: 100, color: "var(--accent-1)", msg: "Amigdala activada: El cerebro detecta una amenaza grande. Alta probabilidad de procrastinacion.", class: "msg-hard" },
+            { task: "Escribir un capitulo", resistance: 80, color: "var(--accent-1)", msg: "Todavia intimidante. Seguramente encontraras excusas para no hacerlo hoy.", class: "msg-hard" },
+            { task: "Escribir una pagina", resistance: 50, color: "var(--accent-4)", msg: "Ya es manejable, pero la resistencia inicial sigue ahi.", class: "msg-medium" },
+            { task: "Escribir una frase", resistance: 20, color: "var(--accent-5)", msg: "Casi sin resistencia. Cualquiera puede escribir una frase.", class: "msg-easy" },
+            { task: "Solo abrir el archivo Word", resistance: 5, color: "var(--accent-2)", msg: "Resistencia casi cero. Es tan facil que ni siquiera cuenta como trabajo. Empieza aqui.", class: "msg-easy" }
+        ];
+
+        meterSlider.addEventListener('input', function() {
+            const level = meterLevels[this.value];
+            
+            meterTask.textContent = level.task;
+            meterTask.style.transform = "scale(1.02)";
+            setTimeout(() => meterTask.style.transform = "scale(1)", 200);
+            
+            meterBar.style.width = level.resistance + "%";
+            meterBar.style.background = level.color;
+            
+            meterLabel.textContent = "Resistencia: " + level.resistance + "%";
+            if (level.resistance < 30) {
+                meterLabel.style.color = "white";
+            } else {
+                meterLabel.style.color = "";
+            }
+            
+            meterMessage.className = "meter-message " + level.class;
+            meterMessage.innerHTML = "<i class=\"fas fa-brain\"></i> <strong>" + (level.class === "msg-hard" ? "Amigdala activada:" : level.class === "msg-medium" ? "Resistencia media:" : "Modo seguro:") + "</strong> " + level.msg.split(":")[1];
+        });
+
+        // Example Accordion
+        const exampleItems = document.querySelectorAll('.ex-item');
+        exampleItems.forEach(function(item) {
+            const header = item.querySelector('.ex-header');
+            header.addEventListener('click', function() {
+                const isOpen = item.classList.contains('open');
+                exampleItems.forEach(function(i) { i.classList.remove('open'); });
+                if (!isOpen) {
+                    item.classList.add('open');
+                }
+            });
+        });
+
+        // Checklist
+        const checkItems = document.querySelectorAll('.check-item');
+        checkItems.forEach(function(item) {
+            item.addEventListener('click', function() {
+                this.classList.toggle('checked');
+            });
+        });
+    </script>
+</body>
+</html>
