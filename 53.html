@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IA como Tutora - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --accent-1: #c0392b; --accent-2: #27ae60; --accent-3: #2980b9;
+            --accent-4: #d35400; --accent-5: #16a085;
+            --accent-6: #8e44ad;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1300px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-hover); }
+
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, #1a3a4a 0%, #0d2633 100%);
+            color: white; padding: 40px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 300px; height: 100%;
+            background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.08) 0%, transparent 60%);
+        }
+        .hero-text { flex: 1; z-index: 1; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.8rem;
+            font-weight: 600; margin-bottom: 15px;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.5rem;
+            margin-bottom: 12px; line-height: 1.2;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.9; max-width: 550px; }
+        .hero-visual {
+            width: 180px; height: 220px; background: rgba(255,255,255,0.1);
+            border-radius: 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 8px;
+            position: relative; z-index: 1; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .hero-visual i { font-size: 3rem; opacity: 0.8; }
+
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white;
+        }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #922b21); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-2), #1e8449); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-3), #1a5276); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-4), #ba4a00); }
+        .icon-teal { background: linear-gradient(135deg, var(--accent-5), #0e6655); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-6), #6c3483); }
+        .icon-brown { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+
+        /* Comparison */
+        .card-comparison {
+            grid-column: span 12;
+        }
+        .comp-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 30px; margin-top: 25px;
+        }
+        .comp-col {
+            background: var(--bg-tertiary); border-radius: 20px;
+            padding: 25px; border-top: 6px solid;
+        }
+        .col-wrong { border-color: var(--accent-1); }
+        .col-right { border-color: var(--accent-2); }
+        
+        .comp-head { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .comp-icon {
+            width: 60px; height: 60px; border-radius: 15px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; color: white;
+        }
+        .col-wrong .comp-icon { background: var(--accent-1); }
+        .col-right .comp-icon { background: var(--accent-2); }
+        
+        .comp-title { font-size: 1.3rem; font-weight: 700; color: var(--primary-dark); }
+        .comp-desc { font-size: 0.9rem; color: var(--text-secondary); }
+        
+        .comp-list { margin-top: 15px; }
+        .comp-item {
+            display: flex; gap: 10px; margin-bottom: 10px; font-size: 0.9rem;
+            align-items: flex-start;
+        }
+        .comp-item i { margin-top: 4px; flex-shrink: 0; }
+        .col-wrong .comp-item i { color: var(--accent-1); }
+        .col-right .comp-item i { color: var(--accent-2); }
+
+        /* Method Cards */
+        .card-method {
+            grid-column: span 6;
+            grid-row: span 2;
+        }
+        .method-step {
+            background: var(--bg-tertiary); border-radius: 15px;
+            padding: 20px; margin-bottom: 12px;
+            border-left: 4px solid var(--accent-3);
+            transition: all 0.3s;
+        }
+        .method-step:hover {
+            transform: translateX(5px);
+            border-left-color: var(--accent-2);
+        }
+        .step-num {
+            display: inline-block; width: 28px; height: 28px;
+            background: var(--accent-3); color: white;
+            border-radius: 50%; text-align: center; line-height: 28px;
+            font-weight: 700; font-size: 0.85rem; margin-right: 10px;
+        }
+        .step-title { font-weight: 600; color: var(--primary-dark); display: inline; }
+        .step-desc { font-size: 0.85rem; color: var(--text-secondary); margin-top: 8px; }
+
+        /* Prompts Card */
+        .card-prompts {
+            grid-column: span 6;
+        }
+        .prompt-box {
+            background: var(--bg-tertiary); border-radius: 12px;
+            padding: 15px; margin-bottom: 10px;
+            border: 1px dashed var(--border-color);
+            cursor: pointer; transition: all 0.3s;
+        }
+        .prompt-box:hover {
+            border-style: solid; border-color: var(--accent-5);
+            background: rgba(22, 160, 133, 0.1);
+        }
+        .prompt-label {
+            font-size: 0.75rem; color: var(--accent-5); font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .prompt-text {
+            font-size: 0.9rem; color: var(--primary-dark);
+            font-style: italic; margin-top: 5px;
+        }
+        .copy-toast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: var(--accent-2); color: white; padding: 12px 24px;
+            border-radius: 10px; font-size: 0.9rem; opacity: 0;
+            transition: opacity 0.3s; pointer-events: none;
+        }
+        .copy-toast.show { opacity: 1; }
+
+        /* Socratic Levels */
+        .card-socratic {
+            grid-column: span 6;
+        }
+        .level-item {
+            display: flex; align-items: center; gap: 15px;
+            padding: 15px; background: var(--bg-tertiary);
+            border-radius: 12px; margin-bottom: 10px;
+            cursor: pointer; transition: all 0.3s;
+        }
+        .level-item:hover, .level-item.active {
+            background: rgba(39, 174, 96, 0.15);
+            transform: scale(1.02);
+        }
+        .level-dot {
+            width: 12px; height: 12px; border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .level-1 .level-dot { background: var(--accent-1); }
+        .level-2 .level-dot { background: var(--accent-4); }
+        .level-3 .level-dot { background: var(--accent-3); }
+        .level-4 .level-dot { background: var(--accent-2); }
+        .level-info h4 { font-size: 0.95rem; color: var(--primary-dark); margin-bottom: 3px; }
+        .level-info p { font-size: 0.8rem; color: var(--text-secondary); margin: 0; }
+        .level-detail {
+            background: var(--bg-secondary); border: 1px solid var(--border-color);
+            border-radius: 10px; padding: 15px; margin-top: 10px;
+            display: none;
+        }
+        .level-detail.show { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Chat Simulation */
+        .card-chat {
+            grid-column: span 6;
+            grid-row: span 2;
+        }
+        .chat-container {
+            background: var(--bg-tertiary); border-radius: 15px;
+            padding: 20px; max-height: 400px; overflow-y: auto;
+        }
+        .chat-msg {
+            margin-bottom: 15px; animation: msgSlide 0.4s ease;
+        }
+        @keyframes msgSlide {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .msg-user { text-align: right; }
+        .msg-bubble {
+            display: inline-block; padding: 12px 16px;
+            border-radius: 15px; max-width: 85%;
+            font-size: 0.9rem;
+        }
+        .msg-user .msg-bubble {
+            background: var(--accent-3); color: white;
+            border-bottom-right-radius: 5px;
+        }
+        .msg-ia .msg-bubble {
+            background: var(--bg-secondary); color: var(--text-primary);
+            border-bottom-left-radius: 5px; border: 1px solid var(--border-color);
+        }
+        .chat-controls {
+            display: flex; gap: 10px; margin-top: 15px;
+        }
+        .chat-btn {
+            flex: 1; padding: 12px; border: none; border-radius: 10px;
+            background: var(--bg-tertiary); color: var(--text-primary);
+            font-family: inherit; font-weight: 600; cursor: pointer;
+            transition: all 0.3s; font-size: 0.85rem;
+        }
+        .chat-btn:hover { background: var(--accent-3); color: white; }
+
+        /* Mistakes */
+        .card-mistakes {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-1) 0%, #922b21 100%);
+            color: white;
+        }
+        .card-mistakes .card-title { color: white; }
+        .mistake-item {
+            background: rgba(255,255,255,0.15); padding: 15px;
+            border-radius: 12px; margin-bottom: 10px;
+            display: flex; gap: 12px; align-items: flex-start;
+        }
+        .mistake-item i { margin-top: 3px; flex-shrink: 0; }
+
+        /* Benefits */
+        .card-benefits {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-2) 0%, #1e8449 100%);
+            color: white;
+        }
+        .card-benefits .card-title { color: white; }
+        .benefit-item {
+            background: rgba(255,255,255,0.15); padding: 12px 15px;
+            border-radius: 10px; margin-bottom: 8px;
+            display: flex; align-items: center; gap: 12px; font-size: 0.9rem;
+        }
+
+        /* Checklist */
+        .card-checklist {
+            grid-column: span 6;
+        }
+        .check-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px; background: var(--bg-tertiary);
+            border-radius: 10px; margin-bottom: 8px;
+            cursor: pointer; transition: all 0.3s;
+        }
+        .check-item:hover { background: var(--beige); }
+        .check-box {
+            width: 22px; height: 22px; border: 2px solid var(--primary);
+            border-radius: 6px; display: flex; align-items: center;
+            justify-content: center; transition: all 0.3s; flex-shrink: 0;
+        }
+        .check-item.checked .check-box {
+            background: var(--accent-2); border-color: var(--accent-2);
+        }
+        .check-box i { color: white; font-size: 0.75rem; opacity: 0; }
+        .check-item.checked .check-box i { opacity: 1; }
+        .check-text { font-size: 0.9rem; color: var(--text-primary); }
+        .check-item.checked .check-text {
+            text-decoration: line-through;
+            color: var(--text-secondary);
+        }
+
+        /* Scaffold */
+        .card-scaffold {
+            grid-column: span 6;
+        }
+        .scaffold-visual {
+            display: flex; align-items: flex-end; gap: 15px;
+            justify-content: center; margin: 25px 0;
+        }
+        .scaffold-bar {
+            width: 60px; border-radius: 8px 8px 0 0;
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: flex-end; padding: 10px;
+            color: white; font-weight: 700; font-size: 0.85rem;
+            transition: all 0.3s; cursor: pointer;
+        }
+        .scaffold-bar:hover { transform: scaleY(1.05); }
+        .bar-1 { height: 60px; background: var(--accent-1); }
+        .bar-2 { height: 90px; background: var(--accent-4); }
+        .bar-3 { height: 130px; background: var(--accent-3); }
+        .bar-4 { height: 170px; background: var(--accent-2); }
+        .scaffold-label {
+            text-align: center; font-size: 0.75rem;
+            color: var(--text-secondary); margin-top: 5px;
+        }
+
+        /* Example Cards */
+        .card-examples {
+            grid-column: span 12;
+        }
+        .ex-tabs {
+            display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;
+        }
+        .ex-tab {
+            padding: 10px 20px; background: var(--bg-tertiary);
+            border: 1px solid var(--border-color); border-radius: 10px;
+            cursor: pointer; transition: all 0.3s;
+            font-family: inherit; font-weight: 600; color: var(--text-primary);
+        }
+        .ex-tab:hover, .ex-tab.active {
+            background: var(--primary); color: white; border-color: var(--primary);
+        }
+        .ex-content {
+            display: none; animation: fadeIn 0.3s ease;
+        }
+        .ex-content.active { display: block; }
+        .ex-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+        }
+        .ex-box {
+            background: var(--bg-tertiary); border-radius: 15px; padding: 20px;
+        }
+        .ex-box h4 {
+            font-size: 0.9rem; color: var(--primary-dark); margin-bottom: 10px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .ex-box p { font-size: 0.85rem; color: var(--text-secondary); }
+        .ex-bad { border-left: 4px solid var(--accent-1); }
+        .ex-good { border-left: 4px solid var(--accent-2); }
+
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 30px;
+            background: var(--bg-tertiary);
+        }
+        .footer-text {
+            font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 5px;
+        }
+
+        @media (max-width: 1100px) {
+            .comp-grid, .ex-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-hero, .card-comparison, .card-method, .card-prompts,
+            .card-socratic, .card-chat, .card-mistakes, .card-benefits,
+            .card-checklist, .card-scaffold, .card-examples, .card-footer { grid-column: span 12; }
+            .hero-text h1 { font-size: 1.8rem; }
+            .card-hero { flex-direction: column; text-align: center; }
+            .scaffold-visual { flex-wrap: wrap; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-robot"></i> IA como Tutora</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-graduation-cap"></i> Aprendizaje Activo</span>
+                    <h1>Usa la IA como Tutora, no como Solucionadora</h1>
+                    <p>El objetivo no es terminar la tarea rápido, es aprender. Una tutora de verdad no te da las respuestas: te hace pensar, te guía y celebra cuando lo logras tú solo. Aquí aprendes a usar la IA así.</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-lightbulb"></i>
+                    <span style="font-size: 0.85rem; font-weight: 600;">Piensa primero</span>
+                </div>
+            </article>
+
+            <!-- COMPARISON -->
+            <article class="card card-comparison">
+                <div class="card-header">
+                    <div class="card-icon icon-brown"><i class="fas fa-balance-scale-left"></i></div>
+                    <h2 class="card-title">Dos Formas de Usar la IA</h2>
+                </div>
+                <div class="comp-grid">
+                    <div class="comp-col col-wrong">
+                        <div class="comp-head">
+                            <div class="comp-icon"><i class="fas fa-times-circle"></i></div>
+                            <div>
+                                <div class="comp-title">Modo "Hazlo por mi"</div>
+                                <div class="comp-desc">Aprendizaje pasivo</div>
+                            </div>
+                        </div>
+                        <div class="comp-list">
+                            <div class="comp-item">
+                                <i class="fas fa-times"></i>
+                                <span>Pides: "Resuelve este ejercicio"</span>
+                            </div>
+                            <div class="comp-item">
+                                <i class="fas fa-times"></i>
+                                <span>Copias la respuesta sin entender</span>
+                            </div>
+                            <div class="comp-item">
+                                <i class="fas fa-times"></i>
+                                <span>Resultado: No aprendiste nada</span>
+                            </div>
+                            <div class="comp-item">
+                                <i class="fas fa-times"></i>
+                                <span>En el examen: Te bloqueas</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="comp-col col-right">
+                        <div class="comp-head">
+                            <div class="comp-icon"><i class="fas fa-check-circle"></i></div>
+                            <div>
+                                <div class="comp-title">Modo "Ayudame a entender"</div>
+                                <div class="comp-desc">Aprendizaje activo</div>
+                            </div>
+                        </div>
+                        <div class="comp-list">
+                            <div class="comp-item">
+                                <i class="fas fa-check"></i>
+                                <span>Pides: "Guíame sin dar la respuesta"</span>
+                            </div>
+                            <div class="comp-item">
+                                <i class="fas fa-check"></i>
+                                <span>La IA hace preguntas que te hacen pensar</span>
+                            </div>
+                            <div class="comp-item">
+                                <i class="fas fa-check"></i>
+                                <span>Tú llegas a la respuesta con pistas</span>
+                            </div>
+                            <div class="comp-item">
+                                <i class="fas fa-check"></i>
+                                <span>Resultado: Aprendiste de verdad</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- METHOD STEPS -->
+            <article class="card card-method">
+                <div class="card-header">
+                    <div class="card-icon icon-blue"><i class="fas fa-list-ol"></i></div>
+                    <h2 class="card-title">Metodo de los 4 Pasos</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Antes de preguntar a la IA, sigue este proceso mental.</p>
+                
+                <div class="method-step">
+                    <span class="step-num">1</span>
+                    <span class="step-title">Intenta por tu cuenta</span>
+                    <p class="step-desc">Dedica al menos 5 minutos a resolverlo solo. Escribe lo que sí entiendes y dónde te atascas.</p>
+                </div>
+                <div class="method-step">
+                    <span class="step-num">2</span>
+                    <span class="step-title">Identifica tu duda especifica</span>
+                    <p class="step-desc">No digas "no entiendo nada". Di: "No sé qué hacer después de despejar la X".</p>
+                </div>
+                <div class="method-step">
+                    <span class="step-num">3</span>
+                    <span class="step-title">Pide guia, no soluciones</span>
+                    <p class="step-desc">Usa prompts como: "Dame una pista" o "Qué concepto deberia repasar".</p>
+                </div>
+                <div class="method-step">
+                    <span class="step-num">4</span>
+                    <span class="step-title">Explica lo que aprendiste</span>
+                    <p class="step-desc">Al final, dile a la IA: "Déjame explicarte cómo lo resolví". Si puedes explicarlo, lo aprendiste.</p>
+                </div>
+            </article>
+
+            <!-- PROMPTS -->
+            <article class="card card-prompts">
+                <div class="card-header">
+                    <div class="card-icon icon-teal"><i class="fas fa-comment-dots"></i></div>
+                    <h2 class="card-title">Prompts que Funcionan</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Clic para copiar y usar en tu IA favorita.</p>
+                
+                <div class="prompt-box" data-prompt="Actua como mi tutor. Tengo este problema: [pegar problema]. NO me des la respuesta. Hazme preguntas que me guien a resolverlo yo mismo. Empieza preguntandome qué entiendo del enunciado.">
+                    <div class="prompt-label">Para empezar</div>
+                    <div class="prompt-text">"Actua como mi tutor. Tengo este problema... NO me des la respuesta. Hazme preguntas que me guien..."</div>
+                </div>
+                <div class="prompt-box" data-prompt="Estoy atascado en este punto: [explicar]. Dame SOLO una pista pequena, no la solucion completa.">
+                    <div class="prompt-label">Cuando te atascas</div>
+                    <div class="prompt-text">"Estoy atascado en este punto... Dame SOLO una pista pequena, no la solucion completa."</div>
+                </div>
+                <div class="prompt-box" data-prompt="Quiero verificar si entendi. Te explico mi razonamiento y tu me dices si hay errores en mi logica, sin corregirlos directamente: [tu explicacion]">
+                    <div class="prompt-label">Para verificar</div>
+                    <div class="prompt-text">"Quiero verificar si entendi. Te explico mi razonamiento y tu me dices si hay errores..."</div>
+                </div>
+            </article>
+
+            <!-- SOCRATIC LEVELS -->
+            <article class="card card-socratic">
+                <div class="card-header">
+                    <div class="card-icon icon-purple"><i class="fas fa-layer-group"></i></div>
+                    <h2 class="card-title">Niveles de Ayuda Socratica</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Pide el nivel que necesitas. Clic para ver ejemplos.</p>
+                
+                <div class="level-item level-1" data-level="1">
+                    <div class="level-dot"></div>
+                    <div class="level-info">
+                        <h4>Nivel 1: Solo direccion</h4>
+                        <p>"Dime por donde empezar"</p>
+                    </div>
+                </div>
+                <div class="level-detail" id="level1">
+                    <strong>Ejemplo de respuesta IA:</strong> "Para resolver una ecuación cuadrática, siempre empezamos identificando los coeficientes a, b y c. ¿Puedes identificarlos en tu ecuación?"
+                </div>
+                
+                <div class="level-item level-2" data-level="2">
+                    <div class="level-dot"></div>
+                    <div class="level-info">
+                        <h4>Nivel 2: Pista conceptual</h4>
+                        <p>"Recuerdame que concepto aplicar"</p>
+                    </div>
+                </div>
+                <div class="level-detail" id="level2">
+                    <strong>Ejemplo de respuesta IA:</strong> "Ya tienes los coeficientes. Existe una fórmula famosa que nos da las soluciones de cualquier ecuación cuadrática. Su nombre empieza con 'B'... ¿la recuerdas?"
+                </div>
+                
+                <div class="level-item level-3" data-level="3">
+                    <div class="level-dot"></div>
+                    <div class="level-info">
+                        <h4>Nivel 3: Ejemplo similar</h4>
+                        <p>"Muestrame un ejemplo parecido"</p>
+                    </div>
+                </div>
+                <div class="level-detail" id="level3">
+                    <strong>Ejemplo de respuesta IA:</strong> "Mira este ejemplo similar: x² - 5x + 6 = 0. Aquí a=1, b=-5, c=6. Si aplicamos la fórmula... ¿Te animas a aplicar el mismo proceso a tu ecuación?"
+                </div>
+                
+                <div class="level-item level-4" data-level="4">
+                    <div class="level-dot"></div>
+                    <div class="level-info">
+                        <h4>Nivel 4: Verificacion final</h4>
+                        <p>"Mi respuesta es X, es correcta?"</p>
+                    </div>
+                </div>
+                <div class="level-detail" id="level4">
+                    <strong>Ejemplo de respuesta IA:</strong> "Tu respuesta es x=3. ¿Cómo puedes verificarla tú mismo? Pista: sustituye x por 3 en la ecuación original. ¿Qué obtienes? Esa es la mejor forma de comprobar."
+                </div>
+            </article>
+
+            <!-- CHAT SIMULATION -->
+            <article class="card card-chat">
+                <div class="card-header">
+                    <div class="card-icon icon-green"><i class="fas fa-comments"></i></div>
+                    <h2 class="card-title">Simulacion de Chat</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Ejemplo de como se ve una conversacion efectiva.</p>
+                
+                <div class="chat-container" id="chatContainer">
+                    <div class="chat-msg msg-user">
+                        <div class="msg-bubble">Tengo este problema: 2x + 5 = 13. No me des la respuesta, solo guíame.</div>
+                    </div>
+                </div>
+                
+                <div class="chat-controls">
+                    <button class="chat-btn" id="chatNext">
+                        <i class="fas fa-arrow-right"></i> Siguiente respuesta
+                    </button>
+                    <button class="chat-btn" id="chatReset">
+                        <i class="fas fa-redo"></i> Reiniciar
+                    </button>
+                </div>
+            </article>
+
+            <!-- MISTAKES -->
+            <article class="card card-mistakes">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-exclamation-triangle"></i></div>
+                    <h2 class="card-title">Errores Comunes</h2>
+                </div>
+                
+                <div class="mistake-item">
+                    <i class="fas fa-times"></i>
+                    <span><strong>"Es que no tengo tiempo"</strong> - Usar la IA para copiar te ahorra 10 minutos hoy, pero te costará horas en el examen.</span>
+                </div>
+                <div class="mistake-item">
+                    <i class="fas fa-times"></i>
+                    <span><strong>"La IA me explica mejor que el profe"</strong> - Cierto, pero si solo lees la explicación sin practicar, se te olvida en 2 días.</span>
+                </div>
+                <div class="mistake-item">
+                    <i class="fas fa-times"></i>
+                    <span><strong>"Ya entiendo, no necesito hacerlo"</strong> - Entender no es lo mismo que saber hacer. Haz ejercicios similares después.</span>
+                </div>
+            </article>
+
+            <!-- BENEFITS -->
+            <article class="card card-benefits">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-trophy"></i></div>
+                    <h2 class="card-title">Beneficios de Aprender Asi</h2>
+                </div>
+                
+                <div class="benefit-item">
+                    <i class="fas fa-brain"></i>
+                    <span>Creas conexiones neuronales más fuertes</span>
+                </div>
+                <div class="benefit-item">
+                    <i class="fas fa-clock"></i>
+                    <span>Retienes información por meses, no días</span>
+                </div>
+                <div class="benefit-item">
+                    <i class="fas fa-smile"></i>
+                    <span>Sientes satisfacción real al resolver</span>
+                </div>
+                <div class="benefit-item">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>En exámenes: no dependes de trucos</span>
+                </div>
+            </article>
+
+            <!-- CHECKLIST -->
+            <article class="card card-checklist">
+                <div class="card-header">
+                    <div class="card-icon icon-orange"><i class="fas fa-tasks"></i></div>
+                    <h2 class="card-title">Checklist Antes de Preguntar</h2>
+                </div>
+                
+                <div class="check-item">
+                    <div class="check-box"><i class="fas fa-check"></i></div>
+                    <span class="check-text">Leí el enunciado completo 2 veces</span>
+                </div>
+                <div class="check-item">
+                    <div class="check-box"><i class="fas fa-check"></i></div>
+                    <span class="check-text">Intenté resolverlo al menos 5 minutos</span>
+                </div>
+                <div class="check-item">
+                    <div class="check-box"><i class="fas fa-check"></i></div>
+                    <span class="check-text">Identifiqué exactamente dónde me atasco</span>
+                </div>
+                <div class="check-item">
+                    <div class="check-box"><i class="fas fa-check"></i></div>
+                    <span class="check-text">Busqué en mis apuntes el tema relacionado</span>
+                </div>
+                <div class="check-item">
+                    <div class="check-box"><i class="fas fa-check"></i></div>
+                    <span class="check-text">Redacté mi duda de forma específica</span>
+                </div>
+            </article>
+
+            <!-- SCAFFOLD VISUAL -->
+            <article class="card card-scaffold">
+                <div class="card-header">
+                    <div class="card-icon icon-brown"><i class="fas fa-chart-bar"></i></div>
+                    <h2 class="card-title">El Andamiaje del Aprendizaje</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary); text-align: center;">Menos ayuda de la IA = Más aprendizaje real</p>
+                
+                <div class="scaffold-visual">
+                    <div class="scaffold-bar bar-1" title="Nivel 1">
+                        <span>1</span>
+                    </div>
+                    <div class="scaffold-bar bar-2" title="Nivel 2">
+                        <span>2</span>
+                    </div>
+                    <div class="scaffold-bar bar-3" title="Nivel 3">
+                        <span>3</span>
+                    </div>
+                    <div class="scaffold-bar bar-4" title="Nivel 4">
+                        <span>4</span>
+                    </div>
+                </div>
+                <div class="scaffold-visual" style="align-items: flex-start;">
+                    <div class="scaffold-label">IA hace<br>casi todo</div>
+                    <div class="scaffold-label"></div>
+                    <div class="scaffold-label"></div>
+                    <div class="scaffold-label">TU haces<br>casi todo</div>
+                </div>
+            </article>
+
+            <!-- EXAMPLES WITH TABS -->
+            <article class="card card-examples">
+                <div class="card-header">
+                    <div class="card-icon icon-red"><i class="fas fa-code"></i></div>
+                    <h2 class="card-title">Ejemplos por Materia</h2>
+                </div>
+                
+                <div class="ex-tabs">
+                    <button class="ex-tab active" data-tab="matematicas">Matematicas</button>
+                    <button class="ex-tab" data-tab="redaccion">Redaccion</button>
+                    <button class="ex-tab" data-tab="programacion">Programacion</button>
+                    <button class="ex-tab" data-tab="historia">Historia</button>
+                </div>
+                
+                <div class="ex-content active" id="matematicas">
+                    <div class="ex-grid">
+                        <div class="ex-box ex-bad">
+                            <h4><i class="fas fa-times-circle" style="color: var(--accent-1);"></i> Prompt incorrecto</h4>
+                            <p>"Resuelve: integral de x² dx"</p>
+                        </div>
+                        <div class="ex-box ex-good">
+                            <h4><i class="fas fa-check-circle" style="color: var(--accent-2);"></i> Prompt correcto</h4>
+                            <p>"Tengo que integrar x². Sé que hay una regla para potencias, pero no recuerdo si el exponente suma o resta. ¿Me das una pista sobre esa regla?"</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="ex-content" id="redaccion">
+                    <div class="ex-grid">
+                        <div class="ex-box ex-bad">
+                            <h4><i class="fas fa-times-circle" style="color: var(--accent-1);"></i> Prompt incorrecto</h4>
+                            <p>"Escribe un ensayo sobre el cambio climático"</p>
+                        </div>
+                        <div class="ex-box ex-good">
+                            <h4><i class="fas fa-check-circle" style="color: var(--accent-2);"></i> Prompt correcto</h4>
+                            <p>"Escribí este párrafo sobre cambio climático. ¿Me puedes decir si mi tesis es clara? No me reescribas nada, solo dime qué se puede mejorar."</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="ex-content" id="programacion">
+                    <div class="ex-grid">
+                        <div class="ex-box ex-bad">
+                            <h4><i class="fas fa-times-circle" style="color: var(--accent-1);"></i> Prompt incorrecto</h4>
+                            <p>"Hazme un código que ordene una lista"</p>
+                        </div>
+                        <div class="ex-box ex-good">
+                            <h4><i class="fas fa-check-circle" style="color: var(--accent-2);"></i> Prompt correcto</h4>
+                            <p>"Intenté hacer bubble sort pero mi código entra en loop infinito. ¿Me indicas dónde puede estar el error sin darme la solución directa?"</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="ex-content" id="historia">
+                    <div class="ex-grid">
+                        <div class="ex-box ex-bad">
+                            <h4><i class="fas fa-times-circle" style="color: var(--accent-1);"></i> Prompt incorrecto</h4>
+                            <p>"Dame las causas de la Revolución Francesa"</p>
+                        </div>
+                        <div class="ex-box ex-good">
+                            <h4><i class="fas fa-check-circle" style="color: var(--accent-2);"></i> Prompt correcto</h4>
+                            <p>"Estudio la Revolución Francesa. Ya identifiqué la crisis económica. ¿Qué otros factores sociales debería investigar? Dame pistas, no la lista completa."</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-text">La IA es como un mapa: te muestra el camino, pero tú debes caminar. Si el mapa te carga, nunca aprenderás a navegar.</p>
+                <p style="font-size: 0.85rem; color: var(--primary); margin-top: 10px; font-weight: 600;">Tu futuro yo de examen te lo agradecerá.</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <div class="copy-toast" id="copyToast">Prompt copiado al portapapeles</div>
+
+    <script>
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+
+        // Copy prompts
+        const promptBoxes = document.querySelectorAll('.prompt-box');
+        const copyToast = document.getElementById('copyToast');
+        
+        promptBoxes.forEach(function(box) {
+            box.addEventListener('click', function() {
+                const prompt = this.getAttribute('data-prompt');
+                navigator.clipboard.writeText(prompt).then(function() {
+                    copyToast.classList.add('show');
+                    setTimeout(function() {
+                        copyToast.classList.remove('show');
+                    }, 2000);
+                });
+            });
+        });
+
+        // Socratic levels
+        const levelItems = document.querySelectorAll('.level-item');
+        levelItems.forEach(function(item) {
+            item.addEventListener('click', function() {
+                const level = this.getAttribute('data-level');
+                const detail = document.getElementById('level' + level);
+                
+                document.querySelectorAll('.level-detail').forEach(function(d) {
+                    d.classList.remove('show');
+                });
+                document.querySelectorAll('.level-item').forEach(function(i) {
+                    i.classList.remove('active');
+                });
+                
+                detail.classList.add('show');
+                this.classList.add('active');
+            });
+        });
+
+        // Chat simulation
+        const chatContainer = document.getElementById('chatContainer');
+        const chatNext = document.getElementById('chatNext');
+        const chatReset = document.getElementById('chatReset');
+        
+        const chatMessages = [
+            { type: 'ia', text: 'Perfecto, empecemos. En la ecuación 2x + 5 = 13, ¿qué significa el signo igual?' },
+            { type: 'user', text: 'Que lo de la izquierda vale lo mismo que lo de la derecha' },
+            { type: 'ia', text: 'Exacto. Ahora, si quisieramos deshacernos del +5 para dejar sola la x, ¿qué podriamos hacer?' },
+            { type: 'user', text: 'Restar 5 a ambos lados?' },
+            { type: 'ia', text: 'Muy bien. ¿Y qué obtienes si haces eso?' },
+            { type: 'user', text: '2x = 8' },
+            { type: 'ia', text: 'Correcto. Ya casi lo tienes. Ahora, para deshacerte del 2 que multiplica a la x, ¿qué operacion usarias?' },
+            { type: 'user', text: 'Dividir entre 2... entonces x = 4!' },
+            { type: 'ia', text: 'Lo lograste tu solo. ¿Como puedes verificar que x=4 es correcta?' }
+        ];
+        
+        let chatIndex = 0;
+        
+        chatNext.addEventListener('click', function() {
+            if (chatIndex < chatMessages.length) {
+                const msg = chatMessages[chatIndex];
+                const msgDiv = document.createElement('div');
+                msgDiv.className = 'chat-msg ' + (msg.type === 'user' ? 'msg-user' : 'msg-ia');
+                msgDiv.innerHTML = '<div class="msg-bubble">' + msg.text + '</div>';
+                chatContainer.appendChild(msgDiv);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+                chatIndex++;
+            }
+        });
+        
+        chatReset.addEventListener('click', function() {
+            chatContainer.innerHTML = '<div class="chat-msg msg-user"><div class="msg-bubble">Tengo este problema: 2x + 5 = 13. No me des la respuesta, solo guíame.</div></div>';
+            chatIndex = 0;
+        });
+
+        // Checklist
+        const checkItems = document.querySelectorAll('.check-item');
+        checkItems.forEach(function(item) {
+            item.addEventListener('click', function() {
+                this.classList.toggle('checked');
+            });
+        });
+
+        // Tabs
+        const exTabs = document.querySelectorAll('.ex-tab');
+        exTabs.forEach(function(tab) {
+            tab.addEventListener('click', function() {
+                const tabId = this.getAttribute('data-tab');
+                
+                document.querySelectorAll('.ex-tab').forEach(function(t) {
+                    t.classList.remove('active');
+                });
+                document.querySelectorAll('.ex-content').forEach(function(c) {
+                    c.classList.remove('active');
+                });
+                
+                this.classList.add('active');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
