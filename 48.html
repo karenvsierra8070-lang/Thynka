@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control del Tiempo en Examenes - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --accent-1: #d64545; --accent-2: #45a0d6; --accent-3: #45b088;
+            --accent-4: #8b5cf6; --accent-5: #e8833a;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1400px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-hover); }
+
+        /* HERO */
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, #d35400 0%, #a04000 100%);
+            color: white; padding: 45px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px; min-height: 320px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 400px; height: 100%;
+            background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.15) 0%, transparent 60%);
+        }
+        .hero-text { flex: 1; z-index: 1; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 8px 18px; border-radius: 25px; font-size: 0.85rem;
+            font-weight: 600; margin-bottom: 15px;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.8rem;
+            margin-bottom: 12px; line-height: 1.2;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.95; max-width: 600px; line-height: 1.7; }
+        .hero-visual {
+            width: 280px; height: 250px; background: rgba(255,255,255,0.1);
+            border-radius: 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 12px;
+            position: relative; z-index: 1; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .hero-visual i { font-size: 4rem; opacity: 0.9; }
+
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white;
+        }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #c0392b); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-2), #2980b9); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-3), #1e8449); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-4), #7d3c98); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-5), #d35400); }
+        .icon-brown { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+
+        /* TIME THIEFS */
+        .card-thieves {
+            grid-column: span 12;
+        }
+        .thieves-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 20px; margin-top: 25px;
+        }
+        .thief-box {
+            background: var(--bg-tertiary); padding: 20px;
+            border-radius: 16px; border-top: 6px solid var(--accent-1);
+            text-align: center;
+        }
+        .thief-box i { font-size: 2rem; color: var(--accent-1); margin-bottom: 10px; }
+        .thief-box h4 { color: var(--primary-dark); margin-bottom: 5px; }
+        .thief-box p { font-size: 0.85rem; color: var(--text-secondary); }
+
+        /* LATE PROTOCOLS */
+        .card-late {
+            grid-column: span 6;
+            grid-row: span 2;
+        }
+        .late-tabs {
+            display: flex; gap: 10px; margin-bottom: 20px;
+        }
+        .late-tab {
+            flex: 1; padding: 12px; text-align: center;
+            background: var(--bg-tertiary); border-radius: 10px;
+            cursor: pointer; font-weight: 600; font-size: 0.9rem;
+            border: 2px solid transparent; transition: all 0.3s;
+        }
+        .late-tab.active { border-color: var(--primary); background: rgba(139, 107, 71, 0.1); }
+        
+        .late-content { display: none; }
+        .late-content.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        .late-step {
+            display: flex; gap: 15px; margin-bottom: 15px;
+            padding: 15px; background: var(--bg-tertiary); border-radius: 12px;
+        }
+        .late-num {
+            width: 30px; height: 30px; background: var(--primary);
+            color: white; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center;
+            font-weight: 700; flex-shrink: 0;
+        }
+
+        /* BUFFER RULE */
+        .card-buffer {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-2) 0%, #2980b9 100%);
+            color: white;
+        }
+        .card-buffer .card-title { color: white; }
+        .buffer-math {
+            display: flex; align-items: center; justify-content: center;
+            gap: 15px; margin: 20px 0; font-family: monospace;
+        }
+        .buffer-num { font-size: 2rem; font-weight: 700; }
+        .buffer-op { font-size: 1.5rem; opacity: 0.7; }
+
+        /* BLOCKAGE PROTOCOL */
+        .card-block {
+            grid-column: span 7;
+        }
+        .block-step {
+            display: flex; gap: 15px; margin-bottom: 15px;
+            padding: 15px; background: var(--bg-tertiary);
+            border-radius: 12px; border-left: 4px solid var(--accent-4);
+        }
+        .block-time {
+            font-weight: 700; color: var(--accent-4);
+            min-width: 60px;
+        }
+
+        /* BATHROOM */
+        .card-bathroom {
+            grid-column: span 5;
+        }
+        .bathroom-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 15px; margin-top: 20px;
+        }
+        .bath-item {
+            background: var(--bg-tertiary); padding: 15px;
+            border-radius: 12px; text-align: center;
+        }
+        .bath-item i { display: block; font-size: 1.5rem; color: var(--primary); margin-bottom: 8px; }
+        .bath-item h4 { font-size: 0.9rem; color: var(--primary-dark); margin-bottom: 3px; }
+        .bath-item p { font-size: 0.8rem; color: var(--text-secondary); margin: 0; }
+
+        /* COUNTDOWN EMERGENCY */
+        .card-countdown {
+            grid-column: span 12;
+        }
+        .count-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 20px; margin-top: 25px;
+        }
+        .count-box {
+            background: var(--bg-tertiary); padding: 20px;
+            border-radius: 16px; position: relative; overflow: hidden;
+        }
+        .count-box::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0;
+            height: 5px;
+        }
+        .cb-15::before { background: var(--accent-5); }
+        .cb-10::before { background: var(--accent-1); }
+        .cb-5::before { background: var(--accent-1); animation: pulse 1s infinite; }
+        
+        .count-time {
+            font-size: 2.5rem; font-weight: 700; color: var(--primary);
+            font-family: 'Playfair Display', serif;
+        }
+        .count-title { font-size: 1.1rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 10px; }
+        .count-list { list-style: none; }
+        .count-list li { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
+
+        /* FOOTER */
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 40px;
+            background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--beige) 100%);
+        }
+        .footer-quote {
+            font-family: 'Playfair Display', serif; font-size: 1.5rem;
+            color: var(--primary-dark); margin-bottom: 10px; font-style: italic;
+        }
+
+        @media (max-width: 1100px) {
+            .thieves-grid { grid-template-columns: 1fr 1fr; }
+            .count-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-hero, .card-thieves, .card-late, .card-buffer,
+            .card-block, .card-bathroom, .card-countdown, .card-footer { grid-column: span 12; }
+            .thieves-grid { grid-template-columns: 1fr; }
+            .late-tabs { flex-direction: column; }
+            .bathroom-grid { grid-template-columns: 1fr; }
+            .hero-text h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-stopwatch"></i> Control del Tiempo</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-hourglass-half"></i> Gestion de Crisis</span>
+                    <h1>Controla tu Tiempo, Controla tu Examen</h1>
+                    <p>El tiempo en un examen es un recurso finito y vulnerable. No solo pierdes tiempo por no saber la respuesta, sino por factores externos (el profe llega tarde) e internos (panico, baño). Aqui aprenderas a crear "margen de seguridad" para que nada te tome por sorpresa.</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-user-clock"></i>
+                    <span style="font-size: 0.9rem; font-weight: 600;">Tiempo Real vs Ideal</span>
+                </div>
+            </article>
+
+            <!-- TIME THIEFS -->
+            <article class="card card-thieves">
+                <div class="card-header">
+                    <div class="card-icon icon-red"><i class="fas fa-user-secret"></i></div>
+                    <h2 class="card-title">Los 4 Ladrones de Tiempo</h2>
+                </div>
+                <p style="font-size: 0.95rem; color: var(--text-secondary);">Identifica al culpable antes de que actue.</p>
+                
+                <div class="thieves-grid">
+                    <div class="thief-box">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <h4>Desorganizacion Externa</h4>
+                        <p>El profesor llega tarde, reparte examenes despacio, el salon esta desordenado.</p>
+                    </div>
+                    <div class="thief-box">
+                        <i class="fas fa-running"></i>
+                        <h4>Llegada Tarde Propia</h4>
+                        <p>Transporte, alarma, perdiste el salon. Empiezas con 10 min menos y panico.</p>
+                    </div>
+                    <div class="thief-box">
+                        <i class="fas fa-toilet"></i>
+                        <h4>Necesidad Fisiologica</h4>
+                        <p>Ir al baño a mitad de examen. Te comes 5-10 minutos facil.</p>
+                    </div>
+                    <div class="thief-box">
+                        <i class="fas fa-brain"></i>
+                        <h4>Bloqueo Mental</h4>
+                        <p>Quedarse mirando una pregunta 20 minutos sin avanzar.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- LATE PROTOCOLS -->
+            <article class="card card-late">
+                <div class="card-header">
+                    <div class="card-icon icon-orange"><i class="fas fa-clock"></i></div>
+                    <h2 class="card-title">Protocolo: Llegada Tarde</h2>
+                </div>
+                
+                <div class="late-tabs">
+                    <div class="late-tab active" onclick="switchLateTab(this, 'teacher')">Profe Llega Tarde</div>
+                    <div class="late-tab" onclick="switchLateTab(this, 'me')">Yo Llego Tarde</div>
+                </div>
+
+                <div id="teacher-content" class="late-content active">
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 15px;">No es tu culpa, pero es tu problema. Si el examen debia ser de 60 min y empiza 15 min tarde:</p>
+                    <div class="late-step">
+                        <div class="late-num">1</div>
+                        <div><strong>No gastes energia enojandote.</strong> Eso te quita foco. Acepta que el tiempo es el que es.</div>
+                    </div>
+                    <div class="late-step">
+                        <div class="late-num">2</div>
+                        <div><strong>Consulta el tiempo real.</strong> Pregunta: "Profe, el examen sigue siendo de 60 min o se reduce?". Si se reduce, ajusta tu ritmo INMEDIATAMENTE.</div>
+                    </div>
+                    <div class="late-step">
+                        <div class="late-num">3</div>
+                        <div><strong>Acelera el "Scan Inicial".</strong> En lugar de 5 min para leer todo, date 2 min. Identifica lo facil rapido.</div>
+                    </div>
+                </div>
+
+                <div id="me-content" class="late-content">
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 15px;">Ya paso. No te castigues. Estrategia de emergencia:</p>
+                    <div class="late-step">
+                        <div class="late-num">1</div>
+                        <div><strong>Entrada en Calor Cero.</strong> No tienes tiempo para leer todo el examen primero. Empieza por la primera pregunta que sepas al 100%.</div>
+                    </div>
+                    <div class="late-step">
+                        <div class="late-num">2</div>
+                        <div><strong>Saltate el Borrador.</strong> Escribe directo en la hoja final (si te permiten borrar). Ganas velocidad.</div>
+                    </div>
+                    <div class="late-step">
+                        <div class="late-num">3</div>
+                        <div><strong>Modo Supervivencia.</strong> Tu objetivo cambio de "sacar 10" a "rescatar los puntos posibles". Prioriza cantidad de preguntas respondidas sobre calidad perfecta.</div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- BUFFER RULE -->
+            <article class="card card-buffer">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-shield-alt"></i></div>
+                    <h2 class="card-title">La Regla del Margen de Seguridad</h2>
+                </div>
+                <p style="font-size: 0.9rem; opacity: 0.9;">Nunca, jamas, planees usar los 60 minutos. El tiempo "real" es menor.</p>
+                
+                <div class="buffer-math">
+                    <div class="buffer-num">60 min</div>
+                    <div class="buffer-op">-</div>
+                    <div class="buffer-num">10 min</div>
+                    <div class="buffer-op">=</div>
+                    <div class="buffer-num" style="color: rgba(255,255,255,0.9);">50 min</div>
+                </div>
+                <p style="font-size: 0.85rem; opacity: 0.8; text-align: center;">
+                    Siempre guarda 10 min de margen. Eso cubre: llegar tarde, ir al baño, bloqueos, o errores de transcripcion final. Si terminas antes, usas ese tiempo para revisar.
+                </p>
+            </article>
+
+            <!-- BLOCKAGE -->
+            <article class="card card-block">
+                <div class="card-header">
+                    <div class="card-icon icon-purple"><i class="fas fa-ban"></i></div>
+                    <h2 class="card-title">Protocolo de Bloqueo Mental</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Cuando miras la hoja y tu mente esta en blanco.</p>
+                
+                <div class="block-step">
+                    <div class="block-time">Minuto 1</div>
+                    <div>Cierra los ojos 10 segundos. Respira. El panico bloquea la memoria. Bajale las revoluciones.</div>
+                </div>
+                <div class="block-step">
+                    <div class="block-time">Minuto 3</div>
+                    <div>Escribe en una esquina palabras claves relacionadas, aunque sea sin sentido. Activa la red neuronal.</div>
+                </div>
+                <div class="block-step">
+                    <div class="block-time">Minuto 5</div>
+                    <div><strong>REGLA DE ORO:</strong> Si a los 5 min no escribiste NI UNA palabra util, MARCALA y SIGUE. No sacrifiques el resto del examen por una pregunta.</div>
+                </div>
+            </article>
+
+            <!-- BATHROOM -->
+            <article class="card card-bathroom">
+                <div class="card-header">
+                    <div class="card-icon icon-brown"><i class="fas fa-restroom"></i></div>
+                    <h2 class="card-title">Estrategia del Baño</h2>
+                </div>
+                
+                <div class="bathroom-grid">
+                    <div class="bath-item">
+                        <i class="fas fa-coffee"></i>
+                        <h4>Pre-Examen</h4>
+                        <p>Ve al baño 10 min ANTES de entrar. Aunque no tengas ganas. Vacia el tanque.</p>
+                    </div>
+                    <div class="bath-item">
+                        <i class="fas fa-tint-slash"></i>
+                        <h4>Hidratacion</h4>
+                        <p>Toma agua moderada. No te llenes de liquido 1 hora antes.</p>
+                    </div>
+                    <div class="bath-item">
+                        <i class="fas fa-door-open"></i>
+                        <h4>Durante</h4>
+                        <p>Si es emergencia, ve. Son 3-5 min. Es mejor perder 5 min que rendir con dolor de vejiga (te distrae al 100%).</p>
+                    </div>
+                    <div class="bath-item">
+                        <i class="fas fa-paper-plane"></i>
+                        <h4>Velocidad</h4>
+                        <p>No te laves las manos meticulosamente. Entra, sal, vuelve al modo examen.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- COUNTDOWN EMERGENCY -->
+            <article class="card card-countdown">
+                <div class="card-header">
+                    <div class="card-icon icon-red"><i class="fas fa-bomb"></i></div>
+                    <h2 class="card-title">Protocolo de Cuenta Regresiva</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Que hacer cuando queda poco tiempo y el panico sube.</p>
+                
+                <div class="count-grid">
+                    <div class="count-box cb-15">
+                        <div class="count-time">15 min</div>
+                        <div class="count-title">Zona Naranja</div>
+                        <ul class="count-list">
+                            <li><i class="fas fa-check"></i> Acelera la escritura, pero mantén legibilidad.</li>
+                            <li><i class="fas fa-check"></i> Prioriza preguntas cortas o de elección múltiple.</li>
+                            <li><i class="fas fa-check"></i> Si falta un ensayo, escribe la estructura (Intro, Puntos, Conclusión).</li>
+                        </ul>
+                    </div>
+
+                    <div class="count-box cb-10">
+                        <div class="count-time">5 min</div>
+                        <div class="count-title">Zona Roja</div>
+                        <ul class="count-list">
+                            <li><i class="fas fa-exclamation-triangle"></i> Olvida la calidad. Volumen.</li>
+                            <li><i class="fas fa-exclamation-triangle"></i> Responde TODO, aunque sea con "intuicion".</li>
+                            <li><i class="fas fa-exclamation-triangle"></i> En preguntas largas, escribe la idea principal.</li>
+                        </ul>
+                    </div>
+
+                    <div class="count-box cb-5">
+                        <div class="count-time">0 min</div>
+                        <div class="count-title">Corte Final</div>
+                        <ul class="count-list">
+                            <li><i class="fas fa-user-check"></i> Revisa que tu NOMBRE este en la hoja.</li>
+                            <li><i class="fas fa-user-check"></i> Asegurate de no dejar preguntas en blanco.</li>
+                            <li><i class="fas fa-user-check"></i> Entrega. No intentes arreglar nada mas.</li>
+                        </ul>
+                    </div>
+                </div>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-quote">"El tiempo perdido nunca se recupera, pero el tiempo mal gestionado se castiga. Planea el desastre y el examen sera pan comido."</p>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Llega temprano, ve al baño, y lleva tu propio reloj.</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+
+        function switchLateTab(btn, id) {
+            document.querySelectorAll('.late-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.late-content').forEach(c => c.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById(id + '-content').classList.add('active');
+        }
+    </script>
+</body>
+</html>
