@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casos de Estudio - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --accent-1: #c0392b; --accent-2: #27ae60; --accent-3: #2980b9;
+            --accent-4: #d35400; --accent-5: #16a085; --accent-6: #8e44ad;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1300px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-hover); }
+
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%);
+            color: white; padding: 40px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 300px; height: 100%;
+            background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.08) 0%, transparent 60%);
+        }
+        .hero-text { flex: 1; z-index: 1; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.8rem;
+            font-weight: 600; margin-bottom: 15px;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.5rem;
+            margin-bottom: 12px; line-height: 1.2;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.9; max-width: 550px; }
+        .hero-visual {
+            width: 180px; height: 220px; background: rgba(255,255,255,0.1);
+            border-radius: 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 8px;
+            position: relative; z-index: 1; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .hero-visual i { font-size: 3rem; opacity: 0.8; }
+
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white;
+        }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #922b21); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-2), #1e8449); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-3), #1a5276); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-4), #ba4a00); }
+        .icon-teal { background: linear-gradient(135deg, var(--accent-5), #0e6655); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-6), #6c3483); }
+        .icon-brown { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+
+        /* Comparison */
+        .card-comparison {
+            grid-column: span 12;
+        }
+        .comp-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 30px; margin-top: 25px;
+        }
+        .comp-col {
+            background: var(--bg-tertiary); border-radius: 20px;
+            padding: 25px; border-top: 6px solid;
+        }
+        .col-wrong { border-color: var(--accent-1); }
+        .col-right { border-color: var(--accent-2); }
+        
+        .comp-head { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .comp-icon {
+            width: 60px; height: 60px; border-radius: 15px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; color: white;
+        }
+        .col-wrong .comp-icon { background: var(--accent-1); }
+        .col-right .comp-icon { background: var(--accent-2); }
+        
+        .comp-title { font-size: 1.3rem; font-weight: 700; color: var(--primary-dark); }
+        .comp-desc { font-size: 0.9rem; color: var(--text-secondary); }
+        
+        .comp-list { margin-top: 15px; }
+        .comp-item {
+            display: flex; gap: 10px; margin-bottom: 10px; font-size: 0.9rem;
+            align-items: flex-start;
+        }
+        .comp-item i { margin-top: 4px; flex-shrink: 0; }
+        .col-wrong .comp-item i { color: var(--accent-1); }
+        .col-right .comp-item i { color: var(--accent-2); }
+
+        /* Method Steps */
+        .card-method {
+            grid-column: span 6;
+            grid-row: span 2;
+        }
+        .method-step {
+            background: var(--bg-tertiary); border-radius: 15px;
+            padding: 20px; margin-bottom: 15px;
+            border-left: 4px solid var(--accent-3);
+            transition: all 0.3s; cursor: pointer;
+        }
+        .method-step:hover {
+            transform: translateX(5px);
+            border-left-color: var(--accent-2);
+        }
+        .method-step.active {
+            border-left-color: var(--accent-5);
+            background: rgba(22, 160, 133, 0.1);
+        }
+        .step-header { display: flex; align-items: center; gap: 12px; }
+        .step-num {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: var(--accent-3); color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.9rem; flex-shrink: 0;
+        }
+        .method-step.active .step-num { background: var(--accent-5); }
+        .step-title { font-weight: 600; color: var(--primary-dark); }
+        .step-detail {
+            margin-top: 12px; font-size: 0.85rem; color: var(--text-secondary);
+            padding-left: 44px; display: none;
+        }
+        .method-step.active .step-detail { display: block; }
+
+        /* Frameworks */
+        .card-frameworks {
+            grid-column: span 6;
+        }
+        .frame-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 15px; margin-top: 20px;
+        }
+        .frame-item {
+            background: var(--bg-tertiary); border-radius: 12px;
+            padding: 18px; cursor: pointer; transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        .frame-item:hover { transform: scale(1.02); }
+        .frame-item.active {
+            border-color: var(--accent-3);
+            background: rgba(41, 128, 185, 0.1);
+        }
+        .frame-icon {
+            width: 40px; height: 40px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem; color: white; margin-bottom: 10px;
+        }
+        .frame-item:nth-child(1) .frame-icon { background: var(--accent-3); }
+        .frame-item:nth-child(2) .frame-icon { background: var(--accent-4); }
+        .frame-item:nth-child(3) .frame-icon { background: var(--accent-6); }
+        .frame-item:nth-child(4) .frame-icon { background: var(--accent-5); }
+        .frame-name { font-weight: 600; font-size: 0.95rem; color: var(--primary-dark); }
+        .frame-use { font-size: 0.75rem; color: var(--text-secondary); margin-top: 3px; }
+        .frame-detail {
+            margin-top: 15px; padding: 15px; background: var(--bg-secondary);
+            border-radius: 10px; font-size: 0.85rem; display: none;
+        }
+        .frame-item.active .frame-detail { display: block; }
+
+        /* Mini Case */
+        .card-minicase {
+            grid-column: span 6;
+        }
+        .case-scenario {
+            background: var(--bg-tertiary); border-radius: 15px;
+            padding: 20px; margin-top: 20px;
+        }
+        .case-title { font-weight: 600; color: var(--accent-3); margin-bottom: 10px; }
+        .case-text { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 15px; }
+        .case-question {
+            background: rgba(41, 128, 185, 0.1); padding: 12px;
+            border-radius: 8px; font-size: 0.85rem; font-weight: 600;
+            color: var(--accent-3); margin-bottom: 15px;
+        }
+        .case-options { display: flex; flex-direction: column; gap: 10px; }
+        .case-option {
+            padding: 12px 15px; background: var(--bg-secondary);
+            border: 1px solid var(--border-color); border-radius: 10px;
+            cursor: pointer; transition: all 0.3s; font-size: 0.85rem;
+        }
+        .case-option:hover { border-color: var(--accent-3); }
+        .case-option.selected { border-color: var(--accent-2); background: rgba(39, 174, 96, 0.1); }
+        .case-option.wrong { border-color: var(--accent-1); background: rgba(192, 57, 43, 0.1); opacity: 0.6; }
+        .case-feedback {
+            margin-top: 15px; padding: 15px; border-radius: 10px;
+            font-size: 0.85rem; display: none;
+        }
+        .case-feedback.show { display: block; }
+        .case-feedback.good { background: rgba(39, 174, 96, 0.1); color: var(--accent-2); }
+        .case-feedback.bad { background: rgba(192, 57, 43, 0.1); color: var(--accent-1); }
+
+        /* Numbers Analysis */
+        .card-numbers {
+            grid-column: span 6;
+        }
+        .num-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 15px; margin-top: 20px;
+        }
+        .num-item {
+            background: var(--bg-tertiary); border-radius: 12px;
+            padding: 18px; text-align: center;
+        }
+        .num-value { font-size: 1.8rem; font-weight: 700; color: var(--accent-3); }
+        .num-label { font-size: 0.75rem; color: var(--text-secondary); margin-top: 5px; }
+        .num-trend { font-size: 0.7rem; margin-top: 5px; }
+        .trend-up { color: var(--accent-2); }
+        .trend-down { color: var(--accent-1); }
+        .num-tip {
+            margin-top: 15px; padding: 12px; background: rgba(211, 84, 0, 0.1);
+            border-radius: 10px; font-size: 0.8rem; color: var(--accent-4);
+        }
+
+        /* Report Structure */
+        .card-report {
+            grid-column: span 6;
+        }
+        .report-list {
+            margin-top: 20px;
+        }
+        .report-item {
+            display: flex; gap: 15px; padding: 15px;
+            background: var(--bg-tertiary); border-radius: 12px;
+            margin-bottom: 10px; cursor: pointer; transition: all 0.3s;
+        }
+        .report-item:hover { transform: translateX(5px); }
+        .report-num {
+            width: 30px; height: 30px; border-radius: 8px;
+            background: var(--accent-3); color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.85rem; flex-shrink: 0;
+        }
+        .report-info h4 { font-size: 0.95rem; color: var(--primary-dark); margin-bottom: 3px; }
+        .report-info p { font-size: 0.8rem; color: var(--text-secondary); margin: 0; }
+
+        /* Mistakes */
+        .card-mistakes {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-1) 0%, #922b21 100%);
+            color: white;
+        }
+        .card-mistakes .card-title { color: white; }
+        .mistake-item {
+            background: rgba(255,255,255,0.15); padding: 15px;
+            border-radius: 12px; margin-bottom: 10px;
+        }
+        .mistake-item h4 { font-size: 0.95rem; margin-bottom: 5px; }
+        .mistake-item p { font-size: 0.85rem; opacity: 0.9; margin: 0; }
+
+        /* Tips */
+        .card-tips {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-2) 0%, #1e8449 100%);
+            color: white;
+        }
+        .card-tips .card-title { color: white; }
+        .tip-item {
+            background: rgba(255,255,255,0.15); padding: 12px 15px;
+            border-radius: 10px; margin-bottom: 8px;
+            display: flex; align-items: center; gap: 12px; font-size: 0.9rem;
+        }
+
+        /* Checklist */
+        .card-checklist {
+            grid-column: span 6;
+        }
+        .checklist-container { margin-top: 15px; }
+        .check-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 15px; background: var(--bg-tertiary);
+            border-radius: 12px; margin-bottom: 10px; cursor: pointer;
+            transition: all 0.3s;
+        }
+        .check-item:hover { background: var(--beige); }
+        .check-box {
+            width: 24px; height: 24px; border: 2px solid var(--primary);
+            border-radius: 6px; display: flex; align-items: center;
+            justify-content: center; transition: all 0.3s; flex-shrink: 0;
+        }
+        .check-item.checked .check-box {
+            background: var(--accent-2); border-color: var(--accent-2);
+        }
+        .check-box i { color: white; font-size: 0.8rem; opacity: 0; }
+        .check-item.checked .check-box i { opacity: 1; }
+        .check-text { font-size: 0.9rem; }
+        .check-item.checked .check-text {
+            text-decoration: line-through; color: var(--text-secondary);
+        }
+
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 30px;
+            background: var(--bg-tertiary);
+        }
+        .footer-text {
+            font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 5px;
+        }
+
+        @media (max-width: 1100px) {
+            .comp-grid, .frame-grid, .num-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-hero, .card-comparison, .card-method, .card-frameworks,
+            .card-minicase, .card-numbers, .card-report, .card-mistakes,
+            .card-tips, .card-checklist, .card-footer { grid-column: span 12; }
+            .hero-text h1 { font-size: 1.8rem; }
+            .card-hero { flex-direction: column; text-align: center; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-briefcase"></i> Casos Empresariales</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-landmark"></i> Metodo del Caso</span>
+                    <h1>Como Resolver Casos de Estudio Empresariales</h1>
+                    <p>No hay una respuesta correcta, hay una respuesta mejor argumentada. Los casos simulan decisiones reales: informacion incompleta, tiempos de ajuste y multiples alternativas. Aprende a estructurar tu pensamiento, no a adivinar.</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-chart-pie"></i>
+                    <span style="font-size: 0.85rem; font-weight: 600;">Analiza y decide</span>
+                </div>
+            </article>
+
+            <!-- COMPARISON -->
+            <article class="card card-comparison">
+                <div class="card-header">
+                    <div class="card-icon icon-brown"><i class="fas fa-balance-scale-left"></i></div>
+                    <h2 class="card-title">El Enfoque Correcto vs El Comun</h2>
+                </div>
+                <div class="comp-grid">
+                    <div class="comp-col col-wrong">
+                        <div class="comp-head">
+                            <div class="comp-icon"><i class="fas fa-random"></i></div>
+                            <div>
+                                <div class="comp-title">Salto a Conclusión</div>
+                                <div class="comp-desc">El error del principiante</div>
+                            </div>
+                        </div>
+                        <div class="comp-list">
+                            <div class="comp-item">
+                                <i class="fas fa-times"></i>
+                                <span>Leer el final y decidir rapido sin analizar.</span>
+                            </div>
+                            <div class="comp-item">
+                                <i class="fas fa-times"></i>
+                                <span>"Yo creo que deberian hacer marketing".</span>
+                            </div>
+                            <div class="comp-item">
+                                <i class="fas fa-times"></i>
+                                <span>Ignorar los numeros y basarse en intuicion.</span>
+                            </div>
+                            <div class="comp-item">
+                                <i class="fas fa-times"></i>
+                                <span>Usar frameworks por usar, sin conectarlos.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="comp-col col-right">
+                        <div class="comp-head">
+                            <div class="comp-icon"><i class="fas fa-microscope"></i></div>
+                            <div>
+                                <div class="comp-title">Diagnostico Estructural</div>
+                                <div class="comp-desc">El metodo profesional</div>
+                            </div>
+                        </div>
+                        <div class="comp-list">
+                            <div class="comp-item">
+                                <i class="fas fa-check"></i>
+                                <span>Identificar el problema real (no el sintoma).</span>
+                            </div>
+                            <div class="comp-item">
+                                <i class="fas fa-check"></i>
+                                <span>Analizar datos cuantitativos a fondo.</span>
+                            </div>
+                            <div class="comp-item">
+                                <i class="fas fa-check"></i>
+                                <span>Generar 3+ alternativas y evaluar criterios.</span>
+                            </div>
+                            <div class="comp-item">
+                                <i class="fas fa-check"></i>
+                                <span>Recomendar con plan de accion y riesgos.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- METHOD STEPS -->
+            <article class="card card-method">
+                <div class="card-header">
+                    <div class="card-icon icon-blue"><i class="fas fa-route"></i></div>
+                    <h2 class="card-title">Proceso de Resolucion</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Sigue estos 6 pasos en orden. Clic para expandir cada uno.</p>
+                
+                <div class="method-step" data-step="1">
+                    <div class="step-header">
+                        <div class="step-num">1</div>
+                        <div class="step-title">Lectura Estrategica</div>
+                    </div>
+                    <div class="step-detail">
+                        Primero lee rapido para entender el contexto. Luego lee lento subrayando datos clave: numeros, fechas, citas de personajes. Separa hechos de opiniones.
+                    </div>
+                </div>
+                <div class="method-step" data-step="2">
+                    <div class="step-header">
+                        <div class="step-num">2</div>
+                        <div class="step-title">Definicion del Problema</div>
+                    </div>
+                    <div class="step-detail">
+                        "Las ventas bajan" es un SINTOMA. El problema podria ser: producto obsoleto, mala distribucion, competencia agresiva... Pregunta: "Por que pasa esto?" hasta llegar a la raiz.
+                    </div>
+                </div>
+                <div class="method-step" data-step="3">
+                    <div class="step-header">
+                        <div class="step-num">3</div>
+                        <div class="step-title">Analisis Cuantitativo</div>
+                    </div>
+                    <div class="step-detail">
+                        Calcula ratios, tendencias, porcentajes. Un numero solo no dice nada; comparado con el ano anterior o la industria, cuenta una historia. Los exhibidos (tablas) son tus mejores amigos.
+                    </div>
+                </div>
+                <div class="method-step" data-step="4">
+                    <div class="step-header">
+                        <div class="step-num">4</div>
+                        <div class="step-title">Aplicacion de Frameworks</div>
+                    </div>
+                    <div class="step-detail">
+                        Usa modelos (SWOT, Porter, PESTEL) para estructurar tu analisis. No los fuerces: el framework debe aclarar, no complicar. Elige el que mejor se adapte al tipo de problema.
+                    </div>
+                </div>
+                <div class="method-step" data-step="5">
+                    <div class="step-header">
+                        <div class="step-num">5</div>
+                        <div class="step-title">Generacion de Alternativas</div>
+                    </div>
+                    <div class="step-detail">
+                        Desarrolla al menos 3 opciones. Evalua cada una con criterios (costo, tiempo, impacto, riesgo). No busques la perfecta; busca la mejor posible dados los recursos.
+                    </div>
+                </div>
+                <div class="method-step" data-step="6">
+                    <div class="step-header">
+                        <div class="step-num">6</div>
+                        <div class="step-title">Recomendacion y Plan</div>
+                    </div>
+                    <div class="step-detail">
+                        Tu recomendacion debe ser: Especifica, viable y con respaldo de datos. Incluye plan de accion (que, quien, cuando, cuanto) y analisis de riesgos (que puede salir mal).
+                    </div>
+                </div>
+            </article>
+
+            <!-- FRAMEWORKS -->
+            <article class="card card-frameworks">
+                <div class="card-header">
+                    <div class="card-icon icon-teal"><i class="fas fa-th"></i></div>
+                    <h2 class="card-title">Frameworks Clave</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Clic para ver cuando usar cada modelo.</p>
+                
+                <div class="frame-grid">
+                    <div class="frame-item" data-frame="swot">
+                        <div class="frame-icon"><i class="fas fa-th-large"></i></div>
+                        <div class="frame-name">SWOT / FODA</div>
+                        <div class="frame-use">Analisis interno-externo</div>
+                        <div class="frame-detail">
+                            <strong>Cuando usar:</strong> Vision general de la empresa.<br>
+                            <strong>Elementos:</strong> Fortalezas, Debilidades (interno), Oportunidades, Amenazas (externo).
+                        </div>
+                    </div>
+                    <div class="frame-item" data-frame="porter">
+                        <div class="frame-icon"><i class="fas fa-shapes"></i></div>
+                        <div class="frame-name">5 Fuerzas de Porter</div>
+                        <div class="frame-use">Analisis de industria</div>
+                        <div class="frame-detail">
+                            <strong>Cuando usar:</strong> Decidir entrar o no a un mercado.<br>
+                            <strong>Elementos:</strong> Rivalidad, proveedores, clientes, sustitutos, nuevos entrantes.
+                        </div>
+                    </div>
+                    <div class="frame-item" data-frame="pestel">
+                        <div class="frame-icon"><i class="fas fa-globe"></i></div>
+                        <div class="frame-name">PESTEL</div>
+                        <div class="frame-use">Entorno macro</div>
+                        <div class="frame-detail">
+                            <strong>Cuando usar:</strong> Expansion internacional o cambios regulatorios.<br>
+                            <strong>Elementos:</strong> Politico, Economico, Social, Tecnologico, Ecologico, Legal.
+                        </div>
+                    </div>
+                    <div class="frame-item" data-frame="4ps">
+                        <div class="frame-icon"><i class="fas fa-bullseye"></i></div>
+                        <div class="frame-name">4Ps Marketing</div>
+                        <div class="frame-use">Estrategia comercial</div>
+                        <div class="frame-detail">
+                            <strong>Cuando usar:</strong> Problemas de ventas, lanzamiento de producto.<br>
+                            <strong>Elementos:</strong> Producto, Precio, Plaza (distribucion), Promocion.
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- MINI CASE -->
+            <article class="card card-minicase">
+                <div class="card-header">
+                    <div class="card-icon icon-orange"><i class="fas fa-building"></i></div>
+                    <h2 class="card-title">Mini Caso Practico</h2>
+                </div>
+                
+                <div class="case-scenario">
+                    <div class="case-title">Caso: Cafe Aurora</div>
+                    <div class="case-text">
+                        "Cafe Aurora" era lider en cafes premium. Hace 2 anos, una cadena internacional abrio 5 locales cerca. Las ventas de Aurora cayeron 25%. El CEO propone: "Bajemos precios para competir".
+                    </div>
+                    <div class="case-question">Cual es el problema REAL?</div>
+                    
+                    <div class="case-options">
+                        <div class="case-option" data-correct="false">A) Precios muy altos</div>
+                        <div class="case-option" data-correct="true">B) Perdida de diferenciacion de marca</div>
+                        <div class="case-option" data-correct="false">C) Ubicacion desfavorable</div>
+                        <div class="case-option" data-correct="false">D) Competencia agresiva</div>
+                    </div>
+                    
+                    <div class="case-feedback" id="caseFeedback">
+                        Correcto! El sintoma es "ventas bajan", pero bajar precios destruiria el posicionamiento premium. El problema real es que Aurora no ha comunicado por que vale la pena pagar mas.
+                    </div>
+                </div>
+            </article>
+
+            <!-- NUMBERS -->
+            <article class="card-numbers">
+                <div class="card-header">
+                    <div class="card-icon icon-purple"><i class="fas fa-calculator"></i></div>
+                    <h2 class="card-title">Mira los Numeros</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Ejemplo de analisis basico de estados financieros.</p>
+                
+                <div class="num-grid">
+                    <div class="num-item">
+                        <div class="num-value">-15%</div>
+                        <div class="num-label">Ventas Anuales</div>
+                        <div class="num-trend trend-down"><i class="fas fa-arrow-down"></i> Preocupante</div>
+                    </div>
+                    <div class="num-item">
+                        <div class="num-value">+8%</div>
+                        <div class="num-label">Margen Bruto</div>
+                        <div class="num-trend trend-up"><i class="fas fa-arrow-up"></i> Eficiencia</div>
+                    </div>
+                    <div class="num-item">
+                        <div class="num-value">2.3x</div>
+                        <div class="num-label">Razon Corriente</div>
+                        <div class="num-trend trend-up"><i class="fas fa-check"></i> Liquidez OK</div>
+                    </div>
+                </div>
+                
+                <div class="num-tip">
+                    <i class="fas fa-lightbulb"></i> <strong>Insight:</strong> Si venden menos pero ganan mas por unidad, el problema puede ser volumen, no rentabilidad. Quizas falta marketing, no ajuste de precios.
+                </div>
+            </article>
+
+            <!-- REPORT STRUCTURE -->
+            <article class="card card-report">
+                <div class="card-header">
+                    <div class="card-icon icon-green"><i class="fas fa-file-alt"></i></div>
+                    <h2 class="card-title">Estructura del Informe</h2>
+                </div>
+                
+                <div class="report-list">
+                    <div class="report-item">
+                        <div class="report-num">1</div>
+                        <div class="report-info">
+                            <h4>Resumen Ejecutivo</h4>
+                            <p>1 pagina max. Tu recomendacion y los 3 argumentos clave. Escribe esto al FINAL.</p>
+                        </div>
+                    </div>
+                    <div class="report-item">
+                        <div class="report-num">2</div>
+                        <div class="report-info">
+                            <h4>Identificacion del Problema</h4>
+                            <p>Define el problema central. No el sintoma. Justifica con datos.</p>
+                        </div>
+                    </div>
+                    <div class="report-item">
+                        <div class="report-num">3</div>
+                        <div class="report-info">
+                            <h4>Analisis</h4>
+                            <p>Frameworks aplicados, interpretacion de datos, factores clave.</p>
+                        </div>
+                    </div>
+                    <div class="report-item">
+                        <div class="report-num">4</div>
+                        <div class="report-info">
+                            <h4>Alternativas y Evaluacion</h4>
+                            <p>3 opciones minimum. Tabla comparativa con criterios de decision.</p>
+                        </div>
+                    </div>
+                    <div class="report-item">
+                        <div class="report-num">5</div>
+                        <div class="report-info">
+                            <h4>Recomendacion y Plan</h4>
+                            <p>Que hacer, como, cuando, cuanto cuesta, que riesgos tiene.</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- MISTAKES -->
+            <article class="card card-mistakes">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-exclamation-triangle"></i></div>
+                    <h2 class="card-title">Errores Comunes</h2>
+                </div>
+                
+                <div class="mistake-item">
+                    <h4>Solucionitis</h4>
+                    <p>Proponer solucion sin haber identificado el problema. Resultado: Resuelves lo que no importa.</p>
+                </div>
+                <div class="mistake-item">
+                    <h4>Ignorar los exhibits</h4>
+                    <p>Las tablas y graficos tienen la mitad de la informacion. No leerlos es dejar puntos sobre la mesa.</p>
+                </div>
+                <div class="mistake-item">
+                    <h4>Recomendacion vaga</h4>
+                    <p>"Deben mejorar su estrategia" no dice nada. "Deben invertir $50k en Instagram Ads targeting millennials" si.</p>
+                </div>
+            </article>
+
+            <!-- TIPS -->
+            <article class="card card-tips">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-lightbulb"></i></div>
+                    <h2 class="card-title">Tips para Sobresalir</h2>
+                </div>
+                
+                <div class="tip-item">
+                    <i class="fas fa-users"></i>
+                    <span>Discute el caso en grupo antes de escribir. Veras perspectivas que pasaste por alto.</span>
+                </div>
+                <div class="tip-item">
+                    <i class="fas fa-question"></i>
+                    <span>Hazte preguntas: "Que informacion me falta?", "Que pasaria si...?"</span>
+                </div>
+                <div class="tip-item">
+                    <i class="fas fa-dumbbell"></i>
+                    <span>Defiende tu postura. Si no puedes argumentarla, no es una buena recomendacion.</span>
+                </div>
+                <div class="tip-item">
+                    <i class="fas fa-clock"></i>
+                    <span> gestiona el tiempo: 40% analisis, 30% alternativas, 30% escritura.</span>
+                </div>
+            </article>
+
+            <!-- CHECKLIST -->
+            <article class="card card-checklist">
+                <div class="card-header">
+                    <div class="card-icon icon-brown"><i class="fas fa-tasks"></i></div>
+                    <h2 class="card-title">Antes de Entregar</h2>
+                </div>
+                
+                <div class="checklist-container">
+                    <div class="check-item">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <span class="check-text">Identifique el problema raiz, no el sintoma</span>
+                    </div>
+                    <div class="check-item">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <span class="check-text">Analice al menos 2 exhibits o tablas de datos</span>
+                    </div>
+                    <div class="check-item">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <span class="check-text">Evalue 3+ alternativas con criterios claros</span>
+                    </div>
+                    <div class="check-item">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <span class="check-text">Mi recomendacion tiene plan de accion especifico</span>
+                    </div>
+                    <div class="check-item">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <span class="check-text">Inclui analisis de riesgos de mi propuesta</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-text">En los casos de negocio, la respuesta correcta no existe. Lo que existe es la respuesta mejor argumentada con datos, logica y estructura. El objetivo no es acertar, es pensar como un gerente.</p>
+                <p style="font-size: 0.85rem; color: var(--primary); margin-top: 10px; font-weight: 600;">Decide con datos, no con corazon.</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+
+        // Method Steps
+        const methodSteps = document.querySelectorAll('.method-step');
+        methodSteps.forEach(function(step) {
+            step.addEventListener('click', function() {
+                methodSteps.forEach(function(s) { s.classList.remove('active'); });
+                this.classList.add('active');
+            });
+        });
+
+        // Frameworks
+        const frameItems = document.querySelectorAll('.frame-item');
+        frameItems.forEach(function(item) {
+            item.addEventListener('click', function() {
+                frameItems.forEach(function(f) { f.classList.remove('active'); });
+                this.classList.add('active');
+            });
+        });
+
+        // Mini Case
+        const caseOptions = document.querySelectorAll('.case-option');
+        const caseFeedback = document.getElementById('caseFeedback');
+        
+        caseOptions.forEach(function(opt) {
+            opt.addEventListener('click', function() {
+                const isCorrect = this.getAttribute('data-correct') === 'true';
+                
+                caseOptions.forEach(function(o) {
+                    o.classList.remove('selected', 'wrong');
+                    if (o.getAttribute('data-correct') === 'false' && isCorrect) {
+                        o.classList.add('wrong');
+                    }
+                });
+                
+                this.classList.add('selected');
+                
+                caseFeedback.classList.remove('good', 'bad');
+                if (isCorrect) {
+                    caseFeedback.classList.add('good', 'show');
+                    caseFeedback.innerHTML = '<strong>Correcto!</strong> El sintoma es "ventas bajan", pero bajar precios destruiria el posicionamiento premium. El problema real es que Aurora no ha comunicado por que vale la pena pagar mas.';
+                } else {
+                    caseFeedback.classList.add('bad', 'show');
+                    caseFeedback.innerHTML = '<strong>Revisa.</strong> Esa opcion trata un sintoma o factor externo, no el problema central que Aurora puede controlar.';
+                }
+            });
+        });
+
+        // Checklist
+        const checkItems = document.querySelectorAll('.check-item');
+        checkItems.forEach(function(item) {
+            item.addEventListener('click', function() {
+                this.classList.toggle('checked');
+            });
+        });
+    </script>
+</body>
+</html>
