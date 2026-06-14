@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tecnicas de Lectura Rapida - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --accent-1: #d64545; --accent-2: #45a0d6; --accent-3: #45b088;
+            --accent-4: #8b5cf6; --accent-5: #e8833a;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1400px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-hover); }
+
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, #e8833a 0%, #d35400 100%);
+            color: white; padding: 45px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px; min-height: 320px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 400px; height: 100%;
+            background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.15) 0%, transparent 60%);
+        }
+        .hero-text { flex: 1; z-index: 1; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.8rem;
+            font-weight: 600; margin-bottom: 15px;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.8rem;
+            margin-bottom: 12px; line-height: 1.2;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.95; max-width: 600px; line-height: 1.7; }
+        .hero-visual {
+            width: 280px; height: 250px; background: rgba(255,255,255,0.1);
+            border-radius: 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 12px;
+            position: relative; z-index: 1; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .hero-visual i { font-size: 4rem; opacity: 0.9; }
+
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white;
+        }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #c0392b); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-2), #2980b9); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-3), #1e8449); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-4), #7d3c98); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-5), #d35400); }
+        .icon-brown { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+
+        /* Comparison Split Card */
+        .card-split {
+            grid-column: span 12;
+        }
+        .split-container {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 30px; margin-top: 25px;
+        }
+        .split-col {
+            background: var(--bg-tertiary); padding: 25px;
+            border-radius: 20px; position: relative;
+            border-top: 6px solid;
+        }
+        .col-skim { border-color: var(--accent-5); }
+        .col-scan { border-color: var(--accent-2); }
+        
+        .split-head { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .split-icon {
+            width: 60px; height: 60px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; color: white;
+        }
+        .col-skim .split-icon { background: var(--accent-5); }
+        .col-scan .split-icon { background: var(--accent-2); }
+        .split-title { font-size: 1.3rem; font-weight: 700; color: var(--primary-dark); }
+        .split-subtitle { font-size: 0.9rem; color: var(--text-secondary); }
+
+        /* Skimming Steps */
+        .card-skim-how {
+            grid-column: span 6;
+            grid-row: span 2;
+        }
+        .step-list { margin-top: 20px; }
+        .step-item {
+            display: flex; gap: 15px; margin-bottom: 20px;
+            padding: 15px; background: var(--bg-tertiary);
+            border-radius: 12px; border-left: 4px solid var(--accent-5);
+        }
+        .step-num {
+            font-size: 1.5rem; font-weight: 700; color: var(--accent-5);
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Scanning Steps */
+        .card-scan-how {
+            grid-column: span 6;
+            grid-row: span 2;
+        }
+        .scan-step {
+            display: flex; gap: 15px; margin-bottom: 20px;
+            padding: 15px; background: var(--bg-tertiary);
+            border-radius: 12px; border-left: 4px solid var(--accent-2);
+        }
+        .scan-num {
+            font-size: 1.5rem; font-weight: 700; color: var(--accent-2);
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Visual Pattern */
+        .card-visual-pattern {
+            grid-column: span 6;
+        }
+        .pattern-box {
+            background: var(--bg-tertiary); padding: 20px;
+            border-radius: 15px; margin-top: 15px;
+        }
+        .eye-line {
+            height: 8px; background: var(--border-color);
+            border-radius: 4px; margin-bottom: 12px;
+            position: relative; overflow: hidden;
+        }
+        .eye-line::after {
+            content: ''; position: absolute; top: 0; left: 0;
+            height: 100%; width: 30px; background: var(--primary);
+            border-radius: 4px;
+        }
+        /* Pattern variations */
+        .pattern-zigzag .eye-line::after { width: 100%; background: repeating-linear-gradient(90deg, var(--primary) 0, var(--primary) 20px, transparent 20px, transparent 40px); }
+        .pattern-vert .eye-line { height: 100px; width: 8px; display: inline-block; margin-right: 10px; }
+        .pattern-vert .eye-line::after { width: 100%; height: 20px; bottom: 0; top: auto; }
+
+        /* Use Cases */
+        .card-use-cases {
+            grid-column: span 6;
+            background: var(--bg-tertiary);
+        }
+        .case-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 15px; margin-top: 15px;
+        }
+        .case-item {
+            background: var(--bg-secondary); padding: 15px;
+            border-radius: 12px; text-align: center;
+            font-size: 0.9rem; font-weight: 500;
+            border: 1px solid var(--border-color);
+        }
+        .case-item i { display: block; font-size: 1.5rem; color: var(--primary); margin-bottom: 8px; }
+
+        /* Warning */
+        .card-warning {
+            grid-column: span 12;
+            background: linear-gradient(135deg, var(--accent-1) 0%, #c0392b 100%);
+            color: white;
+        }
+        .card-warning .card-title { color: white; }
+        .warning-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 20px; margin-top: 20px;
+        }
+        .warn-item {
+            background: rgba(255,255,255,0.1); padding: 15px;
+            border-radius: 12px;
+        }
+        .warn-item h4 { margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
+
+        /* Footer */
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 40px;
+            background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--beige) 100%);
+        }
+        .footer-quote {
+            font-family: 'Playfair Display', serif; font-size: 1.5rem;
+            color: var(--primary-dark); margin-bottom: 10px; font-style: italic;
+        }
+
+        @media (max-width: 1100px) {
+            .split-container { grid-template-columns: 1fr; }
+            .warning-grid { grid-template-columns: 1fr; }
+            .case-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-hero, .card-split, .card-skim-how, .card-scan-how,
+            .card-visual-pattern, .card-use-cases, .card-warning, .card-footer { grid-column: span 12; }
+            .card-skim-how, .card-scan-how { grid-row: span 1; }
+            .hero-text h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-glasses"></i> Lectura Rapida</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-rocket"></i> Eficiencia Lectora</span>
+                    <h1>Skimming y Scanning: Leer mas rapido</h1>
+                    <p>No necesas leer cada palabra para entender un texto. Skimming y Scanning son dos estrategias de lectura rapida esenciales para estudiantes. Una te da la vision general, la otra te encuentra el dato especifico. Aprende cuando usar cada una y duplica tu velocidad de estudio.</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-book-reader"></i>
+                    <span style="font-size: 0.9rem; font-weight: 600;">Velocidad + Precision</span>
+                </div>
+            </article>
+
+            <!-- SPLIT COMPARISON -->
+            <article class="card card-split">
+                <div class="card-header">
+                    <div class="card-icon icon-brown"><i class="fas fa-not-equal"></i></div>
+                    <h2 class="card-title">Dos Tecnicas, Dos Objetivos</h2>
+                </div>
+                <p style="font-size: 0.95rem; color: var(--text-secondary);">A menudo se confunden, pero son opuestos complementarios.</p>
+                
+                <div class="split-container">
+                    <!-- SKIMMING -->
+                    <div class="split-col col-skim">
+                        <div class="split-head">
+                            <div class="split-icon"><i class="fas fa-water"></i></div>
+                            <div>
+                                <div class="split-title">SKIMMING (Desnatado)</div>
+                                <div class="split-subtitle">Leer por encima para captar la idea general.</div>
+                            </div>
+                        </div>
+                        <div style="font-size: 0.9rem; color: var(--text-primary);">
+                            <p><strong>Meta:</strong> Entender el "de que trata" el texto.</p>
+                            <p><strong>Analogia:</strong> Como mirar el indice de un libro o las caratulas de un periodico.</p>
+                            <p><strong>Enfoque:</strong> Titulos, subtitulos, primeras frases de parrafos, palabras en negrita.</p>
+                            <p style="margin-top: 10px; background: rgba(232, 131, 58, 0.1); padding: 10px; border-radius: 8px;">
+                                <i class="fas fa-lightbulb"></i> Usalo ANTES de leer en profundidad para activar conocimientos previos.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- SCANNING -->
+                    <div class="split-col col-scan">
+                        <div class="split-head">
+                            <div class="split-icon"><i class="fas fa-search-location"></i></div>
+                            <div>
+                                <div class="split-title">SCANNING (Rastreo)</div>
+                                <div class="split-subtitle">Buscar un dato especifico ignorando el resto.</div>
+                            </div>
+                        </div>
+                        <div style="font-size: 0.9rem; color: var(--text-primary);">
+                            <p><strong>Meta:</strong> Encontrar UNA informacion concreta (fecha, nombre, cifra).</p>
+                            <p><strong>Analogia:</strong> Como buscar tu nombre en una lista de aprobados o una palabra en el diccionario.</p>
+                            <p><strong>Enfoque:</strong> Palabras clave especificas, numeros, nombres propios.</p>
+                            <p style="margin-top: 10px; background: rgba(69, 160, 216, 0.1); padding: 10px; border-radius: 8px;">
+                                <i class="fas fa-lightbulb"></i> Usalo DURANTE una pregunta de examen o busqueda rapida.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- SKIMMING HOW TO -->
+            <article class="card card-skim-how">
+                <div class="card-header">
+                    <div class="card-icon icon-orange"><i class="fas fa-list-ol"></i></div>
+                    <h2 class="card-title">Como hacer Skimming (Pasos)</h2>
+                </div>
+                
+                <div class="step-list">
+                    <div class="step-item">
+                        <div class="step-num">1</div>
+                        <div>
+                            <strong style="color: var(--primary-dark);">Lee el titulo y subtitulos</strong>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Construye el esqueleto del texto en tu mente.</p>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">2</div>
+                        <div>
+                            <strong style="color: var(--primary-dark);">Primera y ultima frase</strong>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Lee solo la primera oracion de cada parrafo (donde suele estar la idea principal) y la ultima (donde suele estar la conclusion).</p>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">3</div>
+                        <div>
+                            <strong style="color: var(--primary-dark);">Busca pistas visuales</strong>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Palabras en negrita, cursiva, diagramas, infografias. Ahi esta la carne del contenido.</p>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">4</div>
+                        <div>
+                            <strong style="color: var(--primary-dark);">No te detengas</strong>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Si algo no entiendes, no pares. Mantén el flujo. El objetivo es la vision general, no el detalle.</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- SCANNING HOW TO -->
+            <article class="card card-scan-how">
+                <div class="card-header">
+                    <div class="card-icon icon-blue"><i class="fas fa-crosshairs"></i></div>
+                    <h2 class="card-title">Como hacer Scanning (Pasos)</h2>
+                </div>
+                
+                <div class="step-list">
+                    <div class="scan-step">
+                        <div class="scan-num">1</div>
+                        <div>
+                            <strong style="color: var(--primary-dark);">Define tu objetivo</strong>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Antes de mirar, preguntate: Que busco? (Ej: "El año de la Revolucion Francesa").</p>
+                        </div>
+                    </div>
+                    <div class="scan-step">
+                        <div class="scan-num">2</div>
+                        <div>
+                            <strong style="color: var(--primary-dark);">Visualiza la forma</strong>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Si buscas un numero, tu cerebro debe buscar "forma de numero". Si es un nombre, busca "Mayuscula inicial".</p>
+                        </div>
+                    </div>
+                    <div class="scan-step">
+                        <div class="scan-num">3</div>
+                        <div>
+                            <strong style="color: var(--primary-dark);">Movimiento Vertical</strong>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Mueve los ojos de arriba a abajo, no de izquierda a derecha. Escanea la pagina como un radar.</p>
+                        </div>
+                    </div>
+                    <div class="scan-step">
+                        <div class="scan-num">4</div>
+                        <div>
+                            <strong style="color: var(--primary-dark);">Freno y Lectura</strong>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Solo "frena" cuando tu palabra clave salte a la vista. Lee un poco alrededor para contextualizar y sigue.</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- VISUAL PATTERNS -->
+            <article class="card card-visual-pattern">
+                <div class="card-header">
+                    <div class="card-icon icon-purple"><i class="fas fa-eye"></i></div>
+                    <h2 class="card-title">Movimientos Oculares</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Entrena tus ojos para dejar de leer "palabra por palabra".</p>
+                
+                <div class="pattern-box">
+                    <h4 style="font-size: 0.9rem; color: var(--primary-dark); margin-bottom: 10px;">Lectura Lineal (Lenta)</h4>
+                    <div class="eye-line"></div>
+                    <div class="eye-line"></div>
+                    <div class="eye-line"></div>
+                    <p style="font-size: 0.8rem; color: var(--text-secondary); text-align: right;">Los ojos se detienen en cada palabra.</p>
+                </div>
+                
+                <div class="pattern-box" style="margin-top: 15px;">
+                    <h4 style="font-size: 0.9rem; color: var(--primary-dark); margin-bottom: 10px;">Skimming (Salto Selectivo)</h4>
+                    <div class="eye-line pattern-zigzag"></div>
+                    <div class="eye-line pattern-zigzag"></div>
+                    <p style="font-size: 0.8rem; color: var(--text-secondary); text-align: right;">Saltan palabras funcionales y se centran en el contenido.</p>
+                </div>
+            </article>
+
+            <!-- USE CASES -->
+            <article class="card card-use-cases">
+                <div class="card-header">
+                    <div class="card-icon icon-green"><i class="fas fa-tasks"></i></div>
+                    <h2 class="card-title">Casos de Uso Reales</h2>
+                </div>
+                
+                <div class="case-grid">
+                    <div class="case-item">
+                        <i class="fas fa-newspaper"></i>
+                        Skimming: Leer noticias antes de clase.
+                    </div>
+                    <div class="case-item">
+                        <i class="fas fa-calendar-alt"></i>
+                        Scanning: Buscar fechas en un libro de historia.
+                    </div>
+                    <div class="case-item">
+                        <i class="fas fa-file-invoice"></i>
+                        Skimming: Revisar un contrato rapidamente.
+                    </div>
+                    <div class="case-item">
+                        <i class="fas fa-phone-book"></i>
+                        Scanning: Encontrar un telefono en una guia.
+                    </div>
+                </div>
+            </article>
+
+            <!-- WARNING -->
+            <article class="card card-warning">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-exclamation-circle"></i></div>
+                    <h2 class="card-title">Errores Frecuentes</h2>
+                </div>
+                
+                <div class="warning-grid">
+                    <div class="warn-item">
+                        <h4><i class="fas fa-times-circle"></i> Usarlo para todo</h4>
+                        <p style="font-size: 0.85rem; opacity: 0.9; margin: 0;">No uses skimming para textos complejos como filosofia o formulas matematicas. Necesitas lectura profunda alli.</p>
+                    </div>
+                    <div class="warn-item">
+                        <h4><i class="fas fa-times-circle"></i> Creer que memorizas</h4>
+                        <p style="font-size: 0.85rem; opacity: 0.9; margin: 0;">Skimming no es para memorizar, es para ubicar. Si necesitas recordar, pasa a lectura normal despues.</p>
+                    </div>
+                    <div class="warn-item">
+                        <h4><i class="fas fa-times-circle"></i> La ansiedad del salto</h4>
+                        <p style="font-size: 0.85rem; opacity: 0.9; margin: 0;">Al principio te sentiras que "pierdes" informacion. Es normal. Con practica aprenderas a filtrar mejor.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-quote">"Leer rapido no es saltar palabras, es saber cuales palabras pueden saltarse."</p>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Domina estas tecnicas y ahorraras horas de estudio pasivo.</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+    </script>
+</body>
+</html>
