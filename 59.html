@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluacion de Estudio - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --accent-1: #c0392b; --accent-2: #27ae60; --accent-3: #2980b9;
+            --accent-4: #d35400; --accent-5: #16a085; --accent-6: #8e44ad;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1300px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-hover); }
+
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, #1f3a44 0%, #0f1c22 100%);
+            color: white; padding: 40px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 300px; height: 100%;
+            background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.08) 0%, transparent 60%);
+        }
+        .hero-text { flex: 1; z-index: 1; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.8rem;
+            font-weight: 600; margin-bottom: 15px;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.5rem;
+            margin-bottom: 12px; line-height: 1.2;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.9; max-width: 550px; }
+        .hero-visual {
+            width: 180px; height: 220px; background: rgba(255,255,255,0.1);
+            border-radius: 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 8px;
+            position: relative; z-index: 1; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .hero-visual i { font-size: 3rem; opacity: 0.8; }
+
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white;
+        }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #922b21); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-2), #1e8449); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-3), #1a5276); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-4), #ba4a00); }
+        .icon-teal { background: linear-gradient(135deg, var(--accent-5), #0e6655); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-6), #6c3483); }
+        .icon-brown { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+
+        /* Stats */
+        .card-stats {
+            grid-column: span 12;
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+        }
+        .stat-item {
+            background: var(--bg-tertiary); border-radius: 15px;
+            padding: 20px; text-align: center;
+        }
+        .stat-num {
+            font-size: 2.2rem; font-weight: 700; color: var(--accent-4);
+            font-family: 'Playfair Display', serif;
+        }
+        .stat-label { font-size: 0.85rem; color: var(--text-secondary); margin-top: 5px; }
+
+        /* Audit Steps */
+        .card-audit {
+            grid-column: span 6;
+            grid-row: span 2;
+        }
+        .audit-step {
+            background: var(--bg-tertiary); border-radius: 15px;
+            padding: 20px; margin-bottom: 15px;
+            border-left: 4px solid var(--accent-5);
+            transition: all 0.3s; cursor: pointer;
+        }
+        .audit-step:hover {
+            transform: translateX(5px);
+            border-left-color: var(--accent-2);
+        }
+        .audit-step.active {
+            border-left-color: var(--accent-3);
+            background: rgba(41, 128, 185, 0.1);
+        }
+        .step-header { display: flex; align-items: center; gap: 12px; }
+        .step-num {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: var(--accent-5); color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.9rem; flex-shrink: 0;
+        }
+        .audit-step.active .step-num { background: var(--accent-3); }
+        .step-title { font-weight: 600; color: var(--primary-dark); }
+        .step-detail {
+            margin-top: 12px; font-size: 0.85rem; color: var(--text-secondary);
+            padding-left: 44px; display: none;
+        }
+        .audit-step.active .step-detail { display: block; }
+
+        /* Score Calculator */
+        .card-score {
+            grid-column: span 6;
+        }
+        .score-visual {
+            display: flex; justify-content: center; margin: 25px 0;
+        }
+        .score-circle {
+            width: 180px; height: 180px; border-radius: 50%;
+            background: conic-gradient(var(--accent-2) 0deg, var(--accent-2) 0deg, var(--bg-tertiary) 0deg);
+            display: flex; align-items: center; justify-content: center;
+            position: relative; transition: background 0.5s;
+        }
+        .score-inner {
+            width: 140px; height: 140px; border-radius: 50%;
+            background: var(--bg-secondary); display: flex;
+            flex-direction: column; align-items: center; justify-content: center;
+        }
+        .score-value {
+            font-size: 2.5rem; font-weight: 700; color: var(--primary-dark);
+            font-family: 'Playfair Display', serif;
+        }
+        .score-label { font-size: 0.8rem; color: var(--text-secondary); }
+        .score-interpretation {
+            text-align: center; padding: 15px;
+            background: var(--bg-tertiary); border-radius: 10px;
+            margin-top: 20px; font-size: 0.9rem;
+        }
+
+        /* Efficiency Metrics */
+        .card-metrics {
+            grid-column: span 6;
+        }
+        .metric-item {
+            background: var(--bg-tertiary); border-radius: 12px;
+            padding: 18px; margin-bottom: 12px;
+        }
+        .metric-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 10px;
+        }
+        .metric-name { font-weight: 600; font-size: 0.9rem; color: var(--primary-dark); }
+        .metric-value { font-weight: 700; color: var(--accent-3); }
+        .metric-bar {
+            height: 8px; background: var(--border-color);
+            border-radius: 4px; overflow: hidden;
+        }
+        .metric-fill {
+            height: 100%; border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        .metric-desc { font-size: 0.75rem; color: var(--text-secondary); margin-top: 8px; }
+
+        /* Questions Test */
+        .card-questions {
+            grid-column: span 6;
+        }
+        .question-item {
+            background: var(--bg-tertiary); border-radius: 12px;
+            padding: 18px; margin-bottom: 12px;
+            cursor: pointer; transition: all 0.3s;
+        }
+        .question-item:hover { transform: scale(1.01); }
+        .q-text { font-size: 0.9rem; color: var(--primary-dark); margin-bottom: 10px; font-weight: 500; }
+        .q-options { display: flex; gap: 10px; flex-wrap: wrap; }
+        .q-option {
+            padding: 8px 16px; border-radius: 8px;
+            border: 1px solid var(--border-color);
+            cursor: pointer; transition: all 0.3s;
+            font-size: 0.8rem; font-family: inherit;
+            background: var(--bg-secondary); color: var(--text-primary);
+        }
+        .q-option:hover { border-color: var(--accent-3); }
+        .q-option.selected { background: var(--accent-3); color: white; border-color: var(--accent-3); }
+
+        /* Warning Signs */
+        .card-warning {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-1) 0%, #922b21 100%);
+            color: white;
+        }
+        .card-warning .card-title { color: white; }
+        .warning-item {
+            background: rgba(255,255,255,0.15); padding: 15px;
+            border-radius: 12px; margin-bottom: 10px;
+        }
+        .warning-item h4 { font-size: 0.95rem; margin-bottom: 5px; }
+        .warning-item p { font-size: 0.85rem; opacity: 0.9; margin: 0; }
+
+        /* Tips */
+        .card-tips {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-2) 0%, #1e8449 100%);
+            color: white;
+        }
+        .card-tips .card-title { color: white; }
+        .tip-item {
+            background: rgba(255,255,255,0.15); padding: 12px 15px;
+            border-radius: 10px; margin-bottom: 8px;
+            display: flex; align-items: center; gap: 12px; font-size: 0.9rem;
+        }
+
+        /* Checklist */
+        .card-checklist {
+            grid-column: span 6;
+        }
+        .checklist-container { margin-top: 15px; }
+        .check-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 15px; background: var(--bg-tertiary);
+            border-radius: 12px; margin-bottom: 10px; cursor: pointer;
+            transition: all 0.3s;
+        }
+        .check-item:hover { background: var(--beige); }
+        .check-box {
+            width: 24px; height: 24px; border: 2px solid var(--primary);
+            border-radius: 6px; display: flex; align-items: center;
+            justify-content: center; transition: all 0.3s; flex-shrink: 0;
+        }
+        .check-item.checked .check-box {
+            background: var(--accent-2); border-color: var(--accent-2);
+        }
+        .check-box i { color: white; font-size: 0.8rem; opacity: 0; }
+        .check-item.checked .check-box i { opacity: 1; }
+        .check-text { font-size: 0.9rem; }
+        .check-item.checked .check-text {
+            text-decoration: line-through; color: var(--text-secondary);
+        }
+
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 30px;
+            background: var(--bg-tertiary);
+        }
+        .footer-text {
+            font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 5px;
+        }
+
+        @media (max-width: 1100px) {
+            .card-stats { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-hero, .card-stats, .card-audit, .card-score,
+            .card-metrics, .card-questions, .card-warning,
+            .card-tips, .card-checklist, .card-footer { grid-column: span 12; }
+            .hero-text h1 { font-size: 1.8rem; }
+            .card-hero { flex-direction: column; text-align: center; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-chart-line"></i> Evaluar Metodo</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-search"></i> Meta-Aprendizaje</span>
+                    <h1>Como Evaluar Tu Propio Metodo de Estudio</h1>
+                    <p>Estudiar 5 horas sintiendo que "aprendiste mucho" no sirve si al dia siguiente no recuerdas nada. La unica forma de mejorar es medir con datos, no con sensaciones. Tu metodo debe rendir cuentas.</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-clipboard-check"></i>
+                    <span style="font-size: 0.85rem; font-weight: 600;">Mide, no adivines</span>
+                </div>
+            </article>
+
+            <!-- STATS -->
+            <article class="card card-stats">
+                <div class="stat-item">
+                    <div class="stat-num">40%</div>
+                    <div class="stat-label">Se olvida en 24h sin repaso</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num">60%</div>
+                    <div class="stat-label">Tiempo "estudiando" es distraccion</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num">2x</div>
+                    <div class="stat-label">Mejora con repaso activo vs pasivo</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num">0</div>
+                    <div class="stat-label">Datos que mejoran sin medicion</div>
+                </div>
+            </article>
+
+            <!-- AUDIT STEPS -->
+            <article class="card card-audit">
+                <div class="card-header">
+                    <div class="card-icon icon-teal"><i class="fas fa-tasks"></i></div>
+                    <h2 class="card-title">Auditoria de tu Metodo</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Sigue estos 5 pasos para auditar objetivamente tu rendimiento. Clic para expandir.</p>
+                
+                <div class="audit-step" data-step="1">
+                    <div class="step-header">
+                        <div class="step-num">1</div>
+                        <div class="step-title">Rastrea tu tiempo real</div>
+                    </div>
+                    <div class="step-detail">
+                        Durante 3 dias, anota hora de inicio y fin de CADA sesion de estudio. Restale el tiempo que miraste el celu, fuiste al baño, hablaste con alguien. Ese es tu "tiempo efectivo". Te sorprendera la diferencia.
+                    </div>
+                </div>
+                <div class="audit-step" data-step="2">
+                    <div class="step-header">
+                        <div class="step-num">2</div>
+                        <div class="step-title">Prueba de retencion a ciegas</div>
+                    </div>
+                    <div class="step-detail">
+                        Despues de estudiar un tema, cierra todo y escribe en una hoja en blanco todo lo que recuerdes. Haz esto de nuevo 24 horas despues. Comparalo con tus apuntes. El porcentaje que falta es tu tasa de olvido.
+                    </div>
+                </div>
+                <div class="audit-step" data-step="3">
+                    <div class="step-header">
+                        <div class="step-num">3</div>
+                        <div class="step-title">Evalua tu nivel de energia</div>
+                    </div>
+                    <div class="step-detail">
+                        Del 1 al 10, que tan agotado te sientes despues de estudiar? Si la respuesta es 9-10 constantemente, tu metodo es insostenible. El aprendizaje requiere energia, no agotamiento total.
+                    </div>
+                </div>
+                <div class="audit-step" data-step="4">
+                    <div class="step-header">
+                        <div class="step-num">4</div>
+                        <div class="step-title">Mide tus resultados externos</div>
+                    </div>
+                    <div class="step-detail">
+                        Notas de examenes, quizzes, capacidad de explicar el tema a otro. Si tus notas no suben o no puedes explicarlo simple, tu metodo no esta funcionando, por mas "productivo" que te sientas.
+                    </div>
+                </div>
+                <div class="audit-step" data-step="5">
+                    <div class="step-header">
+                        <div class="step-num">5</div>
+                        <div class="step-title">Identifica el cuello de botella</div>
+                    </div>
+                    <div class="step-detail">
+                        Donde fallas mas? En entender? En memorizar? En aplicar? Cada problema tiene solucion distinta. No sigas estudiando igual si sabes donde esta la falla.
+                    </div>
+                </div>
+            </article>
+
+            <!-- SCORE CALCULATOR -->
+            <article class="card card-score">
+                <div class="card-header">
+                    <div class="card-icon icon-green"><i class="fas fa-calculator"></i></div>
+                    <h2 class="card-title">Tu Puntaje de Eficiencia</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary); text-align: center;">Responde las preguntas de la derecha para calcular tu score.</p>
+                
+                <div class="score-visual">
+                    <div class="score-circle" id="scoreCircle">
+                        <div class="score-inner">
+                            <div class="score-value" id="scoreValue">0</div>
+                            <div class="score-label">/100 puntos</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="score-interpretation" id="scoreInterpretation">
+                    Responde las preguntas de evaluacion para ver tu diagnostico.
+                </div>
+            </article>
+
+            <!-- QUESTIONS TEST -->
+            <article class="card-questions">
+                <div class="card-header">
+                    <div class="card-icon icon-blue"><i class="fas fa-question-circle"></i></div>
+                    <h2 class="card-title">Test Rapido de Evaluacion</h2>
+                </div>
+                
+                <div class="question-item" data-question="1">
+                    <div class="q-text">Puedes explicar lo que estudiaste ayer sin mirar apuntes?</div>
+                    <div class="q-options">
+                        <div class="q-option" data-points="25">Si, facilmente</div>
+                        <div class="q-option" data-points="15">Mas o menos</div>
+                        <div class="q-option" data-points="5">No, olvide casi todo</div>
+                    </div>
+                </div>
+                <div class="question-item" data-question="2">
+                    <div class="q-text">Cuando estudias, cada cuanto revisas el celular?</div>
+                    <div class="q-options">
+                        <div class="q-option" data-points="25">Cada 45-60 min</div>
+                        <div class="q-option" data-points="15">Cada 15-20 min</div>
+                        <div class="q-option" data-points="5">Cada 5 min o menos</div>
+                    </div>
+                </div>
+                <div class="question-item" data-question="3">
+                    <div class="q-text">Como te sientes al terminar una sesion de estudio?</div>
+                    <div class="q-options">
+                        <div class="q-option" data-points="25">Satisfecho, con energia</div>
+                        <div class="q-option" data-points="15">Cansado pero bien</div>
+                        <div class="q-option" data-points="5">Agotado y frustrado</div>
+                    </div>
+                </div>
+                <div class="question-item" data-question="4">
+                    <div class="q-text">Que haces cuando no entiendes algo?</div>
+                    <div class="q-options">
+                        <div class="q-option" data-points="25">Busco otra fuente o pregunto</div>
+                        <div class="q-option" data-points="15">Lo dejo para despues</div>
+                        <div class="q-option" data-points="5">Sigo adelante igual</div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- METRICS -->
+            <article class="card-metrics">
+                <div class="card-header">
+                    <div class="card-icon icon-orange"><i class="fas fa-tachometer-alt"></i></div>
+                    <h2 class="card-title">Metricas que Deberias Medir</h2>
+                </div>
+                
+                <div class="metric-item">
+                    <div class="metric-header">
+                        <span class="metric-name">Tasa de Retencion</span>
+                        <span class="metric-value">Meta: >80%</span>
+                    </div>
+                    <div class="metric-bar">
+                        <div class="metric-fill" style="width: 80%; background: var(--accent-2);"></div>
+                    </div>
+                    <div class="metric-desc">Porcentaje que recuerdas 24h despues de estudiar.</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-header">
+                        <span class="metric-name">Tiempo Efectivo</span>
+                        <span class="metric-value">Meta: >70%</span>
+                    </div>
+                    <div class="metric-bar">
+                        <div class="metric-fill" style="width: 60%; background: var(--accent-4);"></div>
+                    </div>
+                    <div class="metric-desc">Tiempo real de foco vs tiempo sentado "estudiando".</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-header">
+                        <span class="metric-name">Velocidad de Comprension</span>
+                        <span class="metric-value">Meta: Estable</span>
+                    </div>
+                    <div class="metric-bar">
+                        <div class="metric-fill" style="width: 90%; background: var(--accent-3);"></div>
+                    </div>
+                    <div class="metric-desc">Paginas/temas que entiendes por hora de estudio.</div>
+                </div>
+            </article>
+
+            <!-- WARNING -->
+            <article class="card card-warning">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-exclamation-triangle"></i></div>
+                    <h2 class="card-title">Senales de Alarma</h2>
+                </div>
+                
+                <div class="warning-item">
+                    <h4>Sensacion de "productivo" sin resultados</h4>
+                    <p>Sientes que trabajaste mucho pero las notas no suben. Es la trampa del "busy work": reescribir apuntes, subrayar, sin procesar nada.</p>
+                </div>
+                <div class="warning-item">
+                    <h4>Dependencia del ultimo minuto</h4>
+                    <p>Solo puedes concentrarte bajo presion de examen. Eso no es un metodo, es supervivencia. A largo plazo quema.</p>
+                </div>
+                <div class="warning-item">
+                    <h4>No puedes explicar con palabras simples</h4>
+                    <p>Si solo puedes repetir la jerga del libro pero no explicarlo a un nino de 12 anos, no lo entiendes.</p>
+                </div>
+            </article>
+
+            <!-- TIPS -->
+            <article class="card card-tips">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-lightbulb"></i></div>
+                    <h2 class="card-title">Como Mejorar tu Metodo</h2>
+                </div>
+                
+                <div class="tip-item">
+                    <i class="fas fa-stopwatch"></i>
+                    <span>Usa un timer: mide sesiones Pomodoro reales, no "aproximaciones".</span>
+                </div>
+                <div class="tip-item">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>Cambia una variable a la vez: horario, tecnica, lugar. Mide el impacto.</span>
+                </div>
+                <div class="tip-item">
+                    <i class="fas fa-book-open"></i>
+                    <span>Lleva un "diario de estudio": que estudiaste, cuanto duro, que tan bien salio.</span>
+                </div>
+                <div class="tip-item">
+                    <i class="fas fa-users"></i>
+                    <span>Compara con otros: no para competir, para descubrir tecnicas que te faltan.</span>
+                </div>
+            </article>
+
+            <!-- CHECKLIST -->
+            <article class="card card-checklist">
+                <div class="card-header">
+                    <div class="card-icon icon-purple"><i class="fas fa-clipboard-list"></i></div>
+                    <h2 class="card-title">Checklist Semanal</h2>
+                </div>
+                
+                <div class="checklist-container">
+                    <div class="check-item">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <span class="check-text">Medi mi tiempo efectivo de estudio real</span>
+                    </div>
+                    <div class="check-item">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <span class="check-text">Hice una prueba de retencion a ciegas</span>
+                    </div>
+                    <div class="check-item">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <span class="check-text">Identifique un punto debil en mi metodo</span>
+                    </div>
+                    <div class="check-item">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <span class="check-text">Probé una tecnica nueva o mejora</span>
+                    </div>
+                    <div class="check-item">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <span class="check-text">Dormi al menos 7 horas despues de estudiar</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-text">El mejor metodo de estudio no es el que funciona para los demas, es el que funciona para TI con datos que lo demuestran. Si no lo mides, es solo una corazonada.</p>
+                <p style="font-size: 0.85rem; color: var(--primary); margin-top: 10px; font-weight: 600;">Lo que no se mide, no se mejora.</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+
+        // Audit Steps
+        const auditSteps = document.querySelectorAll('.audit-step');
+        auditSteps.forEach(function(step) {
+            step.addEventListener('click', function() {
+                auditSteps.forEach(function(s) { s.classList.remove('active'); });
+                this.classList.add('active');
+            });
+        });
+
+        // Score Calculator
+        const questionItems = document.querySelectorAll('.question-item');
+        const scoreCircle = document.getElementById('scoreCircle');
+        const scoreValue = document.getElementById('scoreValue');
+        const scoreInterpretation = document.getElementById('scoreInterpretation');
+        let totalScore = 0;
+        let answeredQuestions = 0;
+        
+        questionItems.forEach(function(item) {
+            const options = item.querySelectorAll('.q-option');
+            options.forEach(function(opt) {
+                opt.addEventListener('click', function() {
+                    const wasSelected = this.classList.contains('selected');
+                    
+                    options.forEach(function(o) { o.classList.remove('selected'); });
+                    
+                    if (!wasSelected) {
+                        this.classList.add('selected');
+                        calculateScore();
+                    }
+                });
+            });
+        });
+        
+        function calculateScore() {
+            totalScore = 0;
+            answeredQuestions = 0;
+            
+            document.querySelectorAll('.q-option.selected').forEach(function(selected) {
+                totalScore += parseInt(selected.getAttribute('data-points'));
+                answeredQuestions++;
+            });
+            
+            const percentage = Math.min((totalScore / 100) * 100, 100);
+            const degrees = (percentage / 100) * 360;
+            
+            scoreCircle.style.background = 'conic-gradient(var(--accent-2) 0deg, var(--accent-2) ' + degrees + 'deg, var(--bg-tertiary) ' + degrees + 'deg)';
+            scoreValue.textContent = totalScore;
+            
+            if (answeredQuestions === 4) {
+                if (totalScore >= 80) {
+                    scoreInterpretation.innerHTML = '<strong style="color: var(--accent-2);">Excelente!</strong> Tu metodo es solido. Solo ajusta detalles.';
+                } else if (totalScore >= 50) {
+                    scoreInterpretation.innerHTML = '<strong style="color: var(--accent-4);">Aceptable.</strong> Hay margen de mejora importante. Revisa tus puntos debiles.';
+                } else {
+                    scoreInterpretation.innerHTML = '<strong style="color: var(--accent-1);">Necesitas cambios.</strong> Tu metodo actual no esta funcionando. Empieza por lo basico.';
+                }
+            } else {
+                scoreInterpretation.textContent = 'Responde las ' + (4 - answeredQuestions) + ' preguntas restantes.';
+            }
+        }
+
+        // Checklist
+        const checkItems = document.querySelectorAll('.check-item');
+        checkItems.forEach(function(item) {
+            item.addEventListener('click', function() {
+                this.classList.toggle('checked');
+            });
+        });
+    </script>
+</body>
+</html>
