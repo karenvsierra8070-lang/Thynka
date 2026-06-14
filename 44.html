@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examenes de Matematicas - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --accent-1: #d64545; --accent-2: #45a0d6; --accent-3: #45b088;
+            --accent-4: #8b5cf6; --accent-5: #e8833a;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1400px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-hover); }
+
+        /* HERO */
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, #45a0d6 0%, #34495e 100%);
+            color: white; padding: 45px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px; min-height: 320px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 400px; height: 100%;
+            background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.15) 0%, transparent 60%);
+        }
+        .hero-text { flex: 1; z-index: 1; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 8px 18px; border-radius: 25px; font-size: 0.85rem;
+            font-weight: 600; margin-bottom: 15px;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.8rem;
+            margin-bottom: 12px; line-height: 1.2;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.95; max-width: 600px; line-height: 1.7; }
+        .hero-visual {
+            width: 280px; height: 250px; background: rgba(255,255,255,0.1);
+            border-radius: 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 12px;
+            position: relative; z-index: 1; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .hero-visual i { font-size: 4rem; opacity: 0.9; }
+        .math-symbols { font-family: serif; font-size: 2rem; opacity: 0.6; }
+
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white;
+        }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #c0392b); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-2), #2980b9); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-3), #1e8449); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-4), #7d3c98); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-5), #d35400); }
+        .icon-brown { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+
+        /* POLYA METHOD */
+        .card-polya {
+            grid-column: span 12;
+            background: var(--bg-tertiary);
+        }
+        .polya-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 20px; margin-top: 25px;
+        }
+        .polya-step {
+            background: var(--bg-secondary); padding: 20px;
+            border-radius: 16px; border-top: 6px solid;
+            transition: transform 0.3s;
+        }
+        .polya-step:hover { transform: translateY(-5px); }
+        .polya-step.p-understand { border-color: var(--accent-2); }
+        .polya-step.p-plan { border-color: var(--accent-5); }
+        .polya-step.p-solve { border-color: var(--accent-3); }
+        .polya-step.p-review { border-color: var(--accent-4); }
+        
+        .polya-num { font-size: 2.5rem; font-weight: 700; color: var(--primary); font-family: 'Playfair Display', serif; line-height: 1; margin-bottom: 10px; }
+        .polya-title { font-size: 1.1rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 10px; }
+        .polya-list { list-style: none; }
+        .polya-list li { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px; display: flex; align-items: flex-start; gap: 6px; }
+        .polya-list li i { margin-top: 4px; font-size: 0.6rem; color: var(--primary); }
+
+        /* TIME STRATEGY */
+        .card-time {
+            grid-column: span 6;
+            grid-row: span 2;
+        }
+        .time-block {
+            background: var(--bg-tertiary); padding: 20px;
+            border-radius: 15px; margin-bottom: 15px;
+            display: flex; gap: 20px; align-items: center;
+        }
+        .time-icon { font-size: 2.5rem; color: var(--primary); }
+        .time-content h4 { color: var(--primary-dark); margin-bottom: 5px; }
+        .time-content p { font-size: 0.85rem; color: var(--text-secondary); margin: 0; }
+
+        /* ERRORS GRID */
+        .card-errors {
+            grid-column: span 6;
+        }
+        .error-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 15px; margin-top: 20px;
+        }
+        .error-item {
+            background: rgba(214, 69, 69, 0.05); border: 1px solid rgba(214, 69, 69, 0.2);
+            padding: 15px; border-radius: 12px;
+        }
+        .error-item i { color: var(--accent-1); margin-right: 8px; }
+        .error-item h4 { font-size: 0.95rem; color: var(--accent-1); margin-bottom: 4px; }
+        .error-item p { font-size: 0.8rem; color: var(--text-secondary); margin: 0; }
+
+        /* STUCK STRATEGY */
+        .card-stuck {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-4) 0%, #7d3c98 100%);
+            color: white;
+        }
+        .card-stuck .card-title { color: white; }
+        .stuck-list { margin-top: 20px; }
+        .stuck-item {
+            display: flex; align-items: flex-start; gap: 12px;
+            margin-bottom: 15px; background: rgba(255,255,255,0.1);
+            padding: 12px; border-radius: 10px;
+        }
+        .stuck-item i { color: rgba(255,255,255,0.8); margin-top: 2px; }
+
+        /* TOOLS */
+        .card-tools {
+            grid-column: span 6;
+        }
+        .tool-row {
+            display: flex; justify-content: space-between;
+            gap: 15px; margin-top: 20px;
+        }
+        .tool-box {
+            flex: 1; background: var(--bg-tertiary); padding: 15px;
+            border-radius: 12px; text-align: center;
+        }
+        .tool-box i { font-size: 2rem; color: var(--primary); margin-bottom: 10px; }
+        .tool-box h4 { color: var(--primary-dark); font-size: 0.95rem; margin-bottom: 5px; }
+        .tool-box p { font-size: 0.8rem; color: var(--text-secondary); margin: 0; }
+
+        /* PARTIAL CREDIT */
+        .card-partial {
+            grid-column: span 12;
+        }
+        .partial-steps {
+            display: flex; justify-content: space-between; margin-top: 20px;
+            position: relative;
+        }
+        .partial-steps::before {
+            content: ''; position: absolute; top: 25px; left: 0; right: 0;
+            height: 2px; background: var(--border-color); z-index: 0;
+        }
+        .p-step {
+            position: relative; z-index: 1; background: var(--bg-secondary);
+            padding: 0 10px; text-align: center; width: 150px;
+        }
+        .p-circle {
+            width: 50px; height: 50px; background: var(--accent-3);
+            border-radius: 50%; margin: 0 auto 10px;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 700;
+        }
+        .p-label { font-size: 0.85rem; color: var(--text-primary); font-weight: 600; }
+        .p-sub { font-size: 0.75rem; color: var(--text-secondary); }
+
+        /* FOOTER */
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 40px;
+            background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--beige) 100%);
+        }
+        .footer-quote {
+            font-family: 'Playfair Display', serif; font-size: 1.5rem;
+            color: var(--primary-dark); margin-bottom: 10px; font-style: italic;
+        }
+
+        @media (max-width: 1100px) {
+            .polya-grid { grid-template-columns: 1fr 1fr; }
+            .error-grid { grid-template-columns: 1fr; }
+            .partial-steps { flex-wrap: wrap; gap: 20px; justify-content: center; }
+            .partial-steps::before { display: none; }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-hero, .card-polya, .card-time, .card-errors,
+            .card-stuck, .card-tools, .card-partial, .card-footer { grid-column: span 12; }
+            .polya-grid { grid-template-columns: 1fr; }
+            .tool-row { flex-direction: column; }
+            .hero-text h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-square-root-alt"></i> Examenes de Matematicas</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-calculator"></i> Estrategia Numerica</span>
+                    <h1>Como Abordar Examenes de Problemas Matematicos</h1>
+                    <p>Un examen de matematicas no es un test de memoria, es un test de logica bajo presion. No se trata de saber la respuesta, se trata de saber como encontrarla. La diferencia entre aprobar y destacar esta en la estrategia: como lees, como organizas y como verificas.</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-infinity"></i>
+                    <div class="math-symbols">∑ π √ ∫</div>
+                </div>
+            </article>
+
+            <!-- POLYA METHOD -->
+            <article class="card card-polya">
+                <div class="card-header">
+                    <div class="card-icon icon-blue"><i class="fas fa-route"></i></div>
+                    <h2 class="card-title">El Metodo de Polya (4 Pasos Clasicos)</h2>
+                </div>
+                <p style="font-size: 0.95rem; color: var(--text-secondary);">George Polya, matematico hungaro, definio el proceso universal para resolver cualquier problema. Si te bloqueas, vuelve a estos pasos.</p>
+                
+                <div class="polya-grid">
+                    <div class="polya-step p-understand">
+                        <div class="polya-num">1</div>
+                        <div class="polya-title">Entender el Problema</div>
+                        <ul class="polya-list">
+                            <li><i class="fas fa-circle"></i> Que datos tengo? (Subrayalos).</li>
+                            <li><i class="fas fa-circle"></i> Que piden encontrar? (Encerralo).</li>
+                            <li><i class="fas fa-circle"></i> Hay datos irrelevantes? (Tachalos).</li>
+                            <li><i class="fas fa-circle"></i> Puedo dibujar la situacion?</li>
+                        </ul>
+                    </div>
+
+                    <div class="polya-step p-plan">
+                        <div class="polya-num">2</div>
+                        <div class="polya-title">Plantear un Plan</div>
+                        <ul class="polya-list">
+                            <li><i class="fas fa-circle"></i> Que formulas aplican?</li>
+                            <li><i class="fas fa-circle"></i> He visto un problema similar?</li>
+                            <li><i class="fas fa-circle"></i> Puedo descomponerlo en partes?</li>
+                            <li><i class="fas fa-circle"></i> Puedo trabajar hacia atras?</li>
+                        </ul>
+                    </div>
+
+                    <div class="polya-step p-solve">
+                        <div class="polya-num">3</div>
+                        <div class="polya-title">Ejecutar el Plan</div>
+                        <ul class="polya-list">
+                            <li><i class="fas fa-circle"></i> Escribe cada paso claramente.</li>
+                            <li><i class="fas fa-circle"></i> No hagas calculos mentales complejos.</li>
+                            <li><i class="fas fa-circle"></i> Cuida los signos (+/-).</li>
+                            <li><i class="fas fa-circle"></i> Escribe las unidades (m, kg, s).</li>
+                        </ul>
+                    </div>
+
+                    <div class="polya-step p-review">
+                        <div class="polya-num">4</div>
+                        <div class="polya-title">Revisar y Verificar</div>
+                        <ul class="polya-list">
+                            <li><i class="fas fa-circle"></i> La respuesta tiene sentido logico?</li>
+                            <li><i class="fas fa-circle"></i> Si un auto va a 5000km/h, algo falló.</li>
+                            <li><i class="fas fa-circle"></i> Puedo resolverlo de otra forma para chequear?</li>
+                            <li><i class="fas fa-circle"></i> Conteste lo que preguntaban?</li>
+                        </ul>
+                    </div>
+                </div>
+            </article>
+
+            <!-- TIME MANAGEMENT -->
+            <article class="card card-time">
+                <div class="card-header">
+                    <div class="card-icon icon-orange"><i class="fas fa-stopwatch"></i></div>
+                    <h2 class="card-title">Gestion del Tiempo</h2>
+                </div>
+                
+                <div class="time-block">
+                    <div class="time-icon"><i class="fas fa-book-open"></i></div>
+                    <div class="time-content">
+                        <h4>La Lectura Inicial (Primeros 5 min)</h4>
+                        <p>Lee todo el examen. Identifica los problemas faciles, los dificiles y los de puntos parciales. Calcula tiempo por pregunta.</p>
+                    </div>
+                </div>
+
+                <div class="time-block">
+                    <div class="time-icon"><i class="fas fa-running"></i></div>
+                    <div class="time-content">
+                        <h4>Regla: Facil Primero</h4>
+                        <p>Resuelve lo que sabes garantizado. Asegura puntos base. Esto baja la ansiedad y te da confianza para atacar los dificiles.</p>
+                    </div>
+                </div>
+
+                <div class="time-block">
+                    <div class="time-icon"><i class="fas fa-hourglass-half"></i></div>
+                    <div class="time-content">
+                        <h4>Regla del 30%</h4>
+                        <p>Si llevas mas del 30% del tiempo asignado a un problema y no avanzas, DEJALO. Marca lo que hiciste y pasa al siguiente. Vuelve al final.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- COMMON ERRORS -->
+            <article class="card card-errors">
+                <div class="card-header">
+                    <div class="card-icon icon-red"><i class="fas fa-bug"></i></div>
+                    <h2 class="card-title">Errores Frecuentes que te Cuestan Puntos</h2>
+                </div>
+                
+                <div class="error-grid">
+                    <div class="error-item">
+                        <h4><i class="fas fa-times-circle"></i> Error de Transcripcion</h4>
+                        <p>Copiar mal un dato del enunciado al papel de trabajo (un 5 por un 3).</p>
+                    </div>
+                    <div class="error-item">
+                        <h4><i class="fas fa-times-circle"></i> Olvido de Unidades</h4>
+                        <p>El resultado es 25, pero 25 que? Metros? Segundos? Sin unidad, suele anularse.</p>
+                    </div>
+                    <div class="error-item">
+                        <h4><i class="fas fa-times-circle"></i> Error de Signo</h4>
+                        <p>El clasico: pasar un negativo al otro lado y no cambiarlo. Cuidado con las restas.</p>
+                    </div>
+                    <div class="error-item">
+                        <h4><i class="fas fa-times-circle"></i> No Contestar</h4>
+                        <p>Escribir el desarrollo pero no encerrar o subrayar la respuesta final clara.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- WHAT TO DO WHEN STUCK -->
+            <article class="card card-stuck">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-plug"></i></div>
+                    <h2 class="card-title">Cuando te Bloqueas (Plan B)</h2>
+                </div>
+                <p style="font-size: 0.9rem; opacity: 0.9;">Tu mente se queda en blanco. No te frustres, aplica una de estas tacticas:</p>
+                
+                <div class="stuck-list">
+                    <div class="stuck-item">
+                        <i class="fas fa-pencil-alt"></i>
+                        <div><strong>Escribe lo que sabes:</strong> Aunque no tengas la solucion completa, escribe la formula que crees que aplica. Eso vale puntos parciales.</div>
+                    </div>
+                    <div class="stuck-item">
+                        <i class="fas fa-image"></i>
+                        <div><strong>Dibuja el problema:</strong> Muchas veces, graficar o hacer un esquema simple desbloquea la logica visual.</div>
+                    </div>
+                    <div class="stuck-item">
+                        <i class="fas fa-undo"></i>
+                        <div><strong>Trabaja hacia atras:</strong> Empieza por las opciones de respuesta (si es multiple choice) y mira cual encaja.</div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- TOOLS OF TRADE -->
+            <article class="card card-tools">
+                <div class="card-header">
+                    <div class="card-icon icon-brown"><i class="fas fa-tools"></i></div>
+                    <h2 class="card-title">Herramientas y Recursos</h2>
+                </div>
+                
+                <div class="tool-row">
+                    <div class="tool-box">
+                        <i class="fas fa-calculator"></i>
+                        <h4>Calculadora</h4>
+                        <p>Limpiela antes. Sepa usar funciones basicas (raiz, potencias). No dependa 100% de ella.</p>
+                    </div>
+                    <div class="tool-box">
+                        <i class="fas fa-scroll"></i>
+                        <h4>Papel Borrador</h4>
+                        <p>Organizalo por numero de problema. No hagas un "chorizo" de numeros. Ordena tu caos.</p>
+                    </div>
+                    <div class="tool-box">
+                        <i class="fas fa-file-alt"></i>
+                        <h4>Formula Sheet</h4>
+                        <p>Si la llevas, anota en ella "tips" rapidos. No pierdas tiempo buscando formulas.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- PARTIAL CREDIT -->
+            <article class="card card-partial">
+                <div class="card-header">
+                    <div class="card-icon icon-green"><i class="fas fa-percent"></i></div>
+                    <h2 class="card-title">Como Ganar Puntos Parciales</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">En matematicas, el camino vale mas que el destino. Un error numerico al final no deberia costarte todo el problema.</p>
+                
+                <div class="partial-steps">
+                    <div class="p-step">
+                        <div class="p-circle">1</div>
+                        <div class="p-label">Datos</div>
+                        <div class="p-sub">Listar variables</div>
+                    </div>
+                    <div class="p-step">
+                        <div class="p-circle">2</div>
+                        <div class="p-label">Formula</div>
+                        <div class="p-sub">Escribir la correcta</div>
+                    </div>
+                    <div class="p-step">
+                        <div class="p-circle">3</div>
+                        <div class="p-label">Despeje</div>
+                        <div class="p-sub">Mostrar algebra</div>
+                    </div>
+                    <div class="p-step">
+                        <div class="p-circle">4</div>
+                        <div class="p-label">Sustitucion</div>
+                        <div class="p-sub">Reemplazar datos</div>
+                    </div>
+                    <div class="p-step">
+                        <div class="p-circle">5</div>
+                        <div class="p-label">Resultado</div>
+                        <div class="p-sub">Respuesta final</div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-quote">"En matematicas no hay problemas imposibles, solo pasos que aun no encuentras. La calma es tu mejor herramienta."</p>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Respira, ordena, ejecuta.</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+    </script>
+</body>
+</html>
