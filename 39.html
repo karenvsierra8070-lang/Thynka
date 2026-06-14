@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metodo del Mapeo - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --accent-1: #d64545; --accent-2: #45a0d6; --accent-3: #45b088;
+            --accent-4: #8b5cf6; --accent-5: #e8833a;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1400px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-hover); }
+
+        /* HERO */
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, #45a0d6 0%, #2980b9 100%);
+            color: white; padding: 40px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px; min-height: 300px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 400px; height: 100%;
+            background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.15) 0%, transparent 60%);
+        }
+        .hero-text { flex: 1; z-index: 1; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.8rem;
+            font-weight: 600; margin-bottom: 15px;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.8rem;
+            margin-bottom: 12px; line-height: 1.2;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.95; max-width: 600px; line-height: 1.7; }
+        .hero-visual {
+            width: 250px; height: 250px; background: rgba(255,255,255,0.1);
+            border-radius: 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 12px;
+            position: relative; z-index: 1; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .hero-visual i { font-size: 4rem; opacity: 0.9; }
+
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white;
+        }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #c0392b); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-2), #2980b9); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-3), #1e8449); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-4), #7d3c98); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-5), #d35400); }
+        .icon-brown { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+        .card-content p { margin-bottom: 15px; font-size: 0.95rem; color: var(--text-primary); }
+        .card-content strong { color: var(--primary-dark); }
+
+        /* MODULES */
+        .card-why {
+            grid-column: span 7;
+            grid-row: span 2;
+        }
+        .reason-list { margin-top: 20px; }
+        .reason-item {
+            display: flex; gap: 15px; margin-bottom: 20px;
+            padding-bottom: 20px; border-bottom: 1px solid var(--border-color);
+        }
+        .reason-item:last-child { border-bottom: none; }
+        .reason-num {
+            width: 40px; height: 40px; background: var(--primary);
+            color: white; border-radius: 10px; display: flex;
+            align-items: center; justify-content: center;
+            font-weight: 700; flex-shrink: 0;
+        }
+
+        .card-ideal {
+            grid-column: span 5;
+            background: linear-gradient(135deg, var(--accent-3) 0%, #1e8449 100%);
+            color: white;
+        }
+        .card-ideal .card-title { color: white; }
+        .ideal-list { margin-top: 20px; }
+        .ideal-item {
+            display: flex; align-items: center; gap: 12px;
+            background: rgba(255,255,255,0.15); padding: 12px;
+            border-radius: 10px; margin-bottom: 10px; font-size: 0.9rem;
+        }
+
+        .card-concept {
+            grid-column: span 12;
+            background: var(--bg-tertiary);
+        }
+        .concept-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 30px; margin-top: 20px;
+        }
+        .concept-box {
+            background: var(--bg-secondary); padding: 20px;
+            border-radius: 15px; border-left: 5px solid var(--primary);
+        }
+        .concept-box h4 { color: var(--primary-dark); margin-bottom: 8px; }
+
+        /* GUIDE */
+        .card-guide {
+            grid-column: span 8;
+            grid-row: span 3;
+        }
+        .guide-step {
+            display: flex; gap: 20px; margin-bottom: 25px;
+            background: var(--bg-tertiary); padding: 20px;
+            border-radius: 15px;
+        }
+        .guide-num {
+            font-size: 2rem; font-weight: 700; color: var(--primary);
+            font-family: 'Playfair Display', serif; line-height: 1;
+        }
+        .guide-content h4 { font-size: 1.1rem; color: var(--primary-dark); margin-bottom: 5px; }
+        .guide-content p { font-size: 0.9rem; color: var(--text-secondary); margin: 0; }
+
+        .card-tips {
+            grid-column: span 4;
+            grid-row: span 2;
+        }
+        .tip-card {
+            background: var(--bg-tertiary); padding: 15px;
+            border-radius: 12px; margin-bottom: 15px;
+        }
+        .tip-card h5 { color: var(--primary-dark); margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
+        .tip-card p { font-size: 0.85rem; color: var(--text-secondary); margin: 0; }
+
+        .card-warning {
+            grid-column: span 4;
+            background: linear-gradient(135deg, var(--accent-1) 0%, #c0392b 100%);
+            color: white;
+        }
+        .card-warning .card-title { color: white; }
+        .warning-list { margin-top: 15px; font-size: 0.9rem; }
+        .warning-list li { margin-bottom: 8px; }
+
+        /* EXAMPLE MAP */
+        .card-example {
+            grid-column: span 12;
+            min-height: 400px;
+        }
+        .map-container {
+            display: flex; flex-direction: column; align-items: center;
+            margin-top: 20px; position: relative;
+            padding: 40px 0;
+        }
+        /* Simple CSS Map Visualization */
+        .map-center {
+            background: var(--primary); color: white;
+            padding: 20px 35px; border-radius: 50px;
+            font-weight: 700; font-size: 1.2rem;
+            box-shadow: 0 10px 30px var(--shadow-hover);
+            position: relative; z-index: 2;
+        }
+        .map-branches {
+            display: flex; justify-content: space-around;
+            width: 100%; margin-top: 30px;
+            position: relative;
+        }
+        /* Lines */
+        .map-branches::before {
+            content: ''; position: absolute; top: -30px; left: 50%;
+            width: 2px; height: 30px; background: var(--primary);
+        }
+        .branch {
+            display: flex; flex-direction: column; align-items: center;
+            position: relative; width: 200px;
+        }
+        .branch::before {
+            content: ''; position: absolute; top: -20px; left: 50%;
+            width: 2px; height: 20px; background: var(--primary);
+        }
+        .branch-node {
+            background: var(--bg-tertiary); border: 2px solid var(--primary);
+            padding: 10px 20px; border-radius: 20px;
+            font-weight: 600; color: var(--primary-dark);
+            text-align: center; min-width: 120px;
+        }
+        .branch-sub {
+            margin-top: 15px; font-size: 0.8rem;
+            background: var(--beige); padding: 8px;
+            border-radius: 8px; text-align: center;
+            color: var(--text-secondary);
+        }
+        
+        .card-digital {
+            grid-column: span 6;
+        }
+        .tools-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr);
+            gap: 15px; margin-top: 15px;
+        }
+        .tool-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 12px; background: var(--bg-tertiary);
+            border-radius: 10px;
+        }
+        .tool-item i { color: var(--primary); font-size: 1.2rem; }
+
+        .card-analog {
+            grid-column: span 6;
+        }
+        .supply-list {
+            margin-top: 15px; display: grid; grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .supply-item {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 0.9rem; color: var(--text-primary);
+        }
+        .supply-item i { color: var(--accent-5); }
+
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 40px;
+            background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--beige) 100%);
+        }
+        .footer-quote {
+            font-family: 'Playfair Display', serif; font-size: 1.5rem;
+            color: var(--primary-dark); margin-bottom: 10px; font-style: italic;
+        }
+
+        @media (max-width: 1100px) {
+            .concept-grid { grid-template-columns: 1fr; }
+            .map-branches { flex-direction: column; align-items: center; gap: 30px; }
+            .branch { width: 100%; flex-direction: row; justify-content: center; gap: 10px; }
+            .branch::before { display: none; }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-hero, .card-why, .card-ideal, .card-concept, .card-guide,
+            .card-tips, .card-warning, .card-example, .card-digital,
+            .card-analog, .card-footer { grid-column: span 12; }
+            .card-guide { grid-row: span 1; }
+            .card-tips { grid-row: span 1; }
+            .hero-text h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-sitemap"></i> Metodo del Mapeo</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-network-wired"></i> Organizacion Visual</span>
+                    <h1>El Metodo del Mapeo para Conferencias</h1>
+                    <p>Ideal para clases virtuales, webinars o conferencistas invitados. Cuando el contenido no es lineal y el orador salta entre ideas, las listas fallan. El mapeo te permite conectar conceptos espacialmente, viendo el bosque entero en lugar de solo los arboles.</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-project-diagram"></i>
+                    <span style="font-size: 0.9rem; font-weight: 600;">Visualizacion Espacial</span>
+                </div>
+            </article>
+
+            <!-- WHY USE IT -->
+            <article class="card card-why">
+                <div class="card-header">
+                    <div class="card-icon icon-blue"><i class="fas fa-question-circle"></i></div>
+                    <h2 class="card-title">Por que Funciona en Conferencias</h2>
+                </div>
+                <div class="reason-list">
+                    <div class="reason-item">
+                        <div class="reason-num">1</div>
+                        <div>
+                            <h4 style="color: var(--primary-dark);">Adaptabilidad al Caos</h4>
+                            <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0;">Los conferencistas invitados a menudo no siguen un guion estricto. Pueden empezar con el final, volver al inicio o divagar. El mapeo te permite colocar esa informacion "flotante" en una rama lateral sin romper tu estructura de apuntes.</p>
+                        </div>
+                    </div>
+                    <div class="reason-item">
+                        <div class="reason-num">2</div>
+                        <div>
+                            <h4 style="color: var(--primary-dark);">Deteccion de Temas Transversales</h4>
+                            <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0;">En una clase de 2 horas, un tema mencionado al minuto 15 puede conectarse con uno del minuto 90. En una lista lineal, estan separados por 3 paginas. En un mapa, puedes dibujar una linea punteada entre ambas ramas y ver la relacion al instante.</p>
+                        </div>
+                    </div>
+                    <div class="reason-item">
+                        <div class="reason-num">3</div>
+                        <div>
+                            <h4 style="color: var(--primary-dark);">Menos Escritura, Mas Escucha</h4>
+                            <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0;">No necesitas escribir oraciones completas. Escribes palabras clave en "burbujas". Eso te libera tiempo mental para procesar lo que dice el experto y formular preguntas, en lugar de ser un estenografo pasivo.</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- IDEAL SCENARIOS -->
+            <article class="card card-ideal">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-check-circle"></i></div>
+                    <h2 class="card-title">Cuando es Ideal Usarlo</h2>
+                </div>
+                <div class="ideal-list">
+                    <div class="ideal-item"><i class="fas fa-video"></i> Clases 100% virtuales o webinars.</div>
+                    <div class="ideal-item"><i class="fas fa-user-tie"></i> Charlas de invitados especiales.</div>
+                    <div class="ideal-item"><i class="fas fa-brain"></i> Lluvia de ideas o discusiones abiertas.</div>
+                    <div class="ideal-item"><i class="fas fa-book-open"></i> Materias con muchos conceptos interrelacionados.</div>
+                    <div class="ideal-item"><i class="fas fa-sync"></i> Repaso general antes de un examen.</div>
+                </div>
+            </article>
+
+            <!-- CORE CONCEPT -->
+            <article class="card card-concept">
+                <div class="card-header">
+                    <div class="card-icon icon-brown"><i class="fas fa-brain"></i></div>
+                    <h2 class="card-title">La Ciencia Detras del Mapa</h2>
+                </div>
+                <div class="concept-grid">
+                    <div class="concept-box">
+                        <h4><i class="fas fa-sitemap"></i> Pensamiento Radial</h4>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0;">El cerebro no piensa en listas (1, 2, 3...). Piensa en asociaciones. Un tema central dispara ideas relacionadas. El mapeo imita esta estructura neuronal natural, facilitando la recuperacion de la informacion despues.</p>
+                    </div>
+                    <div class="concept-box">
+                        <h4><i class="fas fa-eye"></i> Memoria Visual</h4>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin: 0;">Recuerdas mejor donde estaba escrito algo en la pagina ("arriba a la derecha, en rojo") que en que parrafo estaba. El mapeo aprovecha la memoria espacial para anclar conceptos.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- STEP BY STEP GUIDE -->
+            <article class="card card-guide">
+                <div class="card-header">
+                    <div class="card-icon icon-purple"><i class="fas fa-list-ol"></i></div>
+                    <h2 class="card-title">Guia Paso a Paso en Tiempo Real</h2>
+                </div>
+                
+                <div class="guide-step">
+                    <div class="guide-num">01</div>
+                    <div class="guide-content">
+                        <h4>El Centro es el Tema</h4>
+                        <p>Escribe el tema principal en el centro exacto de la pagina (o pantalla) y dibuja un circulo alrededor. Deja mucho espacio alrededor. Si el conferencista dice "Hoy hablaremos de Marketing Digital", eso va al centro.</p>
+                    </div>
+                </div>
+
+                <div class="guide-step">
+                    <div class="guide-num">02</div>
+                    <div class="guide-content">
+                        <h4>Escucha las "Pistas"</h4>
+                        <p>El orador mencionara categorias principales. "Hay 4 estrategias: SEO, SEM, Content y Social". Esas son tus primeras ramas principales que salen del centro. No escribas mas de 4-5 ramas principales.</p>
+                    </div>
+                </div>
+
+                <div class="guide-step">
+                    <div class="guide-num">03</div>
+                    <div class="guide-content">
+                        <h4>Ramas Secundarias y Detalles</h4>
+                        <p>De cada rama principal (ej: SEO), salen sub-ramas con detalles clave (ej: "Keywords", "On-page", "Backlinks"). Usa palabras sueltas, no frases. Una palabra por linea.</p>
+                    </div>
+                </div>
+
+                <div class="guide-step">
+                    <div class="guide-num">04</div>
+                    <div class="guide-content">
+                        <h4>Conexiones Cruzadas (El Poder Real)</h4>
+                        <p>Si el orador menciona que "Las Keywords son clave para el Content Marketing", dibuja una linea punteada conectando la rama "Keywords" (de SEO) con la rama "Content". Esto demuestra comprension profunda.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- TIPS -->
+            <article class="card card-tips">
+                <div class="card-header">
+                    <div class="card-icon icon-green"><i class="fas fa-lightbulb"></i></div>
+                    <h2 class="card-title">Consejos de Maestro</h2>
+                </div>
+                <div class="tip-card">
+                    <h5 style="color: var(--accent-5);"><i class="fas fa-palette"></i> Codigo de Colores</h5>
+                    <p>Usa un color diferente para cada rama principal. Ayuda al cerebro a categorizar visualmente la informacion al instante.</p>
+                </div>
+                <div class="tip-card">
+                    <h5 style="color: var(--accent-2);"><i class="fas fa-text-width"></i> Palabras Clave</h5>
+                    <p>La regla de oro: maximo 3 palabras por burbuja. Si necesitas mas, probablemente estes escribiendo demasiado detalle.</p>
+                </div>
+                <div class="tip-card">
+                    <h5 style="color: var(--accent-3);"><i class="fas fa-paper-plane"></i> Orientacion</h5>
+                    <p>En papel, usa la hoja horizontal (apaisada). Da mas espacio para que el mapa crezca hacia los lados sin chocar.</p>
+                </div>
+            </article>
+
+            <!-- WARNING -->
+            <article class="card card-warning">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-exclamation-triangle"></i></div>
+                    <h2 class="card-title">Cuando NO Usarlo</h2>
+                </div>
+                <ul class="warning-list">
+                    <li><i class="fas fa-times"></i> Formulas matematicas complejas o secuencias exactas.</li>
+                    <li><i class="fas fa-times"></i> Procesos historicos rigidos que deben seguir un orden cronologico.</li>
+                    <li><i class="fas fa-times"></i> Si el profesor dicta palabra por palabra (mejor el metodo lineal alli).</li>
+                </ul>
+            </article>
+
+            <!-- VISUAL EXAMPLE -->
+            <article class="card card-example">
+                <div class="card-header">
+                    <div class="card-icon icon-brown"><i class="fas fa-draw-polygon"></i></div>
+                    <h2 class="card-title">Ejemplo Visual: Conferencia de Startups</h2>
+                </div>
+                <div class="map-container">
+                    <div class="map-center">Creacion de Startups</div>
+                    
+                    <div class="map-branches">
+                        <!-- Branch 1 -->
+                        <div class="branch">
+                            <div class="branch-node">Idea</div>
+                            <div class="branch-sub">Problema Real</div>
+                            <div class="branch-sub">Solucion</div>
+                        </div>
+                        <!-- Branch 2 -->
+                        <div class="branch">
+                            <div class="branch-node">Equipo</div>
+                            <div class="branch-sub">CEO Tecnico</div>
+                            <div class="branch-sub">Cultura</div>
+                        </div>
+                        <!-- Branch 3 -->
+                        <div class="branch">
+                            <div class="branch-node">Finanzas</div>
+                            <div class="branch-sub">Bootstrapping</div>
+                            <div class="branch-sub">Inversores</div>
+                        </div>
+                        <!-- Branch 4 -->
+                        <div class="branch">
+                            <div class="branch-node">Mercado</div>
+                            <div class="branch-sub">MVP</div>
+                            <div class="branch-sub">Early Adopters</div>
+                        </div>
+                    </div>
+                </div>
+                <p style="text-align: center; font-size: 0.85rem; color: var(--text-secondary); margin-top: 20px;">Nota como las ramas permiten agregar detalles en cualquier orden sin desordenar el resto.</p>
+            </article>
+
+            <!-- DIGITAL TOOLS -->
+            <article class="card card-digital">
+                <div class="card-header">
+                    <div class="card-icon icon-blue"><i class="fas fa-laptop"></i></div>
+                    <h2 class="card-title">Herramientas Digitales</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Para clases virtuales, el mapa digital permite editarse y crecer infinitamente.</p>
+                <div class="tools-grid">
+                    <div class="tool-item"><i class="fas fa-cube"></i> Miro (Infinito)</div>
+                    <div class="tool-item"><i class="fas fa-swatchbook"></i> Mural</div>
+                    <div class="tool-item"><i class="fas fa-file-alt"></i> OneNote</div>
+                    <div class="tool-item"><i class="fas fa-code-branch"></i> GitMind</div>
+                </div>
+            </article>
+
+            <!-- ANALOG TOOLS -->
+            <article class="card card-analog">
+                <div class="card-header">
+                    <div class="card-icon icon-orange"><i class="fas fa-pencil-alt"></i></div>
+                    <h2 class="card-title">Materiales Analogicos</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Si eres de papel, estos son tus amigos para mapear:</p>
+                <div class="supply-list">
+                    <div class="supply-item"><i class="fas fa-expand"></i> Hojas A4 Horizontal</div>
+                    <div class="supply-item"><i class="fas fa-pen-fancy"></i> Boligrafos de colores</div>
+                    <div class="supply-item"><i class="fas fa-highlighter"></i> Marcadores suaves</div>
+                    <div class="supply-item"><i class="fas fa-ruler-combined"></i> Lapiz para correcciones</div>
+                </div>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-quote">"Un mapa mal dibujado que entiendes vale mas que una lista perfecta que no tiene sentido."</p>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">El objetivo no es el arte, es la conexion de ideas.</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+    </script>
+</body>
+</html>
