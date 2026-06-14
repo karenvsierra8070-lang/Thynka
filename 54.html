@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bloquear Distracciones - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --accent-1: #c0392b; --accent-2: #27ae60; --accent-3: #2980b9;
+            --accent-4: #d35400; --accent-5: #16a085; --accent-6: #8e44ad;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1300px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-hover); }
+
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, #1a3a3a 0%, #0d2626 100%);
+            color: white; padding: 40px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 300px; height: 100%;
+            background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.08) 0%, transparent 60%);
+        }
+        .hero-text { flex: 1; z-index: 1; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.8rem;
+            font-weight: 600; margin-bottom: 15px;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.5rem;
+            margin-bottom: 12px; line-height: 1.2;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.9; max-width: 550px; }
+        .hero-visual {
+            width: 180px; height: 220px; background: rgba(255,255,255,0.1);
+            border-radius: 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 8px;
+            position: relative; z-index: 1; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .hero-visual i { font-size: 3rem; opacity: 0.8; }
+
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white;
+        }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #922b21); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-2), #1e8449); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-3), #1a5276); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-4), #ba4a00); }
+        .icon-teal { background: linear-gradient(135deg, var(--accent-5), #0e6655); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-6), #6c3483); }
+        .icon-brown { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+
+        /* Stats Row */
+        .card-stats {
+            grid-column: span 12;
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+        }
+        .stat-item {
+            background: var(--bg-tertiary); border-radius: 15px;
+            padding: 20px; text-align: center;
+        }
+        .stat-num {
+            font-size: 2.2rem; font-weight: 700; color: var(--accent-4);
+            font-family: 'Playfair Display', serif;
+        }
+        .stat-label { font-size: 0.85rem; color: var(--text-secondary); margin-top: 5px; }
+
+        /* Extensions Grid */
+        .card-extensions {
+            grid-column: span 12;
+        }
+        .ext-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px;
+        }
+        .ext-card {
+            background: var(--bg-tertiary); border-radius: 18px;
+            padding: 25px; border-top: 5px solid;
+            transition: all 0.3s; position: relative;
+        }
+        .ext-card:hover { transform: translateY(-5px); }
+        .ext-card.ext-chrome { border-color: #4285f4; }
+        .ext-card.ext-fox { border-color: #ff7139; }
+        .ext-card.ext-cross { border-color: var(--accent-2); }
+        .ext-card.ext-hard { border-color: var(--accent-1); }
+        .ext-card.ext-soft { border-color: var(--accent-5); }
+        .ext-card.ext-focus { border-color: var(--accent-6); }
+        
+        .ext-head { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .ext-icon {
+            width: 50px; height: 50px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem; color: white;
+        }
+        .ext-chrome .ext-icon { background: #4285f4; }
+        .ext-fox .ext-icon { background: #ff7139; }
+        .ext-cross .ext-icon { background: var(--accent-2); }
+        .ext-hard .ext-icon { background: var(--accent-1); }
+        .ext-soft .ext-icon { background: var(--accent-5); }
+        .ext-focus .ext-icon { background: var(--accent-6); }
+        
+        .ext-name { font-weight: 700; font-size: 1.1rem; color: var(--primary-dark); }
+        .ext-browser { font-size: 0.75rem; color: var(--text-secondary); }
+        
+        .ext-features { margin-bottom: 15px; }
+        .ext-feat {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 0.85rem; color: var(--text-primary); margin-bottom: 6px;
+        }
+        .ext-feat i { color: var(--accent-2); font-size: 0.7rem; }
+        
+        .ext-badge {
+            display: inline-block; padding: 4px 10px;
+            border-radius: 20px; font-size: 0.7rem; font-weight: 600;
+        }
+        .badge-free { background: rgba(39, 174, 96, 0.2); color: var(--accent-2); }
+        .badge-freemium { background: rgba(41, 128, 185, 0.2); color: var(--accent-3); }
+        .badge-hardcore { background: rgba(192, 57, 43, 0.2); color: var(--accent-1); }
+
+        /* Comparison Table */
+        .card-comparison {
+            grid-column: span 6;
+            grid-row: span 2;
+        }
+        .comp-table {
+            width: 100%; border-collapse: collapse; margin-top: 20px;
+        }
+        .comp-table th, .comp-table td {
+            padding: 12px 10px; text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.85rem;
+        }
+        .comp-table th {
+            background: var(--bg-tertiary); font-weight: 600;
+            color: var(--primary-dark);
+        }
+        .comp-table tr:hover td { background: var(--bg-tertiary); }
+        .check-yes { color: var(--accent-2); }
+        .check-no { color: var(--accent-1); }
+        .comp-table .ext-link {
+            color: var(--accent-3); text-decoration: none; font-weight: 600;
+        }
+        .comp-table .ext-link:hover { text-decoration: underline; }
+
+        /* Strategies */
+        .card-strategies {
+            grid-column: span 6;
+        }
+        .strategy-item {
+            background: var(--bg-tertiary); border-radius: 15px;
+            padding: 18px; margin-bottom: 12px;
+            display: flex; gap: 15px; align-items: flex-start;
+            cursor: pointer; transition: all 0.3s;
+        }
+        .strategy-item:hover { transform: translateX(5px); }
+        .strategy-num {
+            width: 35px; height: 35px; border-radius: 50%;
+            background: var(--accent-5); color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; flex-shrink: 0;
+        }
+        .strategy-content h4 { font-size: 0.95rem; color: var(--primary-dark); margin-bottom: 4px; }
+        .strategy-content p { font-size: 0.8rem; color: var(--text-secondary); margin: 0; }
+
+        /* Sites to Block */
+        .card-sites {
+            grid-column: span 6;
+        }
+        .site-category {
+            margin-bottom: 20px;
+        }
+        .cat-title {
+            font-weight: 600; font-size: 0.9rem; color: var(--primary-dark);
+            margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+        }
+        .cat-sites {
+            display: flex; flex-wrap: wrap; gap: 8px;
+        }
+        .site-tag {
+            background: var(--bg-tertiary); padding: 8px 14px;
+            border-radius: 20px; font-size: 0.8rem;
+            border: 1px solid var(--border-color); cursor: pointer;
+            transition: all 0.3s;
+        }
+        .site-tag:hover, .site-tag.selected {
+            background: var(--accent-1); color: white; border-color: var(--accent-1);
+        }
+
+        /* Warning */
+        .card-warning {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-1) 0%, #922b21 100%);
+            color: white;
+        }
+        .card-warning .card-title { color: white; }
+        .warning-item {
+            background: rgba(255,255,255,0.15); padding: 15px;
+            border-radius: 12px; margin-bottom: 10px;
+        }
+        .warning-item h4 { font-size: 0.95rem; margin-bottom: 5px; }
+        .warning-item p { font-size: 0.85rem; opacity: 0.9; margin: 0; }
+
+        /* Setup Guide */
+        .card-setup {
+            grid-column: span 6;
+            grid-row: span 2;
+        }
+        .setup-accordion {
+            margin-top: 15px;
+        }
+        .setup-item {
+            background: var(--bg-tertiary); border-radius: 12px;
+            margin-bottom: 10px; overflow: hidden;
+        }
+        .setup-header {
+            padding: 15px 20px; display: flex; align-items: center;
+            justify-content: space-between; cursor: pointer;
+            transition: all 0.3s;
+        }
+        .setup-header:hover { background: var(--beige); }
+        .setup-header h4 { font-size: 0.95rem; color: var(--primary-dark); display: flex; align-items: center; gap: 10px; }
+        .setup-header i { transition: transform 0.3s; }
+        .setup-item.open .setup-header i { transform: rotate(180deg); }
+        .setup-content {
+            padding: 0 20px; max-height: 0; overflow: hidden;
+            transition: all 0.3s;
+        }
+        .setup-item.open .setup-content {
+            padding: 0 20px 20px; max-height: 500px;
+        }
+        .setup-content ol {
+            margin-left: 20px; font-size: 0.85rem; color: var(--text-secondary);
+        }
+        .setup-content li { margin-bottom: 8px; }
+
+        /* Timer Card */
+        .card-timer {
+            grid-column: span 6;
+        }
+        .timer-visual {
+            display: flex; justify-content: center; margin: 25px 0;
+        }
+        .timer-circle {
+            width: 180px; height: 180px; border-radius: 50%;
+            background: conic-gradient(var(--accent-2) 0deg, var(--accent-2) 0deg, var(--bg-tertiary) 0deg);
+            display: flex; align-items: center; justify-content: center;
+            position: relative; cursor: pointer;
+        }
+        .timer-inner {
+            width: 150px; height: 150px; border-radius: 50%;
+            background: var(--bg-secondary); display: flex;
+            flex-direction: column; align-items: center; justify-content: center;
+        }
+        .timer-time {
+            font-size: 2rem; font-weight: 700; color: var(--primary-dark);
+            font-family: 'Playfair Display', serif;
+        }
+        .timer-label { font-size: 0.8rem; color: var(--text-secondary); }
+        .timer-presets {
+            display: flex; justify-content: center; gap: 10px; margin-top: 15px;
+        }
+        .preset-btn {
+            padding: 8px 16px; background: var(--bg-tertiary);
+            border: 1px solid var(--border-color); border-radius: 8px;
+            cursor: pointer; font-family: inherit; font-size: 0.8rem;
+            transition: all 0.3s; color: var(--text-primary);
+        }
+        .preset-btn:hover, .preset-btn.active { background: var(--accent-2); color: white; border-color: var(--accent-2); }
+
+        /* Tips */
+        .card-tips {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-2) 0%, #1e8449 100%);
+            color: white;
+        }
+        .card-tips .card-title { color: white; }
+        .tip-item {
+            background: rgba(255,255,255,0.15); padding: 12px 15px;
+            border-radius: 10px; margin-bottom: 8px;
+            display: flex; align-items: center; gap: 12px; font-size: 0.9rem;
+        }
+
+        /* FAQ */
+        .card-faq {
+            grid-column: span 12;
+        }
+        .faq-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 20px;
+        }
+        .faq-item {
+            background: var(--bg-tertiary); border-radius: 15px; padding: 20px;
+        }
+        .faq-q {
+            font-weight: 600; color: var(--primary-dark); margin-bottom: 10px;
+            display: flex; align-items: flex-start; gap: 10px;
+        }
+        .faq-q i { color: var(--accent-3); margin-top: 3px; }
+        .faq-a { font-size: 0.85rem; color: var(--text-secondary); }
+
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 30px;
+            background: var(--bg-tertiary);
+        }
+        .footer-text {
+            font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 5px;
+        }
+
+        @media (max-width: 1100px) {
+            .ext-grid, .faq-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-stats { grid-template-columns: repeat(2, 1fr); }
+            .card-hero, .card-stats, .card-extensions, .card-comparison,
+            .card-strategies, .card-sites, .card-warning, .card-setup,
+            .card-timer, .card-tips, .card-faq, .card-footer { grid-column: span 12; }
+            .hero-text h1 { font-size: 1.8rem; }
+            .card-hero { flex-direction: column; text-align: center; }
+            .ext-grid { grid-template-columns: 1fr; }
+            .faq-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-ban"></i> Bloquear Distracciones</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-shield-alt"></i> Enfoque Total</span>
+                    <h1>Extensiones Gratuitas para Bloquear Distracciones</h1>
+                    <p>Tu cerebro busca dopamina barata: redes sociales, videos, noticias. Mientras estudias, cada 3 minutos de distraccion te cuesta 23 minutos en recuperar el foco. Estas herramientas son tu armadura.</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-lock"></i>
+                    <span style="font-size: 0.85rem; font-weight: 600;">Protege tu atencion</span>
+                </div>
+            </article>
+
+            <!-- STATS -->
+            <article class="card card-stats">
+                <div class="stat-item">
+                    <div class="stat-num">23 min</div>
+                    <div class="stat-label">Tiempo en recuperar foco</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num">2.5h</div>
+                    <div class="stat-label">Promedio en redes/dia</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num">58x</div>
+                    <div class="stat-label">Veces revisamos el celu</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num">40%</div>
+                    <div class="stat-label">Productividad perdida</div>
+                </div>
+            </article>
+
+            <!-- EXTENSIONS -->
+            <article class="card card-extensions">
+                <div class="card-header">
+                    <div class="card-icon icon-teal"><i class="fas fa-puzzle-piece"></i></div>
+                    <h2 class="card-title">Extensiones Recomendadas</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Todas son gratuitas o tienen version gratuitas funcionales. Elige segun tu nivel de autodisciplina.</p>
+                
+                <div class="ext-grid">
+                    <!-- StayFocusd -->
+                    <div class="ext-card ext-chrome">
+                        <div class="ext-head">
+                            <div class="ext-icon"><i class="fas fa-clock"></i></div>
+                            <div>
+                                <div class="ext-name">StayFocusd</div>
+                                <div class="ext-browser"><i class="fab fa-chrome"></i> Chrome</div>
+                            </div>
+                        </div>
+                        <div class="ext-features">
+                            <div class="ext-feat"><i class="fas fa-check"></i> Limite de tiempo por sitio</div>
+                            <div class="ext-feat"><i class="fas fa-check"></i> Bloqueo por horarios</div>
+                            <div class="ext-feat"><i class="fas fa-check"></i> Modo "Nuclear" irreversible</div>
+                        </div>
+                        <span class="ext-badge badge-free">100% Gratis</span>
+                    </div>
+
+                    <!-- LeechBlock -->
+                    <div class="ext-card ext-fox">
+                        <div class="ext-head">
+                            <div class="ext-icon"><i class="fas fa-leech"></i></div>
+                            <div>
+                                <div class="ext-name">LeechBlock NG</div>
+                                <div class="ext-browser"><i class="fab fa-firefox-browser"></i> Firefox / Chrome</div>
+                            </div>
+                        </div>
+                        <div class="ext-features">
+                            <div class="ext-feat"><i class="fas fa-check"></i> Multiples grupos de sitios</div>
+                            <div class="ext-feat"><i class="fas fa-check"></i> Palabras clave bloqueadas</div>
+                            <div class="ext-feat"><i class="fas fa-check"></i> Temporizador con retraso</div>
+                        </div>
+                        <span class="ext-badge badge-free">100% Gratis</span>
+                    </div>
+
+                    <!-- Block Site -->
+                    <div class="ext-card ext-cross">
+                        <div class="ext-head">
+                            <div class="ext-icon"><i class="fas fa-ban"></i></div>
+                            <div>
+                                <div class="ext-name">Block Site</div>
+                                <div class="ext-browser"><i class="fab fa-chrome"></i> <i class="fab fa-firefox-browser"></i> Todos</div>
+                            </div>
+                        </div>
+                        <div class="ext-features">
+                            <div class="ext-feat"><i class="fas fa-check"></i> Bloqueo simple y rapido</div>
+                            <div class="ext-feat"><i class="fas fa-check"></i> Proteccion con contrasena</div>
+                            <div class="ext-feat"><i class="fas fa-check"></i> Sincroniza entre dispositivos</div>
+                        </div>
+                        <span class="ext-badge badge-freemium">Freemium</span>
+                    </div>
+
+                    <!-- Cold Turkey -->
+                    <div class="ext-card ext-hard">
+                        <div class="ext-head">
+                            <div class="ext-icon"><i class="fas fa-snowflake"></i></div>
+                            <div>
+                                <div class="ext-name">Cold Turkey</div>
+                                <div class="ext-browser"><i class="fas fa-desktop"></i> App de escritorio</div>
+                            </div>
+                        </div>
+                        <div class="ext-features">
+                            <div class="ext-feat"><i class="fas fa-check"></i> Bloqueo IMPOSIBLE de burlar</div>
+                            <div class="ext-feat"><i class="fas fa-check"></i> Bloquea apps y sitios</div>
+                            <div class="ext-feat"><i class="fas fa-check"></i> Modo "Frozen" extremo</div>
+                        </div>
+                        <span class="ext-badge badge-hardcore">Nivel Hardcore</span>
+                    </div>
+
+                    <!-- Forest -->
+                    <div class="ext-card ext-soft">
+                        <div class="ext-head">
+                            <div class="ext-icon"><i class="fas fa-tree"></i></div>
+                            <div>
+                                <div class="ext-name">Forest</div>
+                                <div class="ext-browser"><i class="fas fa-mobile-alt"></i> Movil + Extension</div>
+                            </div>
+                        </div>
+                        <div class="ext-features">
+                            <div class="ext-feat"><i class="fas fa-check"></i> Gamificacion: plantas arboles</div>
+                            <div class="ext-feat"><i class="fas fa-check"></i> Refuerzo positivo</div>
+                            <div class="ext-feat"><i class="fas fa-check"></i> Estadisticas visuales</div>
+                        </div>
+                        <span class="ext-badge badge-freemium">Freemium</span>
+                    </div>
+
+                    <!-- Strict Workflow -->
+                    <div class="ext-card ext-focus">
+                        <div class="ext-head">
+                            <div class="ext-icon"><i class="fas fa-stopwatch"></i></div>
+                            <div>
+                                <div class="ext-name">Strict Workflow</div>
+                                <div class="ext-browser"><i class="fab fa-chrome"></i> Chrome</div>
+                            </div>
+                        </div>
+                        <div class="ext-features">
+                            <div class="ext-feat"><i class="fas fa-check"></i> Tecnica Pomodoro integrada</div>
+                            <div class="ext-feat"><i class="fas fa-check"></i> 25 min foco / 5 min descanso</div>
+                            <div class="ext-feat"><i class="fas fa-check"></i> Bloqueos durante trabajo</div>
+                        </div>
+                        <span class="ext-badge badge-free">100% Gratis</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- COMPARISON TABLE -->
+            <article class="card card-comparison">
+                <div class="card-header">
+                    <div class="card-icon icon-brown"><i class="fas fa-table"></i></div>
+                    <h2 class="card-title">Tabla Comparativa</h2>
+                </div>
+                <table class="comp-table">
+                    <thead>
+                        <tr>
+                            <th>Extension</th>
+                            <th>Dificultad</th>
+                            <th>Password</th>
+                            <th>Horarios</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><a href="https://chrome.google.com/webstore/detail/stayfocusd/laankejkbhbdhmipfmgcngdelahlfoji" target="_blank" class="ext-link">StayFocusd</a></td>
+                            <td>Media</td>
+                            <td class="check-yes"><i class="fas fa-check"></i></td>
+                            <td class="check-yes"><i class="fas fa-check"></i></td>
+                        </tr>
+                        <tr>
+                            <td><a href="https://addons.mozilla.org/es/firefox/addon/leechblock-ng/" target="_blank" class="ext-link">LeechBlock NG</a></td>
+                            <td>Media</td>
+                            <td class="check-yes"><i class="fas fa-check"></i></td>
+                            <td class="check-yes"><i class="fas fa-check"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Block Site</td>
+                            <td>Facil</td>
+                            <td class="check-yes"><i class="fas fa-check"></i></td>
+                            <td class="check-no"><i class="fas fa-times"></i></td>
+                        </tr>
+                        <tr>
+                            <td><a href="https://getcoldturkey.com/" target="_blank" class="ext-link">Cold Turkey</a></td>
+                            <td>Extrema</td>
+                            <td class="check-yes"><i class="fas fa-check"></i></td>
+                            <td class="check-yes"><i class="fas fa-check"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Forest</td>
+                            <td>Facil</td>
+                            <td class="check-no"><i class="fas fa-times"></i></td>
+                            <td class="check-no"><i class="fas fa-times"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Strict Workflow</td>
+                            <td>Media</td>
+                            <td class="check-no"><i class="fas fa-times"></i></td>
+                            <td class="check-yes"><i class="fas fa-check"></i></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 15px;">
+                    <strong>Dificultad:</strong> Se refiere a que tan facil es saltarse el bloqueo. Cold Turkey es casi imposible de burlar.
+                </p>
+            </article>
+
+            <!-- STRATEGIES -->
+            <article class="card card-strategies">
+                <div class="card-header">
+                    <div class="card-icon icon-orange"><i class="fas fa-chess"></i></div>
+                    <h2 class="card-title">Estrategias de Bloqueo</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">No todos necesitamos lo mismo. Elige tu estrategia.</p>
+                
+                <div class="strategy-item">
+                    <div class="strategy-num">1</div>
+                    <div class="strategy-content">
+                        <h4>Bloqueo por Tiempo</h4>
+                        <p>Permites 30 min de YouTube al dia. Cuando se acaba, se acaba. Ideal si tienes autcontrol.</p>
+                    </div>
+                </div>
+                <div class="strategy-item">
+                    <div class="strategy-num">2</div>
+                    <div class="strategy-content">
+                        <h4>Bloqueo por Horario</h4>
+                        <p>De 9am a 1pm y 3pm a 7pm: bloqueo total. Fuera de eso, libre. Ideal para rutinas fijas.</p>
+                    </div>
+                </div>
+                <div class="strategy-item">
+                    <div class="strategy-num">3</div>
+                    <div class="strategy-content">
+                        <h4>Bloqueo con Contrasena</h4>
+                        <p>Alguien mas pone la contrasena. Tu no la sabes. Para cuando TU eres tu peor enemigo.</p>
+                    </div>
+                </div>
+                <div class="strategy-item">
+                    <div class="strategy-num">4</div>
+                    <div class="strategy-content">
+                        <h4>Modo Nuclear</h4>
+                        <p>Bloqueo absoluto por X horas. No hay forma de desactivarlo. Para examenes urgentes.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- SITES TO BLOCK -->
+            <article class="card card-sites">
+                <div class="card-header">
+                    <div class="card-icon icon-red"><i class="fas fa-globe"></i></div>
+                    <h2 class="card-title">Sitios Comunes a Bloquear</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Clic para seleccionar los que te distraen.</p>
+                
+                <div class="site-category">
+                    <div class="cat-title"><i class="fas fa-video"></i> Video y Streaming</div>
+                    <div class="cat-sites">
+                        <span class="site-tag" data-site="youtube.com">YouTube</span>
+                        <span class="site-tag" data-site="netflix.com">Netflix</span>
+                        <span class="site-tag" data-site="twitch.tv">Twitch</span>
+                        <span class="site-tag" data-site="tiktok.com">TikTok</span>
+                    </div>
+                </div>
+                <div class="site-category">
+                    <div class="cat-title"><i class="fas fa-comments"></i> Redes Sociales</div>
+                    <div class="cat-sites">
+                        <span class="site-tag" data-site="instagram.com">Instagram</span>
+                        <span class="site-tag" data-site="twitter.com">Twitter/X</span>
+                        <span class="site-tag" data-site="facebook.com">Facebook</span>
+                        <span class="site-tag" data-site="reddit.com">Reddit</span>
+                    </div>
+                </div>
+                <div class="site-category">
+                    <div class="cat-title"><i class="fas fa-gamepad"></i> Juegos y Ocio</div>
+                    <div class="cat-sites">
+                        <span class="site-tag" data-site="poki.com">Poki</span>
+                        <span class="site-tag" data-site="crazygames.com">CrazyGames</span>
+                        <span class="site-tag" data-site="steam.com">Steam</span>
+                        <span class="site-tag" data-site="roblox.com">Roblox</span>
+                    </div>
+                </div>
+                <div id="selectedSites" style="margin-top: 15px; font-size: 0.85rem; color: var(--accent-3); font-weight: 600;"></div>
+            </article>
+
+            <!-- WARNING -->
+            <article class="card card-warning">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-exclamation-triangle"></i></div>
+                    <h2 class="card-title">Advertencia: Tu Cerebro te Engaña</h2>
+                </div>
+                
+                <div class="warning-item">
+                    <h4>"Solo revisare rapido"</h4>
+                    <p>40 minutos despues sigues ahi. Tu cerebro no entiende "rapido" con contenido infinito.</p>
+                </div>
+                <div class="warning-item">
+                    <h4>"Necesito relajarme 5 min"</h4>
+                    <p>Las redes sociales estan disenadas para NO dejarte salir. El scroll infinito es una trampa.</p>
+                </div>
+                <div class="warning-item">
+                    <h4>"Ya configure el bloqueo"</h4>
+                    <p>El 80% de personas se desbloquean a si mismas en la primera semana. Usa contrasena que no controles.</p>
+                </div>
+            </article>
+
+            <!-- SETUP GUIDE -->
+            <article class="card card-setup">
+                <div class="card-header">
+                    <div class="card-icon icon-blue"><i class="fas fa-cog"></i></div>
+                    <h2 class="card-title">Guia de Configuracion</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Clic en cada extension para ver como configurarla.</p>
+                
+                <div class="setup-accordion">
+                    <div class="setup-item">
+                        <div class="setup-header">
+                            <h4><i class="fas fa-clock" style="color: #4285f4;"></i> StayFocusd - Paso a Paso</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="setup-content">
+                            <ol>
+                                <li>Instala desde Chrome Web Store</li>
+                                <li>Clic en el icono y ve a "Settings"</li>
+                                <li>En "Blocked Sites" agrega: youtube.com, twitter.com, etc.</li>
+                                <li>En "Max Time Allowed" pon 30 minutos (o menos)</li>
+                                <li>Activa "The Nuclear Option" para bloqueos irreversibles</li>
+                                <li>Tip: Pon un Challenge activo para dificultar cambios</li>
+                            </ol>
+                        </div>
+                    </div>
+                    <div class="setup-item">
+                        <div class="setup-header">
+                            <h4><i class="fas fa-leech" style="color: #ff7139;"></i> LeechBlock NG - Paso a Paso</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="setup-content">
+                            <ol>
+                                <li>Instala desde Firefox Add-ons o Chrome Store</li>
+                                <li>Abre opciones y crea un "Block Set"</li>
+                                <li>Agrega los sitios a bloquear (uno por linea)</li>
+                                <li>Configura los tiempos: "Limit to X minutes every Y minutes"</li>
+                                <li>Establece contrasena en "Access Control"</li>
+                                <li>Activa "Prevent access to options during block period"</li>
+                            </ol>
+                        </div>
+                    </div>
+                    <div class="setup-item">
+                        <div class="setup-header">
+                            <h4><i class="fas fa-snowflake" style="color: var(--accent-1);"></i> Cold Turkey - Paso a Paso</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="setup-content">
+                            <ol>
+                                <li>Descarga desde getcoldturkey.com (version gratuita disponible)</li>
+                                <li>Crea una lista de sitios y apps a bloquear</li>
+                                <li>Elige duracion del bloqueo</li>
+                                <li>Selecciona "Frozen" si quieres bloqueo EXTREMO</li>
+                                <li>Una vez activado, NO hay forma de cancelarlo</li>
+                                <li>Advertencia: No lo uses si podrias necesitar algo urgente</li>
+                            </ol>
+                        </div>
+                    </div>
+                    <div class="setup-item">
+                        <div class="setup-header">
+                            <h4><i class="fas fa-tree" style="color: var(--accent-5);"></i> Forest - Paso a Paso</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="setup-content">
+                            <ol>
+                                <li>Instala la extension o app movil</li>
+                                <li>Establece el tiempo de concentracion (25-50 min recomendado)</li>
+                                <li>Presiona "Plantar" para comenzar</li>
+                                <li>Si sales de la lista blanca, tu arbol muere</li>
+                                <li>Acumula monedas para plantar arboles reales</li>
+                                <li>Ideal para quienes responden a gamificacion</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- TIMER -->
+            <article class="card card-timer">
+                <div class="card-header">
+                    <div class="card-icon icon-green"><i class="fas fa-hourglass-half"></i></div>
+                    <h2 class="card-title">Temporizador de Enfoque</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary); text-align: center;">Usa Pomodoro: 25 min foco, 5 min descanso.</p>
+                
+                <div class="timer-visual">
+                    <div class="timer-circle" id="timerCircle">
+                        <div class="timer-inner">
+                            <div class="timer-time" id="timerDisplay">25:00</div>
+                            <div class="timer-label">Clic para iniciar</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="timer-presets">
+                    <button class="preset-btn active" data-time="25">25 min</button>
+                    <button class="preset-btn" data-time="45">45 min</button>
+                    <button class="preset-btn" data-time="60">60 min</button>
+                </div>
+            </article>
+
+            <!-- TIPS -->
+            <article class="card card-tips">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-lightbulb"></i></div>
+                    <h2 class="card-title">Tips que Funcionan</h2>
+                </div>
+                
+                <div class="tip-item">
+                    <i class="fas fa-user-friends"></i>
+                    <span>Pide a alguien que ponga la contrasena por ti</span>
+                </div>
+                <div class="tip-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Empieza con bloques cortos: 1-2 horas, no todo el dia</span>
+                </div>
+                <div class="tip-item">
+                    <i class="fas fa-bell-slash"></i>
+                    <span>Silencia notificaciones del celu tambien</span>
+                </div>
+                <div class="tip-item">
+                    <i class="fas fa-bed"></i>
+                    <span>Deja el celular en otra habitacion, no solo bloqueado</span>
+                </div>
+            </article>
+
+            <!-- FAQ -->
+            <article class="card card-faq">
+                <div class="card-header">
+                    <div class="card-icon icon-purple"><i class="fas fa-question-circle"></i></div>
+                    <h2 class="card-title">Preguntas Frecuentes</h2>
+                </div>
+                
+                <div class="faq-grid">
+                    <div class="faq-item">
+                        <div class="faq-q"><i class="fas fa-chevron-right"></i> ¿Puedo burlar estos bloqueos?</div>
+                        <div class="faq-a">Si, la mayoria se pueden desinstalar. Por eso Cold Turkey o la opcion de contrasena externa son mejores si no confias en ti mismo.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-q"><i class="fas fa-chevron-right"></i> ¿Cual es mejor para examenes?</div>
+                        <div class="faq-a">Cold Turkey en modo Frozen. Una vez activado, ni reiniciando el PC se desactiva hasta que pase el tiempo.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-q"><i class="fas fa-chevron-right"></i> ¿Funcionan en movil?</div>
+                        <div class="faq-a">Forest tiene app. Para bloqueo total en movil, usa "Bienestar Digital" (Android) o "Tiempo de Pantalla" (iOS) que ya vienen integrados.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-q"><i class="fas fa-chevron-right"></i> ¿Que pasa si necesito algo bloqueado?</div>
+                        <div class="faq-a">La mayoria tiene "lista blanca". Agrega sitios de estudio o trabajo que si necesitas. YouTube puede estar bloqueado excepto canales educativos.</div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-text">Las herramientas ayudan, pero la decision es tuya. Si realmente quieres distraerte, encontraras la forma. El bloqueo es para cuando tu voluntad falla, que sera a menudo.</p>
+                <p style="font-size: 0.85rem; color: var(--primary); margin-top: 10px; font-weight: 600;">Configuralo HOY, antes de que lo necesites.</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+
+        // Site tags selection
+        const siteTags = document.querySelectorAll('.site-tag');
+        const selectedSitesDiv = document.getElementById('selectedSites');
+        const selectedSites = [];
+        
+        siteTags.forEach(function(tag) {
+            tag.addEventListener('click', function() {
+                const site = this.getAttribute('data-site');
+                
+                if (this.classList.contains('selected')) {
+                    this.classList.remove('selected');
+                    const index = selectedSites.indexOf(site);
+                    if (index > -1) selectedSites.splice(index, 1);
+                } else {
+                    this.classList.add('selected');
+                    selectedSites.push(site);
+                }
+                
+                if (selectedSites.length > 0) {
+                    selectedSitesDiv.textContent = 'Sitios seleccionados: ' + selectedSites.join(', ');
+                } else {
+                    selectedSitesDiv.textContent = '';
+                }
+            });
+        });
+
+        // Accordion
+        const setupItems = document.querySelectorAll('.setup-item');
+        setupItems.forEach(function(item) {
+            const header = item.querySelector('.setup-header');
+            header.addEventListener('click', function() {
+                const isOpen = item.classList.contains('open');
+                
+                setupItems.forEach(function(i) {
+                    i.classList.remove('open');
+                });
+                
+                if (!isOpen) {
+                    item.classList.add('open');
+                }
+            });
+        });
+
+        // Timer
+        const timerDisplay = document.getElementById('timerDisplay');
+        const timerCircle = document.getElementById('timerCircle');
+        const presetBtns = document.querySelectorAll('.preset-btn');
+        
+        let timerDuration = 25 * 60;
+        let timerRemaining = timerDuration;
+        let timerInterval = null;
+        let timerRunning = false;
+        
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timerRemaining / 60);
+            const seconds = timerRemaining % 60;
+            timerDisplay.textContent = String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+            
+            const percentage = (timerRemaining / timerDuration) * 360;
+            timerCircle.style.background = 'conic-gradient(var(--accent-2) 0deg, var(--accent-2) ' + percentage + 'deg, var(--bg-tertiary) ' + percentage + 'deg)';
+        }
+        
+        timerCircle.addEventListener('click', function() {
+            if (timerRunning) {
+                clearInterval(timerInterval);
+                timerRunning = false;
+                timerCircle.querySelector('.timer-label').textContent = 'Clic para continuar';
+            } else {
+                timerRunning = true;
+                timerCircle.querySelector('.timer-label').textContent = 'Clic para pausar';
+                
+                timerInterval = setInterval(function() {
+                    timerRemaining--;
+                    updateTimerDisplay();
+                    
+                    if (timerRemaining <= 0) {
+                        clearInterval(timerInterval);
+                        timerRunning = false;
+                        timerRemaining = timerDuration;
+                        updateTimerDisplay();
+                        timerCircle.querySelector('.timer-label').textContent = 'Completado! Clic para reiniciar';
+                    }
+                }, 1000);
+            }
+        });
+        
+        presetBtns.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                const time = parseInt(this.getAttribute('data-time'));
+                timerDuration = time * 60;
+                timerRemaining = timerDuration;
+                
+                presetBtns.forEach(function(b) { b.classList.remove('active'); });
+                this.classList.add('active');
+                
+                if (timerInterval) clearInterval(timerInterval);
+                timerRunning = false;
+                updateTimerDisplay();
+                timerCircle.querySelector('.timer-label').textContent = 'Clic para iniciar';
+            });
+        });
+
+        // Initialize timer display
+        updateTimerDisplay();
+    </script>
+</body>
+</html>
