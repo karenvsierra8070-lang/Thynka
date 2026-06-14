@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Datos Puros - Tecnicas de Memoria - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --accent-1: #d64545; --accent-2: #45a0d6; --accent-3: #45b088;
+            --accent-4: #8b5cf6; --accent-5: #e8833a;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1400px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-hover); }
+
+        /* HERO */
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, #8b5cf6 0%, #6d3cd6 100%);
+            color: white; padding: 45px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px; min-height: 320px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 400px; height: 100%;
+            background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.15) 0%, transparent 60%);
+        }
+        .hero-text { flex: 1; z-index: 1; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 8px 18px; border-radius: 25px; font-size: 0.85rem;
+            font-weight: 600; margin-bottom: 15px;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.8rem;
+            margin-bottom: 12px; line-height: 1.2;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.95; max-width: 600px; line-height: 1.7; }
+        .hero-visual {
+            width: 280px; height: 250px; background: rgba(255,255,255,0.1);
+            border-radius: 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 12px;
+            position: relative; z-index: 1; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .hero-visual i { font-size: 4rem; opacity: 0.9; }
+
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white;
+        }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #c0392b); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-2), #2980b9); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-3), #1e8449); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-4), #7d3c98); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-5), #d35400); }
+        .icon-brown { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+
+        /* THE PROBLEM */
+        .card-problem {
+            grid-column: span 6;
+            background: var(--bg-tertiary);
+        }
+        .problem-box {
+            background: var(--bg-secondary); padding: 20px;
+            border-radius: 15px; margin-top: 15px;
+            border-left: 4px solid var(--accent-1);
+        }
+        .problem-box p { font-size: 0.9rem; color: var(--text-secondary); margin: 0; }
+        .problem-box strong { color: var(--primary-dark); }
+
+        /* TECHNIQUE GRID */
+        .tech-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 20px; margin-top: 25px;
+        }
+        .tech-card {
+            background: var(--bg-tertiary); padding: 20px;
+            border-radius: 16px; border-top: 5px solid;
+            transition: transform 0.3s;
+        }
+        .tech-card:hover { transform: translateY(-5px); }
+        .t-chunk { border-color: var(--accent-2); }
+        .t-mnem { border-color: var(--accent-5); }
+        .t-loci { border-color: var(--accent-4); }
+        
+        .tech-icon { font-size: 2rem; margin-bottom: 10px; display: block; }
+        .tech-title { font-size: 1.1rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 8px; }
+        .tech-desc { font-size: 0.85rem; color: var(--text-secondary); }
+        .tech-example {
+            margin-top: 12px; background: rgba(255,255,255,0.5); padding: 10px;
+            border-radius: 8px; font-size: 0.8rem; font-weight: 600; text-align: center;
+        }
+
+        /* VISUAL ASSOCIATION */
+        .card-visual {
+            grid-column: span 6;
+            grid-row: span 2;
+        }
+        .visual-demo {
+            display: flex; gap: 20px; margin-top: 20px; align-items: center;
+        }
+        .visual-from {
+            flex: 1; text-align: center; padding: 15px;
+            background: var(--bg-tertiary); border-radius: 12px;
+        }
+        .visual-arrow { font-size: 1.5rem; color: var(--primary); }
+        .visual-to {
+            flex: 1; text-align: center; padding: 15px;
+            background: linear-gradient(135deg, var(--accent-3), #1e8449); color: white;
+            border-radius: 12px;
+        }
+        .visual-to i { font-size: 1.5rem; display: block; margin-bottom: 5px; }
+
+        /* SPACED REPETITION */
+        .card-spaced {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-2) 0%, #2980b9 100%);
+            color: white;
+        }
+        .card-spaced .card-title { color: white; }
+        .spaced-timeline {
+            display: flex; justify-content: space-between;
+            margin-top: 25px; position: relative;
+        }
+        .spaced-timeline::before {
+            content: ''; position: absolute; top: 15px; left: 0; right: 0;
+            height: 2px; background: rgba(255,255,255,0.3); z-index: 0;
+        }
+        .spaced-dot {
+            position: relative; z-index: 1; text-align: center;
+        }
+        .spaced-circle {
+            width: 30px; height: 30px; background: white;
+            border-radius: 50%; margin: 0 auto 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; color: var(--accent-2); font-size: 0.8rem;
+        }
+        .spaced-label { font-size: 0.75rem; opacity: 0.9; }
+        .spaced-time { font-size: 0.65rem; opacity: 0.7; }
+
+        /* PRACTICAL EXAMPLE */
+        .card-example {
+            grid-column: span 12;
+        }
+        .example-tabs {
+            display: flex; gap: 10px; margin-bottom: 20px;
+        }
+        .ex-tab {
+            padding: 10px 20px; background: var(--bg-tertiary);
+            border: none; border-radius: 25px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.9rem;
+            transition: all 0.3s; color: var(--text-primary);
+        }
+        .ex-tab.active { background: var(--primary); color: white; }
+        
+        .ex-content { display: none; padding: 20px; background: var(--bg-tertiary); border-radius: 16px; }
+        .ex-content.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        .ex-solution {
+            margin-top: 15px; padding: 15px;
+            background: rgba(139, 107, 71, 0.1); border-radius: 12px;
+            border-left: 4px solid var(--primary);
+        }
+        .ex-solution strong { color: var(--primary-dark); }
+
+        /* FOOTER */
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 40px;
+            background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--beige) 100%);
+        }
+        .footer-quote {
+            font-family: 'Playfair Display', serif; font-size: 1.5rem;
+            color: var(--primary-dark); margin-bottom: 10px; font-style: italic;
+        }
+
+        @media (max-width: 1100px) {
+            .tech-grid { grid-template-columns: 1fr; }
+            .visual-demo { flex-direction: column; }
+            .visual-arrow { transform: rotate(90deg); }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-hero, .card-problem, .card-techniques, .card-visual,
+            .card-spaced, .card-example, .card-footer { grid-column: span 12; }
+            .hero-text h1 { font-size: 2rem; }
+            .spaced-timeline { flex-wrap: wrap; gap: 20px; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-database"></i> Datos Puros</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-brain"></i> Mnemotecnia Avanzada</span>
+                    <h1>Tecnicas para Recordar Datos Puros</h1>
+                    <p>Fechas, numeros, formulas, definiciones cortas. Datos "puros" son aquellos sin contexto narrativo. El cerebro los odia porque no tienen gancho. Aqui aprenderas a crear ganchos artificiales para que se peguen a tu memoria a largo plazo.</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-paperclip"></i>
+                    <span style="font-size: 0.9rem; font-weight: 600;">Pegamento Mental</span>
+                </div>
+            </article>
+
+            <!-- THE PROBLEM -->
+            <article class="card card-problem">
+                <div class="card-header">
+                    <div class="card-icon icon-red"><i class="fas fa-unlink"></i></div>
+                    <h2 class="card-title">El Problema del Dato Puro</h2>
+                </div>
+                <div class="problem-box">
+                    <strong>Por que se te olvidan?</strong>
+                    <p>El cerebro esta diseñado para historias y sobrevivencia, no para listas abstractas. Un numero de telefono es "informacion basura" para tu hipocampo a menos que le des significado.</p>
+                </div>
+                <div class="problem-box" style="border-color: var(--accent-3); margin-top: 10px;">
+                    <strong>La solucion</strong>
+                    <p>Convertir el dato abstracto en una imagen concreta y bizarra. Entre mas rara, mas facil de recordar.</p>
+                </div>
+            </article>
+
+            <!-- TECHNIQUE GRID -->
+            <article class="card card-techniques" style="grid-column: span 12;">
+                <div class="card-header">
+                    <div class="card-icon icon-purple"><i class="fas fa-toolbox"></i></div>
+                    <h2 class="card-title">Tecnicas Fundamentales</h2>
+                </div>
+                
+                <div class="tech-grid">
+                    <!-- CHUNKING -->
+                    <div class="tech-card t-chunk">
+                        <i class="fas fa-cut" style="color: var(--accent-2);"></i>
+                        <div class="tech-title">Chunking (Fragmentacion)</div>
+                        <div class="tech-desc">Dividir largas cadenas en bloques pequenos. El cerebro procesa mejor 4 items que 12.</div>
+                        <div class="tech-example">
+                            Telefono: 5558675309 → 555-867-5309
+                        </div>
+                    </div>
+
+                    <!-- MNEMONICS -->
+                    <div class="tech-card t-mnem">
+                        <i class="fas fa-spell-check" style="color: var(--accent-5);"></i>
+                        <div class="tech-title">Mnemotecnia (Frases)</div>
+                        <div class="tech-desc">Usar la primera letra de cada dato para formar una palabra o frase absurda.</div>
+                        <div class="tech-example">
+                            Planetas: "Mi Vieja Tia Marta Jamas Supo Usar Nepturno"
+                        </div>
+                    </div>
+
+                    <!-- LOCI -->
+                    <div class="tech-card t-loci">
+                        <i class="fas fa-home" style="color: var(--accent-4);"></i>
+                        <div class="tech-title">Palacio de Memoria (Loci)</div>
+                        <div class="tech-desc">Colocar datos en lugares especificos de una ruta que conoces (tu casa, camino a la escuela).</div>
+                        <div class="tech-example">
+                            "La fecha 1492 esta en la puerta de mi casa..."
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- VISUAL ASSOCIATION -->
+            <article class="card card-visual">
+                <div class="card-header">
+                    <div class="card-icon icon-green"><i class="fas fa-eye"></i></div>
+                    <h2 class="card-title">Asociacion Visual: De Abstracto a Concreto</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Convertir numeros o sonidos en imagenes. Esta es la tecnica de los campeones mundiales de memoria.</p>
+                
+                <div class="visual-demo">
+                    <div class="visual-from">
+                        <strong style="font-size: 1.5rem; color: var(--primary-dark);">1492</strong>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);">Abstracto y frio</div>
+                    </div>
+                    <div class="visual-arrow"><i class="fas fa-arrow-right"></i></div>
+                    <div class="visual-to">
+                        <i class="fas fa-ship"></i>
+                        <strong style="font-size: 1.2rem;">Un Barco Hundido</strong>
+                        <div style="font-size: 0.75rem; opacity: 0.8;">1=Barco, 4=Agua, 9=Grito, 2=Dos velas</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; background: var(--bg-tertiary); padding: 15px; border-radius: 12px;">
+                    <strong style="color: var(--primary-dark);">Regla de Oro:</strong>
+                    <span style="font-size: 0.9rem; color: var(--text-secondary);"> La imagen debe ser BIZARRA, MOVIL y VIVIDA. Un perro comiendo un reloj es mas facil de recordar que "tiempo canino".</span>
+                </div>
+            </article>
+
+            <!-- SPACED REPETITION -->
+            <article class="card card-spaced">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-chart-line"></i></div>
+                    <h2 class="card-title">Repeticion Espaciada</h2>
+                </div>
+                <p style="font-size: 0.9rem; opacity: 0.9;">El secreto para que el dato no se borre mañana. Repasar en intervalos crecientes.</p>
+                
+                <div class="spaced-timeline">
+                    <div class="spaced-dot">
+                        <div class="spaced-circle">1</div>
+                        <div class="spaced-label">Estudiar</div>
+                        <div class="spaced-time">Hoy</div>
+                    </div>
+                    <div class="spaced-dot">
+                        <div class="spaced-circle">2</div>
+                        <div class="spaced-label">Repaso 1</div>
+                        <div class="spaced-time">+1 Dia</div>
+                    </div>
+                    <div class="spaced-dot">
+                        <div class="spaced-circle">3</div>
+                        <div class="spaced-label">Repaso 2</div>
+                        <div class="spaced-time">+3 Dias</div>
+                    </div>
+                    <div class="spaced-dot">
+                        <div class="spaced-circle">4</div>
+                        <div class="spaced-label">Repaso 3</div>
+                        <div class="spaced-time">+7 Dias</div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- PRACTICAL EXAMPLE -->
+            <article class="card card-example">
+                <div class="card-header">
+                    <div class="card-icon icon-orange"><i class="fas fa-flask"></i></div>
+                    <h2 class="card-title">Ejemplos Prácticos</h2>
+                </div>
+                
+                <div class="example-tabs">
+                    <button class="ex-tab active" onclick="showExample('dates')">Fechas Historicas</button>
+                    <button class="ex-tab" onclick="showExample('chem')">Tabla Periodica</button>
+                    <button class="ex-tab" onclick="showExample('math')">Formulas</button>
+                </div>
+
+                <div id="ex-dates" class="ex-content active">
+                    <h4 style="color: var(--primary-dark);">Memorizar: 1810 (Independencia de Argentina/Mexico)</h4>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary);">Convertir el numero en historia visual:</p>
+                    <div class="ex-solution">
+                        <strong>Asociacion:</strong> Imagina a un <strong>18</strong> (un soldado con un fusil, 1 palo 8 dos circulos) tocando un <strong>10</strong> (un tambor, 1 palo 0 el tambor). <br>
+                        <span style="font-size: 0.85rem; color: var(--text-secondary);">Visualiza: "El soldado (18) toca el tambor (10) de la libertad."</span>
+                    </div>
+                </div>
+
+                <div id="ex-chem" class="ex-content">
+                    <h4 style="color: var(--primary-dark);">Memorizar: Elementos Alcalinos (Li, Na, K, Rb, Cs, Fr)</h4>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary);">Crear una historia absurda con las siglas:</p>
+                    <div class="ex-solution">
+                        <strong>Frase Mnemotecnica:</strong> "<strong>Li</strong>onel <strong>Na</strong>rra <strong>K</strong>uentos <strong>R</strong>ompiendo <strong>C</strong>ristales <strong>F</strong>eliz". <br>
+                        <span style="font-size: 0.85rem; color: var(--text-secondary);">Cuanto mas absurda la frase, mejor funciona.</span>
+                    </div>
+                </div>
+
+                <div id="ex-math" class="ex-content">
+                    <h4 style="color: var(--primary-dark);">Memorizar: Formula deVelocidad (v = d / t)</h4>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary);">Metodo de triangulo o palabra clave:</p>
+                    <div class="ex-solution">
+                        <strong>Triangulo Visual:</strong> Dibuja un triangulo. Pon "d" arriba. Abajo a la izquierda "v" y abajo a la derecha "t". Si tapas lo que buscas, ves la formula. Tapas 'd'? Ves v*t. Tapas 'v'? Ves d/t.<br>
+                        <span style="font-size: 0.85rem; color: var(--text-secondary);">O simplemente recuerda: "<strong>V</strong>ete <strong>D</strong>ividiendo el <strong>T</strong>iempo".</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-quote">"La memoria no es un archivo. Es un muscle. Entrenalo con imagenes y repeticion, no con repeticion pasiva."</p>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Si puedes imaginarlo, puedes recordarlo.</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+
+        function showExample(id) {
+            document.querySelectorAll('.ex-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.ex-content').forEach(c => c.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById('ex-' + id).classList.add('active');
+        }
+    </script>
+</body>
+</html>
