@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Materias Practicas - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --accent-1: #c0392b; --accent-2: #27ae60; --accent-3: #2980b9;
+            --accent-4: #d35400; --accent-5: #16a085; --accent-6: #8e44ad;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1300px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-hover); }
+
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, #1e3a5f 0%, #0d1f33 100%);
+            color: white; padding: 40px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 300px; height: 100%;
+            background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.08) 0%, transparent 60%);
+        }
+        .hero-text { flex: 1; z-index: 1; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.8rem;
+            font-weight: 600; margin-bottom: 15px;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.5rem;
+            margin-bottom: 12px; line-height: 1.2;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.9; max-width: 550px; }
+        .hero-visual {
+            width: 180px; height: 220px; background: rgba(255,255,255,0.1);
+            border-radius: 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 8px;
+            position: relative; z-index: 1; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .hero-visual i { font-size: 3rem; opacity: 0.8; }
+
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white;
+        }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #922b21); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-2), #1e8449); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-3), #1a5276); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-4), #ba4a00); }
+        .icon-teal { background: linear-gradient(135deg, var(--accent-5), #0e6655); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-6), #6c3483); }
+        .icon-brown { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+
+        /* Stats */
+        .card-stats {
+            grid-column: span 12;
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+        }
+        .stat-item {
+            background: var(--bg-tertiary); border-radius: 15px;
+            padding: 20px; text-align: center;
+        }
+        .stat-num {
+            font-size: 2.2rem; font-weight: 700; color: var(--accent-3);
+            font-family: 'Playfair Display', serif;
+        }
+        .stat-label { font-size: 0.85rem; color: var(--text-secondary); margin-top: 5px; }
+
+        /* Comparison */
+        .card-comparison {
+            grid-column: span 12;
+        }
+        .comp-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 30px; margin-top: 25px;
+        }
+        .comp-col {
+            background: var(--bg-tertiary); border-radius: 20px;
+            padding: 25px; border-top: 6px solid;
+        }
+        .col-wrong { border-color: var(--accent-1); }
+        .col-right { border-color: var(--accent-2); }
+        
+        .comp-head { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .comp-icon {
+            width: 60px; height: 60px; border-radius: 15px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; color: white;
+        }
+        .col-wrong .comp-icon { background: var(--accent-1); }
+        .col-right .comp-icon { background: var(--accent-2); }
+        
+        .comp-title { font-size: 1.3rem; font-weight: 700; color: var(--primary-dark); }
+        .comp-desc { font-size: 0.9rem; color: var(--text-secondary); }
+        
+        .comp-list { margin-top: 15px; }
+        .comp-item {
+            display: flex; gap: 10px; margin-bottom: 10px; font-size: 0.9rem;
+            align-items: flex-start;
+        }
+        .comp-item i { margin-top: 4px; flex-shrink: 0; }
+        .col-wrong .comp-item i { color: var(--accent-1); }
+        .col-right .comp-item i { color: var(--accent-2); }
+
+        /* Problem Steps */
+        .card-steps {
+            grid-column: span 6;
+            grid-row: span 2;
+        }
+        .step-flow {
+            position: relative; margin-top: 20px;
+        }
+        .step-item {
+            display: flex; gap: 20px; margin-bottom: 25px; position: relative;
+        }
+        .step-item:not(:last-child)::after {
+            content: ''; position: absolute; left: 24px; top: 55px;
+            width: 3px; height: calc(100% - 10px);
+            background: linear-gradient(to bottom, var(--accent-3), var(--border-color));
+        }
+        .step-num {
+            width: 50px; height: 50px; border-radius: 50%;
+            background: var(--accent-3); color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 1.2rem; flex-shrink: 0;
+            position: relative; z-index: 2;
+        }
+        .step-item:nth-child(2) .step-num { background: var(--accent-5); }
+        .step-item:nth-child(3) .step-num { background: var(--accent-4); }
+        .step-item:nth-child(4) .step-num { background: var(--accent-2); }
+        .step-item:nth-child(5) .step-num { background: var(--accent-6); }
+        
+        .step-content h4 { font-size: 1rem; color: var(--primary-dark); margin-bottom: 5px; }
+        .step-content p { font-size: 0.85rem; color: var(--text-secondary); margin: 0; }
+        .step-tip {
+            background: var(--bg-tertiary); padding: 10px 15px;
+            border-radius: 8px; margin-top: 8px; font-size: 0.8rem;
+            border-left: 3px solid var(--accent-5);
+        }
+
+        /* Blank Page Method */
+        .card-blank {
+            grid-column: span 6;
+        }
+        .blank-demo {
+            background: var(--bg-tertiary); border-radius: 15px;
+            padding: 25px; margin-top: 20px; position: relative;
+        }
+        .blank-page {
+            background: var(--bg-secondary); border: 2px dashed var(--border-color);
+            border-radius: 10px; min-height: 150px; padding: 20px;
+            transition: all 0.3s;
+        }
+        .blank-page.active {
+            border-style: solid; border-color: var(--accent-2);
+            background: rgba(39, 174, 96, 0.05);
+        }
+        .blank-placeholder {
+            color: var(--text-secondary); font-size: 0.9rem;
+            text-align: center; padding-top: 40px;
+        }
+        .blank-filled { display: none; }
+        .blank-page.active .blank-placeholder { display: none; }
+        .blank-page.active .blank-filled { display: block; font-size: 0.85rem; }
+        .blank-btn {
+            display: block; width: 100%; padding: 12px;
+            background: var(--accent-2); color: white; border: none;
+            border-radius: 10px; margin-top: 15px; cursor: pointer;
+            font-family: inherit; font-weight: 600; transition: all 0.3s;
+        }
+        .blank-btn:hover { background: #1e8449; }
+
+        /* Error Analysis */
+        .card-errors {
+            grid-column: span 6;
+        }
+        .error-type {
+            background: var(--bg-tertiary); border-radius: 12px;
+            padding: 18px; margin-bottom: 12px;
+            border-left: 4px solid var(--accent-1);
+            cursor: pointer; transition: all 0.3s;
+        }
+        .error-type:hover { transform: translateX(5px); }
+        .error-type.calc { border-color: var(--accent-4); }
+        .error-type.concept { border-color: var(--accent-6); }
+        .error-type.process { border-color: var(--accent-3); }
+        .error-type.reading { border-color: var(--accent-5); }
+        
+        .error-header { display: flex; align-items: center; gap: 12px; }
+        .error-icon {
+            width: 35px; height: 35px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.9rem; color: white;
+        }
+        .calc .error-icon { background: var(--accent-4); }
+        .concept .error-icon { background: var(--accent-6); }
+        .process .error-icon { background: var(--accent-3); }
+        .reading .error-icon { background: var(--accent-5); }
+        
+        .error-title { font-weight: 600; color: var(--primary-dark); font-size: 0.95rem; }
+        .error-solution {
+            font-size: 0.8rem; color: var(--text-secondary); margin-top: 10px;
+            padding-top: 10px; border-top: 1px solid var(--border-color);
+            display: none;
+        }
+        .error-type.active .error-solution { display: block; }
+
+        /* Deliberate Practice */
+        .card-deliberate {
+            grid-column: span 6;
+        }
+        .delib-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 15px; margin-top: 20px;
+        }
+        .delib-item {
+            background: var(--bg-tertiary); border-radius: 12px;
+            padding: 18px; text-align: center; transition: all 0.3s;
+            cursor: pointer;
+        }
+        .delib-item:hover { transform: scale(1.03); }
+        .delib-item.highlight { background: rgba(39, 174, 96, 0.15); border: 2px solid var(--accent-2); }
+        .delib-icon { font-size: 2rem; margin-bottom: 10px; }
+        .delib-item:nth-child(1) .delib-icon { color: var(--accent-1); }
+        .delib-item:nth-child(2) .delib-icon { color: var(--accent-4); }
+        .delib-item:nth-child(3) .delib-icon { color: var(--accent-3); }
+        .delib-item:nth-child(4) .delib-icon { color: var(--accent-2); }
+        .delib-title { font-weight: 600; font-size: 0.9rem; color: var(--primary-dark); }
+        .delib-desc { font-size: 0.75rem; color: var(--text-secondary); margin-top: 5px; }
+
+        /* Subjects Grid */
+        .card-subjects {
+            grid-column: span 6;
+        }
+        .subject-tabs {
+            display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;
+        }
+        .subject-tab {
+            padding: 10px 18px; background: var(--bg-tertiary);
+            border: 1px solid var(--border-color); border-radius: 10px;
+            cursor: pointer; transition: all 0.3s;
+            font-family: inherit; font-weight: 600; font-size: 0.85rem;
+            color: var(--text-primary);
+        }
+        .subject-tab:hover, .subject-tab.active {
+            background: var(--primary); color: white; border-color: var(--primary);
+        }
+        .subject-content {
+            display: none; animation: fadeIn 0.3s ease;
+        }
+        .subject-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .subject-tips {
+            background: var(--bg-tertiary); border-radius: 15px; padding: 20px;
+        }
+        .subject-tip {
+            display: flex; gap: 12px; margin-bottom: 12px;
+            align-items: flex-start;
+        }
+        .subject-tip i { color: var(--accent-2); margin-top: 3px; flex-shrink: 0; }
+        .subject-tip span { font-size: 0.85rem; color: var(--text-primary); }
+
+        /* Progress Tracker */
+        .card-progress {
+            grid-column: span 6;
+        }
+        .progress-bar-container {
+            margin: 20px 0;
+        }
+        .progress-label {
+            display: flex; justify-content: space-between;
+            font-size: 0.85rem; margin-bottom: 8px;
+        }
+        .progress-label span:last-child { font-weight: 600; color: var(--accent-2); }
+        .progress-bar {
+            height: 12px; background: var(--bg-tertiary);
+            border-radius: 6px; overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%; border-radius: 6px;
+            transition: width 0.5s ease;
+        }
+        .progress-1 { background: var(--accent-1); }
+        .progress-2 { background: var(--accent-4); }
+        .progress-3 { background: var(--accent-3); }
+        .progress-4 { background: var(--accent-2); }
+        
+        .progress-checklist {
+            margin-top: 20px;
+        }
+        .check-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 15px; background: var(--bg-tertiary);
+            border-radius: 10px; margin-bottom: 8px; cursor: pointer;
+            transition: all 0.3s;
+        }
+        .check-item:hover { background: var(--beige); }
+        .check-box {
+            width: 22px; height: 22px; border: 2px solid var(--primary);
+            border-radius: 6px; display: flex; align-items: center;
+            justify-content: center; transition: all 0.3s; flex-shrink: 0;
+        }
+        .check-item.checked .check-box {
+            background: var(--accent-2); border-color: var(--accent-2);
+        }
+        .check-box i { color: white; font-size: 0.75rem; opacity: 0; }
+        .check-item.checked .check-box i { opacity: 1; }
+        .check-text { font-size: 0.9rem; }
+        .check-item.checked .check-text { text-decoration: line-through; color: var(--text-secondary); }
+
+        /* Warning */
+        .card-warning {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-1) 0%, #922b21 100%);
+            color: white;
+        }
+        .card-warning .card-title { color: white; }
+        .warning-item {
+            background: rgba(255,255,255,0.15); padding: 15px;
+            border-radius: 12px; margin-bottom: 10px;
+        }
+        .warning-item h4 { font-size: 0.95rem; margin-bottom: 5px; }
+        .warning-item p { font-size: 0.85rem; opacity: 0.9; margin: 0; }
+
+        /* Tips */
+        .card-tips {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-2) 0%, #1e8449 100%);
+            color: white;
+        }
+        .card-tips .card-title { color: white; }
+        .tip-item {
+            background: rgba(255,255,255,0.15); padding: 12px 15px;
+            border-radius: 10px; margin-bottom: 8px;
+            display: flex; align-items: center; gap: 12px; font-size: 0.9rem;
+        }
+
+        /* Resources */
+        .card-resources {
+            grid-column: span 12;
+        }
+        .resource-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 20px; margin-top: 20px;
+        }
+        .resource-card {
+            background: var(--bg-tertiary); border-radius: 15px;
+            padding: 20px; text-align: center; transition: all 0.3s;
+            border-top: 4px solid;
+        }
+        .resource-card:hover { transform: translateY(-5px); }
+        .resource-card.res-1 { border-color: var(--accent-3); }
+        .resource-card.res-2 { border-color: var(--accent-5); }
+        .resource-card.res-3 { border-color: var(--accent-4); }
+        .resource-card.res-4 { border-color: var(--accent-6); }
+        
+        .resource-icon {
+            width: 50px; height: 50px; border-radius: 12px;
+            margin: 0 auto 15px; display: flex; align-items: center;
+            justify-content: center; font-size: 1.3rem; color: white;
+        }
+        .res-1 .resource-icon { background: var(--accent-3); }
+        .res-2 .resource-icon { background: var(--accent-5); }
+        .res-3 .resource-icon { background: var(--accent-4); }
+        .res-4 .resource-icon { background: var(--accent-6); }
+        
+        .resource-name { font-weight: 600; color: var(--primary-dark); margin-bottom: 5px; }
+        .resource-desc { font-size: 0.8rem; color: var(--text-secondary); }
+
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 30px;
+            background: var(--bg-tertiary);
+        }
+        .footer-text {
+            font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 5px;
+        }
+
+        @media (max-width: 1100px) {
+            .comp-grid, .delib-grid { grid-template-columns: 1fr; }
+            .resource-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-stats { grid-template-columns: repeat(2, 1fr); }
+            .card-hero, .card-stats, .card-comparison, .card-steps, .card-blank,
+            .card-errors, .card-deliberate, .card-subjects, .card-progress,
+            .card-warning, .card-tips, .card-resources, .card-footer { grid-column: span 12; }
+            .hero-text h1 { font-size: 1.8rem; }
+            .card-hero { flex-direction: column; text-align: center; }
+            .resource-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-calculator"></i> Materias Practicas</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-tools"></i> Aprendizaje Activo</span>
+                    <h1>Enfoque para Estudiar Materias Practicas</h1>
+                    <p>Matematicas, fisica, programacion, quimica... No se aprenden leyendo, se aprenden HACIENDO. Ver resolver 100 ejercicios no te ensena a resolver ninguno. Tienes que mancharte las manos.</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-pencil-alt"></i>
+                    <span style="font-size: 0.85rem; font-weight: 600;">Manos a la obra</span>
+                </div>
+            </article>
+
+            <!-- STATS -->
+            <article class="card card-stats">
+                <div class="stat-item">
+                    <div class="stat-num">90%</div>
+                    <div class="stat-label">Retencion al HACER</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num">10%</div>
+                    <div class="stat-label">Retencion al LEER</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num">5x</div>
+                    <div class="stat-label">Mas efectivo practicar</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num">0</div>
+                    <div class="stat-label">Ejercicios aprendidos viendo</div>
+                </div>
+            </article>
+
+            <!-- COMPARISON -->
+            <article class="card card-comparison">
+                <div class="card-header">
+                    <div class="card-icon icon-brown"><i class="fas fa-balance-scale-left"></i></div>
+                    <h2 class="card-title">Ver vs Hacer: La Diferencia</h2>
+                </div>
+                <div class="comp-grid">
+                    <div class="comp-col col-wrong">
+                        <div class="comp-head">
+                            <div class="comp-icon"><i class="fas fa-video"></i></div>
+                            <div>
+                                <div class="comp-title">Ver Tutoriales</div>
+                                <div class="comp-desc">La ilusion de competencia</div>
+                            </div>
+                        </div>
+                        <div class="comp-list">
+                            <div class="comp-item">
+                                <i class="fas fa-times"></i>
+                                <span>Ver videos de "como resolver" sin pausar</span>
+                            </div>
+                            <div class="comp-item">
+                                <i class="fas fa-times"></i>
+                                <span>Leer la solucion antes de intentar</span>
+                            </div>
+                            <div class="comp-item">
+                                <i class="fas fa-times"></i>
+                                <span>"Ya entiendo" sin haber escrito nada</span>
+                            </div>
+                            <div class="comp-item">
+                                <i class="fas fa-times"></i>
+                                <span>Copiar codigo o procedimientos sin pensar</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="comp-col col-right">
+                        <div class="comp-head">
+                            <div class="comp-icon"><i class="fas fa-hand-paper"></i></div>
+                            <div>
+                                <div class="comp-title">Practica Activa</div>
+                                <div class="comp-desc">Aprendizaje real</div>
+                            </div>
+                        </div>
+                        <div class="comp-list">
+                            <div class="comp-item">
+                                <i class="fas fa-check"></i>
+                                <span>Pausar video y predecir el siguiente paso</span>
+                            </div>
+                            <div class="comp-item">
+                                <i class="fas fa-check"></i>
+                                <span>Intentar resolver ANTES de ver la solucion</span>
+                            </div>
+                            <div class="comp-item">
+                                <i class="fas fa-check"></i>
+                                <span>Escribir cada paso, aunque "ya lo se"</span>
+                            </div>
+                            <div class="comp-item">
+                                <i class="fas fa-check"></i>
+                                <span>Resolver variaciones del mismo problema</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- STEPS -->
+            <article class="card card-steps">
+                <div class="card-header">
+                    <div class="card-icon icon-blue"><i class="fas fa-route"></i></div>
+                    <h2 class="card-title">Metodo para Resolver Problemas</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Sigue este flujo SIEMPRE. No te saltes pasos.</p>
+                
+                <div class="step-flow">
+                    <div class="step-item">
+                        <div class="step-num">1</div>
+                        <div class="step-content">
+                            <h4>Lee el problema COMPLETO</h4>
+                            <p>No escanees. Lee cada palabra. Muchos errores vienen de no leer "no" o "excepto".</p>
+                            <div class="step-tip">Subraya los datos y circula lo que piden.</div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">2</div>
+                        <div class="step-content">
+                            <h4>Identifica el tipo de problema</h4>
+                            <p>Es de derivadas? De equilibrio quimico? De loops en programacion? Clasificarlo activa la memoria.</p>
+                            <div class="step-tip">Preguntate: "Que tema del curso parece esto?"</div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">3</div>
+                        <div class="step-content">
+                            <h4>Escribe que conoces y que buscas</h4>
+                            <p>Datos = lo que te dan. Incognita = lo que piden. Relacion = formula o concepto que conecta ambos.</p>
+                            <div class="step-tip">Haz un diagrama o tabla si aplica.</div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">4</div>
+                        <div class="step-content">
+                            <h4>Resuelve SIN saltar pasos</h4>
+                            <p>Escribe cada paso algebraico. No hagas mentalmente simplificaciones "obvias". Ahi estan los errores.</p>
+                            <div class="step-tip">Si te atascas, vuelve al paso 2.</div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">5</div>
+                        <div class="step-content">
+                            <h4>Verifica tu respuesta</h4>
+                            <p>Tiene sentido fisico? Las unidades coinciden? Puedes sustituir el resultado en el original?</p>
+                            <div class="step-tip">Si da negativo algo que deberia ser positivo, algo falló.</div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- BLANK PAGE METHOD -->
+            <article class="card card-blank">
+                <div class="card-header">
+                    <div class="card-icon icon-teal"><i class="fas fa-file"></i></div>
+                    <h2 class="card-title">Tecnica de la Hoja en Blanco</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">El test definitivo: puedes resolverlo sin notas?</p>
+                
+                <div class="blank-demo">
+                    <div class="blank-page" id="blankPage">
+                        <div class="blank-placeholder">
+                            <i class="fas fa-pencil-alt" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                            Toma una hoja en blanco. Escribe el problema. Resuelvelo sin mirar apuntes ni soluciones.
+                        </div>
+                        <div class="blank-filled">
+                            <strong style="color: var(--accent-2);">Si pudiste resolverlo:</strong><br>
+                            Entendiste el proceso. Pasa al siguiente tipo de problema.
+                            <br><br>
+                            <strong style="color: var(--accent-4);">Si te atascaste:</strong><br>
+                            Volvi a los apuntes SOLO en el punto donde fallaste. Luego intenta de nuevo con hoja en blanco.
+                            <br><br>
+                            <strong style="color: var(--accent-1);">Si no pudiste empezarlo:</strong><br>
+                            No estudiaste lo suficiente la teoria. Vuelve al material base antes de hacer ejercicios.
+                        </div>
+                    </div>
+                    <button class="blank-btn" id="blankBtn">
+                        <i class="fas fa-check-circle"></i> Ver que hacer segun tu resultado
+                    </button>
+                </div>
+            </article>
+
+            <!-- ERROR ANALYSIS -->
+            <article class="card card-errors">
+                <div class="card-header">
+                    <div class="card-icon icon-red"><i class="fas fa-bug"></i></div>
+                    <h2 class="card-title">Analisis de Errores</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Clic en cada tipo para ver la solucion.</p>
+                
+                <div class="error-type calc" data-error="calc">
+                    <div class="error-header">
+                        <div class="error-icon"><i class="fas fa-calculator"></i></div>
+                        <div class="error-title">Error de calculo</div>
+                    </div>
+                    <div class="error-solution">
+                        <strong>Solucion:</strong> No es "mala suerte". Verifica cada operacion antes de seguir. Usa calculadora para confirmar. Si fallas mucho, practica aritmetica basica 10 min al dia.
+                    </div>
+                </div>
+                <div class="error-type concept" data-error="concept">
+                    <div class="error-header">
+                        <div class="error-icon"><i class="fas fa-lightbulb"></i></div>
+                        <div class="error-title">Error conceptual</div>
+                    </div>
+                    <div class="error-solution">
+                        <strong>Solucion:</strong> Usaste la formula o concepto equivocado. Vuelve a la teoria y entiende CUANDO usar cada cosa. Haz una tabla de "si pasa X, uso Y".
+                    </div>
+                </div>
+                <div class="error-type process" data-error="process">
+                    <div class="error-header">
+                        <div class="error-icon"><i class="fas fa-project-diagram"></i></div>
+                        <div class="error-title">Error de procedimiento</div>
+                    </div>
+                    <div class="error-solution">
+                        <strong>Solucion:</strong> Conocias la teoria pero te saltaste pasos o los ordenaste mal. Escribe el procedimiento como receta antes de empezar.
+                    </div>
+                </div>
+                <div class="error-type reading" data-error="reading">
+                    <div class="error-header">
+                        <div class="error-icon"><i class="fas fa-glasses"></i></div>
+                        <div class="error-title">Error de lectura</div>
+                    </div>
+                    <div class="error-solution">
+                        <strong>Solucion:</strong> No leiste bien el enunciado. Practica leer dos veces y subrayar datos clave antes de empezar a resolver.
+                    </div>
+                </div>
+            </article>
+
+            <!-- DELIBERATE PRACTICE -->
+            <article class="card card-deliberate">
+                <div class="card-header">
+                    <div class="card-icon icon-orange"><i class="fas fa-bullseye"></i></div>
+                    <h2 class="card-title">Practica Deliberada</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">No es practicar mas, es practicar MEJOR.</p>
+                
+                <div class="delib-grid">
+                    <div class="delib-item">
+                        <div class="delib-icon"><i class="fas fa-crosshairs"></i></div>
+                        <div class="delib-title">Enfocate en lo debil</div>
+                        <div class="delib-desc">No repitas lo que ya sabes. Ataca tus puntos debiles.</div>
+                    </div>
+                    <div class="delib-item">
+                        <div class="delib-icon"><i class="fas fa-stopwatch"></i></div>
+                        <div class="delib-title">Sesion corta e intensa</div>
+                        <div class="delib-desc">45 min concentrado > 3 horas distraido.</div>
+                    </div>
+                    <div class="delib-item">
+                        <div class="delib-icon"><i class="fas fa-sync-alt"></i></div>
+                        <div class="delib-title">Feedback inmediato</div>
+                        <div class="delib-desc">Verifica la solucion despues de cada ejercicio.</div>
+                    </div>
+                    <div class="delib-item">
+                        <div class="delib-icon"><i class="fas fa-stairs"></i></div>
+                        <div class="delib-title">Dificultad progresiva</div>
+                        <div class="delib-desc">Cuando domines un nivel, sube la dificultad.</div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- SUBJECTS -->
+            <article class="card card-subjects">
+                <div class="card-header">
+                    <div class="card-icon icon-purple"><i class="fas fa-graduation-cap"></i></div>
+                    <h2 class="card-title">Tips por Materia</h2>
+                </div>
+                
+                <div class="subject-tabs">
+                    <button class="subject-tab active" data-subject="mate">Matematicas</button>
+                    <button class="subject-tab" data-subject="fisica">Fisica</button>
+                    <button class="subject-tab" data-subject="codigo">Programacion</button>
+                    <button class="subject-tab" data-subject="quimica">Quimica</button>
+                </div>
+                
+                <div class="subject-content active" id="mate">
+                    <div class="subject-tips">
+                        <div class="subject-tip"><i class="fas fa-check"></i><span>Memoriza formulas solo DESPUES de entender de donde salen.</span></div>
+                        <div class="subject-tip"><i class="fas fa-check"></i><span>Haz ejercicios de cada tipo, no del mismo tipo siempre.</span></div>
+                        <div class="subject-tip"><i class="fas fa-check"></i><span>Escribe cada paso algebraico. Los errores estan en los saltos.</span></div>
+                        <div class="subject-tip"><i class="fas fa-check"></i><span>Verifica unidades y coherencia del resultado.</span></div>
+                    </div>
+                </div>
+                
+                <div class="subject-content" id="fisica">
+                    <div class="subject-tips">
+                        <div class="subject-tip"><i class="fas fa-check"></i><span>SIEMPRE haz un diagrama antes de empezar.</span></div>
+                        <div class="subject-tip"><i class="fas fa-check"></i><span>Escribe todas las variables conocidas con unidades.</span></div>
+                        <div class="subject-tip"><i class="fas fa-check"></i><span>Convierte unidades al inicio, no al final.</span></div>
+                        <div class="subject-tip"><i class="fas fa-check"></i><span>Preguntate: "Tiene sentido fisico esta respuesta?"</span></div>
+                    </div>
+                </div>
+                
+                <div class="subject-content" id="codigo">
+                    <div class="subject-tips">
+                        <div class="subject-tip"><i class="fas fa-check"></i><span>Escribe el codigo, no lo copies y pegues.</span></div>
+                        <div class="subject-tip"><i class="fas fa-check"></i><span>Intentionalmente rompe el codigo para ver que pasa.</span></div>
+                        <div class="subject-tip"><i class="fas fa-check"></i><span>Usa print/console.log para ver que pasa en cada paso.</span></div>
+                        <div class="subject-tip"><i class="fas fa-check"></i><span>Resuelve el mismo problema de 2 formas distintas.</span></div>
+                    </div>
+                </div>
+                
+                <div class="subject-content" id="quimica">
+                    <div class="subject-tips">
+                        <div class="subject-tip"><i class="fas fa-check"></i><span>Domina la tabla periodica: no la memorices, entiendela.</span></div>
+                        <div class="subject-tip"><i class="fas fa-check"></i><span>Balancea ecuaciones en papel, no mentalmente.</span></div>
+                        <div class="subject-tip"><i class="fas fa-check"></i><span>Verifica que los moles y masas tengan sentido.</span></div>
+                        <div class="subject-tip"><i class="fas fa-check"></i><span>Practica conversion de unidades hasta que sea automatico.</span></div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- PROGRESS -->
+            <article class="card card-progress">
+                <div class="card-header">
+                    <div class="card-icon icon-green"><i class="fas fa-tasks"></i></div>
+                    <h2 class="card-title">Tu Progreso Hoy</h2>
+                </div>
+                
+                <div class="progress-bar-container">
+                    <div class="progress-label">
+                        <span>Ejercicios intentados</span>
+                        <span id="progressCount">0/10</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill progress-3" id="progressFill" style="width: 0%;"></div>
+                    </div>
+                </div>
+                
+                <div class="progress-checklist">
+                    <div class="check-item" data-count="1">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <span class="check-text">Resolvi un ejercicio sin ver solucion</span>
+                    </div>
+                    <div class="check-item" data-count="1">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <span class="check-text">Analice mi error en un ejercicio fallido</span>
+                    </div>
+                    <div class="check-item" data-count="1">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <span class="check-text">Verifique mi resultado antes de ver respuesta</span>
+                    </div>
+                    <div class="check-item" data-count="1">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <span class="check-text">Resolvi una variacion del mismo problema</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- WARNING -->
+            <article class="card card-warning">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-exclamation-triangle"></i></div>
+                    <h2 class="card-title">Trampas Mentales</h2>
+                </div>
+                
+                <div class="warning-item">
+                    <h4>"Ya entiendo, no necesito escribirlo"</h4>
+                    <p>Entender el proceso viendolo NO es lo mismo que poder reproducirlo. Si no puedes escribirlo de memoria con hoja en blanco, no lo dominas.</p>
+                </div>
+                <div class="warning-item">
+                    <h4>"Es un error tonto, no cuento"</h4>
+                    <p>Errores de calculo, de signo, de lectura... NO son "tontos". Son tu mayor debilidad. Si pasas 2 horas y fallas por un signo, perdiste 2 horas.</p>
+                </div>
+                <div class="warning-item">
+                    <h4>"Voy a ver la solucion para aprender"</h4>
+                    <p>Ver la solucion es el ultimo recurso, no el primero. Tu cerebro aprende luchando. Si lo haces facil, no aprende.</p>
+                </div>
+            </article>
+
+            <!-- TIPS -->
+            <article class="card card-tips">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-lightbulb"></i></div>
+                    <h2 class="card-title">Tips que Funcionan</h2>
+                </div>
+                
+                <div class="tip-item">
+                    <i class="fas fa-clock"></i>
+                    <span>25 min resolviendo > 2 horas viendo videos</span>
+                </div>
+                <div class="tip-item">
+                    <i class="fas fa-users"></i>
+                    <span>Ensenale el ejercicio a alguien. Si no puedes, no lo dominas.</span>
+                </div>
+                <div class="tip-item">
+                    <i class="fas fa-book"></i>
+                    <span>Crea tu propio "libro de errores" y revisalo antes de cada sesion.</span>
+                </div>
+                <div class="tip-item">
+                    <i class="fas fa-redo"></i>
+                    <span>Resuelve el mismo ejercicio una semana despues. Lo recuerdas?</span>
+                </div>
+            </article>
+
+            <!-- RESOURCES -->
+            <article class="card card-resources">
+                <div class="card-header">
+                    <div class="card-icon icon-brown"><i class="fas fa-folder-open"></i></div>
+                    <h2 class="card-title">Dónde Conseguir Ejercicios</h2>
+                </div>
+                
+                <div class="resource-grid">
+                    <div class="resource-card res-1">
+                        <div class="resource-icon"><i class="fas fa-book"></i></div>
+                        <div class="resource-name">Libros de texto</div>
+                        <div class="resource-desc">Ejercicios verificados con soluciones paso a paso. Empieza aqui.</div>
+                    </div>
+                    <div class="resource-card res-2">
+                        <div class="resource-icon"><i class="fas fa-university"></i></div>
+                        <div class="resource-name">Examenes pasados</div>
+                        <div class="resource-desc">De tu misma materia. El formato y dificultad real.</div>
+                    </div>
+                    <div class="resource-card res-3">
+                        <div class="resource-icon"><i class="fas fa-globe"></i></div>
+                        <div class="resource-name">Plataformas online</div>
+                        <div class="resource-desc">Khan Academy, LeetCode, Wolfram. Retroalimentacion inmediata.</div>
+                    </div>
+                    <div class="resource-card res-4">
+                        <div class="resource-icon"><i class="fas fa-magic"></i></div>
+                        <div class="resource-name">Inventa tus propios</div>
+                        <div class="resource-desc">Cambia numeros, condiciones. Si puedes crearlo, lo dominas.</div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-text">En materias practicas no hay atajos. Cada ejercicio que resuelves construye una conexion neuronal que no existia. Ver a otros hacerlo no construye nada.</p>
+                <p style="font-size: 0.85rem; color: var(--primary); margin-top: 10px; font-weight: 600;">El dolor de no saber es temporal. El conocimiento es permanente.</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+
+        // Blank page method
+        const blankPage = document.getElementById('blankPage');
+        const blankBtn = document.getElementById('blankBtn');
+        
+        blankBtn.addEventListener('click', function() {
+            blankPage.classList.toggle('active');
+            this.innerHTML = blankPage.classList.contains('active') 
+                ? '<i class="fas fa-redo"></i> Volver a intentar' 
+                : '<i class="fas fa-check-circle"></i> Ver que hacer segun tu resultado';
+        });
+
+        // Error types
+        const errorTypes = document.querySelectorAll('.error-type');
+        errorTypes.forEach(function(type) {
+            type.addEventListener('click', function() {
+                errorTypes.forEach(function(t) { t.classList.remove('active'); });
+                this.classList.add('active');
+            });
+        });
+
+        // Subject tabs
+        const subjectTabs = document.querySelectorAll('.subject-tab');
+        subjectTabs.forEach(function(tab) {
+            tab.addEventListener('click', function() {
+                const subject = this.getAttribute('data-subject');
+                
+                document.querySelectorAll('.subject-tab').forEach(function(t) {
+                    t.classList.remove('active');
+                });
+                document.querySelectorAll('.subject-content').forEach(function(c) {
+                    c.classList.remove('active');
+                });
+                
+                this.classList.add('active');
+                document.getElementById(subject).classList.add('active');
+            });
+        });
+
+        // Progress checklist
+        const checkItems = document.querySelectorAll('.check-item');
+        const progressFill = document.getElementById('progressFill');
+        const progressCount = document.getElementById('progressCount');
+        let totalProgress = 0;
+        
+        checkItems.forEach(function(item) {
+            item.addEventListener('click', function() {
+                this.classList.toggle('checked');
+                
+                totalProgress = 0;
+                document.querySelectorAll('.check-item.checked').forEach(function(checked) {
+                    totalProgress += parseInt(checked.getAttribute('data-count'));
+                });
+                
+                const percentage = Math.min(totalProgress * 10, 100);
+                progressFill.style.width = percentage + '%';
+                progressCount.textContent = totalProgress + '/10';
+            });
+        });
+    </script>
+</body>
+</html>
