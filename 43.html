@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peligro de Transcribir - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --accent-1: #d64545; --accent-2: #45a0d6; --accent-3: #45b088;
+            --accent-4: #8b5cf6; --accent-5: #e8833a;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1400px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-hover); }
+
+        /* HERO */
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, #d64545 0%, #9e3a3a 100%);
+            color: white; padding: 45px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px; min-height: 320px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 400px; height: 100%;
+            background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.15) 0%, transparent 60%);
+        }
+        .hero-text { flex: 1; z-index: 1; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 8px 18px; border-radius: 25px; font-size: 0.85rem;
+            font-weight: 600; margin-bottom: 15px;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.8rem;
+            margin-bottom: 12px; line-height: 1.2;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.95; max-width: 600px; line-height: 1.7; }
+        .hero-visual {
+            width: 280px; height: 250px; background: rgba(255,255,255,0.1);
+            border-radius: 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 12px;
+            position: relative; z-index: 1; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .hero-visual i { font-size: 4rem; opacity: 0.9; }
+
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white;
+        }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #c0392b); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-2), #2980b9); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-3), #1e8449); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-4), #7d3c98); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-5), #d35400); }
+        .icon-brown { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+
+        /* ILLUSION MODULE */
+        .card-illusion {
+            grid-column: span 7;
+            grid-row: span 2;
+        }
+        .illusion-graphic {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-top: 30px; gap: 20px;
+        }
+        .brain-box {
+            flex: 1; text-align: center; padding: 20px;
+            background: var(--bg-tertiary); border-radius: 20px;
+            position: relative;
+        }
+        .brain-box i { font-size: 3rem; margin-bottom: 10px; display: block; }
+        .brain-active i { color: var(--accent-3); }
+        .brain-asleep i { color: var(--gray); }
+        .arrow-process {
+            font-size: 2rem; color: var(--primary);
+        }
+
+        /* COMPARISON */
+        .card-vs {
+            grid-column: span 5;
+        }
+        .vs-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .vs-table th { text-align: left; padding: 12px; color: var(--primary-dark); border-bottom: 2px solid var(--primary); }
+        .vs-table td { padding: 12px; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; color: var(--text-secondary); }
+        .vs-bad { color: var(--accent-1); font-weight: 600; }
+        .vs-good { color: var(--accent-3); font-weight: 600; }
+
+        /* PLAGIARISM RISKS */
+        .card-risk {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-1) 0%, #c0392b 100%);
+            color: white;
+        }
+        .card-risk .card-title { color: white; }
+        .risk-item {
+            display: flex; gap: 15px; margin-bottom: 15px;
+            background: rgba(255,255,255,0.15); padding: 15px;
+            border-radius: 12px; align-items: center;
+        }
+        .risk-item i { font-size: 1.5rem; }
+
+        /* PRACTICAL EXAMPLE */
+        .card-example {
+            grid-column: span 6;
+        }
+        .example-box {
+            background: var(--bg-tertiary); padding: 20px;
+            border-radius: 15px; margin-bottom: 15px;
+        }
+        .example-box h4 { color: var(--primary-dark); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .example-box p { font-size: 0.9rem; color: var(--text-secondary); margin: 0; }
+        .ex-bad { border-left: 4px solid var(--accent-1); }
+        .ex-good { border-left: 4px solid var(--accent-3); }
+
+        /* TECHNIQUE */
+        .card-technique {
+            grid-column: span 7;
+            grid-row: span 2;
+        }
+        .technique-step {
+            display: flex; gap: 20px; margin-bottom: 25px;
+            background: var(--bg-tertiary); padding: 20px;
+            border-radius: 16px; border-left: 5px solid var(--primary);
+        }
+        .tech-num {
+            font-size: 2.5rem; font-weight: 700; color: var(--primary);
+            font-family: 'Playfair Display', serif; line-height: 1;
+        }
+        .tech-content h4 { color: var(--primary-dark); margin-bottom: 5px; font-size: 1.1rem; }
+        .tech-content p { color: var(--text-secondary); font-size: 0.9rem; margin: 0; }
+
+        /* FAQ / MYTHS */
+        .card-myths {
+            grid-column: span 5;
+        }
+        .myth-item {
+            margin-bottom: 15px; border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+        .myth-item:last-child { border-bottom: none; }
+        .myth-q { font-weight: 600; color: var(--primary-dark); margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
+        .myth-a { font-size: 0.9rem; color: var(--text-secondary); }
+
+        /* FOOTER */
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 40px;
+            background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--beige) 100%);
+        }
+        .footer-quote {
+            font-family: 'Playfair Display', serif; font-size: 1.5rem;
+            color: var(--primary-dark); margin-bottom: 10px; font-style: italic;
+        }
+
+        @media (max-width: 1100px) {
+            .illusion-graphic { flex-direction: column; }
+            .arrow-process { transform: rotate(90deg); }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-hero, .card-illusion, .card-vs, .card-risk,
+            .card-example, .card-technique, .card-myths, .card-footer { grid-column: span 12; }
+            .hero-text h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-copy"></i> Peligro de Transcribir</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-brain"></i> Trampa Cognitiva</span>
+                    <h1>El Peligro de Transcribir Textualmente</h1>
+                    <p>Copiar y pegar, o dictar palabra por palabra, es el "azucar" del estudio: dulce al principio, pero vacio de nutrientes. Le das a tu cerebro el trabajo mecanico de escribir mientras le ahorras el esfuerzo cognitivo de entender. El resultado: paginas llenas y una mente vacia.</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-file-export"></i>
+                    <span style="font-size: 0.9rem; font-weight: 600;">Entrada != Salida</span>
+                </div>
+            </article>
+
+            <!-- ILLUSION OF COMPETENCE -->
+            <article class="card card-illusion">
+                <div class="card-header">
+                    <div class="card-icon icon-red"><i class="fas fa-ghost"></i></div>
+                    <h2 class="card-title">La Ilusion de Competencia</h2>
+                </div>
+                <p style="font-size: 0.95rem; color: var(--text-secondary);">Este es el efecto psicologico mas peligroso. Tu cerebro reconoce la informacion mientras la escribes y piensa: "Ya lo se, lo escribi". Pero solo lo reconoces, no lo sabes.</p>
+                
+                <div class="illusion-graphic">
+                    <div class="brain-box brain-asleep">
+                        <i class="fas fa-brain"></i>
+                        <h4 style="color: var(--gray);">Cerebro en "Piloto Automatico"</h4>
+                        <p style="font-size: 0.8rem; color: var(--text-secondary);">Solo procesa la forma de las letras y el movimiento de la mano. No procesa el concepto.</p>
+                    </div>
+                    
+                    <div class="arrow-process"><i class="fas fa-arrows-alt-h"></i></div>
+                    
+                    <div class="brain-box brain-active">
+                        <i class="fas fa-brain"></i>
+                        <h4 style="color: var(--accent-3);">Cerebro "Despierto"</h4>
+                        <p style="font-size: 0.8rem; color: var(--text-secondary);">Procesa significado, conecta con ideas previas y genera dudas. Doloroso pero efectivo.</p>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 25px; background: var(--bg-tertiary); padding: 15px; border-radius: 12px; border-left: 4px solid var(--accent-1);">
+                    <strong style="color: var(--primary-dark);">El resultado:</strong>
+                    <span style="font-size: 0.9rem; color: var(--text-secondary);">Tienes 10 paginas de apuntes bonitos que no puedes explicar con tus propias palabras. Es informacion "prestada" que nunca pasa a ser conocimiento "propio".</span>
+                </div>
+            </article>
+
+            <!-- COMPARISON TABLE -->
+            <article class="card card-vs">
+                <div class="card-header">
+                    <div class="card-icon icon-brown"><i class="fas fa-balance-scale-left"></i></div>
+                    <h2 class="card-title">Transcribir vs Parafrasear</h2>
+                </div>
+                <table class="vs-table">
+                    <thead>
+                        <tr>
+                            <th>Aspecto</th>
+                            <th>Transcribir (Mal)</th>
+                            <th>Parafrasear (Bien)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Memoria</td>
+                            <td class="vs-bad">Memoria a corto plazo (se borra rapido)</td>
+                            <td class="vs-good">Codificacion profunda (queda grabado)</td>
+                        </tr>
+                        <tr>
+                            <td>Comprension</td>
+                            <td class="vs-bad">Superficial o nula</td>
+                            <td class="vs-good">Profunda y conectada</td>
+                        </tr>
+                        <tr>
+                            <td>Tiempo</td>
+                            <td class="vs-bad">Parece rapido, pero pierdes horas despues</td>
+                            <td class="vs-good">Mas lento al inicio, ahorra tiempo al repasar</td>
+                        </tr>
+                        <tr>
+                            <td>Riesgo</td>
+                            <td class="vs-bad">Plagio involuntario</td>
+                            <td class="vs-good">Autoria intelectual propia</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </article>
+
+            <!-- PLAGIARISM RISKS -->
+            <article class="card card-risk">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-gavel"></i></div>
+                    <h2 class="card-title">Riesgos Academicos</h2>
+                </div>
+                <p style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 15px;">Transcribir sin procesar te lleva al "Plagio Inconsciente". Crees que son tus palabras porque lo escribiste, pero la estructura es del autor original.</p>
+                
+                <div class="risk-item">
+                    <i class="fas fa-search"></i>
+                    <div>
+                        <strong>Herramientas Antiplagio</strong>
+                        <p style="font-size: 0.8rem; opacity: 0.8; margin: 0;">Turnitin y similares detectan similitudes estructurales, no solo palabras exactas.</p>
+                    </div>
+                </div>
+                <div class="risk-item">
+                    <i class="fas fa-user-graduate"></i>
+                    <div>
+                        <strong>Desacreditacion</strong>
+                        <p style="font-size: 0.8rem; opacity: 0.8; margin: 0;">Si un profesor te pide explicar lo que escribiste y no puedes, tu credibilidad academica cae a cero.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- PRACTICAL EXAMPLE -->
+            <article class="card card-example">
+                <div class="card-header">
+                    <div class="card-icon icon-orange"><i class="fas fa-pen-fancy"></i></div>
+                    <h2 class="card-title">Ejemplo Practico</h2>
+                </div>
+                
+                <div class="example-box ex-bad">
+                    <h4><i class="fas fa-times-circle"></i> Transcripcion (Error)</h4>
+                    <p>"La fotosintesis es un proceso biologico mediante el cual las plantas, algas y algunas bacterias transforman la energia luminosa en energia quimica..."</p>
+                    <p style="margin-top: 5px; font-size: 0.75rem; color: var(--accent-1);">Problema: Copia exacta. Sin procesamiento. Si se borra "quimica", no sabrias que poner.</p>
+                </div>
+
+                <div class="example-box ex-good">
+                    <h4><i class="fas fa-check-circle"></i> Parafrasis (Acierto)</h4>
+                    <p>"Las plantas usan la luz del sol para crear su propio alimento (energia). Es como una fabrica interna que les permite vivir sin comer otros seres."</p>
+                    <p style="margin-top: 5px; font-size: 0.75rem; color: var(--accent-3);">Ventaja: Usa analogias, palabras propias y demuestra entendimiento del concepto.</p>
+                </div>
+            </article>
+
+            <!-- TECHNIQUE: CLOSE THE BOOK -->
+            <article class="card card-technique">
+                <div class="card-header">
+                    <div class="card-icon icon-green"><i class="fas fa-book"></i></div>
+                    <h2 class="card-title">Tecnica: "Cierra el Libro"</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">La solucion definitiva para evitar la transcripcion mecanica.</p>
+                
+                <div class="technique-step">
+                    <div class="tech-num">1</div>
+                    <div class="tech-content">
+                        <h4>Lee un fragmento corto</h4>
+                        <p>Lee solo uno o dos parrafos. No intentes abarcar una pagina entera. Concéntrate en una idea unitaria.</p>
+                    </div>
+                </div>
+
+                <div class="technique-step">
+                    <div class="tech-num">2</div>
+                    <div class="tech-content">
+                        <h4>APARTA LA VISTA (Cierra el libro)</h4>
+                        <p>Este es el paso clave. Elimina la fuente visual. Si sigues viendo el texto, tu cerebro copiara por inercia.</p>
+                    </div>
+                </div>
+
+                <div class="technique-step">
+                    <div class="tech-num">3</div>
+                    <div class="tech-content">
+                        <h4>Escribe de memoria</h4>
+                        <p>Escribe lo que entendiste con tus propias palabras. Si no te acuerdas, no vuelvas al libro todavia. Fuerza a tu cerebro a buscar la idea.</p>
+                    </div>
+                </div>
+
+                <div class="technique-step">
+                    <div class="tech-num">4</div>
+                    <div class="tech-content">
+                        <h4>Verifica y Corrige</h4>
+                        <p>Ahora si, abre el libro. Compara. Que te faltó? Que entendiste mal? Corrige tu nota. Esa correccion es donde ocurre el aprendizaje real.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- MYTHS -->
+            <article class="card card-myths">
+                <div class="card-header">
+                    <div class="card-icon icon-purple"><i class="fas fa-lightbulb"></i></div>
+                    <h2 class="card-title">Falsas Creencias</h2>
+                </div>
+                
+                <div class="myth-item">
+                    <div class="myth-q"><i class="fas fa-times" style="color: var(--accent-1);"></i> "Si lo escribo, se me graba"</div>
+                    <div class="myth-a">Falso. Si no lo piensas al escribirlo, solo grabas la secuencia motora de tu mano escribiendo.</div>
+                </div>
+                <div class="myth-item">
+                    <div class="myth-q"><i class="fas fa-times" style="color: var(--accent-1);"></i> "Tengo que citar las palabras exactas"</div>
+                    <div class="myth-a">Solo necesitas citas textuales para definiciones muy precisas o frases celebres. El resto debe ser parafraseado.</div>
+                </div>
+                <div class="myth-item">
+                    <div class="myth-q"><i class="fas fa-times" style="color: var(--accent-1);"></i> "Parafrasear es cambiar sinónimos"</div>
+                    <div class="myth-a">Cambiar "casa" por "hogar" sigue siendo copiar estructura. Parafrasear es cambiar la estructura de la idea, no solo las palabras.</div>
+                </div>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-quote">"No estudies para saber mas. Estudia para saber explicar mejor. Si no puedes explicarlo, solo lo transcribiste."</p>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">El conocimiento no es lo que entra a tu cuaderno, es lo que se queda en tu cabeza.</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+    </script>
+</body>
+</html>
