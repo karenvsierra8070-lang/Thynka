@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exposicion en Grupo - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --accent-1: #c0392b; --accent-2: #27ae60; --accent-3: #2980b9;
+            --accent-4: #d35400; --accent-5: #16a085; --accent-6: #8e44ad;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1300px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-hover); }
+
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, #2e86ab 0%, #1a5276 100%);
+            color: white; padding: 40px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 300px; height: 100%;
+            background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.08) 0%, transparent 60%);
+        }
+        .hero-text { flex: 1; z-index: 1; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.8rem;
+            font-weight: 600; margin-bottom: 15px;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.5rem;
+            margin-bottom: 12px; line-height: 1.2;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.9; max-width: 550px; }
+        .hero-visual {
+            width: 180px; height: 220px; background: rgba(255,255,255,0.1);
+            border-radius: 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 8px;
+            position: relative; z-index: 1; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .hero-visual i { font-size: 3rem; opacity: 0.8; }
+
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white;
+        }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #922b21); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-2), #1e8449); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-3), #1a5276); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-4), #ba4a00); }
+        .icon-teal { background: linear-gradient(135deg, var(--accent-5), #0e6655); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-6), #6c3483); }
+        .icon-brown { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+
+        /* Phases */
+        .card-phases {
+            grid-column: span 6;
+            grid-row: span 2;
+        }
+        .phase-item {
+            background: var(--bg-tertiary); border-radius: 15px;
+            padding: 20px; margin-bottom: 15px;
+            border-left: 4px solid var(--accent-3);
+            transition: all 0.3s; cursor: pointer;
+        }
+        .phase-item:hover {
+            transform: translateX(5px);
+            border-left-color: var(--accent-2);
+        }
+        .phase-item.active {
+            border-left-color: var(--accent-5);
+            background: rgba(22, 160, 133, 0.1);
+        }
+        .phase-header { display: flex; align-items: center; gap: 12px; }
+        .phase-num {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: var(--accent-3); color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.9rem; flex-shrink: 0;
+        }
+        .phase-item.active .phase-num { background: var(--accent-5); }
+        .phase-title { font-weight: 600; color: var(--primary-dark); }
+        .phase-detail {
+            margin-top: 12px; font-size: 0.85rem; color: var(--text-secondary);
+            padding-left: 44px; display: none;
+        }
+        .phase-item.active .phase-detail { display: block; }
+
+        /* Roles */
+        .card-roles {
+            grid-column: span 6;
+        }
+        .role-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr);
+            gap: 15px; margin-top: 20px;
+        }
+        .role-card {
+            background: var(--bg-tertiary); border-radius: 12px;
+            padding: 20px; text-align: center;
+            transition: all 0.3s; cursor: pointer;
+        }
+        .role-card:hover { transform: scale(1.02); }
+        .role-icon {
+            width: 50px; height: 50px; border-radius: 12px;
+            margin: 0 auto 12px; display: flex; align-items: center;
+            justify-content: center; font-size: 1.2rem; color: white;
+        }
+        .role-card:nth-child(1) .role-icon { background: var(--accent-3); }
+        .role-card:nth-child(2) .role-icon { background: var(--accent-4); }
+        .role-card:nth-child(3) .role-icon { background: var(--accent-6); }
+        .role-card:nth-child(4) .role-icon { background: var(--accent-5); }
+        .role-name { font-weight: 600; font-size: 0.95rem; color: var(--primary-dark); }
+        .role-desc { font-size: 0.8rem; color: var(--text-secondary); margin-top: 5px; }
+
+        /* Frankenstein Problem */
+        .card-frankenstein {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-1) 0%, #922b21 100%);
+            color: white;
+        }
+        .card-frankenstein .card-title { color: white; }
+        .frank-visual {
+            display: flex; gap: 15px; margin-top: 20px;
+        }
+        .frank-slide {
+            flex: 1; padding: 20px; background: rgba(255,255,255,0.1);
+            border-radius: 10px; text-align: center;
+        }
+        .frank-slide h4 { font-size: 0.8rem; opacity: 0.7; margin-bottom: 10px; }
+        .frank-slide p { font-size: 0.75rem; line-height: 1.4; }
+        .frank-slide:nth-child(1) { border: 2px dashed rgba(255,255,255,0.3); }
+        .frank-slide:nth-child(2) { border: 2px dashed rgba(255,255,255,0.3); }
+        .frank-slide:nth-child(3) { border: 2px dashed rgba(255,255,255,0.3); }
+        .frank-warning {
+            margin-top: 15px; padding: 12px;
+            background: rgba(0,0,0,0.2); border-radius: 8px;
+            font-size: 0.85rem; text-align: center;
+        }
+
+        /* Transitions */
+        .card-transitions {
+            grid-column: span 6;
+        }
+        .transition-list { margin-top: 20px; }
+        .trans-item {
+            background: var(--bg-tertiary); border-radius: 12px;
+            padding: 18px; margin-bottom: 12px;
+            border-left: 4px solid var(--accent-5);
+        }
+        .trans-scenario { font-weight: 600; font-size: 0.9rem; color: var(--primary-dark); margin-bottom: 5px; }
+        .trans-phrase {
+            background: var(--bg-secondary); padding: 12px;
+            border-radius: 8px; font-size: 0.85rem;
+            font-style: italic; color: var(--accent-5);
+        }
+
+        /* Mistakes */
+        .card-mistakes {
+            grid-column: span 6;
+        }
+        .mistake-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 15px; margin-top: 20px;
+        }
+        .mistake-item {
+            background: var(--bg-tertiary); border-radius: 12px;
+            padding: 15px; display: flex; gap: 12px; align-items: flex-start;
+        }
+        .mistake-icon {
+            width: 35px; height: 35px; border-radius: 50%;
+            background: rgba(192, 57, 43, 0.1); color: var(--accent-1);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .mistake-text { font-size: 0.85rem; }
+        .mistake-text strong { color: var(--primary-dark); }
+
+        /* Checklist */
+        .card-checklist {
+            grid-column: span 6;
+        }
+        .checklist-container { margin-top: 15px; }
+        .check-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 15px; background: var(--bg-tertiary);
+            border-radius: 12px; margin-bottom: 10px; cursor: pointer;
+            transition: all 0.3s;
+        }
+        .check-item:hover { background: var(--beige); }
+        .check-box {
+            width: 24px; height: 24px; border: 2px solid var(--primary);
+            border-radius: 6px; display: flex; align-items: center;
+            justify-content: center; transition: all 0.3s; flex-shrink: 0;
+        }
+        .check-item.checked .check-box {
+            background: var(--accent-2); border-color: var(--accent-2);
+        }
+        .check-box i { color: white; font-size: 0.8rem; opacity: 0; }
+        .check-item.checked .check-box i { opacity: 1; }
+        .check-text { font-size: 0.9rem; }
+        .check-item.checked .check-text {
+            text-decoration: line-through; color: var(--text-secondary);
+        }
+
+        /* Tips */
+        .card-tips {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-2) 0%, #1e8449 100%);
+            color: white;
+        }
+        .card-tips .card-title { color: white; }
+        .tip-item {
+            background: rgba(255,255,255,0.15); padding: 12px 15px;
+            border-radius: 10px; margin-bottom: 8px;
+            display: flex; align-items: center; gap: 12px; font-size: 0.9rem;
+        }
+
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 30px;
+            background: var(--bg-tertiary);
+        }
+        .footer-text {
+            font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 5px;
+        }
+
+        @media (max-width: 1100px) {
+            .role-grid, .mistake-grid { grid-template-columns: 1fr; }
+            .frank-visual { flex-direction: column; }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-hero, .card-phases, .card-roles, .card-frankenstein,
+            .card-transitions, .card-mistakes, .card-checklist,
+            .card-tips, .card-footer { grid-column: span 12; }
+            .hero-text h1 { font-size: 1.8rem; }
+            .card-hero { flex-direction: column; text-align: center; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-users"></i> Exposicion en Grupo</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-handshake"></i> Trabajo en Equipo</span>
+                    <h1>Como Coordinar una Exposicion en Grupo</h1>
+                    <p>Una exposicion grupal no es "tu parte" + "mi parte". Es una sola historia contada por varias voces. Si el publico nota los cortes entre exponentes, fallo la coordinacion. El objetivo es la fluidez.</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-project-diagram"></i>
+                    <span style="font-size: 0.85rem; font-weight: 600;">Un solo hilo conductor</span>
+                </div>
+            </article>
+
+            <!-- PHASES -->
+            <article class="card card-phases">
+                <div class="card-header">
+                    <div class="card-icon icon-blue"><i class="fas fa-tasks"></i></div>
+                    <h2 class="card-title">Las 5 Fases de la Coordinacion</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Sigue este proceso cronologico. Clic para expandir detalles.</p>
+                
+                <div class="phase-item" data-phase="1">
+                    <div class="phase-header">
+                        <div class="phase-num">1</div>
+                        <div class="phase-title">Definir el Hilo Conductor</div>
+                    </div>
+                    <div class="phase-detail">
+                        Antes de dividir, definan la tesis central. "Que queremos que el publico recuerde al final?". Todo debe girar en torno a eso. Si cada uno hace su parte sin este eje, sera un Frankenstein.
+                    </div>
+                </div>
+                <div class="phase-item" data-phase="2">
+                    <div class="phase-header">
+                        <div class="phase-num">2</div>
+                        <div class="phase-title">Dividir por Logica, no por Cantidad</div>
+                    </div>
+                    <div class="phase-detail">
+                        No dividas "5 slides cada uno". Divide por secciones tematicas: Introduccion, Problema, Solucion, Conclusion. Asi cada uno tiene un arco completo, no fragmentos sueltos.
+                    </div>
+                </div>
+                <div class="phase-item" data-phase="3">
+                    <div class="phase-header">
+                        <div class="phase-num">3</div>
+                        <div class="phase-title">Unificar Formato (El "Master Slide")</div>
+                    </div>
+                    <div class="phase-detail">
+                        Una sola persona diseña la plantilla maestra. Fuente, colores, estilos de graficos. Todos usan ESA. Nada de "yo prefiero Comic Sans". La presentacion debe verse como una sola pieza.
+                    </div>
+                </div>
+                <div class="phase-item" data-phase="4">
+                    <div class="phase-header">
+                        <div class="phase-num">4</div>
+                        <div class="phase-title">Ensayar las Transiciones</div>
+                    </div>
+                    <div class="phase-detail">
+                        El momento mas critico es cuando un exponente pasa el mic tomo a otro. Deben ensayarse frases de enlace. "Como bien menciono Maria, el problema es X, y ahora veremos como resolverlo".
+                    </div>
+                </div>
+                <div class="phase-item" data-phase="5">
+                    <div class="phase-header">
+                        <div class="phase-num">5</div>
+                        <div class="phase-title">Simulacion General con Tiempo</div>
+                    </div>
+                    <div class="phase-detail">
+                        Al menos 2 ensayos completos cronometrados. Uno para ajustar contenido, otro para pulir tiempos. Si alguien se pasa, el grupo entero pierde. Respeten el tiempo colectivo.
+                    </div>
+                </div>
+            </article>
+
+            <!-- ROLES -->
+            <article class="card card-roles">
+                <div class="card-header">
+                    <div class="card-icon icon-teal"><i class="fas fa-user-tag"></i></div>
+                    <h2 class="card-title">Roles Asignados</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">No todos deben hacer todo. Especialicen tareas.</p>
+                
+                <div class="role-grid">
+                    <div class="role-card">
+                        <div class="role-icon"><i class="fas fa-pen-fancy"></i></div>
+                        <div class="role-name">El Diseñador</div>
+                        <div class="role-desc">Controla la estetica y unifica el PPT. Recibe contenido de todos.</div>
+                    </div>
+                    <div class="role-card">
+                        <div class="role-icon"><i class="fas fa-stopwatch"></i></div>
+                        <div class="role-name">El Cronometrista</div>
+                        <div class="role-desc">Vigila los tiempos en ensayos y avisa si alguien se alarga.</div>
+                    </div>
+                    <div class="role-card">
+                        <div class="role-icon"><i class="fas fa-link"></i></div>
+                        <div class="role-name">El Conector</div>
+                        <div class="role-desc">Se especializa en transiciones y mantener el hilo tematico.</div>
+                    </div>
+                    <div class="role-card">
+                        <div class="role-icon"><i class="fas fa-comments"></i></div>
+                        <div class="role-name">El Portavoz Q&A</div>
+                        <div class="role-desc">Lidera las preguntas, pero redirige a quien tenga la respuesta tecnica.</div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- FRANKENSTEIN PROBLEM -->
+            <article class="card card-frankenstein">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-puzzle-piece"></i></div>
+                    <h2 class="card-title">El Efecto "Frankenstein"</h2>
+                </div>
+                <p style="font-size: 0.85rem; opacity: 0.9;">Cuando cada uno hace sus slides por separado y luego las pegan...</p>
+                
+                <div class="frank-visual">
+                    <div class="frank-slide">
+                        <h4>Slide de Ana</h4>
+                        <p>Fondo azul, fuente Arial, estilo formal...</p>
+                    </div>
+                    <div class="frank-slide">
+                        <h4>Slide de Luis</h4>
+                        <p>Fondo blanco, Comic Sans, mucho texto...</p>
+                    </div>
+                    <div class="frank-slide">
+                        <h4>Slide de Maria</h4>
+                        <p>Foto de paisaje, letra verde, 3 graficos...</p>
+                    </div>
+                </div>
+                
+                <div class="frank-warning">
+                    <i class="fas fa-exclamation-triangle"></i> Resultado: El publico se distrae con los cambios de estilo y pierde el hilo del mensaje.
+                </div>
+            </article>
+
+            <!-- TRANSITIONS -->
+            <article class="card card-transitions">
+                <div class="card-header">
+                    <div class="card-icon icon-purple"><i class="fas fa-exchange-alt"></i></div>
+                    <h2 class="card-title">Frases de Transicion</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Como pasar el micrófono sin que suene a corte.</p>
+                
+                <div class="transition-list">
+                    <div class="trans-item">
+                        <div class="trans-scenario">Continuar el mismo tema:</div>
+                        <div class="trans-phrase">"Profundizando en este punto, [Nombre] nos explicara los detalles tecnicos..."</div>
+                    </div>
+                    <div class="trans-item">
+                        <div class="trans-scenario">Cambiar de seccion:</div>
+                        <div class="trans-phrase">"Ya visto el problema, ahora [Nombre] nos presentara la solucion propuesta..."</div>
+                    </div>
+                    <div class="trans-item">
+                        <div class="trans-scenario">Cerrar la presentacion:</div>
+                        <div class="trans-phrase">"Para finalizar, [Nombre] resumira los puntos clave y daremos paso a preguntas..."</div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- MISTAKES -->
+            <article class="card card-mistakes">
+                <div class="card-header">
+                    <div class="card-icon icon-red"><i class="fas fa-times-circle"></i></div>
+                    <h2 class="card-title">Errores Comunes</h2>
+                </div>
+                
+                <div class="mistake-grid">
+                    <div class="mistake-item">
+                        <div class="mistake-icon"><i class="fas fa-user-slash"></i></div>
+                        <div class="mistake-text">
+                            <strong>El "mi parte" mental</strong><br>
+                            <span style="color: var(--text-secondary); font-size: 0.8rem;">Solo preparas tu seccion y no sabes que dicen los demas.</span>
+                        </div>
+                    </div>
+                    <div class="mistake-item">
+                        <div class="mistake-icon"><i class="fas fa-clock"></i></div>
+                        <div class="mistake-text">
+                            <strong>Desconocer el tiempo total</strong><br>
+                            <span style="color: var(--text-secondary); font-size: 0.8rem;">Si todos se pasan 2 min, la presentacion dura 10 min mas.</span>
+                        </div>
+                    </div>
+                    <div class="mistake-item">
+                        <div class="mistake-icon"><i class="fas fa-file-alt"></i></div>
+                        <div class="mistake-text">
+                            <strong>Archivos separados</strong><br>
+                            <span style="color: var(--text-secondary); font-size: 0.8rem;">Cada uno lleva su USB. Desastre tecnico asegurado.</span>
+                        </div>
+                    </div>
+                    <div class="mistake-item">
+                        <div class="mistake-icon"><i class="fas fa-question"></i></div>
+                        <div class="mistake-text">
+                            <strong>Q&A sin plan</strong><br>
+                            <span style="color: var(--text-secondary); font-size: 0.8rem;">Todos miran la pregunta y nadie responde, o todos responden a la vez.</span>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- CHECKLIST -->
+            <article class="card card-checklist">
+                <div class="card-header">
+                    <div class="card-icon icon-orange"><i class="fas fa-clipboard-check"></i></div>
+                    <h2 class="card-title">Checklist Pre-Exposicion</h2>
+                </div>
+                
+                <div class="checklist-container">
+                    <div class="check-item">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <span class="check-text">Definimos una tesis central clara</span>
+                    </div>
+                    <div class="check-item">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <span class="check-text">Un solo archivo de presentacion consolidado</span>
+                    </div>
+                    <div class="check-item">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <span class="check-text">Ensayamos al menos 2 veces completos</span>
+                    </div>
+                    <div class="check-item">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <span class="check-text">Cada uno conoce el tiempo exacto de su parte</span>
+                    </div>
+                    <div class="check-item">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <span class="check-text">Practicamos frases de transicion</span>
+                    </div>
+                    <div class="check-item">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <span class="check-text">Asignamos un backup por si alguien falta</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- TIPS -->
+            <article class="card card-tips">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-lightbulb"></i></div>
+                    <h2 class="card-title">Tips para el Dia</h2>
+                </div>
+                
+                <div class="tip-item">
+                    <i class="fas fa-laptop"></i>
+                    <span>Lleguen 15 min antes para probar el archivo en la PC del aula.</span>
+                </div>
+                <div class="tip-item">
+                    <i class="fas fa-usb"></i>
+                    <span>Lleven 2 copias del PPT: una en la nube y otra en USB.</span>
+                </div>
+                <div class="tip-item">
+                    <i class="fas fa-tshirt"></i>
+                    <span>Coordinen vestimenta similar (no uniformes, pero paleta de colores acorde).</span>
+                </div>
+                <div class="tip-item">
+                    <i class="fas fa-hand-paper"></i>
+                    <span>Si alguien se bloquea, el equipo lo rescata, no lo deja solo.</span>
+                </div>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-text">El mejor grupo no es el que tiene los mejores exponentes individuales, sino el que logra que la presentacion parezca hecha por una sola voz con multiples bocas. Coordinacion sobre talento.</p>
+                <p style="font-size: 0.85rem; color: var(--primary); margin-top: 10px; font-weight: 600;">Un equipo, un mensaje.</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+
+        // Phases Accordion
+        const phaseItems = document.querySelectorAll('.phase-item');
+        phaseItems.forEach(function(item) {
+            item.addEventListener('click', function() {
+                phaseItems.forEach(function(p) { p.classList.remove('active'); });
+                this.classList.add('active');
+            });
+        });
+
+        // Checklist
+        const checkItems = document.querySelectorAll('.check-item');
+        checkItems.forEach(function(item) {
+            item.addEventListener('click', function() {
+                this.classList.toggle('checked');
+            });
+        });
+    </script>
+</body>
+</html>
