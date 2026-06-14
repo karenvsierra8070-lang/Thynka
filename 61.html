@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peligro de Leer Diapositivas - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --accent-1: #c0392b; --accent-2: #27ae60; --accent-3: #2980b9;
+            --accent-4: #d35400; --accent-5: #16a085; --accent-6: #8e44ad;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1300px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-hover); }
+
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, #922b21 0%, #5a1a1a 100%);
+            color: white; padding: 40px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 300px; height: 100%;
+            background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.08) 0%, transparent 60%);
+        }
+        .hero-text { flex: 1; z-index: 1; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.8rem;
+            font-weight: 600; margin-bottom: 15px;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.5rem;
+            margin-bottom: 12px; line-height: 1.2;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.9; max-width: 550px; }
+        .hero-visual {
+            width: 180px; height: 220px; background: rgba(255,255,255,0.1);
+            border-radius: 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 8px;
+            position: relative; z-index: 1; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .hero-visual i { font-size: 3rem; opacity: 0.8; }
+
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white;
+        }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #922b21); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-2), #1e8449); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-3), #1a5276); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-4), #ba4a00); }
+        .icon-teal { background: linear-gradient(135deg, var(--accent-5), #0e6655); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-6), #6c3483); }
+        .icon-brown { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+
+        /* Stats */
+        .card-stats {
+            grid-column: span 12;
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+        }
+        .stat-item {
+            background: var(--bg-tertiary); border-radius: 15px;
+            padding: 20px; text-align: center;
+        }
+        .stat-num {
+            font-size: 2.2rem; font-weight: 700; color: var(--accent-1);
+            font-family: 'Playfair Display', serif;
+        }
+        .stat-label { font-size: 0.85rem; color: var(--text-secondary); margin-top: 5px; }
+
+        /* Comparison */
+        .card-comparison {
+            grid-column: span 12;
+        }
+        .comp-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 30px; margin-top: 25px;
+        }
+        .comp-col {
+            background: var(--bg-tertiary); border-radius: 20px;
+            padding: 25px; border-top: 6px solid;
+        }
+        .col-wrong { border-color: var(--accent-1); }
+        .col-right { border-color: var(--accent-2); }
+        
+        .comp-head { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .comp-icon {
+            width: 60px; height: 60px; border-radius: 15px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; color: white;
+        }
+        .col-wrong .comp-icon { background: var(--accent-1); }
+        .col-right .comp-icon { background: var(--accent-2); }
+        
+        .comp-title { font-size: 1.3rem; font-weight: 700; color: var(--primary-dark); }
+        .comp-desc { font-size: 0.9rem; color: var(--text-secondary); }
+        
+        .comp-list { margin-top: 15px; }
+        .comp-item {
+            display: flex; gap: 10px; margin-bottom: 10px; font-size: 0.9rem;
+            align-items: flex-start;
+        }
+        .comp-item i { margin-top: 4px; flex-shrink: 0; }
+        .col-wrong .comp-item i { color: var(--accent-1); }
+        .col-right .comp-item i { color: var(--accent-2); }
+
+        /* Simulation */
+        .card-simulation {
+            grid-column: span 6;
+        }
+        .sim-container {
+            margin-top: 20px;
+        }
+        .sim-slide {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            border-radius: 15px; padding: 30px; min-height: 200px;
+            position: relative; margin-bottom: 20px;
+        }
+        .sim-slide-header {
+            position: absolute; top: 15px; left: 20px; right: 20px;
+            display: flex; justify-content: space-between; font-size: 0.7rem;
+            color: rgba(255,255,255,0.5);
+        }
+        .sim-text {
+            color: white; font-size: 0.95rem; line-height: 1.8;
+        }
+        .sim-text.highlight {
+            background: rgba(192, 57, 43, 0.4);
+            padding: 2px 4px; border-radius: 3px;
+        }
+        .sim-speaker {
+            display: flex; align-items: center; gap: 15px;
+            background: var(--bg-tertiary); padding: 15px;
+            border-radius: 10px;
+        }
+        .speaker-avatar {
+            width: 50px; height: 50px; border-radius: 50%;
+            background: var(--accent-4); display: flex; align-items: center;
+            justify-content: center; color: white; font-size: 1.2rem;
+        }
+        .speaker-bubble {
+            background: var(--bg-secondary); padding: 12px 15px;
+            border-radius: 10px; font-size: 0.85rem; position: relative;
+        }
+        .speaker-bubble::before {
+            content: ''; position: absolute; left: -8px; top: 50%;
+            transform: translateY(-50%);
+            border: 8px solid transparent;
+            border-right-color: var(--bg-secondary);
+        }
+        .sim-btn {
+            display: block; width: 100%; padding: 15px;
+            background: var(--accent-1); color: white; border: none;
+            border-radius: 10px; font-family: inherit; font-weight: 600;
+            cursor: pointer; margin-top: 15px; transition: all 0.3s;
+        }
+        .sim-btn:hover { background: #922b21; }
+
+        /* Cognitive Load */
+        .card-cognitive {
+            grid-column: span 6;
+        }
+        .brain-visual {
+            display: flex; justify-content: center; margin: 30px 0;
+            position: relative;
+        }
+        .brain-icon {
+            font-size: 8rem; color: var(--accent-5); opacity: 0.3;
+        }
+        .load-indicators {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .load-item {
+            background: var(--bg-tertiary); padding: 10px 20px;
+            border-radius: 20px; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 10px;
+            border: 1px solid var(--border-color);
+        }
+        .load-item.overload {
+            border-color: var(--accent-1);
+            background: rgba(192, 57, 43, 0.1);
+            color: var(--accent-1);
+        }
+        .load-item i { font-size: 1rem; }
+
+        /* Why We Do It */
+        .card-reasons {
+            grid-column: span 6;
+        }
+        .reason-item {
+            background: var(--bg-tertiary); border-radius: 12px;
+            padding: 18px; margin-bottom: 12px;
+            display: flex; gap: 15px; align-items: flex-start;
+        }
+        .reason-icon {
+            width: 40px; height: 40px; border-radius: 10px;
+            background: var(--accent-4); color: white;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .reason-content h4 { font-size: 0.95rem; color: var(--primary-dark); margin-bottom: 3px; }
+        .reason-content p { font-size: 0.85rem; color: var(--text-secondary); margin: 0; }
+
+        /* Solutions */
+        .card-solutions {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-2) 0%, #1e8449 100%);
+            color: white;
+        }
+        .card-solutions .card-title { color: white; }
+        .solution-item {
+            background: rgba(255,255,255,0.15); padding: 15px;
+            border-radius: 12px; margin-bottom: 10px;
+        }
+        .solution-item h4 { font-size: 0.95rem; margin-bottom: 5px; }
+        .solution-item p { font-size: 0.85rem; opacity: 0.9; margin: 0; }
+
+        /* Tips */
+        .card-tips {
+            grid-column: span 6;
+        }
+        .tip-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 15px; margin-top: 20px;
+        }
+        .tip-card {
+            background: var(--bg-tertiary); border-radius: 12px;
+            padding: 20px; text-align: center;
+        }
+        .tip-icon {
+            width: 50px; height: 50px; border-radius: 50%;
+            margin: 0 auto 12px; display: flex; align-items: center;
+            justify-content: center; font-size: 1.2rem; color: white;
+        }
+        .tip-card:nth-child(1) .tip-icon { background: var(--accent-3); }
+        .tip-card:nth-child(2) .tip-icon { background: var(--accent-5); }
+        .tip-card:nth-child(3) .tip-icon { background: var(--accent-6); }
+        .tip-card:nth-child(4) .tip-icon { background: var(--accent-2); }
+        .tip-title { font-weight: 600; font-size: 0.9rem; color: var(--primary-dark); }
+        .tip-desc { font-size: 0.8rem; color: var(--text-secondary); margin-top: 5px; }
+
+        /* Quote */
+        .card-quote {
+            grid-column: span 6;
+            background: var(--bg-tertiary);
+        }
+        .quote-content {
+            font-family: 'Playfair Display', serif; font-size: 1.3rem;
+            color: var(--primary-dark); text-align: center;
+            padding: 20px 0; font-style: italic;
+        }
+        .quote-author {
+            text-align: center; font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 30px;
+            background: var(--bg-tertiary);
+        }
+        .footer-text {
+            font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 5px;
+        }
+
+        @media (max-width: 1100px) {
+            .comp-grid, .tip-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-stats { grid-template-columns: repeat(2, 1fr); }
+            .card-hero, .card-stats, .card-comparison, .card-simulation,
+            .card-cognitive, .card-reasons, .card-solutions, .card-tips,
+            .card-quote, .card-footer { grid-column: span 12; }
+            .hero-text h1 { font-size: 1.8rem; }
+            .card-hero { flex-direction: column; text-align: center; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-ban"></i> Leer Diapositivas</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-skull-crossbones"></i> Error Fatal</span>
+                    <h1>El Peligro de Leer las Diapositivas</h1>
+                    <p>Nada mata mas rapido una presentacion que un expositor que da la espalda al publico para leer lo que todos ya pueden ver. Es la forma mas segura de perder credibilidad, conexion y atencion.</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-user-slash"></i>
+                    <span style="font-size: 0.85rem; font-weight: 600;">Conexion rota</span>
+                </div>
+            </article>
+
+            <!-- STATS -->
+            <article class="card card-stats">
+                <div class="stat-item">
+                    <div class="stat-num">38%</div>
+                    <div class="stat-label">Pierde credibilidad</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num">3x</div>
+                    <div class="stat-label">Mas aburrido para el publico</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num">0</div>
+                    <div class="stat-label">Valor agregado del expositor</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num">100%</div>
+                    <div class="stat-label">Evitable con practica</div>
+                </div>
+            </article>
+
+            <!-- COMPARISON -->
+            <article class="card card-comparison">
+                <div class="card-header">
+                    <div class="card-icon icon-brown"><i class="fas fa-balance-scale-left"></i></div>
+                    <h2 class="card-title">Leer vs. Exponer</h2>
+                </div>
+                <div class="comp-grid">
+                    <div class="comp-col col-wrong">
+                        <div class="comp-head">
+                            <div class="comp-icon"><i class="fas fa-book-reader"></i></div>
+                            <div>
+                                <div class="comp-title">El Lector de Slides</div>
+                                <div class="comp-desc">El error del principiante</div>
+                            </div>
+                        </div>
+                        <div class="comp-list">
+                            <div class="comp-item">
+                                <i class="fas fa-times"></i>
+                                <span>Da la espalda al publico constantemente.</span>
+                            </div>
+                            <div class="comp-item">
+                                <i class="fas fa-times"></i>
+                                <span>La voz se pierde mirando la pantalla.</span>
+                            </div>
+                            <div class="comp-item">
+                                <i class="fas fa-times"></i>
+                                <span>El publico lee mas rapido que el habla.</span>
+                            </div>
+                            <div class="comp-item">
+                                <i class="fas fa-times"></i>
+                                <span>Transmite: "No prepare esto bien".</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="comp-col col-right">
+                        <div class="comp-head">
+                            <div class="comp-icon"><i class="fas fa-user-tie"></i></div>
+                            <div>
+                                <div class="comp-title">El Presentador Efectivo</div>
+                                <div class="comp-desc">Conexion y autoridad</div>
+                            </div>
+                        </div>
+                        <div class="comp-list">
+                            <div class="comp-item">
+                                <i class="fas fa-check"></i>
+                                <span>Mantiene contacto visual permanente.</span>
+                            </div>
+                            <div class="comp-item">
+                                <i class="fas fa-check"></i>
+                                <span>La slide apoya, no reemplaza el mensaje.</span>
+                            </div>
+                            <div class="comp-item">
+                                <i class="fas fa-check"></i>
+                                <span>Agrega valor con ejemplos y matices.</span>
+                            </div>
+                            <div class="comp-item">
+                                <i class="fas fa-check"></i>
+                                <span>Transmite: "Se de lo que habla".</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- SIMULATION -->
+            <article class="card card-simulation">
+                <div class="card-header">
+                    <div class="card-icon icon-red"><i class="fas fa-tv"></i></div>
+                    <h2 class="card-title">Simulacion: Lo que Siente el Publico</h2>
+                </div>
+                
+                <div class="sim-container">
+                    <div class="sim-slide">
+                        <div class="sim-slide-header">
+                            <span>Diapositiva 1 de 15</span>
+                            <span>Proyecto Final</span>
+                        </div>
+                        <p class="sim-text" id="simText">
+                            "El objetivo principal de este proyecto es implementar una solucion integral que permita optimizar los procesos internos de la organizacion, logrando una mejora del 35% en eficiencia operativa..."
+                        </p>
+                    </div>
+                    
+                    <div class="sim-speaker">
+                        <div class="speaker-avatar"><i class="fas fa-user"></i></div>
+                        <div class="speaker-bubble" id="speakerBubble">
+                            "El objetivo principal de este proyecto es implementar una solucion integral..."
+                        </div>
+                    </div>
+                    
+                    <button class="sim-btn" id="simBtn">
+                        <i class="fas fa-play"></i> Simular experiencia
+                    </button>
+                </div>
+            </article>
+
+            <!-- COGNITIVE LOAD -->
+            <article class="card card-cognitive">
+                <div class="card-header">
+                    <div class="card-icon icon-purple"><i class="fas fa-brain"></i></div>
+                    <h2 class="card-title">Sobrecarga Cognitiva</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">El cerebro no puede procesar dos fuentes de texto iguales simultáneamente.</p>
+                
+                <div class="brain-visual">
+                    <i class="fas fa-brain brain-icon"></i>
+                    <div class="load-indicators">
+                        <div class="load-item overload">
+                            <i class="fas fa-eye"></i>
+                            <span>Leyendo slide...</span>
+                        </div>
+                        <div class="load-item overload">
+                            <i class="fas fa-headphones"></i>
+                            <span>Escuchando lo mismo...</span>
+                        </div>
+                        <div class="load-item">
+                            <i class="fas fa-bolt"></i>
+                            <span>Procesando significado?</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <p style="font-size: 0.85rem; color: var(--text-secondary); text-align: center;">
+                    <strong style="color: var(--accent-1);">Resultado:</strong> El cerebro decide ignorar una fuente. Generalmente, ignora al expositor.
+                </p>
+            </article>
+
+            <!-- REASONS -->
+            <article class="card card-reasons">
+                <div class="card-header">
+                    <div class="card-icon icon-orange"><i class="fas fa-question-circle"></i></div>
+                    <h2 class="card-title">Por Que lo Hacemos?</h2>
+                </div>
+                
+                <div class="reason-item">
+                    <div class="reason-icon"><i class="fas fa-cloud-rain"></i></div>
+                    <div class="reason-content">
+                        <h4>Nervios y ansiedad</h4>
+                        <p>El slide se siente como un "guion seguro" cuando la mente se queda en blanco.</p>
+                    </div>
+                </div>
+                <div class="reason-item">
+                    <div class="reason-icon"><i class="fas fa-file-alt"></i></div>
+                    <div class="reason-content">
+                        <h4>Slides con demasiado texto</h4>
+                        <p>Si la slide tiene parrafos, la unica opcion es leerlos porque no se pueden resumir de otro modo.</p>
+                    </div>
+                </div>
+                <div class="reason-item">
+                    <div class="reason-icon"><i class="fas fa-clock"></i></div>
+                    <div class="reason-content">
+                        <h4>Falta de preparacion</h4>
+                        <p>No se practico lo suficiente para poder hablar sin apoyo visual constante.</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- SOLUTIONS -->
+            <article class="card card-solutions">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-lightbulb"></i></div>
+                    <h2 class="card-title">Como Dejar de Hacerlo</h2>
+                </div>
+                
+                <div class="solution-item">
+                    <h4>La regla del "pegamento"</h4>
+                    <p>Mira la slide brevemente (1-2 seg), luego vuelve inmediatamente al publico. El pegamento esta en los ojos de la audiencia, no en la pantalla.</p>
+                </div>
+                <div class="solution-item">
+                    <h4>Slides con palabras clave, no oraciones</h4>
+                    <p>Si tu slide dice "Incremento del 35%", tu dices "Logramos subir un 35% gracias a...". No puedes leer lo que no esta escrito.</p>
+                </div>
+                <div class="solution-item">
+                    <h4>Usa tarjetas de apoyo (no slides)</h4>
+                    <p>Una ficha pequena en la mano con 3 puntos clave es mejor que leer la pantalla. Mantiene el contacto visual.</p>
+                </div>
+            </article>
+
+            <!-- TIPS -->
+            <article class="card card-tips">
+                <div class="card-header">
+                    <div class="card-icon icon-teal"><i class="fas fa-check-double"></i></div>
+                    <h2 class="card-title">Tecnicas Rapidas</h2>
+                </div>
+                
+                <div class="tip-grid">
+                    <div class="tip-card">
+                        <div class="tip-icon"><i class="fas fa-image"></i></div>
+                        <div class="tip-title">Usa imagenes</div>
+                        <div class="tip-desc">Una imagen no se puede leer, se explica.</div>
+                    </div>
+                    <div class="tip-card">
+                        <div class="tip-icon"><i class="fas fa-microphone-alt"></i></div>
+                        <div class="tip-title">Apunta con el laser</div>
+                        <div class="tip-desc">Senala graficos, no texto. Habla mirando al publico.</div>
+                    </div>
+                    <div class="tip-card">
+                        <div class="tip-icon"><i class="fas fa-forward"></i></div>
+                        <div class="tip-title">El boton "B"</div>
+                        <div class="tip-desc">En Power Point, B pone la pantalla en negro. Habla sin distraccion.</div>
+                    </div>
+                    <div class="tip-card">
+                        <div class="tip-icon"><i class="fas fa-users"></i></div>
+                        <div class="tip-title">Busca un aliado</div>
+                        <div class="tip-desc">Pide a un amigo que te avise si lees demasiado.</div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- QUOTE -->
+            <article class="card card-quote">
+                <div class="card-header">
+                    <div class="card-icon icon-brown"><i class="fas fa-quote-left"></i></div>
+                    <h2 class="card-title">Para Recordar</h2>
+                </div>
+                
+                <div class="quote-content">
+                    "Si vas a leer las diapositivas, mejor envia el archivo por correo y ahorrales el viaje a todos."
+                </div>
+                <div class="quote-author">
+                    <i class="fas fa-user"></i> Regla de oro de presentaciones
+                </div>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-text">El publico puede leer 300 palabras por minuto. Tu hablas a 150. Si les lees el texto, les haces esperar a que termines. Respeta su tiempo y su inteligencia: agrega valor, no repitas lo visible.</p>
+                <p style="font-size: 0.85rem; color: var(--primary); margin-top: 10px; font-weight: 600;">La slide es para ellos, no para ti.</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+
+        // Simulation
+        const simBtn = document.getElementById('simBtn');
+        const simText = document.getElementById('simText');
+        const speakerBubble = document.getElementById('speakerBubble');
+        
+        const simulationSteps = [
+            {
+                text: "El objetivo principal de este proyecto es implementar una solucion integral...",
+                highlight: "El objetivo principal de este proyecto es implementar una solucion integral",
+                speaker: "El objetivo principal de este proyecto es implementar una solucion integral...",
+                msg: "El publico ya leyo esto en 2 segundos. Tu tardaste 8 en decirlo."
+            },
+            {
+                text: "...que permita optimizar los procesos internos de la organizacion...",
+                highlight: "que permita optimizar los procesos internos de la organizacion",
+                speaker: "...que permita optimizar los procesos internos de la organizacion...",
+                msg: "La mitad del publico ya esta mirando el celular. Saben lo que vas a decir."
+            },
+            {
+                text: "...logrando una mejora del 35% en eficiencia operativa.",
+                highlight: "logrando una mejora del 35% en eficiencia operativa",
+                speaker: "...logrando una mejora del 35% en eficiencia operativa.",
+                msg: "Terminaste. El publico supo el final antes que tu. Credibilidad: perdida."
+            }
+        ];
+        
+        let simStep = 0;
+        
+        simBtn.addEventListener('click', function() {
+            if (simStep < simulationSteps.length) {
+                const step = simulationSteps[simStep];
+                
+                // Highlight text
+                simText.innerHTML = step.text.replace(step.highlight, '<span class="highlight">' + step.highlight + '</span>');
+                
+                // Update speaker
+                speakerBubble.textContent = step.speaker;
+                
+                // Update button
+                this.innerHTML = '<i class="fas fa-arrow-right"></i> ' + step.msg;
+                
+                simStep++;
+                
+                if (simStep === simulationSteps.length) {
+                    this.innerHTML = '<i class="fas fa-redo"></i> Reiniciar simulacion';
+                    simStep = 0;
+                }
+            } else {
+                location.reload();
+            }
+        });
+    </script>
+</body>
+</html>
