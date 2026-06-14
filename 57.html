@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memorizar Formulas - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --accent-1: #c0392b; --accent-2: #27ae60; --accent-3: #2980b9;
+            --accent-4: #d35400; --accent-5: #16a085; --accent-6: #8e44ad;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1300px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-hover); }
+
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, #4a235a 0%, #1a1a2e 100%);
+            color: white; padding: 40px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 300px; height: 100%;
+            background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.08) 0%, transparent 60%);
+        }
+        .hero-text { flex: 1; z-index: 1; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 6px 16px; border-radius: 20px; font-size: 0.8rem;
+            font-weight: 600; margin-bottom: 15px;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.5rem;
+            margin-bottom: 12px; line-height: 1.2;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.9; max-width: 550px; }
+        .hero-visual {
+            width: 180px; height: 220px; background: rgba(255,255,255,0.1);
+            border-radius: 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 8px;
+            position: relative; z-index: 1; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .hero-visual i { font-size: 3rem; opacity: 0.8; }
+
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white;
+        }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #922b21); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-2), #1e8449); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-3), #1a5276); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-4), #ba4a00); }
+        .icon-teal { background: linear-gradient(135deg, var(--accent-5), #0e6655); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-6), #6c3483); }
+        .icon-brown { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+
+        /* Comparison */
+        .card-comparison {
+            grid-column: span 12;
+        }
+        .comp-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 30px; margin-top: 25px;
+        }
+        .comp-col {
+            background: var(--bg-tertiary); border-radius: 20px;
+            padding: 25px; border-top: 6px solid;
+        }
+        .col-wrong { border-color: var(--accent-1); }
+        .col-right { border-color: var(--accent-2); }
+        
+        .comp-head { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .comp-icon {
+            width: 60px; height: 60px; border-radius: 15px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; color: white;
+        }
+        .col-wrong .comp-icon { background: var(--accent-1); }
+        .col-right .comp-icon { background: var(--accent-2); }
+        
+        .comp-title { font-size: 1.3rem; font-weight: 700; color: var(--primary-dark); }
+        .comp-desc { font-size: 0.9rem; color: var(--text-secondary); }
+        
+        .comp-list { margin-top: 15px; }
+        .comp-item {
+            display: flex; gap: 10px; margin-bottom: 10px; font-size: 0.9rem;
+            align-items: flex-start;
+        }
+        .comp-item i { margin-top: 4px; flex-shrink: 0; }
+        .col-wrong .comp-item i { color: var(--accent-1); }
+        .col-right .comp-item i { color: var(--accent-2); }
+
+        /* Understanding Steps */
+        .card-understanding {
+            grid-column: span 6;
+            grid-row: span 2;
+        }
+        .understand-flow {
+            margin-top: 20px;
+        }
+        .understand-item {
+            background: var(--bg-tertiary); border-radius: 15px;
+            padding: 20px; margin-bottom: 15px;
+            border-left: 4px solid var(--accent-6);
+            transition: all 0.3s; cursor: pointer;
+        }
+        .understand-item:hover {
+            transform: translateX(5px);
+            border-left-color: var(--accent-2);
+        }
+        .understand-item.active {
+            border-left-color: var(--accent-5);
+            background: rgba(22, 160, 133, 0.1);
+        }
+        .u-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+        .u-num {
+            width: 28px; height: 28px; border-radius: 50%;
+            background: var(--accent-6); color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.85rem; flex-shrink: 0;
+        }
+        .understand-item.active .u-num { background: var(--accent-5); }
+        .u-title { font-weight: 600; color: var(--primary-dark); }
+        .u-detail {
+            font-size: 0.85rem; color: var(--text-secondary); margin-left: 40px;
+            display: none;
+        }
+        .understand-item.active .u-detail { display: block; margin-top: 10px; }
+
+        /* Formula Cards */
+        .card-formulas {
+            grid-column: span 6;
+        }
+        .formula-tabs {
+            display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;
+        }
+        .formula-tab {
+            padding: 8px 16px; background: var(--bg-tertiary);
+            border: 1px solid var(--border-color); border-radius: 8px;
+            cursor: pointer; transition: all 0.3s;
+            font-family: inherit; font-weight: 600; font-size: 0.8rem;
+            color: var(--text-primary);
+        }
+        .formula-tab:hover, .formula-tab.active {
+            background: var(--accent-6); color: white; border-color: var(--accent-6);
+        }
+        .formula-display {
+            background: var(--bg-tertiary); border-radius: 15px;
+            padding: 30px; text-align: center; min-height: 180px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .formula-math {
+            font-size: 2rem; font-weight: 700; color: var(--primary-dark);
+            font-family: 'Times New Roman', serif; margin-bottom: 15px;
+        }
+        .formula-meaning {
+            font-size: 0.9rem; color: var(--text-secondary); max-width: 280px;
+        }
+        .formula-story {
+            background: rgba(142, 68, 173, 0.1); border: 1px dashed var(--accent-6);
+            border-radius: 10px; padding: 12px; margin-top: 15px;
+            font-size: 0.85rem; color: var(--accent-6); font-style: italic;
+        }
+
+        /* Mnemonic Demo */
+        .card-mnemonic {
+            grid-column: span 6;
+        }
+        .mnemonic-interactive {
+            margin-top: 20px;
+        }
+        .mnemonic-input-group {
+            display: flex; gap: 10px; margin-bottom: 15px;
+        }
+        .mnemonic-letter {
+            width: 45px; height: 45px; border: 2px dashed var(--border-color);
+            border-radius: 10px; display: flex; align-items: center;
+            justify-content: center; font-size: 1.2rem; font-weight: 700;
+            color: var(--primary-dark); background: var(--bg-tertiary);
+            transition: all 0.3s; cursor: pointer;
+        }
+        .mnemonic-letter.filled {
+            border-style: solid; border-color: var(--accent-2);
+            background: rgba(39, 174, 96, 0.1);
+        }
+        .mnemonic-result {
+            background: var(--bg-tertiary); border-radius: 12px;
+            padding: 20px; text-align: center; min-height: 100px;
+        }
+        .mnemonic-phrase {
+            font-size: 1.1rem; color: var(--primary-dark); font-weight: 600;
+        }
+        .mnemonic-hint {
+            font-size: 0.8rem; color: var(--text-secondary); margin-top: 8px;
+        }
+
+        /* Dimensions Card */
+        .card-dimensions {
+            grid-column: span 6;
+        }
+        .dimension-demo {
+            background: var(--bg-tertiary); border-radius: 15px;
+            padding: 25px; margin-top: 20px;
+        }
+        .dim-row {
+            display: flex; align-items: center; gap: 15px;
+            margin-bottom: 15px; justify-content: center;
+        }
+        .dim-variable {
+            width: 50px; height: 50px; border-radius: 10px;
+            background: var(--accent-3); color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 1.1rem;
+        }
+        .dim-variable.result { background: var(--accent-2); }
+        .dim-unit {
+            padding: 8px 15px; background: var(--bg-secondary);
+            border-radius: 8px; font-size: 0.9rem; color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+        .dim-operator {
+            font-size: 1.5rem; color: var(--primary-dark); font-weight: 700;
+        }
+        .dim-check {
+            text-align: center; padding: 15px;
+            background: rgba(39, 174, 96, 0.1); border-radius: 10px;
+            margin-top: 15px;
+        }
+        .dim-check i { color: var(--accent-2); margin-right: 8px; }
+        .dim-check span { font-size: 0.9rem; color: var(--accent-2); font-weight: 600; }
+
+        /* Flashcards Practice */
+        .card-flashpractice {
+            grid-column: span 6;
+        }
+        .flashcard-box {
+            perspective: 1000px; margin: 20px auto;
+        }
+        .flash-inner {
+            width: 100%; min-height: 200px; position: relative;
+            transform-style: preserve-3d; transition: transform 0.6s;
+            cursor: pointer;
+        }
+        .flash-inner.flipped { transform: rotateY(180deg); }
+        .flash-face {
+            position: absolute; width: 100%; min-height: 200px;
+            backface-visibility: hidden; border-radius: 15px;
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; padding: 25px;
+        }
+        .flash-front {
+            background: linear-gradient(135deg, var(--accent-6) 0%, #6c3483 100%);
+            color: white;
+        }
+        .flash-back {
+            background: var(--bg-tertiary); border: 2px solid var(--accent-6);
+            transform: rotateY(180deg);
+        }
+        .flash-question { font-size: 1rem; margin-bottom: 10px; text-align: center; }
+        .flash-hint { font-size: 0.8rem; opacity: 0.7; }
+        .flash-answer { font-size: 1.8rem; font-weight: 700; color: var(--primary-dark); font-family: 'Times New Roman', serif; }
+        .flash-explain { font-size: 0.85rem; color: var(--text-secondary); margin-top: 10px; text-align: center; }
+        .flash-nav {
+            display: flex; justify-content: center; gap: 10px; margin-top: 20px;
+        }
+        .flash-btn {
+            padding: 10px 20px; background: var(--bg-tertiary); border: none;
+            border-radius: 8px; cursor: pointer; font-family: inherit;
+            font-weight: 600; color: var(--text-primary); transition: all 0.3s;
+        }
+        .flash-btn:hover { background: var(--accent-6); color: white; }
+
+        /* Mistakes */
+        .card-mistakes {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-1) 0%, #922b21 100%);
+            color: white;
+        }
+        .card-mistakes .card-title { color: white; }
+        .mistake-item {
+            background: rgba(255,255,255,0.15); padding: 15px;
+            border-radius: 12px; margin-bottom: 10px;
+        }
+        .mistake-item h4 { font-size: 0.95rem; margin-bottom: 5px; }
+        .mistake-item p { font-size: 0.85rem; opacity: 0.9; margin: 0; }
+
+        /* Tips */
+        .card-tips {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-2) 0%, #1e8449 100%);
+            color: white;
+        }
+        .card-tips .card-title { color: white; }
+        .tip-item {
+            background: rgba(255,255,255,0.15); padding: 12px 15px;
+            border-radius: 10px; margin-bottom: 8px;
+            display: flex; align-items: center; gap: 12px; font-size: 0.9rem;
+        }
+
+        /* Checklist */
+        .card-checklist {
+            grid-column: span 6;
+        }
+        .checklist-container {
+            margin-top: 15px;
+        }
+        .check-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 15px; background: var(--bg-tertiary);
+            border-radius: 12px; margin-bottom: 10px; cursor: pointer;
+            transition: all 0.3s;
+        }
+        .check-item:hover { background: var(--beige); }
+        .check-box {
+            width: 24px; height: 24px; border: 2px solid var(--primary);
+            border-radius: 6px; display: flex; align-items: center;
+            justify-content: center; transition: all 0.3s; flex-shrink: 0;
+        }
+        .check-item.checked .check-box {
+            background: var(--accent-2); border-color: var(--accent-2);
+        }
+        .check-box i { color: white; font-size: 0.8rem; opacity: 0; }
+        .check-item.checked .check-box i { opacity: 1; }
+        .check-text { font-size: 0.9rem; }
+        .check-item.checked .check-text {
+            text-decoration: line-through; color: var(--text-secondary);
+        }
+
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 30px;
+            background: var(--bg-tertiary);
+        }
+        .footer-text {
+            font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 5px;
+        }
+
+        @media (max-width: 1100px) {
+            .comp-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-hero, .card-comparison, .card-understanding, .card-formulas,
+            .card-mnemonic, .card-dimensions, .card-flashpractice, .card-mistakes,
+            .card-tips, .card-checklist, .card-footer { grid-column: span 12; }
+            .hero-text h1 { font-size: 1.8rem; }
+            .card-hero { flex-direction: column; text-align: center; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-square-root-alt"></i> Memorizar Formulas</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-brain"></i> Memoria Matematica</span>
+                    <h1>Como Memorizar Formulas Sin Sufrir</h1>
+                    <p>Muchos estudiantes intentan memorizar formulas como si fueran poemas: repitiendo sin parar. Error. Una formula no es un verso, es una relacion logica. Si la entiendes, la recuerdas. Si no, la olvidas en 2 dias.</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-superscript"></i>
+                    <span style="font-size: 0.85rem; font-weight: 600;">Logica > Repeticion</span>
+                </div>
+            </article>
+
+            <!-- COMPARISON -->
+            <article class="card card-comparison">
+                <div class="card-header">
+                    <div class="card-icon icon-brown"><i class="fas fa-balance-scale-left"></i></div>
+                    <h2 class="card-title">Dos Enfoques Opuestos</h2>
+                </div>
+                <div class="comp-grid">
+                    <div class="comp-col col-wrong">
+                        <div class="comp-head">
+                            <div class="comp-icon"><i class="fas fa-parachute-box"></i></div>
+                            <div>
+                                <div class="comp-title">Memorizacion Mecanica</div>
+                                <div class="comp-desc">Repetir sin entender</div>
+                            </div>
+                        </div>
+                        <div class="comp-list">
+                            <div class="comp-item">
+                                <i class="fas fa-times"></i>
+                                <span>Repetir "x igual b mas o menos raiz..." sin saber por que.</span>
+                            </div>
+                            <div class="comp-item">
+                                <i class="fas fa-times"></i>
+                                <span>Copiar la formula 20 veces en una hoja.</span>
+                            </div>
+                            <div class="comp-item">
+                                <i class="fas fa-times"></i>
+                                <span>Resultado: En el examen mezclas signos o variables.</span>
+                            </div>
+                            <div class="comp-item">
+                                <i class="fas fa-times"></i>
+                                <span>Si olvidas una letra, la formula entera se pierde.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="comp-col col-right">
+                        <div class="comp-head">
+                            <div class="comp-icon"><i class="fas fa-link"></i></div>
+                            <div>
+                                <div class="comp-title">Comprension Estructural</div>
+                                <div class="comp-desc">Entender para recordar</div>
+                            </div>
+                        </div>
+                        <div class="comp-list">
+                            <div class="comp-item">
+                                <i class="fas fa-check"></i>
+                                <span>Preguntar: "De donde sale esta formula?"</span>
+                            </div>
+                            <div class="comp-item">
+                                <i class="fas fa-check"></i>
+                                <span>Identificar cada variable: "Que es la b?"</span>
+                            </div>
+                            <div class="comp-item">
+                                <i class="fas fa-check"></i>
+                                <span>Resultado: Puedes reconstruirla si la olvidas.</span>
+                            </div>
+                            <div class="comp-item">
+                                <i class="fas fa-check"></i>
+                                <span>Sabes CUANDO usarla y cuando NO.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- UNDERSTANDING STEPS -->
+            <article class="card card-understanding">
+                <div class="card-header">
+                    <div class="card-icon icon-purple"><i class="fas fa-unlock"></i></div>
+                    <h2 class="card-title">Desbloquea la Formula</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Sigue estos pasos con CUALQUIER formula. Clic para expandir cada uno.</p>
+                
+                <div class="understand-flow">
+                    <div class="understand-item" data-step="1">
+                        <div class="u-header">
+                            <div class="u-num">1</div>
+                            <div class="u-title">Identifica cada simbolo</div>
+                        </div>
+                        <div class="u-detail">
+                            No pases por alto ninguna letra. Que significa "a"? Y "h"? Y ese triangulo? Cada simbolo tiene un nombre y un rol. Escribelo.
+                        </div>
+                    </div>
+                    <div class="understand-item" data-step="2">
+                        <div class="u-header">
+                            <div class="u-num">2</div>
+                            <div class="u-title">Conecta con la realidad</div>
+                        </div>
+                        <div class="u-detail">
+                            La formula de velocidad es v = d/t. En la vida real: "Mas distancia en menos tiempo = voy mas rapido". Tiene sentido fisico. Si la formula contradice tu intuicion, algo falla.
+                        </div>
+                    </div>
+                    <div class="understand-item" data-step="3">
+                        <div class="u-header">
+                            <div class="u-num">3</div>
+                            <div class="u-title">Aprende el origen</div>
+                        </div>
+                        <div class="u-detail">
+                            Como llego ahi? Viene de un teorema? De un experimento? Conocer la derivacion te da un "hilo" mental para tirar y recuperar la formula.
+                        </div>
+                    </div>
+                    <div class="understand-item" data-step="4">
+                        <div class="u-header">
+                            <div class="u-num">4</div>
+                            <div class="u-title">Verifica las unidades</div>
+                        </div>
+                        <div class="u-detail">
+                            Si multiplicas metros por segundos, te deben dar metros-segundo. Si la formula da metros al cuadrado, hay un error. Las unidades nunca mienten.
+                        </div>
+                    </div>
+                    <div class="understand-item" data-step="5">
+                        <div class="u-header">
+                            <div class="u-num">5</div>
+                            <div class="u-title">Practica con valores extremos</div>
+                        </div>
+                        <div class="u-detail">
+                            Que pasa si X es 0? Y si tiende a infinito? Si la formula se rompe o da resultados absurdos, no la entiendes del todo.
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- FORMULA DISPLAY -->
+            <article class="card card-formulas">
+                <div class="card-header">
+                    <div class="card-icon icon-teal"><i class="fas fa-function"></i></div>
+                    <h2 class="card-title">Anatomia de una Formula</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Selecciona una formula para verla desglosada.</p>
+                
+                <div class="formula-tabs">
+                    <button class="formula-tab active" data-formula="cuadratica">Cuadratica</button>
+                    <button class="formula-tab" data-formula="pitagoras">Pitagoras</button>
+                    <button class="formula-tab" data-formula="velocidad">Velocidad</button>
+                </div>
+                
+                <div class="formula-display" id="formulaDisplay">
+                    <div class="formula-math" id="formulaMath">x = -b ± √(b²-4ac) / 2a</div>
+                    <div class="formula-meaning" id="formulaMeaning">
+                        Resuelve ecuaciones de la forma ax² + bx + c = 0. "a" es el coeficiente cuadrático, "b" el lineal y "c" el término independiente.
+                    </div>
+                    <div class="formula-story" id="formulaStory">
+                        "El menos de b, más o menos la raíz de pelea entre b al cuadrado y 4 familiares (a y c), todo dividido entre los 2 ayudantes (a)."
+                    </div>
+                </div>
+            </article>
+
+            <!-- MNEMONIC BUILDER -->
+            <article class="card card-mnemonic">
+                <div class="card-header">
+                    <div class="card-icon icon-orange"><i class="fas fa-key"></i></div>
+                    <h2 class="card-title">Constructor Mnemotecnico</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Clic en las letras para formar una frase que te ayude a recordar la formula de la pendiente: m = (y₂ - y₁) / (x₂ - x₁)</p>
+                
+                <div class="mnemonic-interactive">
+                    <div class="mnemonic-input-group" id="mnemonicGroup">
+                        <div class="mnemonic-letter" data-letter="M">M</div>
+                        <div class="mnemonic-letter" data-letter="Y">Y</div>
+                        <div class="mnemonic-letter" data-letter="X">X</div>
+                    </div>
+                    <div class="mnemonic-result">
+                        <div class="mnemonic-phrase" id="mnemonicPhrase">Selecciona letras para crear tu frase</div>
+                        <div class="mnemonic-hint" id="mnemonicHint">Ejemplo: M = Mi, Y = Yate, X = Xilofono</div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- DIMENSIONS CHECK -->
+            <article class="card card-dimensions">
+                <div class="card-header">
+                    <div class="card-icon icon-blue"><i class="fas fa-ruler-combined"></i></div>
+                    <h2 class="card-title">Verificacion Dimensional</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Las unidades te delatan si la formula esta mal.</p>
+                
+                <div class="dimension-demo">
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); text-align: center; margin-bottom: 15px;">Formula de velocidad: v = d / t</p>
+                    <div class="dim-row">
+                        <div class="dim-variable result">v</div>
+                        <div class="dim-operator">=</div>
+                        <div class="dim-variable">d</div>
+                        <div class="dim-operator">÷</div>
+                        <div class="dim-variable">t</div>
+                    </div>
+                    <div class="dim-row">
+                        <div class="dim-unit">m/s</div>
+                        <div class="dim-operator">=</div>
+                        <div class="dim-unit">m</div>
+                        <div class="dim-operator">÷</div>
+                        <div class="dim-unit">s</div>
+                    </div>
+                    <div class="dim-check">
+                        <i class="fas fa-check-circle"></i>
+                        <span>metros dividido segundos = metros/segundo. Coincide!</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- FLASHCARD PRACTICE -->
+            <article class="card card-flashpractice">
+                <div class="card-header">
+                    <div class="card-icon icon-green"><i class="fas fa-clone"></i></div>
+                    <h2 class="card-title">Practica con Flashcards</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary); text-align: center;">Clic en la tarjeta para voltearla.</p>
+                
+                <div class="flashcard-box">
+                    <div class="flash-inner" id="flashInner">
+                        <div class="flash-face flash-front">
+                            <div class="flash-question">Area del triangulo</div>
+                            <div class="flash-hint">Toca para ver la respuesta</div>
+                        </div>
+                        <div class="flash-face flash-back">
+                            <div class="flash-answer">A = (b × h) / 2</div>
+                            <div class="flash-explain">Base por altura, partido a la mitad. Un triangulo es siempre la mitad de un rectangulo.</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flash-nav">
+                    <button class="flash-btn" id="flashPrev"><i class="fas fa-arrow-left"></i> Anterior</button>
+                    <button class="flash-btn" id="flashNext">Siguiente <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </article>
+
+            <!-- MISTAKES -->
+            <article class="card card-mistakes">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-exclamation-triangle"></i></div>
+                    <h2 class="card-title">Errores Frecuentes</h2>
+                </div>
+                
+                <div class="mistake-item">
+                    <h4>Memorizar sin unidades</h4>
+                    <p>Si no sabes que "g" es aceleracion (m/s²), no sabras cuando usarla en fisica.</p>
+                </div>
+                <div class="mistake-item">
+                    <h4>Confundir variables similares</h4>
+                    <p>"r" es radio, "R" puede ser constante de gases. En cada formula, verifica QUE representa cada letra.</p>
+                </div>
+                <div class="mistake-item">
+                    <h4>No practicar la derivacion</h4>
+                    <p>Si entiendes de donde sale la formula, puedes reconstruirla. Si solo la memorizaste, se borra.</p>
+                </div>
+            </article>
+
+            <!-- TIPS -->
+            <article class="card card-tips">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-lightbulb"></i></div>
+                    <h2 class="card-title">Tips que Funcionan</h2>
+                </div>
+                
+                <div class="tip-item">
+                    <i class="fas fa-pencil-alt"></i>
+                    <span>Escribe la formula de memoria, no la copies.</span>
+                </div>
+                <div class="tip-item">
+                    <i class="fas fa-microphone"></i>
+                    <span>Explicala en voz alta como si ensenaras.</span>
+                </div>
+                <div class="tip-item">
+                    <i class="fas fa-layer-group"></i>
+                    <span>Agrupa formulas relacionadas: todas de area, todas de velocidad.</span>
+                </div>
+                <div class="tip-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Repasa cada 3 dias. La curva del olvido no perdona.</span>
+                </div>
+            </article>
+
+            <!-- CHECKLIST -->
+            <article class="card card-checklist">
+                <div class="card-header">
+                    <div class="card-icon icon-brown"><i class="fas fa-tasks"></i></div>
+                    <h2 class="card-title">Checklist de Aprendizaje</h2>
+                </div>
+                
+                <div class="checklist-container">
+                    <div class="check-item">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <span class="check-text">Se el nombre de cada variable en la formula</span>
+                    </div>
+                    <div class="check-item">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <span class="check-text">Se las unidades de cada variable</span>
+                    </div>
+                    <div class="check-item">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <span class="check-text">Puedo escribirla de memoria sin errores</span>
+                    </div>
+                    <div class="check-item">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <span class="check-text">Se CUANDO usarla y cuando NO</span>
+                    </div>
+                    <div class="check-item">
+                        <div class="check-box"><i class="fas fa-check"></i></div>
+                        <span class="check-text">He resuelto al menos 5 ejercicios con ella</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-text">Una formula no es un conjuro magico. Es la traduccion matematica de algo que existe en la realidad. Si entiendes la realidad, la formula se vuelve obvia.</p>
+                <p style="font-size: 0.85rem; color: var(--primary); margin-top: 10px; font-weight: 600;">No memorices formulas. Entiende relaciones.</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+
+        // Understanding Steps
+        const understandItems = document.querySelectorAll('.understand-item');
+        understandItems.forEach(function(item) {
+            item.addEventListener('click', function() {
+                understandItems.forEach(function(i) { i.classList.remove('active'); });
+                this.classList.add('active');
+            });
+        });
+
+        // Formula Tabs
+        const formulaTabs = document.querySelectorAll('.formula-tab');
+        const formulaMath = document.getElementById('formulaMath');
+        const formulaMeaning = document.getElementById('formulaMeaning');
+        const formulaStory = document.getElementById('formulaStory');
+        
+        const formulaData = {
+            cuadratica: {
+                math: 'x = -b ± √(b²-4ac) / 2a',
+                meaning: 'Resuelve ecuaciones de la forma ax² + bx + c = 0. "a" es el coeficiente cuadrático, "b" el lineal y "c" el término independiente.',
+                story: '"El menos de b, más o menos la raíz de pelea entre b al cuadrado y 4 familiares (a y c), todo dividido entre los 2 ayudantes (a)."'
+            },
+            pitagoras: {
+                math: 'a² + b² = c²',
+                meaning: 'En un triángulo rectángulo, la suma de los catetos al cuadrado equals la hipotenusa al cuadrado. c siempre es el lado más largo.',
+                story: '"Los dos chicos (a y b) se ponen al cuadrado y suman fuerzas para igualar al grande (c) también al cuadrado."'
+            },
+            velocidad: {
+                math: 'v = d / t',
+                meaning: 'Velocidad es distancia dividida entre tiempo. Cuanta más distancia recorro en menos tiempo, más rápido voy.',
+                story: '"Voy muy rápido (v) cuando recorro mucha distancia (d) en poquito tiempo (t)."'
+            }
+        };
+        
+        formulaTabs.forEach(function(tab) {
+            tab.addEventListener('click', function() {
+                const key = this.getAttribute('data-formula');
+                formulaTabs.forEach(function(t) { t.classList.remove('active'); });
+                this.classList.add('active');
+                
+                formulaMath.textContent = formulaData[key].math;
+                formulaMeaning.textContent = formulaData[key].meaning;
+                formulaStory.textContent = formulaData[key].story;
+            });
+        });
+
+        // Mnemonic Builder
+        const mnemonicLetters = document.querySelectorAll('.mnemonic-letter');
+        const mnemonicPhrase = document.getElementById('mnemonicPhrase');
+        const mnemonicHint = document.getElementById('mnemonicHint');
+        
+        const mnemonics = {
+            'M': { phrase: 'Mi mamá', hint: 'M de Mamá o M de Montaña' },
+            'Y': { phrase: 'Yucef', hint: 'Y de Yate o Y de Yogur' },
+            'X': { phrase: 'Xilófono', hint: 'X de Xilófono o X de Rayos X' }
+        };
+        
+        let selectedMnemonic = [];
+        
+        mnemonicLetters.forEach(function(letter) {
+            letter.addEventListener('click', function() {
+                const l = this.getAttribute('data-letter');
+                
+                if (this.classList.contains('filled')) {
+                    this.classList.remove('filled');
+                    selectedMnemonic = selectedMnemonic.filter(function(item) { return item !== l; });
+                } else {
+                    this.classList.add('filled');
+                    selectedMnemonic.push(l);
+                }
+                
+                if (selectedMnemonic.length > 0) {
+                    const phrases = selectedMnemonic.map(function(item) { return mnemonics[item].phrase; });
+                    mnemonicPhrase.textContent = phrases.join(' - ');
+                    mnemonicHint.textContent = 'Recuerda: Pendiente = diferencia de Y entre diferencia de X';
+                } else {
+                    mnemonicPhrase.textContent = 'Selecciona letras para crear tu frase';
+                    mnemonicHint.textContent = 'Ejemplo: M = Mi, Y = Yate, X = Xilofono';
+                }
+            });
+        });
+
+        // Flashcards
+        const flashInner = document.getElementById('flashInner');
+        const flashNext = document.getElementById('flashNext');
+        const flashPrev = document.getElementById('flashPrev');
+        
+        const flashcards = [
+            { q: 'Area del triangulo', a: 'A = (b × h) / 2', ex: 'Base por altura, partido a la mitad. Un triangulo es siempre la mitad de un rectangulo.' },
+            { q: 'Teorema de Pitagoras', a: 'a² + b² = c²', ex: 'Catetos al cuadrado suman la hipotenusa al cuadrado. Solo para triangulos rectangulos.' },
+            { q: 'Volumen del cilindro', a: 'V = π × r² × h', ex: 'Area del circulo base por la altura. Pi por radio al cuadrado por altura.' },
+            { q: 'Derivada de x^n', a: 'n × x^(n-1)', ex: 'Baja el exponente, reduce el exponente en 1. La derivada de x³ es 3x².' }
+        ];
+        
+        let currentFlash = 0;
+        
+        flashInner.addEventListener('click', function() {
+            this.classList.toggle('flipped');
+        });
+        
+        function updateFlashcard() {
+            flashInner.classList.remove('flipped');
+            flashInner.querySelector('.flash-question').textContent = flashcards[currentFlash].q;
+            flashInner.querySelector('.flash-answer').textContent = flashcards[currentFlash].a;
+            flashInner.querySelector('.flash-explain').textContent = flashcards[currentFlash].ex;
+        }
+        
+        flashNext.addEventListener('click', function(e) {
+            e.stopPropagation();
+            currentFlash = (currentFlash + 1) % flashcards.length;
+            updateFlashcard();
+        });
+        
+        flashPrev.addEventListener('click', function(e) {
+            e.stopPropagation();
+            currentFlash = (currentFlash - 1 + flashcards.length) % flashcards.length;
+            updateFlashcard();
+        });
+
+        // Checklist
+        const checkItems = document.querySelectorAll('.check-item');
+        checkItems.forEach(function(item) {
+            item.addEventListener('click', function() {
+                this.classList.toggle('checked');
+            });
+        });
+    </script>
+</body>
+</html>
