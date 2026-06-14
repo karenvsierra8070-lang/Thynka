@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estrategia al 50% de Seguridad - Thynka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@3e0;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b6b47; --primary-light: #a3846c; --primary-dark: #6b5538;
+            --cream: #f8f5f2; --beige: #f0e6dc; --brown: #5a4032;
+            --gray: #9a9a9a; --white: #ffffff;
+            --shadow: rgba(107, 85, 56, 0.1); --shadow-hover: rgba(107, 85, 56, 0.2);
+            --text-primary: #5a4032; --text-secondary: #9a9a9a;
+            --bg-primary: #f8f5f2; --bg-secondary: #ffffff;
+            --bg-tertiary: #f0e6dc; --border-color: #f0e6dc;
+            --accent-1: #d64545; --accent-2: #45a0d6; --accent-3: #45b088;
+            --accent-4: #8b5cf6; --accent-5: #e8833a;
+        }
+
+        [data-theme="dark"] {
+            --primary: #a3846c; --primary-light: #c0a686; --primary-dark: #8b6b47;
+            --cream: #2a2520; --beige: #3a342e; --brown: #e0d5c7;
+            --gray: #a89b8b; --white: #1a1815;
+            --shadow: rgba(0, 0, 0, 0.4); --shadow-hover: rgba(0, 0, 0, 0.5);
+            --text-primary: #e0d5c7; --text-secondary: #a89b8b;
+            --bg-primary: #1a1815; --bg-secondary: #2a2520;
+            --bg-tertiary: #3a342e; --border-color: #3a342e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+
+        .top-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 65px;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+            z-index: 1000; box-shadow: 0 2px 15px var(--shadow);
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+            background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 10px; color: var(--text-primary); text-decoration: none;
+            font-weight: 600; transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .page-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-dark);
+            display: flex; align-items: center; gap: 10px;
+        }
+        
+        .top-actions { display: flex; gap: 10px; }
+        .action-btn {
+            padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-weight: 600; font-family: inherit; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 8px; transition: all 0.3s;
+        }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--primary); color: white; }
+
+        .main-container { padding: 85px 25px 40px; max-width: 1400px; margin: 0 auto; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-auto-rows: minmax(80px, auto);
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-secondary); border-radius: 20px;
+            padding: 25px; box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px var(--shadow-hover); }
+
+        /* HERO */
+        .card-hero {
+            grid-column: span 12;
+            background: linear-gradient(135deg, #e8833a 0%, #d35400 100%);
+            color: white; padding: 45px 50px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 40px; min-height: 320px;
+        }
+        .card-hero::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 400px; height: 100%;
+            background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.15) 0%, transparent 60%);
+        }
+        .hero-text { flex: 1; z-index: 1; }
+        .hero-badge {
+            display: inline-block; background: rgba(255,255,255,0.2);
+            padding: 8px 18px; border-radius: 25px; font-size: 0.85rem;
+            font-weight: 600; margin-bottom: 15px;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.8rem;
+            margin-bottom: 12px; line-height: 1.2;
+        }
+        .hero-text p { font-size: 1rem; opacity: 0.95; max-width: 600px; line-height: 1.7; }
+        .hero-visual {
+            width: 280px; height: 250px; background: rgba(255,255,255,0.1);
+            border-radius: 15px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 12px;
+            position: relative; z-index: 1; border: 2px solid rgba(255,255,255,0.2);
+        }
+        .hero-visual i { font-size: 4rem; opacity: 0.9; }
+        .half-circle {
+            width: 120px; height: 60px; border: 4px solid rgba(255,255,255, 0.8);
+            border-bottom: none; border-radius: 60px 60px 0 0; margin-top: 10px;
+        }
+
+        .card-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            width: 45px; height: 45px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: white;
+        }
+        .icon-red { background: linear-gradient(135deg, var(--accent-1), #c0392b); }
+        .icon-blue { background: linear-gradient(135deg, var(--accent-2), #2980b9); }
+        .icon-green { background: linear-gradient(135deg, var(--accent-3), #1e8449); }
+        .icon-purple { background: linear-gradient(135deg, var(--accent-4), #7d3c98); }
+        .icon-orange { background: linear-gradient(135deg, var(--accent-5), #d35400); }
+        .icon-brown { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+        .card-title {
+            font-family: 'Playfair Display', serif; font-size: 1.4rem;
+            color: var(--primary-dark);
+        }
+
+        /* GAME THEORY MATRIX */
+        .card-matrix {
+            grid-column: span 6;
+            grid-row: span 2;
+        }
+        .matrix-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 20px; margin-top: 20px;
+        }
+        .matrix-box {
+            background: var(--bg-tertiary); padding: 20px;
+            border-radius: 16px; text-align: center;
+            border-top: 5px solid;
+        }
+        .m-guess { border-color: var(--accent-3); }
+        .m-blank { border-color: var(--gray); }
+        .m-right { border-color: var(--accent-2); }
+        .m-wrong { border-color: var(--accent-1); }
+        
+        .matrix-val { font-size: 2rem; font-weight: 700; font-family: 'Playfair Display', serif; }
+        .matrix-lbl { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 10px; display: block; }
+        .matrix-prob { font-size: 0.8rem; color: var(--text-primary); font-weight: 600; }
+
+        /* SCORING SYSTEM */
+        .card-scoring {
+            grid-column: span 6;
+            background: linear-gradient(135deg, var(--accent-2) 0%, #2980b9 100%);
+            color: white;
+        }
+        .card-scoring .card-title { color: white; }
+        .score-item {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 15px; background: rgba(255,255,255,0.15);
+            padding: 12px; border-radius: 10px;
+        }
+        .score-item strong { color: white; display: block; margin-bottom: 2px; }
+
+        /* TIE BREAKER */
+        .card-tie {
+            grid-column: span 7;
+        }
+        .tie-list { margin-top: 20px; }
+        .tie-item {
+            display: flex; gap: 15px; margin-bottom: 15px;
+            padding: 15px; background: var(--bg-tertiary);
+            border-radius: 12px; border-left: 4px solid var(--primary);
+        }
+        .tie-num {
+            width: 30px; height: 30px; background: var(--primary);
+            color: white; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center;
+            font-weight: 700; flex-shrink: 0;
+        }
+        .tie-content h4 { color: var(--primary-dark); margin-bottom: 4px; }
+        .tie-content p { font-size: 0.85rem; color: var(--text-secondary); margin: 0; }
+
+        /* CHANGE ANSWER? */
+        .card-change {
+            grid-column: span 5;
+        }
+        .change-stat {
+            text-align: center; padding: 20px; background: var(--bg-tertiary);
+            border-radius: 15px; margin-top: 15px;
+        }
+        .stat-big { font-size: 3rem; font-weight: 700; color: var(--primary-dark); font-family: 'Playfair Display', serif; line-height: 1; }
+        .stat-label { font-size: 0.85rem; color: var(--text-secondary); margin-top: 5px; }
+
+        /* MYTHS */
+        .card-myths {
+            grid-column: span 6;
+            background: var(--bg-tertiary);
+        }
+        .myth-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .myth-item {
+            background: var(--bg-secondary); padding: 15px;
+            border-radius: 12px; text-align: center;
+        }
+        .myth-item i { display: block; font-size: 1.5rem; margin-bottom: 8px; }
+        .myth-true i { color: var(--accent-3); }
+        .myth-false i { color: var(--accent-1); }
+        .myth-title { font-size: 0.9rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 3px; }
+        .myth-desc { font-size: 0.8rem; color: var(--text-secondary); }
+
+        /* FLAGS */
+        .card-flags {
+            grid-column: span 6;
+        }
+        .flag-box {
+            background: var(--bg-tertiary); padding: 12px;
+            border-radius: 10px; margin-bottom: 10px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .flag-box i { color: var(--accent-5); font-size: 1.2rem; }
+
+        /* FOOTER */
+        .card-footer {
+            grid-column: span 12;
+            text-align: center; padding: 40px;
+            background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--beige) 100%);
+        }
+        .footer-quote {
+            font-family: 'Playfair Display', serif; font-size: 1.5rem;
+            color: var(--primary-dark); margin-bottom: 10px; font-style: italic;
+        }
+
+        @media (max-width: 1100px) {
+            .matrix-grid { grid-template-columns: 1fr; }
+            .myth-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 900px) {
+            .main-container { padding: 80px 15px 30px; }
+            .dashboard-grid { gap: 15px; }
+            .card-hero, .card-matrix, .card-scoring, .card-tie,
+            .card-change, .card-myths, .card-flags, .card-footer { grid-column: span 12; }
+            .hero-text h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-bar">
+        <a href="recomendaciones.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+        <h1 class="page-title"><i class="fas fa-balance-scale-left"></i> Zona de Incertidumbre</h1>
+        <div class="top-actions">
+            <button class="action-btn btn-secondary" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="dashboard-grid">
+
+            <!-- HERO -->
+            <article class="card card-hero">
+                <div class="hero-text">
+                    <span class="hero-badge"><i class="fas fa-dice"></i> Teoria de Juegos</span>
+                    <h1>Estrategias al 50% de Seguridad</h1>
+                    <p>Es la zona mas peligrosa del examen: no estas perdido, pero tampoco seguro. Tu instinto dice una cosa, tu logica otra. Aqui no basta con "intuir", necesitas estrategias probabilisticas para maximizar tus puntos sin arriesgar todo por culpa de un 50/50 mal jugado.</p>
+                </div>
+                <div class="hero-visual">
+                    <i class="fas fa-percentage"></i>
+                    <div class="half-circle"></div>
+                </div>
+            </article>
+
+            <!-- MATRIX -->
+            <article class="card card-matrix">
+                <div class="card-header">
+                    <div class="card-icon icon-blue"><i class="fas fa-table"></i></div>
+                    <h2 class="card-title">La Matematica de la Duda</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Analisis costo-beneficio segun el sistema de calificacion.</p>
+                
+                <div class="matrix-grid">
+                    <div class="matrix-box m-guess">
+                        <span class="matrix-lbl">Si Adivinas y Aciertas</span>
+                        <div class="matrix-val" style="color: var(--accent-3);">+1 Pto</div>
+                        <div class="matrix-prob">Probabilidad: 50%</div>
+                    </div>
+                    <div class="matrix-box m-wrong">
+                        <span class="matrix-lbl">Si Adivinas y Fallas</span>
+                        <div class="matrix-val" style="color: var(--accent-1);">-0.25 Pto*</div>
+                        <div class="matrix-prob">Probabilidad: 50%</div>
+                    </div>
+                    <div class="matrix-box m-blank">
+                        <span class="matrix-lbl">Si dejas en Blanco</span>
+                        <div class="matrix-val" style="color: var(--gray);">0 Ptos</div>
+                        <div class="matrix-prob">Seguridad: 100%</div>
+                    </div>
+                    <div class="matrix-box m-right">
+                        <span class="matrix-lbl">Si estudias mas</span>
+                        <div class="matrix-val" style="color: var(--accent-2);">+1 Pto</div>
+                        <div class="matrix-prob">Probabilidad: Sube a 80%</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px; padding: 15px; background: var(--bg-tertiary); border-radius: 12px; font-size: 0.85rem; color: var(--text-secondary);">
+                    <strong style="color: var(--primary-dark);">Veredicto Matematico:</strong> Si el error descuenta menos de la mitad del valor del acierto (ej: vale 1 y resta 0.25), estadisticamente CONVIENE arriesgar si puedes eliminar al menos una opcion incorrecta.
+                </div>
+            </article>
+
+            <!-- SCORING SYSTEM -->
+            <article class="card card-scoring">
+                <div class="card-header">
+                    <div class="card-icon" style="background: rgba(255,255,255,0.2);"><i class="fas fa-gavel"></i></div>
+                    <h2 class="card-title">Regla Segun el Tipo de Examen</h2>
+                </div>
+                
+                <div class="score-item">
+                    <i class="fas fa-times-circle"></i>
+                    <div>
+                        <strong>Examen SIN puntos negativos</strong>
+                        <span style="opacity: 0.8; font-size: 0.85rem;">Responde SIEMPRE. Aunque sea al azar. Tienes nada que perder y puntos que ganar.</span>
+                    </div>
+                </div>
+                <div class="score-item">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>
+                        <strong>Examen CON puntos negativos</strong>
+                        <span style="opacity: 0.8; font-size: 0.85rem;">Solo responde si puedes eliminar 2 opciones. Con 50/50 (2 opciones), es una moneda al aire, pero el riesgo es calculado.</span>
+                    </div>
+                </div>
+                <div class="score-item">
+                    <i class="fas fa-check-circle"></i>
+                    <div>
+                        <strong>Examen tipo Ensayo</strong>
+                        <span style="opacity: 0.8; font-size: 0.85rem;">Escribe ALGO coherente. Los profesores buscan puntos para dar nota parcial. El silencio es 0 seguro.</span>
+                    </div>
+                </div>
+            </article>
+
+            <!-- TIE BREAKER -->
+            <article class="card card-tie">
+                <div class="card-header">
+                    <div class="card-icon icon-purple"><i class="fas fa-link"></i></div>
+                    <h2 class="card-title">Como Romper el Empate (Tie-Breakers)</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Si te quedan A y B y no sabes cual elegir:</p>
+                
+                <div class="tie-list">
+                    <div class="tie-item">
+                        <div class="tie-num">1</div>
+                        <div class="tie-content">
+                            <h4>Longitud y Detalle</h4>
+                            <p>La respuesta correcta suele ser la mas larga o especifica. Las falsas tienden a ser generales o absolutas.</p>
+                        </div>
+                    </div>
+                    <div class="tie-item">
+                        <div class="tie-num">2</div>
+                        <div class="tie-content">
+                            <h4>La Regla del "Nunca/Siempre"</h4>
+                            <p>Desconfia de absolutos ("Siempre", "Nunca", "Solo"). La vida real tiene matices. Busca opciones con "Generalmente", "A menudo".</p>
+                        </div>
+                    </div>
+                    <div class="tie-item">
+                        <div class="tie-num">3</div>
+                        <div class="tie-content">
+                            <h4>Pistas en otras preguntas</h4>
+                            <p>Revisa el resto del examen. A veces una pregunta posterior da la clave de una anterior (mismo termino, mismo contexto).</p>
+                        </div>
+                    </div>
+                    <div class="tie-item">
+                        <div class="tie-num">4</div>
+                        <div class="tie-content">
+                            <h4>Primera Impresion</h4>
+                            <p>Si al leerla por primera vez una te "sonó" mas, quedate con esa. Cambiar suele ser error (ver modulo siguiente).</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- CHANGE ANSWER -->
+            <article class="card card-change">
+                <div class="card-header">
+                    <div class="card-icon icon-orange"><i class="fas fa-exchange-alt"></i></div>
+                    <h2 class="card-title">Cambiar la Respuesta?</h2>
+                </div>
+                <div class="change-stat">
+                    <div class="stat-big">57%</div>
+                    <div class="stat-label">de las veces que cambias, improves tu nota</div>
+                </div>
+                <p style="margin-top: 15px; font-size: 0.85rem; color: var(--text-secondary); text-align: center;">
+                    El mito de "nunca cambies" es falso. Si cambias por un RAZONAMIENTO (encontraste un error logico), cambia. Si cambias por "no me suena", no lo hagas.
+                </p>
+            </article>
+
+            <!-- MYTHS -->
+            <article class="card card-myths">
+                <div class="card-header">
+                    <div class="card-icon icon-brown"><i class="fas fa-ghost"></i></div>
+                    <h2 class="card-title">Mitos del 50%</h2>
+                </div>
+                
+                <div class="myth-grid">
+                    <div class="myth-item myth-false">
+                        <i class="fas fa-times-circle"></i>
+                        <div class="myth-title">FALSO</div>
+                        <div class="myth-desc">"Elige siempre la C si no sabes". Eso es azar puro.</div>
+                    </div>
+                    <div class="myth-item myth-true">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="myth-title">VERDADERO</div>
+                        <div class="myth-desc">Tu instinto es memoria subconsciente. A veces sabes sin saber por qué.</div>
+                    </div>
+                    <div class="myth-item myth-false">
+                        <i class="fas fa-times-circle"></i>
+                        <div class="myth-title">FALSO</div>
+                        <div class="myth-desc">"La respuesta mas larga siempre es la correcta". No siempre, pero es un buen indicador.</div>
+                    </div>
+                    <div class="myth-item myth-true">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="myth-title">VERDADERO</div>
+                        <div class="myth-desc">Si una opcion tiene un error de fecha o nombre, descartala YA.</div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- FLAGS -->
+            <article class="card card-flags">
+                <div class="card-header">
+                    <div class="card-icon icon-red"><i class="fas fa-flag"></i></div>
+                    <h2 class="card-title">Banderas Rojas (Red Flags)</h2>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Senales de que una opcion probablemente sea INCORRECTA:</p>
+                
+                <div class="flag-box">
+                    <i class="fas fa-ban"></i>
+                    <span>Contiene absolutos: "Siempre", "Nunca", "Jamás", "Unicamente".</span>
+                </div>
+                <div class="flag-box">
+                    <i class="fas fa-ban"></i>
+                    <span>Es demasiado parecida a otra opcion (trampa de distractor).</span>
+                </div>
+                <div class="flag-box">
+                    <i class="fas fa-ban"></i>
+                    <span>Usa un vocabulario que nunca uso el profesor en clase.</span>
+                </div>
+                <div class="flag-box">
+                    <i class="fas fa-ban"></i>
+                    <span>Es la opcion mas corta y vaga del grupo.</span>
+                </div>
+            </article>
+
+            <!-- FOOTER -->
+            <footer class="card card-footer">
+                <p class="footer-quote">"La duda es mejor que el vacio. Si puedes eliminar una opcion, ya no es 50%, es 66%. Juega con ventaja."</p>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Confia en tu preparacion, pero verifica lo que puedas.</p>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            this.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        (function() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        })();
+    </script>
+</body>
+</html>
