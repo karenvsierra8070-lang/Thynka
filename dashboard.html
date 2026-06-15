@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            /* Light Mode Colors */
             --primary: #8b6b47;
             --primary-light: #a3846c;
             --primary-dark: #6b5538;
@@ -25,10 +24,12 @@
             --bg-secondary: #ffffff;
             --bg-tertiary: #f0e6dc;
             --border-color: #f0e6dc;
+            --danger: #dc2626;
+            --warning: #d97706;
+            --success: #16a34a;
         }
 
         [data-theme="dark"] {
-            /* Dark Mode Colors */
             --primary: #a3846c;
             --primary-light: #c0a686;
             --primary-dark: #8b6b47;
@@ -63,7 +64,6 @@
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        /* Theme Toggle */
         .theme-toggle {
             position: fixed;
             right: 20px;
@@ -89,7 +89,6 @@
             transform: scale(1.05);
         }
 
-        /* Sidebar Menu - CON Z-INDEX MÁXIMO */
         .sidebar {
             position: fixed;
             left: 0;
@@ -100,14 +99,13 @@
             box-shadow: 2px 0 15px var(--shadow);
             transform: translateX(-100%);
             transition: transform 0.3s ease;
-            z-index: 9999; /* Z-INDEX MÁXIMO */
+            z-index: 9999;
         }
 
         .sidebar.active {
             transform: translateX(0);
         }
 
-        /* Menu Toggle - CON Z-INDEX MÁXIMO */
         .menu-toggle {
             position: fixed;
             left: 20px;
@@ -124,7 +122,7 @@
             justify-content: center;
             font-size: 1.2rem;
             transition: all 0.3s ease;
-            z-index: 10000; /* Z-INDEX MÁXIMO ABSOLUTO */
+            z-index: 10000;
             box-shadow: 0 4px 12px var(--shadow);
         }
 
@@ -187,7 +185,6 @@
             text-align: center;
         }
 
-        /* Tutorial Button in Menu */
         .tutorial-menu-item {
             display: flex;
             align-items: center;
@@ -212,7 +209,6 @@
             text-align: center;
         }
 
-        /* Main Content */
         .main-content {
             flex: 1;
             padding: 80px 20px 40px;
@@ -238,7 +234,6 @@
             font-size: 1.1rem;
         }
 
-        /* Dashboard Grid */
         .dashboard-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -301,18 +296,35 @@
         }
 
         .task-item.urgent {
-            border-left-color: #e74c3c;
-            background-color: rgba(231, 76, 60, 0.1);
+            border-left-color: var(--danger);
+            background-color: rgba(220, 38, 38, 0.1);
         }
 
         .task-item.urgent:hover {
-            background-color: rgba(231, 76, 60, 0.2);
+            background-color: rgba(220, 38, 38, 0.2);
+        }
+
+        .task-item.warning {
+            border-left-color: var(--warning);
+            background-color: rgba(217, 119, 6, 0.1);
+        }
+
+        .task-item.warning:hover {
+            background-color: rgba(217, 119, 6, 0.2);
         }
 
         .task-title, .exam-title {
             font-weight: 500;
             margin-bottom: 5px;
             color: var(--text-primary);
+        }
+
+        .task-meta, .exam-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
         .task-date, .exam-date {
@@ -327,18 +339,61 @@
             font-size: 0.8rem;
         }
 
+        .task-subject {
+            font-size: 0.8rem;
+            color: var(--primary);
+            background-color: var(--bg-secondary);
+            padding: 3px 10px;
+            border-radius: 15px;
+        }
+
         .urgent-badge {
             display: inline-block;
-            background-color: #e74c3c;
+            background-color: var(--danger);
             color: white;
             padding: 3px 8px;
             border-radius: 6px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 600;
             margin-left: 10px;
+            text-transform: uppercase;
         }
 
-        /* Welcome Section */
+        .warning-badge {
+            display: inline-block;
+            background-color: var(--warning);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 10px;
+            text-transform: uppercase;
+        }
+
+        .days-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .days-badge.danger {
+            background-color: rgba(220, 38, 38, 0.15);
+            color: var(--danger);
+        }
+
+        .days-badge.warning {
+            background-color: rgba(217, 119, 6, 0.15);
+            color: var(--warning);
+        }
+
+        .days-badge.success {
+            background-color: rgba(22, 163, 74, 0.15);
+            color: var(--success);
+        }
+
         .welcome-section {
             background: linear-gradient(135deg, var(--primary-light), var(--primary));
             border-radius: 25px;
@@ -400,7 +455,6 @@
             font-size: 1.1rem;
         }
 
-        /* Empty State */
         .empty-state {
             text-align: center;
             padding: 30px;
@@ -413,7 +467,10 @@
             opacity: 0.5;
         }
 
-        /* Overlay - CON Z-INDEX BAJO */
+        .empty-state p {
+            font-size: 0.95rem;
+        }
+
         .overlay {
             position: fixed;
             top: 0;
@@ -424,7 +481,7 @@
             opacity: 0;
             visibility: hidden;
             transition: all 0.3s ease;
-            z-index: 9998; /* Z-INDEX BAJO */
+            z-index: 9998;
         }
 
         .overlay.active {
@@ -432,7 +489,6 @@
             visibility: visible;
         }
 
-        /* Tutorial Styles - CON Z-INDEX MÁS BAJO */
         .tutorial-overlay {
             position: fixed;
             top: 0;
@@ -440,7 +496,7 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.8);
-            z-index: 1; /* Z-INDEX MÍNIMO */
+            z-index: 1;
             opacity: 0;
             visibility: hidden;
             transition: all 0.3s ease;
@@ -565,7 +621,6 @@
             transform: scale(1.2);
         }
 
-        /* User Profile Section */
         .user-profile {
             display: flex;
             align-items: center;
@@ -619,7 +674,20 @@
             background-color: var(--primary-dark);
         }
 
-        /* Responsive */
+        .loading-skeleton {
+            background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--beige) 50%, var(--bg-tertiary) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 8px;
+            height: 60px;
+            margin-bottom: 12px;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
         @media (max-width: 768px) {
             .dashboard-grid {
                 grid-template-columns: 1fr;
@@ -688,10 +756,8 @@
     </style>
 </head>
 <body>
-    <!-- Tutorial Overlay -->
     <div class="tutorial-overlay" id="tutorialOverlay"></div>
 
-    <!-- Sidebar Menu -->
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div class="sidebar-logo">
@@ -729,7 +795,7 @@
             </a>
             <a href="examen.html" class="menu-item" id="menu-examen">
                 <i class="fas fa-file-alt"></i>
-                Exámenes
+                Examenes
             </a>
             <a href="asistente.html" class="menu-item" id="menu-asistente">
                 <i class="fas fa-robot"></i>
@@ -745,9 +811,8 @@
             </a>
             <a href="patron.html" class="menu-item" id="menu-patron">
                 <i class="fas fa-chart-line"></i>
-                Análisis patrones
+                Analisis patrones
             </a>
-            <!-- Tutorial Menu Item -->
             <div class="tutorial-menu-item" id="tutorial-trigger">
                 <i class="fas fa-play-circle"></i>
                 <span>Tutorial</span>
@@ -755,22 +820,17 @@
         </div>
     </nav>
 
-    <!-- Menu Toggle Button -->
     <button class="menu-toggle" id="menuToggle">
         <i class="fas fa-bars"></i>
     </button>
 
-    <!-- Theme Toggle Button -->
     <button class="theme-toggle" id="themeToggle">
         <i class="fas fa-moon" id="themeIcon"></i>
     </button>
 
-    <!-- Overlay -->
     <div class="overlay" id="overlay"></div>
 
-    <!-- Main Content -->
     <main class="main-content">
-        <!-- User Profile Section -->
         <div class="user-profile" id="userProfile">
             <div class="user-avatar" id="userAvatar">
                 <i class="fas fa-user"></i>
@@ -781,16 +841,15 @@
             </div>
             <button class="logout-btn" id="logoutBtn" style="display: none;">
                 <i class="fas fa-sign-out-alt"></i>
-                Cerrar sesión
+                Cerrar sesion
             </button>
         </div>
 
         <header class="header">
             <h1 id="welcomeHeader">Bienvenido</h1>
-            <p>Tu centro de organización y aprendizaje inteligente</p>
+            <p>Tu centro de organizacion y aprendizaje inteligente</p>
         </header>
 
-        <!-- Welcome Section -->
         <section class="welcome-section" id="welcome-section">
             <svg class="welcome-owl" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -809,16 +868,16 @@
                 <circle cx="75" cy="85" r="10" fill="#ffffff"/>
                 <path d="M 100 95 L 90 105 L 100 108 L 110 105 Z" fill="#ffffff" opacity="0.8"/>
             </svg>
-            <h2 class="welcome-title">¿No sabes qué hacer ahora?</h2>
+            <h2 class="welcome-title">No sabes que hacer ahora?</h2>
             <p class="welcome-text">
                 Thynka es tu asistente personal de aprendizaje. Te ayuda a organizar tus tareas, 
-                preparar exámenes y descubrir tu estilo de aprendizaje ideal. Confía en nuestro sistema 
-                para que puedas enfocarte en lo más importante: aprender.
+                preparar examenes y descubrir tu estilo de aprendizaje ideal. Confia en nuestro sistema 
+                para que puedas enfocarte en lo mas importante: aprender.
             </p>
             <div class="welcome-features">
                 <div class="feature-item">
                     <i class="fas fa-check-circle"></i>
-                    <span>Organización inteligente</span>
+                    <span>Organizacion inteligente</span>
                 </div>
                 <div class="feature-item">
                     <i class="fas fa-brain"></i>
@@ -831,7 +890,6 @@
             </div>
         </section>
 
-        <!-- Dashboard Grid -->
         <div class="dashboard-grid">
             <!-- Tasks Due Soon -->
             <div class="card" id="tasks-card">
@@ -839,10 +897,12 @@
                     <div class="card-icon">
                         <i class="fas fa-clock"></i>
                     </div>
-                    <h3 class="card-title">Tareas próximas (3 días)</h3>
+                    <h3 class="card-title">Proximas tareas a vencer</h3>
                 </div>
                 <div id="tasksDueSoon">
-                    <!-- Tasks will be loaded here -->
+                    <div class="loading-skeleton"></div>
+                    <div class="loading-skeleton"></div>
+                    <div class="loading-skeleton"></div>
                 </div>
             </div>
 
@@ -852,10 +912,12 @@
                     <div class="card-icon">
                         <i class="fas fa-file-alt"></i>
                     </div>
-                    <h3 class="card-title">Próximos exámenes (2 semanas)</h3>
+                    <h3 class="card-title">Examenes proximos (2 semanas)</h3>
                 </div>
                 <div id="upcomingExams">
-                    <!-- Exams will be loaded here -->
+                    <div class="loading-skeleton"></div>
+                    <div class="loading-skeleton"></div>
+                    <div class="loading-skeleton"></div>
                 </div>
             </div>
 
@@ -865,26 +927,26 @@
                     <div class="card-icon">
                         <i class="fas fa-exclamation-triangle"></i>
                     </div>
-                    <h3 class="card-title">Tareas urgentes</h3>
+                    <h3 class="card-title">Tareas urgentes (prioridad alta)</h3>
                 </div>
                 <div id="urgentTasks">
-                    <!-- Urgent tasks will be loaded here -->
+                    <div class="loading-skeleton"></div>
+                    <div class="loading-skeleton"></div>
+                    <div class="loading-skeleton"></div>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Tutorial Tooltip -->
     <div class="tutorial-tooltip" id="tutorialTooltip">
         <div class="tutorial-arrow" id="tutorialArrow"></div>
-        <h3 id="tutorialTitle">Título</h3>
-        <p id="tutorialText">Texto de explicación</p>
+        <h3 id="tutorialTitle">Titulo</h3>
+        <p id="tutorialText">Texto de explicacion</p>
         <ul id="tutorialFeatures"></ul>
         <button id="tutorialNext">Siguiente</button>
         <button id="tutorialSkip" class="skip">Saltar</button>
     </div>
 
-    <!-- Tutorial Progress -->
     <div class="tutorial-progress" id="tutorialProgress">
         <div class="tutorial-dot active"></div>
         <div class="tutorial-dot"></div>
@@ -895,39 +957,38 @@
     </div>
 
     <script type="module">
-        // Import the functions you need from the SDKs you need
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-analytics.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // --- CONFIGURACIÓN DINÁMICA DE FIREBASE ---
         const firebaseConfig = {
             apiKey: "AIzaSyBH42jsEEaEOFa02LhD59aDkwFfo_RVVB4",
+            authDomain: "thynka-1dd68.firebaseapp.com",
+            databaseURL: "https://thynka-1dd68-default-rtdb.firebaseio.com",
             projectId: "thynka-1dd68",
-            storageBucket: "thynka-1dd68.firebasestorage.app",
+            storageBucket: "thynka-1dd68.appspot.com",
             messagingSenderId: "704622327906",
-            appId: "1:704622327906:web:57c4efb9da7b935b80f93b",
-            measurementId: "G-5WYWTXZ562"
+            appId: "1:704622327906:web:57c4efb9da7b935b80f93b"
         };
 
-        // Detectar si estamos en local o en producción y asignar el authDomain correcto
-        if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
-            firebaseConfig.authDomain = "localhost";
-        } else {
-            firebaseConfig.authDomain = "thynka-1dd68.firebaseapp.com";
-        }
-
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
         const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        let currentUser = null;
+        let appData = {
+            tasks: {},
+            exams: {},
+            subjects: {}
+        };
+
+        const $ = id => document.getElementById(id);
 
         // Theme Toggle
-        const themeToggle = document.getElementById('themeToggle');
-        const themeIcon = document.getElementById('themeIcon');
+        const themeToggle = $('themeToggle');
+        const themeIcon = $('themeIcon');
         const html = document.documentElement;
 
-        // Check for saved theme preference or default to light
         const currentTheme = localStorage.getItem('theme') || 'light';
         html.setAttribute('data-theme', currentTheme);
         updateThemeIcon(currentTheme);
@@ -943,37 +1004,35 @@
             themeIcon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
         }
 
-        // Menu Toggle - AHORA FUNCIONA EXACTAMENTE COMO EL THEME TOGGLE
-        const menuToggle = document.getElementById('menuToggle');
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('overlay');
+        // Menu Toggle
+        const menuToggle = $('menuToggle');
+        const sidebar = $('sidebar');
+        const overlay = $('overlay');
 
-        // Event listener simple y directo como el theme toggle
         menuToggle.addEventListener('click', () => {
             sidebar.classList.toggle('active');
             overlay.classList.toggle('active');
             menuToggle.classList.toggle('active');
         });
 
-        // Cerrar menú al hacer clic en el overlay
         overlay.addEventListener('click', () => {
             sidebar.classList.remove('active');
             overlay.classList.remove('active');
             menuToggle.classList.remove('active');
         });
 
-        // Tutorial System - COMPLETAMENTE SEPARADO
-        const tutorialOverlay = document.getElementById('tutorialOverlay');
-        const tutorialTooltip = document.getElementById('tutorialTooltip');
-        const tutorialArrow = document.getElementById('tutorialArrow');
-        const tutorialTitle = document.getElementById('tutorialTitle');
-        const tutorialText = document.getElementById('tutorialText');
-        const tutorialFeatures = document.getElementById('tutorialFeatures');
-        const tutorialNext = document.getElementById('tutorialNext');
-        const tutorialSkip = document.getElementById('tutorialSkip');
-        const tutorialProgress = document.getElementById('tutorialProgress');
+        // Tutorial System
+        const tutorialOverlay = $('tutorialOverlay');
+        const tutorialTooltip = $('tutorialTooltip');
+        const tutorialArrow = $('tutorialArrow');
+        const tutorialTitle = $('tutorialTitle');
+        const tutorialText = $('tutorialText');
+        const tutorialFeatures = $('tutorialFeatures');
+        const tutorialNext = $('tutorialNext');
+        const tutorialSkip = $('tutorialSkip');
+        const tutorialProgress = $('tutorialProgress');
         const tutorialDots = tutorialProgress.querySelectorAll('.tutorial-dot');
-        const tutorialTrigger = document.getElementById('tutorial-trigger');
+        const tutorialTrigger = $('tutorial-trigger');
 
         let currentStep = 0;
         let tutorialActive = false;
@@ -981,71 +1040,49 @@
         const tutorialSteps = [
             {
                 element: '#menuToggle',
-                title: 'Menú de navegación',
-                text: 'Aquí encontrarás todas las secciones de Thynka. Cada opción tiene herramientas específicas para tu aprendizaje:',
-                features: [
-                    'Cuenta: Perfil personalizado y configuración',
-                    'Tareas: Organización con filtros y Pomodoro',
-                    'Horario: Vista semanal y mensual integrada',
-                    'Exámenes: Preparación con simulacros',
-                    'Asistente IA: Ayuda personalizada 24/7',
-                    'Cuestionarios: Práctica adaptativa',
-                    'Análisis: Patrones de estudio y progreso',
-                    'Tutorial: Repetir tutorial completo'
-                ],
+                title: 'Menu de navegacion',
+                text: 'Aqui encontraras todas las secciones de Thynka:',
+                features: ['Cuenta: Perfil y configuracion', 'Tareas: Organizacion con Pomodoro', 'Horario: Vista semanal', 'Examenes: Preparacion', 'Asistente IA: Ayuda 24/7', 'Analisis: Progreso'],
                 position: 'right'
             },
             {
                 element: '#themeToggle',
                 title: 'Modo oscuro/claro',
-                text: 'Personaliza tu experiencia cambiando entre el modo claro y oscuro. Tu preferencia se guardará automáticamente para futuras sesiones.',
+                text: 'Personaliza tu experiencia cambiando entre modos.',
                 features: [],
                 position: 'left'
             },
             {
                 element: '#welcome-section',
                 title: 'Centro de bienvenida',
-                text: 'Esta sección te recuerda el propósito de Thynka y cómo puede ayudarte a organizar tu aprendizaje de manera inteligente.',
+                text: 'Recuerda el proposito de Thynka y como puede ayudarte.',
                 features: [],
                 position: 'bottom'
             },
             {
                 element: '#tasks-card',
-                title: 'Tareas próximas',
-                text: 'Aquí verás todas las tareas que vencen en los próximos 3 días. Incluye:',
-                features: [
-                    'Filtros por materia y prioridad',
-                    'Recomendaciones de fecha/hora',
-                    'Lectura con IA para entender mejor',
-                    'Pomodoro integrado',
-                    'Subtareas desglosadas'
-                ],
+                title: 'Proximas tareas',
+                text: 'Las 3 tareas mas cercanas a vencer que no has completado.',
+                features: ['Ordenadas por fecha', 'Muestra materia y tiempo restante'],
                 position: 'top'
             },
             {
                 element: '#exams-card',
-                title: 'Próximos exámenes',
-                text: 'Prepárate con antelación. Esta sección muestra:',
-                features: [
-                    'Exámenes en las próximas dos semanas',
-                    'Análisis de temas y dificultad',
-                    'Técnica Pomodoro adaptada',
-                    'Simulador de exámenes',
-                    'Cuestionarios personalizados'
-                ],
+                title: 'Examenes proximos',
+                text: 'Examenes de las proximas 2 semanas no completados.',
+                features: ['Fecha y materia', 'Dias restantes'],
                 position: 'top'
             },
             {
                 element: '#urgent-card',
                 title: 'Tareas urgentes',
-                text: 'Las tareas que has marcado como urgentes aparecen aquí para que no se te pasen por alto.',
-                features: [],
+                text: 'Las 3 tareas de prioridad alta mas cercanas a vencer.',
+                features: ['Prioridad alta', 'No completadas'],
                 position: 'top'
             }
         ];
 
         function startTutorialProcess() {
-            console.log('Iniciando tutorial...');
             currentStep = 0;
             tutorialActive = true;
             tutorialOverlay.classList.add('active');
@@ -1061,15 +1098,9 @@
             const step = tutorialSteps[currentStep];
             const element = document.querySelector(step.element);
 
-            // Remove previous highlights
-            document.querySelectorAll('.tutorial-highlight').forEach(el => {
-                el.classList.remove('tutorial-highlight');
-            });
-
-            // Add highlight to current element
+            document.querySelectorAll('.tutorial-highlight').forEach(el => el.classList.remove('tutorial-highlight'));
             element.classList.add('tutorial-highlight');
 
-            // Position tooltip
             const rect = element.getBoundingClientRect();
             const tooltipWidth = 350;
             const tooltipHeight = step.features.length > 0 ? 250 : 180;
@@ -1108,7 +1139,6 @@
                     break;
             }
 
-            // Adjust position if tooltip goes out of viewport
             if (left < 10) left = 10;
             if (left + tooltipWidth > window.innerWidth - 10) left = window.innerWidth - tooltipWidth - 10;
             if (top < 10) top = 10;
@@ -1120,27 +1150,18 @@
             tutorialArrow.style.left = `${arrowLeft}px`;
             tutorialArrow.style.transform = `rotate(${arrowRotation}deg)`;
 
-            // Update content
             tutorialTitle.textContent = step.title;
             tutorialText.textContent = step.text;
 
-            // Update features list
             if (step.features.length > 0) {
-                tutorialFeatures.innerHTML = step.features.map(feature => `<li>${feature}</li>`).join('');
+                tutorialFeatures.innerHTML = step.features.map(f => `<li>${f}</li>`).join('');
                 tutorialFeatures.style.display = 'block';
             } else {
                 tutorialFeatures.style.display = 'none';
             }
 
-            // Update button text
             tutorialNext.textContent = currentStep === tutorialSteps.length - 1 ? 'Finalizar' : 'Siguiente';
-
-            // Update progress dots
-            tutorialDots.forEach((dot, index) => {
-                dot.classList.toggle('active', index === currentStep);
-            });
-
-            // Show tooltip immediately
+            tutorialDots.forEach((dot, i) => dot.classList.toggle('active', i === currentStep));
             tutorialTooltip.classList.add('active');
         }
 
@@ -1151,250 +1172,278 @@
         }
 
         function endTutorial() {
-            console.log('Tutorial finalizado');
             tutorialActive = false;
             tutorialOverlay.classList.remove('active');
             tutorialTooltip.classList.remove('active');
-            document.querySelectorAll('.tutorial-highlight').forEach(el => {
-                el.classList.remove('tutorial-highlight');
-            });
-
-            // Mark tutorial as completed
+            document.querySelectorAll('.tutorial-highlight').forEach(el => el.classList.remove('tutorial-highlight'));
             localStorage.setItem('tutorialCompleted', 'true');
         }
 
-        // Event listeners
         tutorialNext.addEventListener('click', nextTutorialStep);
         tutorialSkip.addEventListener('click', endTutorial);
-
-        // Tutorial Trigger from Menu - SIMPLIFICADO
         tutorialTrigger.addEventListener('click', () => {
-            // Preguntar siempre si quiere ver el tutorial
-            if (confirm('¿Quieres ver el tutorial?')) {
-                startTutorialProcess();
-            }
+            if (confirm('Quieres ver el tutorial?')) startTutorialProcess();
         });
 
-        // Sample data
-        const sampleTasks = [
-            { id: 1, title: "Entregar proyecto de matemáticas", date: "2024-01-15", urgent: false },
-            { id: 2, title: "Resumen capítulo 5 historia", date: "2024-01-16", urgent: true },
-            { id: 3, title: "Ejercicios de química", date: "2024-01-17", urgent: false },
-            { id: 4, title: "Presentación inglés", date: "2024-01-18", urgent: true }
-        ];
-
-        const sampleExams = [
-            { id: 1, title: "Matemáticas - Parcial 2", date: "2024-01-20", subject: "Matemáticas" },
-            { id: 2, title: "Historia - Examen final", date: "2024-01-25", subject: "Historia" },
-            { id: 3, title: "Química - Laboratorio", date: "2024-01-28", subject: "Química" }
-        ];
-
-        // Function to format dates
+        // Date formatting
         function formatDate(dateString) {
-            const date = new Date(dateString);
+            const date = new Date(dateString + 'T23:59:59');
             const today = new Date();
+            today.setHours(0, 0, 0, 0);
             const diffTime = date - today;
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             
+            if (diffDays < 0) return 'Vencida';
             if (diffDays === 0) return 'Hoy';
-            if (diffDays === 1) return 'Mañana';
-            if (diffDays <= 7) return `En ${diffDays} días`;
+            if (diffDays === 1) return 'Manana';
+            if (diffDays <= 7) return `En ${diffDays} dias`;
             return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
         }
 
-        // Load tasks due in next 3 days
-        function loadTasksDueSoon() {
-            const container = document.getElementById('tasksDueSoon');
-            const today = new Date();
-            const threeDaysFromNow = new Date(today.getTime() + (3 * 24 * 60 * 60 * 1000));
-            
-            const tasksDueSoon = sampleTasks.filter(task => {
-                const taskDate = new Date(task.date);
-                return taskDate >= today && taskDate <= threeDaysFromNow && !task.urgent;
-            });
+        function getDaysClass(days) {
+            if (days < 0) return 'success';
+            if (days <= 1) return 'danger';
+            if (days <= 3) return 'warning';
+            return 'success';
+        }
 
-            if (tasksDueSoon.length === 0) {
+        function getDaysUntil(dateString) {
+            const date = new Date(dateString + 'T23:59:59');
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            return Math.ceil((date - today) / (1000 * 60 * 60 * 24));
+        }
+
+        // Load functions - CONNECTED TO FIREBASE
+        function loadTasksDueSoon() {
+            const container = $('tasksDueSoon');
+            const tasks = Object.entries(appData.tasks);
+            const subjects = appData.subjects;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            // Filter: not completed, has dueDate, sort by date, limit to 3
+            const pendingTasks = tasks
+                .filter(([id, t]) => !t.completed && t.dueDate)
+                .map(([id, t]) => ({ id, ...t }))
+                .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
+                .slice(0, 3);
+
+            if (pendingTasks.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-check-circle"></i>
-                        <p>No tienes tareas próximas</p>
+                        <p>No tienes tareas pendientes</p>
                     </div>
                 `;
                 return;
             }
 
-            container.innerHTML = tasksDueSoon.map(task => `
-                <div class="task-item">
-                    <div class="task-title">${task.title}</div>
-                    <div class="task-date">
-                        <i class="fas fa-calendar"></i>
-                        ${formatDate(task.date)}
+            container.innerHTML = pendingTasks.map(task => {
+                const subject = subjects[task.subjectId];
+                const days = getDaysUntil(task.dueDate);
+                const daysClass = getDaysClass(days);
+
+                return `
+                    <div class="task-item ${days <= 1 ? 'urgent' : days <= 3 ? 'warning' : ''}">
+                        <div class="task-title">${task.title || 'Sin titulo'}</div>
+                        <div class="task-meta">
+                            <div class="task-date">
+                                <i class="fas fa-calendar"></i>
+                                ${formatDate(task.dueDate)}
+                            </div>
+                            ${subject ? `<span class="task-subject">${subject.name}</span>` : ''}
+                            <span class="days-badge ${daysClass}">${days < 0 ? 'Vencida' : days === 0 ? 'Hoy' : days === 1 ? '1 dia' : `${days} dias`}</span>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
-        // Load upcoming exams
         function loadUpcomingExams() {
-            const container = document.getElementById('upcomingExams');
+            const container = $('upcomingExams');
+            const exams = Object.entries(appData.exams);
+            const subjects = appData.subjects;
             const today = new Date();
-            const twoWeeksFromNow = new Date(today.getTime() + (14 * 24 * 60 * 60 * 1000));
-            
-            const upcomingExams = sampleExams.filter(exam => {
-                const examDate = new Date(exam.date);
-                return examDate >= today && examDate <= twoWeeksFromNow;
-            });
+            today.setHours(0, 0, 0, 0);
+            const twoWeeksFromNow = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000);
+
+            // Filter: not completed, within 2 weeks, sort by date
+            const upcomingExams = exams
+                .filter(([id, e]) => !e.completed && e.date)
+                .map(([id, e]) => ({ id, ...e }))
+                .filter(e => {
+                    const examDate = new Date(e.date);
+                    return examDate >= today && examDate <= twoWeeksFromNow;
+                })
+                .sort((a, b) => new Date(a.date) - new Date(b.date));
 
             if (upcomingExams.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-calendar-check"></i>
-                        <p>No hay exámenes próximos</p>
+                        <p>No hay examenes en las proximas 2 semanas</p>
                     </div>
                 `;
                 return;
             }
 
-            container.innerHTML = upcomingExams.map(exam => `
-                <div class="exam-item">
-                    <div class="exam-title">${exam.title}</div>
-                    <div class="exam-date">
-                        <i class="fas fa-calendar"></i>
-                        ${formatDate(exam.date)}
+            container.innerHTML = upcomingExams.map(exam => {
+                const subject = subjects[exam.subjectId];
+                const days = getDaysUntil(exam.date);
+                const daysClass = getDaysClass(days);
+
+                return `
+                    <div class="exam-item">
+                        <div class="exam-title">${exam.title || 'Sin titulo'}</div>
+                        <div class="exam-meta">
+                            <div class="exam-date">
+                                <i class="fas fa-calendar"></i>
+                                ${formatDate(exam.date)}
+                            </div>
+                            ${subject ? `<span class="task-subject">${subject.name}</span>` : ''}
+                            <span class="days-badge ${daysClass}">${days === 0 ? 'Hoy' : days === 1 ? '1 dia' : `${days} dias`}</span>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
-        // Load urgent tasks
         function loadUrgentTasks() {
-            const container = document.getElementById('urgentTasks');
-            const urgentTasks = sampleTasks.filter(task => task.urgent);
+            const container = $('urgentTasks');
+            const tasks = Object.entries(appData.tasks);
+            const subjects = appData.subjects;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            // Filter: not completed, priority = 'alta', has dueDate, sort by date, limit to 3
+            const urgentTasks = tasks
+                .filter(([id, t]) => !t.completed && t.priority === 'alta' && t.dueDate)
+                .map(([id, t]) => ({ id, ...t }))
+                .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
+                .slice(0, 3);
 
             if (urgentTasks.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-check-circle"></i>
-                        <p>No hay tareas urgentes</p>
+                        <p>No tienes tareas urgentes pendientes</p>
                     </div>
                 `;
                 return;
             }
 
-            container.innerHTML = urgentTasks.map(task => `
-                <div class="task-item urgent">
-                    <div class="task-title">
-                        ${task.title}
-                        <span class="urgent-badge">URGENTE</span>
+            container.innerHTML = urgentTasks.map(task => {
+                const subject = subjects[task.subjectId];
+                const days = getDaysUntil(task.dueDate);
+                const daysClass = getDaysClass(days);
+
+                return `
+                    <div class="task-item urgent">
+                        <div class="task-title">
+                            ${task.title || 'Sin titulo'}
+                            <span class="urgent-badge">URGENTE</span>
+                        </div>
+                        <div class="task-meta">
+                            <div class="task-date">
+                                <i class="fas fa-calendar"></i>
+                                ${formatDate(task.dueDate)}
+                            </div>
+                            ${subject ? `<span class="task-subject">${subject.name}</span>` : ''}
+                            <span class="days-badge ${daysClass}">${days < 0 ? 'Vencida' : days === 0 ? 'Hoy' : days === 1 ? '1 dia' : `${days} dias`}</span>
+                        </div>
                     </div>
-                    <div class="task-date">
-                        <i class="fas fa-calendar"></i>
-                        ${formatDate(task.date)}
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
-        // Initialize dashboard
-        function initDashboard() {
+        function updateAllSections() {
             loadTasksDueSoon();
             loadUpcomingExams();
             loadUrgentTasks();
         }
 
-        // Check if user is logged in and update UI accordingly
+        // Auth status
         function checkAuthStatus(user) {
-            const userProfile = document.getElementById('userProfile');
-            const userAvatar = document.getElementById('userAvatar');
-            const userName = document.getElementById('userName');
-            const userEmail = document.getElementById('userEmail');
-            const welcomeHeader = document.getElementById('welcomeHeader');
-            const logoutBtn = document.getElementById('logoutBtn');
-
-            // Check if user is guest
+            const userAvatar = $('userAvatar');
+            const userName = $('userName');
+            const userEmail = $('userEmail');
+            const welcomeHeader = $('welcomeHeader');
+            const logoutBtn = $('logoutBtn');
             const isGuest = localStorage.getItem('isGuest') === 'true';
-            
+
             if (isGuest) {
-                // User is logged in as guest
                 userName.textContent = 'Invitado';
-                userEmail.textContent = 'Sin sesión iniciada';
+                userEmail.textContent = 'Sin sesion iniciada';
                 userAvatar.innerHTML = '<i class="fas fa-user"></i>';
                 welcomeHeader.textContent = 'Bienvenido';
                 logoutBtn.style.display = 'none';
             } else if (user) {
-                // User is logged in with Firebase
                 const displayName = user.displayName;
                 const email = user.email;
                 const emailName = email ? email.split('@')[0] : '';
+                const firstLetter = (displayName || emailName).charAt(0).toUpperCase();
                 
-                // Extract first letter for avatar
-                const firstLetter = displayName ? displayName.charAt(0).toUpperCase() : emailName.charAt(0).toUpperCase();
                 userAvatar.textContent = firstLetter;
-                
-                // Check if user has a custom name or use email name
-                if (displayName) {
-                    userName.textContent = displayName;
-                } else {
-                    userName.textContent = emailName;
-                }
-                
+                userName.textContent = displayName || emailName;
                 userEmail.textContent = email;
                 logoutBtn.style.display = 'block';
                 
-                // Check if it's first time visiting
-                const hasVisitedBefore = localStorage.getItem('hasVisitedBefore') === 'true';
-                
-                if (hasVisitedBefore) {
-                    welcomeHeader.textContent = `Bienvenido de nuevo, ${displayName || emailName}`;
-                } else {
-                    welcomeHeader.textContent = `Bienvenido, ${displayName || emailName}`;
-                    localStorage.setItem('hasVisitedBefore', 'true');
-                }
+                const hasVisited = localStorage.getItem('hasVisitedBefore') === 'true';
+                welcomeHeader.textContent = hasVisited 
+                    ? `Bienvenido de nuevo, ${displayName || emailName}`
+                    : `Bienvenido, ${displayName || emailName}`;
+                localStorage.setItem('hasVisitedBefore', 'true');
             } else {
-                // No user logged in
                 userName.textContent = 'Invitado';
-                userEmail.textContent = 'Sin sesión iniciada';
+                userEmail.textContent = 'Sin sesion iniciada';
                 userAvatar.innerHTML = '<i class="fas fa-user"></i>';
                 welcomeHeader.textContent = 'Bienvenido';
                 logoutBtn.style.display = 'none';
             }
         }
 
-        // Logout function
         function logout() {
             signOut(auth).then(() => {
                 localStorage.removeItem('isGuest');
                 window.location.href = 'inicioseccion.html';
-            }).catch((error) => {
-                console.error('Error al cerrar sesión:', error);
-            });
+            }).catch(console.error);
         }
 
-        // Add logout event listener
-        document.getElementById('logoutBtn').addEventListener('click', logout);
+        $('logoutBtn').addEventListener('click', logout);
 
-        // Check if tutorial should be shown - SIMPLIFICADO
         function checkTutorialStatus() {
-            const tutorialCompleted = localStorage.getItem('tutorialCompleted');
-            console.log('Tutorial completado:', tutorialCompleted);
-            
-            // MOSTRAR TUTORIAL SOLO LA PRIMERA VEZ
-            if (tutorialCompleted !== 'true') {
-                console.log('Primera visita - mostrando tutorial');
-                setTimeout(() => {
-                    startTutorialProcess();
-                }, 1000);
+            if (localStorage.getItem('tutorialCompleted') !== 'true') {
+                setTimeout(startTutorialProcess, 1000);
             }
         }
 
-        // Load page
+        // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('Página cargada');
-            initDashboard();
-            
-            // Listen for auth state changes
             onAuthStateChanged(auth, (user) => {
+                currentUser = user;
                 checkAuthStatus(user);
+                
+                if (user) {
+                    // Listen to Firebase data
+                    onValue(ref(db, `tasks/${user.uid}`), snap => {
+                        appData.tasks = snap.val() || {};
+                        updateAllSections();
+                    });
+
+                    onValue(ref(db, `exams/${user.uid}`), snap => {
+                        appData.exams = snap.val() || {};
+                        updateAllSections();
+                    });
+
+                    onValue(ref(db, `subjects/${user.uid}`), snap => {
+                        appData.subjects = snap.val() || {};
+                        updateAllSections();
+                    });
+                } else {
+                    updateAllSections();
+                }
+
                 checkTutorialStatus();
             });
         });
