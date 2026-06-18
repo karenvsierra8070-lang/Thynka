@@ -207,7 +207,7 @@
 
         .grade-row {
             display: flex;
-            align-items: center;
+            align-items: center,
             justify-content: space-between;
             padding: 10px 0;
         }
@@ -408,7 +408,34 @@
         </div>
     </div>
 
-    <script>
+    <!-- SCRIPT MODIFICADO CON FIREBASE -->
+    <script type="module">
+        // Importaciones de Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
+
+        // Configuración de Firebase (La que me diste antes)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBH42jsEEaEOFa02LhD59aDkwFfo_RVVB4",
+            authDomain: "thynka-1dd68.firebaseapp.com",
+            databaseURL: "https://thynka-1dd68-default-rtdb.firebaseio.com",
+            projectId: "thynka-1dd68",
+            storageBucket: "thynka-1dd68.firebasestorage.app",
+            messagingSenderId: "704622327906",
+            appId: "1:704622327906:web:57c4efb9da7b935b80f93b",
+            measurementId: "G-5WYWTXZ562"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        let currentUserId = null;
+        let saveTimeout = null;
+
+        // Estado de la aplicación
         const state = {
             targetGlobal: 35,
             subjects: [], 
@@ -417,13 +444,64 @@
         };
         const generateId = () => Math.random().toString(36).substr(2, 9);
 
-        // Lógica de compensación corregida para incluir materias terminadas en el cálculo
+        // --- FUNCIONES DE PERSISTENCIA (GUARDAR/CARGAR) ---
+
+        async function saveDataToFirebase() {
+            if (!currentUserId) return;
+            try {
+                // Guardamos materias y meta global
+                await set(ref(db, 'users/' + currentUserId + '/subjects'), state.subjects);
+                await set(ref(db, 'users/' + currentUserId + '/targetGlobal'), state.targetGlobal);
+                console.log("Progreso guardado");
+            } catch (error) {
+                console.error("Error guardando:", error);
+            }
+        }
+
+        async function loadDataFromFirebase() {
+            if (!currentUserId) return;
+            try {
+                // Cargar materias
+                const subjectsSnap = await get(ref(db, 'users/' + currentUserId + '/subjects'));
+                if (subjectsSnap.exists()) {
+                    state.subjects = subjectsSnap.val();
+                } else {
+                    state.subjects = [];
+                }
+
+                // Cargar meta global
+                const targetSnap = await get(ref(db, 'users/' + currentUserId + '/targetGlobal'));
+                if (targetSnap.exists()) {
+                    state.targetGlobal = targetSnap.val();
+                    document.getElementById('globalTarget').value = state.targetGlobal;
+                }
+
+                // Renderizar vista inicial
+                renderSubjectList();
+            } catch (error) {
+                console.error("Error cargando:", error);
+            }
+        }
+
+        // --- VERIFICACIÓN DE SESIÓN ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Usuario logueado
+                currentUserId = user.uid;
+                loadDataFromFirebase();
+            } else {
+                // No hay sesión -> Redirigir a index.html
+                window.location.href = 'index.html';
+            }
+        });
+
+
+        // --- LÓGICA DE CALCULADORA (IGUAL QUE ANTES) ---
+
         function getSubjectCompensationTarget(subjectId) {
-            // Incluimos TODAS las materias para el sumatorio total
             const totalSubjects = state.subjects.length;
             if (totalSubjects === 0) return { target: state.targetGlobal, isCapped: false, finalMaxAvg: null };
 
-            // Suma de puntos reales (incluye las finalizadas)
             let totalSum = 0;
             state.subjects.forEach(s => {
                 let score = 0;
@@ -437,28 +515,22 @@
                 totalSum += score;
             });
 
-            // Puntos totales necesarios para alcanzar la meta global
             const pointsNeeded = state.targetGlobal * totalSubjects;
             const deficit = pointsNeeded - totalSum;
             
-            // El déficit se reparte SOLO entre las materias ABIERTAS
             const openSubjectsCount = state.subjects.filter(s => !s.isFinished).length;
             
             const currentSubject = state.subjects.find(s => s.id === subjectId);
             if(!currentSubject) return { target: state.targetGlobal, isCapped: false, finalMaxAvg: null };
 
-            // Si la materia está terminada, retorna 0 (no se usa en la vista de detalle para meta)
             if (currentSubject.isFinished) {
                 return { target: 0, isCapped: false, finalMaxAvg: null };
             }
 
-            // Si no hay materias abiertas, no se puede compensar más
             if (openSubjectsCount === 0) return { target: state.targetGlobal, isCapped: false, finalMaxAvg: null };
 
-            // Calculamos cuánto necesita cada materia abierta para cubrir el déficit global
             const compensation = deficit / openSubjectsCount;
             
-            // Calculamos la nota actual de esta materia
             let currentSubScore = 0;
             currentSubject.cuts.forEach(c => {
                 let cs = 0;
@@ -470,12 +542,8 @@
             const isCapped = rawTarget > 50;
             const finalTarget = isCapped ? 50 : rawTarget;
 
-            // Si está capado, calculamos cuál será el promedio real si saca 50 en todas las abiertas
             let finalMaxAvg = null;
             if (isCapped) {
-                // Suma actual (fijas) + (50 * num materias abiertas)
-                const projectedSum = totalSum + (50 * openSubjectsCount) - (currentSubScore * openSubjectsCount); // Ajuste simple para proyección
-                // Nota: Cálculo aproximado de cuánto subiría el global si todo queda en 50
                 const actualFixedSum = state.subjects.filter(s => s.isFinished).reduce((acc, s) => {
                     let sc = 0; s.cuts.forEach(c => { let cs=0; c.grades.forEach(g=>{if(g.value!=="")cs+=parseFloat(g.value)*g.weight/100}); sc+=cs*c.weight/100});
                     return acc + sc;
@@ -488,7 +556,6 @@
             return { target: finalTarget, isCapped, finalMaxAvg };
         }
 
-        // Lógica Cascada (Corte a Corte)
         function calculateCascadingProjections(subject, subjectTarget) {
             let currentSubjectScore = 0;
             let cutData = [];
@@ -518,7 +585,6 @@
                 });
             });
 
-            // 2. Determinar qué peso y puntos están "asegurados" por cortes completos
             let lockedScore = 0;
             let lockedWeight = 0;
             
@@ -602,7 +668,6 @@
                     score += (cs * (c.weight/100));
                 });
 
-                // CORRECCIÓN: Si está terminada, NO mostramos Meta Ajustada, solo la nota final.
                 let metaHtml = '';
                 let warningHtml = '';
 
@@ -671,7 +736,6 @@
             });
             els.detailSubjectAvg.textContent = parseFloat(score.toFixed(1));
 
-            // Si está finalizada, no mostramos proyecciones internas, solo resultado
             let subjectTarget = state.targetGlobal;
             if (!sub.isFinished) {
                 const { target } = getSubjectCompensationTarget(sub.id);
@@ -795,7 +859,6 @@
             const finishedSubjects = state.subjects.filter(s => s.isFinished);
             els.globalResultBanner.innerHTML = ''; 
 
-            // Mostrar banner global solo si todas están terminadas
             if (state.subjects.length > 0 && finishedSubjects.length === state.subjects.length) {
                 let totalSum = 0;
                 finishedSubjects.forEach(sub => {
@@ -838,15 +901,17 @@
             const grade = cut.grades.find(g => g.id === gradeId);
             grade.value = value;
             renderSubjectDetail();
+            
+            // Debounce para no saturar Firebase mientras escribes
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => {
+                saveDataToFirebase();
+            }, 1000);
         }
 
-        // CORRECCIÓN FUNCIÓN FINALIZAR
-        window.toggleSubjectFinish = function() {
+        function toggleSubjectFinish() {
             const sub = state.subjects.find(s => s.id === state.currentSubjectId);
-            if (!sub) {
-                console.error("No se encontró la materia");
-                return;
-            }
+            if (!sub) return;
 
             if (!sub.isFinished) {
                 if (sub.cuts.length === 0) {
@@ -855,54 +920,92 @@
                 }
                 if (confirm("¿Finalizar esta materia? No podrás editar las notas después y esta nota se fijará para el cálculo global.")) {
                     sub.isFinished = true;
-                    // Forzar actualización
                     renderSubjectDetail();
                     renderSubjectList();
+                    saveDataToFirebase(); // Guardar inmediatamente
                 }
             } else {
                 if (confirm("¿Reabrir esta materia? Podrás editar notas nuevamente.")) {
                     sub.isFinished = false;
                     renderSubjectDetail();
                     renderSubjectList();
+                    saveDataToFirebase(); // Guardar inmediatamente
                 }
             }
         };
 
-        window.openModal = (type) => els.modals[type].classList.add('active');
-        window.openModalForGrade = (cutId) => { 
+        function openModal(type) { els.modals[type].classList.add('active'); }
+        
+        function openModalForGrade(cutId) { 
             const sub = state.subjects.find(s => s.id === state.currentSubjectId);
             if(sub.isFinished) { alert("Reabre la materia para agregar notas."); return; }
             state.tempCutId = cutId; 
             els.modals.grade.classList.add('active'); 
         };
-        window.closeModals = () => { Object.values(els.modals).forEach(m => m.classList.remove('active')); document.querySelectorAll('.form-control').forEach(i => i.value = ''); };
+        
+        function closeModals() { 
+            Object.values(els.modals).forEach(m => m.classList.remove('active')); 
+            document.querySelectorAll('.form-control').forEach(i => i.value = ''); 
+        }
 
-        window.saveSubject = () => {
+        function saveSubject() {
             const name = document.getElementById('subNameInput').value;
             if (!name) return;
             state.subjects.push({ id: generateId(), name: name, cuts: [], isFinished: false });
-            closeModals(); renderSubjectList();
-        };
-        window.saveCut = () => {
+            closeModals(); 
+            renderSubjectList();
+            saveDataToFirebase();
+        }
+        
+        function saveCut() {
             const name = document.getElementById('cutNameInput').value;
             const weight = parseFloat(document.getElementById('cutWeightInput').value);
             if (!name || !weight) return;
             const sub = state.subjects.find(s => s.id === state.currentSubjectId);
             sub.cuts.push({ id: generateId(), name: name, weight: weight, grades: [] });
-            closeModals(); renderSubjectDetail();
-        };
-        window.saveGrade = () => {
+            closeModals(); 
+            renderSubjectDetail();
+            saveDataToFirebase();
+        }
+        
+        function saveGrade() {
             const name = document.getElementById('gradeNameInput').value;
             const weight = parseFloat(document.getElementById('gradeWeightInput').value);
             if (!name || !weight) return;
             const sub = state.subjects.find(s => s.id === state.currentSubjectId);
             const cut = sub.cuts.find(c => c.id === state.tempCutId);
             cut.grades.push({ id: generateId(), name: name, weight: weight, value: "" });
-            closeModals(); renderSubjectDetail();
-        };
-        window.deleteCurrentSubject = () => { if(confirm("¿Borrar materia?")) { state.subjects = state.subjects.filter(s => s.id !== state.currentSubjectId); goBack(); }};
-        window.deleteCut = (cutId) => { if(confirm("¿Borrar corte?")) { const sub = state.subjects.find(s => s.id === state.currentSubjectId); sub.cuts = sub.cuts.filter(c => c.id !== cutId); renderSubjectDetail(); }};
-        window.deleteGrade = (cutId, gradeId) => { if(confirm("¿Borrar nota?")) { const sub = state.subjects.find(s => s.id === state.currentSubjectId); const cut = sub.cuts.find(c => c.id === cutId); cut.grades = cut.grades.filter(g => g.id !== gradeId); renderSubjectDetail(); }};
+            closeModals(); 
+            renderSubjectDetail();
+            saveDataToFirebase();
+        }
+        
+        function deleteCurrentSubject() { 
+            if(confirm("¿Borrar materia?")) { 
+                state.subjects = state.subjects.filter(s => s.id !== state.currentSubjectId); 
+                goBack();
+                saveDataToFirebase();
+            }
+        }
+        
+        function deleteCut(cutId) { 
+            if(confirm("¿Borrar corte?")) { 
+                const sub = state.subjects.find(s => s.id === state.currentSubjectId); 
+                sub.cuts = sub.cuts.filter(c => c.id !== cutId); 
+                renderSubjectDetail();
+                saveDataToFirebase();
+            }
+        }
+        
+        function deleteGrade(cutId, gradeId) { 
+            if(confirm("¿Borrar nota?")) { 
+                const sub = state.subjects.find(s => s.id === state.currentSubjectId); 
+                const cut = sub.cuts.find(c => c.id === cutId); 
+                cut.grades = cut.grades.filter(g => g.id !== gradeId); 
+                renderSubjectDetail();
+                saveDataToFirebase();
+            }
+        }
 
         els.globalTarget.addEventListener('change', (e) => {
             let v = parseFloat(e.target.value);
@@ -910,9 +1013,23 @@
             state.targetGlobal = v;
             if(state.currentSubjectId) renderSubjectDetail();
             else renderSubjectList();
+            saveDataToFirebase();
         });
 
-        renderSubjectList();
+        // --- EXPONER FUNCIONES AL WINDOW PARA QUE FUNCIONEN LOS ONCLICK DEL HTML ---
+        window.goBack = goBack;
+        window.openModal = openModal;
+        window.openModalForGrade = openModalForGrade;
+        window.closeModals = closeModals;
+        window.saveSubject = saveSubject;
+        window.saveCut = saveCut;
+        window.saveGrade = saveGrade;
+        window.deleteCurrentSubject = deleteCurrentSubject;
+        window.deleteCut = deleteCut;
+        window.deleteGrade = deleteGrade;
+        window.toggleSubjectFinish = toggleSubjectFinish;
+        window.updateGrade = updateGrade;
+
     </script>
 </body>
 </html>
