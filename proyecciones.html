@@ -206,7 +206,7 @@
         .grades-list { display: flex; flex-direction: column; gap: 15px; }
 
         .grade-row {
-            display: flex;
+            display: flex,
             align-items: center,
             justify-content: space-between;
             padding: 10px 0;
@@ -348,20 +348,20 @@
             
             <div class="detail-header">
                 <div class="detail-top-row">
-                    <button class="btn-back" onclick="goBack()">
+                    <button class="btn-back" onclick="window.goBack()">
                         <i class="fas fa-arrow-left"></i>
                     </button>
                     <div class="detail-title">
                         <h1 id="detailSubjectName">Nombre Materia</h1>
                     </div>
                     <div style="margin-left: auto; display:flex; gap:10px;">
-                        <button id="btnFinishSubject" class="btn btn-success" onclick="toggleSubjectFinish()">
+                        <button id="btnFinishSubject" class="btn btn-success" onclick="window.toggleSubjectFinish()">
                             <i class="fas fa-check-circle"></i> Finalizar Materia
                         </button>
-                        <button id="btnAddCut" class="btn btn-outline" onclick="openModal('cut')">
+                        <button id="btnAddCut" class="btn btn-outline" onclick="window.openModal('cut')">
                             <i class="fas fa-plus"></i> Corte
                         </button>
-                        <button class="btn btn-danger" onclick="deleteCurrentSubject()">
+                        <button class="btn btn-danger" onclick="window.deleteCurrentSubject()">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
@@ -386,7 +386,7 @@
         <div class="modal">
             <h3>Nueva Materia</h3>
             <div class="form-group"><label>Nombre</label><input type="text" id="subNameInput" class="form-control"></div>
-            <div style="text-align:right"><button class="btn" onclick="saveSubject()">Crear</button><button class="btn btn-outline" style="border:none" onclick="closeModals()">Cancelar</button></div>
+            <div style="text-align:right"><button class="btn" onclick="window.saveSubject()">Crear</button><button class="btn btn-outline" style="border:none" onclick="window.closeModals()">Cancelar</button></div>
         </div>
     </div>
 
@@ -395,7 +395,7 @@
             <h3>Nuevo Corte/Periodo</h3>
             <div class="form-group"><label>Nombre (Ej. Corte 1)</label><input type="text" id="cutNameInput" class="form-control"></div>
             <div class="form-group"><label>Valor del Corte (%)</label><input type="number" id="cutWeightInput" class="form-control" min="1" max="100"></div>
-            <div style="text-align:right"><button class="btn" onclick="saveCut()">Agregar</button><button class="btn btn-outline" style="border:none" onclick="closeModals()">Cancelar</button></div>
+            <div style="text-align:right"><button class="btn" onclick="window.saveCut()">Agregar</button><button class="btn btn-outline" style="border:none" onclick="window.closeModals()">Cancelar</button></div>
         </div>
     </div>
 
@@ -404,18 +404,17 @@
             <h3>Nueva Nota</h3>
             <div class="form-group"><label>Nombre de Evaluación</label><input type="text" id="gradeNameInput" class="form-control"></div>
             <div class="form-group"><label>Porcentaje (%)</label><input type="number" id="gradeWeightInput" class="form-control" min="1" max="100"></div>
-            <div style="text-align:right"><button class="btn" onclick="saveGrade()">Agregar</button><button class="btn btn-outline" style="border:none" onclick="closeModals()">Cancelar</button></div>
+            <div style="text-align:right"><button class="btn" onclick="window.saveGrade()">Agregar</button><button class="btn btn-outline" style="border:none" onclick="window.closeModals()">Cancelar</button></div>
         </div>
     </div>
 
-    <!-- SCRIPT MODIFICADO CON FIREBASE -->
+    <!-- SCRIPT -->
     <script type="module">
-        // Importaciones de Firebase
+        // Importaciones de Firebase (Versión 12.5.0)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
         import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
 
-        // Configuración de Firebase (La que me diste antes)
         const firebaseConfig = {
             apiKey: "AIzaSyBH42jsEEaEOFa02LhD59aDkwFfo_RVVB4",
             authDomain: "thynka-1dd68.firebaseapp.com",
@@ -427,7 +426,7 @@
             measurementId: "G-5WYWTXZ562"
         };
 
-        // Inicializar Firebase
+        // Inicialización
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
@@ -435,7 +434,7 @@
         let currentUserId = null;
         let saveTimeout = null;
 
-        // Estado de la aplicación
+        // Estado
         const state = {
             targetGlobal: 35,
             subjects: [], 
@@ -444,15 +443,13 @@
         };
         const generateId = () => Math.random().toString(36).substr(2, 9);
 
-        // --- FUNCIONES DE PERSISTENCIA (GUARDAR/CARGAR) ---
+        // --- FIREBASE FUNCTIONS ---
 
         async function saveDataToFirebase() {
             if (!currentUserId) return;
             try {
-                // Guardamos materias y meta global
                 await set(ref(db, 'users/' + currentUserId + '/subjects'), state.subjects);
                 await set(ref(db, 'users/' + currentUserId + '/targetGlobal'), state.targetGlobal);
-                console.log("Progreso guardado");
             } catch (error) {
                 console.error("Error guardando:", error);
             }
@@ -461,7 +458,6 @@
         async function loadDataFromFirebase() {
             if (!currentUserId) return;
             try {
-                // Cargar materias
                 const subjectsSnap = await get(ref(db, 'users/' + currentUserId + '/subjects'));
                 if (subjectsSnap.exists()) {
                     state.subjects = subjectsSnap.val();
@@ -469,34 +465,30 @@
                     state.subjects = [];
                 }
 
-                // Cargar meta global
                 const targetSnap = await get(ref(db, 'users/' + currentUserId + '/targetGlobal'));
                 if (targetSnap.exists()) {
                     state.targetGlobal = targetSnap.val();
                     document.getElementById('globalTarget').value = state.targetGlobal;
                 }
 
-                // Renderizar vista inicial
                 renderSubjectList();
             } catch (error) {
                 console.error("Error cargando:", error);
             }
         }
 
-        // --- VERIFICACIÓN DE SESIÓN ---
+        // Verificar sesión y redirigir si no existe
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // Usuario logueado
                 currentUserId = user.uid;
                 loadDataFromFirebase();
             } else {
-                // No hay sesión -> Redirigir a index.html
                 window.location.href = 'index.html';
             }
         });
 
 
-        // --- LÓGICA DE CALCULADORA (IGUAL QUE ANTES) ---
+        // --- LOGIC FUNCTIONS ---
 
         function getSubjectCompensationTarget(subjectId) {
             const totalSubjects = state.subjects.length;
@@ -808,10 +800,10 @@
                             <div class="grade-input-wrapper">
                                 <input type="number" class="grade-input" min="0" max="50" value="${grade.value}" placeholder="" 
                                     ${sub.isFinished ? 'disabled' : ''}
-                                    oninput="updateGrade('${cut.id}', '${grade.id}', this.value)">
+                                    oninput="window.updateGrade('${cut.id}', '${grade.id}', this.value)">
                                 ${ghostHtml}
                             </div>
-                            ${!sub.isFinished ? `<button class="btn-icon" onclick="deleteGrade('${cut.id}', '${grade.id}')"><i class="fas fa-times"></i></button>` : ''}
+                            ${!sub.isFinished ? `<button class="btn-icon" onclick="window.deleteGrade('${cut.id}', '${grade.id}')"><i class="fas fa-times"></i></button>` : ''}
                         </div>
                     `;
                 });
@@ -844,8 +836,8 @@
                         <div style="display:flex; gap:10px; align-items:center;">
                             <div class="cut-weight-badge">${cut.weight}%</div>
                             ${!sub.isFinished ? `
-                            <button class="btn-icon add" onclick="openModalForGrade('${cut.id}')"><i class="fas fa-plus-circle fa-lg"></i></button>
-                            <button class="btn-icon" onclick="deleteCut('${cut.id}')"><i class="fas fa-trash"></i></button>
+                            <button class="btn-icon add" onclick="window.openModalForGrade('${cut.id}')"><i class="fas fa-plus-circle fa-lg"></i></button>
+                            <button class="btn-icon" onclick="window.deleteCut('${cut.id}')"><i class="fas fa-trash"></i></button>
                             ` : ''}
                         </div>
                     </div>
@@ -902,7 +894,6 @@
             grade.value = value;
             renderSubjectDetail();
             
-            // Debounce para no saturar Firebase mientras escribes
             clearTimeout(saveTimeout);
             saveTimeout = setTimeout(() => {
                 saveDataToFirebase();
@@ -922,14 +913,14 @@
                     sub.isFinished = true;
                     renderSubjectDetail();
                     renderSubjectList();
-                    saveDataToFirebase(); // Guardar inmediatamente
+                    saveDataToFirebase();
                 }
             } else {
                 if (confirm("¿Reabrir esta materia? Podrás editar notas nuevamente.")) {
                     sub.isFinished = false;
                     renderSubjectDetail();
                     renderSubjectList();
-                    saveDataToFirebase(); // Guardar inmediatamente
+                    saveDataToFirebase();
                 }
             }
         };
@@ -1016,7 +1007,8 @@
             saveDataToFirebase();
         });
 
-        // --- EXPONER FUNCIONES AL WINDOW PARA QUE FUNCIONEN LOS ONCLICK DEL HTML ---
+        // --- EXPONER FUNCIONES AL OBJETO WINDOW ---
+        // Esto es CRÍTICO para que los onclick en el HTML funcionen
         window.goBack = goBack;
         window.openModal = openModal;
         window.openModalForGrade = openModalForGrade;
