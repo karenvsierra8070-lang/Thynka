@@ -6,14 +6,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thynka - Sistema Inteligente de Gestión de Tiempo</title>
-<!-- === ONE SIGNAL PUSH === -->
-<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<!-- === ONE SIGNAL PUSH (Versión Legacy) === -->
+<script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async></script>
 <script>
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
-  OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
+  window.OneSignal = window.OneSignal || [];
+  OneSignal.push(function() {
+    OneSignal.init({
       appId: "9592fb5d-8b32-4840-b8ea-ca410473fdc3",
-      path: "/Thynka/"  // <--- ESTA ES LA LÍNEA NUEVA QUE ARREGLA TODO
+      serviceWorkerParam: { scope: "/Thynka/" },
+      serviceWorkerPath: "OneSignalSDKWorker.js",
+      notifyButton: { enable: false }
     });
   });
 </script>
