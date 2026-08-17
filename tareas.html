@@ -623,11 +623,15 @@
             } else { window.location.href = 'index.html'; }
         });
 
-        function listen(path) {
+              function listen(path) {
             onValue(ref(db, `${path}/${uid}`), snap => {
                 DB[path] = snap.val() || {};
                 if(path === 'subjects') { populateSubjects(); renderSidebarSubjects(); }
-                if(path === 'tasks') { renderView(); updateStats(); }
+                if(path === 'tasks') { 
+                    renderView(); 
+                    updateStats(); 
+                    window._thynkaDB = DB; // <--- LÍNEA NUEVA
+                }
                 if(path === 'classSchedule' || path === 'workSchedule') loadScheduleUI();
             });
         }
@@ -884,7 +888,7 @@
 
         window.recalculate = () => performCalculation();
 
-               window.confirmSave = async () => {
+             window.confirmSave = async () => {
             if(tempTaskData.mode === 'grupo') {
                 const manualStart = new Date($('manualStartDate').value + 'T' + $('manualStartTime').value);
                 tempTaskData.recommendedStart = manualStart.toISOString();
@@ -896,10 +900,9 @@
                 else await push(ref(db, `tasks/${uid}`), tempTaskData);
                 closeModal('resultModal');
                 
-                // --- NUEVO: Programar las 3 notificaciones push ---
-                await programarNotificacionesPush(tempTaskData);
-                // ------------------------------------------------
-
+                // Aquí se activan las notificaciones
+                programarNotificacionesPush(tempTaskData);
+                
                 resetForm();
                 tempTaskData = null;
             } catch(e) { alert("Error: " + e.message); }
@@ -1160,56 +1163,81 @@
             $('pomoCycleInfo').innerText = `Ciclo ${pomoState.currentCycle + 1} de ${pomoState.cycles} - ${statusText}`;
             $('pomoClock').style.color = pomoState.isBreak ? 'var(--success)' : 'var(--primary)';
         }
-        // --- 11. SISTEMA DE NOTIFICACIONES PUSH (ONESIGNAL) ---
-async function programarNotificacionesPush(task) {
-    // Esperamos a que OneSignal esté listo en la página
-    if (typeof OneSignal === 'undefined') return;
+// --- 11. NOTIFICACIONES PUSH ---
+let lastChecked = new Set();
 
-    try {
-        // TIPO 1: 10 minutos antes de EMPEZAR (recommendedStart)
+async function programarNotificacionesPush(task) {
+    // Esta función ya no necesita enviar a Pipedream, el reloj se encarga.
+    // Solo la llamamos en confirmSave para mantener tu flujo, pero el reloj hace el trabajo real.
+    iniciarRelojNotificaciones();
+}
+
+function iniciarRelojNotificaciones() {
+    if (window._relojNotifsActivo) return; // Evitar crear múltiples relojes
+    window._relojNotifsActivo = true;
+    verificarTareas(); // Verificar inmediato
+    setInterval(verificarTareas, 30000); // Verificar cada 30 segundos
+}
+
+async function verificarTareas() {
+    const tasks = DB.tasks || {};
+    const now = new Date();
+
+    for (const [id, task] of Object.entries(tasks)) {
+        if (task.completed) continue;
+
+        // TIPO 1: 10 minutos antes de EMPEZAR
         if (task.recommendedStart) {
             const inicio = new Date(task.recommendedStart);
             const diezMinAntes = new Date(inicio.getTime() - 10 * 60000);
             
-            // Solo programar si la hora aún no ha pasado
-            if (diezMinAntes > new Date()) {
-                await OneSignal.schedule({
-                    contents: { en: `⏰ Empieza en 10 min: "${task.title}"` },
-                    headings: { en: "Thynka: Es hora de empezar" },
-                    send_after: diezMinAntes.toISOString()
-                });
+            if (now >= diezMinAntes && now < inicio) {
+                const key = `10m_${id}`;
+                if (!lastChecked.has(key)) {
+                    lastChecked.add(key);
+                    await enviarNotificacionNativa("⏰ Thynka: Es hora de empezar", `Empieza ahora: "${task.title}"`);
+                }
             }
         }
 
-        // TIPO 3: URGENTE - Importante/Alta + vence en 3 horas (dueDate)
+        // TIPO 3: URGENTE - Prioridad alta + vence en 3 horas
         if ((task.priority === 'alta' || task.difficulty === 'alta') && task.dueDate) {
             const vencimiento = new Date(task.dueDate + 'T' + (task.dueTime || '23:59'));
             const tresHorasAntes = new Date(vencimiento.getTime() - 3 * 3600000);
             
-            if (tresHorasAntes > new Date()) {
-                await OneSignal.schedule({
-                    contents: { en: `🚨 URGENTE: "${task.title}" vence en 3 horas.` },
-                    headings: { en: "Thynka: ¡Tarea prioritaria!" },
-                    send_after: tresHorasAntes.toISOString()
-                });
+            if (now >= tresHorasAntes && now < new Date(tresHorasAntes.getTime() + 60000)) {
+                const key = `3h_${id}`;
+                if (!lastChecked.has(key)) {
+                    lastChecked.add(key);
+                    await enviarNotificacionNativa("🚨 Thynka: ¡Urgente!", `"${task.title}" vence en 3 horas.`);
+                }
             }
         }
 
-        // TIPO 2: Próximas a vencer en 3 días (dueDate)
+        // TIPO 2: Próximos a vencer en 3 días
         if (task.dueDate) {
             const vencimiento = new Date(task.dueDate + 'T' + (task.dueTime || '23:59'));
             const tresDiasAntes = new Date(vencimiento.getTime() - 3 * 86400000);
             
-            if (tresDiasAntes > new Date()) {
-                await OneSignal.schedule({
-                    contents: { en: `📅 Próximo a vencer: "${task.title}" (en 3 días).` },
-                    headings: { en: "Thynka: Tarea próxima" },
-                    send_after: tresDiasAntes.toISOString()
-                });
+            if (now >= tresDiasAntes && now < new Date(tresDiasAntes.getTime() + 60000)) {
+                const key = `3d_${id}`;
+                if (!lastChecked.has(key)) {
+                    lastChecked.add(key);
+                    await enviarNotificacionNativa("📅 Thynka: Tarea próxima", `"${task.title}" vence en 3 días.`);
+                }
             }
         }
-    } catch (error) {
-        console.log("Error programando notificación:", error);
+    }
+}
+
+async function enviarNotificacionNativa(title, body) {
+    if ('Notification' in window && Notification.permission === 'granted') {
+        try {
+            new Notification(title, { body: body, icon: '🧠', requireInteraction: true });
+        } catch(e) {}
+    }
+    if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission();
     }
 }
     </script>
