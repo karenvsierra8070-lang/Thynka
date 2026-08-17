@@ -1233,7 +1233,7 @@ async function verificarTareas() {
 async function enviarNotificacionNativa(title, body) {
     if ('Notification' in window && Notification.permission === 'granted') {
         try {
-            new Notification(title, { body: body, icon: '🧠', requireInteraction: true });
+ new Notification(title, { body: body, requireInteraction: true });
         } catch(e) {}
     }
     if ('Notification' in window && Notification.permission === 'default') {
