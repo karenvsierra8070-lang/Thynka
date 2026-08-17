@@ -884,7 +884,7 @@
 
         window.recalculate = () => performCalculation();
 
-        window.confirmSave = async () => {
+               window.confirmSave = async () => {
             if(tempTaskData.mode === 'grupo') {
                 const manualStart = new Date($('manualStartDate').value + 'T' + $('manualStartTime').value);
                 tempTaskData.recommendedStart = manualStart.toISOString();
@@ -895,6 +895,11 @@
                 if(id) await update(ref(db, `tasks/${uid}/${id}`), tempTaskData);
                 else await push(ref(db, `tasks/${uid}`), tempTaskData);
                 closeModal('resultModal');
+                
+                // --- NUEVO: Programar las 3 notificaciones push ---
+                await programarNotificacionesPush(tempTaskData);
+                // ------------------------------------------------
+
                 resetForm();
                 tempTaskData = null;
             } catch(e) { alert("Error: " + e.message); }
@@ -1155,6 +1160,58 @@
             $('pomoCycleInfo').innerText = `Ciclo ${pomoState.currentCycle + 1} de ${pomoState.cycles} - ${statusText}`;
             $('pomoClock').style.color = pomoState.isBreak ? 'var(--success)' : 'var(--primary)';
         }
+        // --- 11. SISTEMA DE NOTIFICACIONES PUSH (ONESIGNAL) ---
+async function programarNotificacionesPush(task) {
+    // Esperamos a que OneSignal esté listo en la página
+    if (typeof OneSignal === 'undefined') return;
+
+    try {
+        // TIPO 1: 10 minutos antes de EMPEZAR (recommendedStart)
+        if (task.recommendedStart) {
+            const inicio = new Date(task.recommendedStart);
+            const diezMinAntes = new Date(inicio.getTime() - 10 * 60000);
+            
+            // Solo programar si la hora aún no ha pasado
+            if (diezMinAntes > new Date()) {
+                await OneSignal.schedule({
+                    contents: { en: `⏰ Empieza en 10 min: "${task.title}"` },
+                    headings: { en: "Thynka: Es hora de empezar" },
+                    send_after: diezMinAntes.toISOString()
+                });
+            }
+        }
+
+        // TIPO 3: URGENTE - Importante/Alta + vence en 3 horas (dueDate)
+        if ((task.priority === 'alta' || task.difficulty === 'alta') && task.dueDate) {
+            const vencimiento = new Date(task.dueDate + 'T' + (task.dueTime || '23:59'));
+            const tresHorasAntes = new Date(vencimiento.getTime() - 3 * 3600000);
+            
+            if (tresHorasAntes > new Date()) {
+                await OneSignal.schedule({
+                    contents: { en: `🚨 URGENTE: "${task.title}" vence en 3 horas.` },
+                    headings: { en: "Thynka: ¡Tarea prioritaria!" },
+                    send_after: tresHorasAntes.toISOString()
+                });
+            }
+        }
+
+        // TIPO 2: Próximas a vencer en 3 días (dueDate)
+        if (task.dueDate) {
+            const vencimiento = new Date(task.dueDate + 'T' + (task.dueTime || '23:59'));
+            const tresDiasAntes = new Date(vencimiento.getTime() - 3 * 86400000);
+            
+            if (tresDiasAntes > new Date()) {
+                await OneSignal.schedule({
+                    contents: { en: `📅 Próximo a vencer: "${task.title}" (en 3 días).` },
+                    headings: { en: "Thynka: Tarea próxima" },
+                    send_after: tresDiasAntes.toISOString()
+                });
+            }
+        }
+    } catch (error) {
+        console.log("Error programando notificación:", error);
+    }
+}
     </script>
 </body>
 </html>
