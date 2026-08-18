@@ -764,29 +764,27 @@
             if (task.difficulty === 'media') baseMinutes *= 1.3;
             if (task.difficulty === 'alta') baseMinutes *= 1.6;
             return Math.round(baseMinutes);
-        }
-        function isTimeSlotValid(start, end) {
+        }        function isTimeSlotValid(start, end, ignoreSleep = false) {
             const startMins = start.getHours() * 60 + start.getMinutes();
             const endMins = end.getHours() * 60 + end.getMinutes();
             const dayMap = ['D', 'L', 'M', 'X', 'J', 'V', 'S'];
             const dayLetter = dayMap[start.getDay()];
             
-            // 1. Regla de Sueño (23:00 - 06:00)
-            if (startMins >= 23*60 || startMins < 6*60 || endMins > 23*60) return false;
+            // 1. Regla de Sueño (22:00 a 7:00) - Solo se ignora si es urgente y se lo permitimos
+            if (!ignoreSleep) {
+                // No puede iniciar ni finalizar en este rango
+                if (startMins >= 22*60 || startMins < 7*60 || endMins >= 22*60 || endMins < 7*60) return false;
+            }
             
             // 2. Clases (Sumando 1 hora de transporte antes y después)
             if (DB.classSchedule && DB.classSchedule[dayLetter]) {
                 const sch = DB.classSchedule[dayLetter];
-                // Convertimos a objetos Date del mismo día para comparaciones exactas
                 const classStart = new Date(start); classStart.setHours(parseInt(sch.start.split(':')[0]), parseInt(sch.start.split(':')[1]), 0, 0);
                 const classEnd = new Date(start); classEnd.setHours(parseInt(sch.end.split(':')[0]), parseInt(sch.end.split(':')[1]), 0, 0);
                 
-                // Restamos 1 hora a la clase (Transporte de ida)
                 const transIda = new Date(classStart.getTime() - 60 * 60000);
-                // Sumamos 1 hora al final de la clase (Transporte de vuelta)
                 const transVuelta = new Date(classEnd.getTime() + 60 * 60000);
                 
-                // Si la tarea se cruza con el bloque amplio (Clase + Transportes), se rechaza
                 if (start < transVuelta && end > transIda) return false;
             }
             
@@ -814,7 +812,8 @@
                 }
             }
             return true;
-        }      
+        }
+        
         function generateRecommendation(task) {
             const now = new Date();
             const due = new Date(task.dueDate + 'T' + task.dueTime);
@@ -831,33 +830,61 @@
             const limitDate = new Date(now.getTime() + limitOffset * 60000);
 
             let foundSlot = null;
-            let attempts = 0;
-            // Intento aleatorio
-            while(attempts < 100) {
-                const window = limitDate.getTime() - now.getTime();
-                if (window <= 0) break;
-                const randomOffset = Math.random() * window;
-                const proposedStart = new Date(now.getTime() + randomOffset);
-                const proposedEnd = new Date(proposedStart.getTime() + duration * 60000);
-                proposedStart.setSeconds(0); proposedEnd.setSeconds(0);
-                if (proposedEnd < due && isTimeSlotValid(proposedStart, proposedEnd)) {
-                    foundSlot = { start: proposedStart, end: proposedEnd }; break;
+            let isEmergencyOverride = false;
+
+            // FUNCIÓN INTERNA PARA BUSCAR HUECOS (Recibe si puede o no ignorar el sueño)
+            const searchSlots = (allowSleep) => {
+                let attempts = 0;
+                // Intento aleatorio
+                while(attempts < 100) {
+                    const window = limitDate.getTime() - now.getTime();
+                    if (window <= 0) return null;
+                    const randomOffset = Math.random() * window;
+                    const proposedStart = new Date(now.getTime() + randomOffset);
+                    const proposedEnd = new Date(proposedStart.getTime() + duration * 60000);
+                    proposedStart.setSeconds(0, 0); proposedEnd.setSeconds(0, 0);
+                    // <-- AQUÍ SE LE MANDA EL allowSleep A isTimeSlotValid
+                    if (proposedEnd < due && isTimeSlotValid(proposedStart, proposedEnd, allowSleep)) {
+                        return { start: proposedStart, end: proposedEnd }; 
+                    }
+                    attempts++;
                 }
-                attempts++;
-            }
-            // Barrido lineal si falla
-            if (!foundSlot) {
+                // Barrido lineal si falla lo aleatorio
                 let currentScan = new Date(now.getTime() + 15 * 60000);
                 while(currentScan < limitDate) {
                     const proposedEnd = new Date(currentScan.getTime() + duration * 60000);
-                    if (proposedEnd < due && isTimeSlotValid(currentScan, proposedEnd)) {
-                        foundSlot = { start: new Date(currentScan), end: proposedEnd }; break;
+                    // <-- AQUÍ TAMBIÉN
+                    if (proposedEnd < due && isTimeSlotValid(currentScan, proposedEnd, allowSleep)) {
+                        return { start: new Date(currentScan), end: proposedEnd }; 
                     }
                     currentScan.setMinutes(currentScan.getMinutes() + 30);
                 }
+                return null;
+            };
+
+            // FASE 1: Búsqueda normal (Respetando sueño de 22:00 a 7:00 y tus clases)
+            foundSlot = searchSlots(false);
+
+            // FASE 2: Si es URGENTE y no encontró nada, intenta ignorar la regla de sueño
+            if (!foundSlot) {
+                const hoursLeft = (due - now) / (1000 * 60 * 60);
+                // Si quedan menos de 24 horas para entregar o la prioridad es alta
+                if (hoursLeft <= 24 || task.priority === 'alta') {
+                    foundSlot = searchSlots(true); // true = ignorar sueño
+                    if (foundSlot) isEmergencyOverride = true;
+                }
             }
-            if (foundSlot) return { start: foundSlot.start, end: foundSlot.end, duration: duration, limitUsed: limitOffset, alert: null };
-            else return { start: limitDate, end: new Date(limitDate.getTime() + duration * 60000), duration: duration, limitUsed: limitOffset, alert: "¡Urgente! No se encontraron huecos óptimos." };
+
+            // RESULTADOS
+            if (foundSlot) {
+                let alert = null;
+                if (isEmergencyOverride) {
+                    alert = "⚠️ Modo Emergencia: Se asignó en horario de sueño (22:00-07:00) porque la tarea es urgente y no hay otros cupos.";
+                }
+                return { start: foundSlot.start, end: foundSlot.end, duration: duration, limitUsed: limitOffset, alert: alert };
+            } else {
+                return { start: limitDate, end: new Date(limitDate.getTime() + duration * 60000), duration: duration, limitUsed: limitOffset, alert: "¡Urgente! No se encontraron huecos óptimos." };
+            }
         }
 
         window.processTask = () => {
