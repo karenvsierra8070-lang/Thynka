@@ -765,29 +765,44 @@
             if (task.difficulty === 'alta') baseMinutes *= 1.6;
             return Math.round(baseMinutes);
         }
-
         function isTimeSlotValid(start, end) {
             const startMins = start.getHours() * 60 + start.getMinutes();
             const endMins = end.getHours() * 60 + end.getMinutes();
             const dayMap = ['D', 'L', 'M', 'X', 'J', 'V', 'S'];
             const dayLetter = dayMap[start.getDay()];
-            // Sueño (23:00 - 06:00)
+            
+            // 1. Regla de Sueño (23:00 - 06:00)
             if (startMins >= 23*60 || startMins < 6*60 || endMins > 23*60) return false;
-            // Clases
-            if (DB.classSchedule[dayLetter]) {
+            
+            // 2. Clases (Sumando 1 hora de transporte antes y después)
+            if (DB.classSchedule && DB.classSchedule[dayLetter]) {
                 const sch = DB.classSchedule[dayLetter];
-                const sSch = parseInt(sch.start.split(':')[0])*60 + parseInt(sch.start.split(':')[1]);
-                const eSch = parseInt(sch.end.split(':')[0])*60 + parseInt(sch.end.split(':')[1]);
-                if (startMins < (eSch + 60) && endMins > (sSch - 60)) return false;
+                // Convertimos a objetos Date del mismo día para comparaciones exactas
+                const classStart = new Date(start); classStart.setHours(parseInt(sch.start.split(':')[0]), parseInt(sch.start.split(':')[1]), 0, 0);
+                const classEnd = new Date(start); classEnd.setHours(parseInt(sch.end.split(':')[0]), parseInt(sch.end.split(':')[1]), 0, 0);
+                
+                // Restamos 1 hora a la clase (Transporte de ida)
+                const transIda = new Date(classStart.getTime() - 60 * 60000);
+                // Sumamos 1 hora al final de la clase (Transporte de vuelta)
+                const transVuelta = new Date(classEnd.getTime() + 60 * 60000);
+                
+                // Si la tarea se cruza con el bloque amplio (Clase + Transportes), se rechaza
+                if (start < transVuelta && end > transIda) return false;
             }
-            // Trabajo
-            if (DB.settings.works === 'si' && DB.workSchedule[dayLetter]) {
+            
+            // 3. Trabajo (Sumando 1 hora de transporte antes y después)
+            if (DB.settings.works === 'si' && DB.workSchedule && DB.workSchedule[dayLetter]) {
                 const wrk = DB.workSchedule[dayLetter];
-                const sWrk = parseInt(wrk.start.split(':')[0])*60 + parseInt(wrk.start.split(':')[1]);
-                const eWrk = parseInt(wrk.end.split(':')[0])*60 + parseInt(wrk.end.split(':')[1]);
-                if (startMins < (eWrk + 60) && endMins > (sWrk - 60)) return false;
+                const workStart = new Date(start); workStart.setHours(parseInt(wrk.start.split(':')[0]), parseInt(wrk.start.split(':')[1]), 0, 0);
+                const workEnd = new Date(start); workEnd.setHours(parseInt(wrk.end.split(':')[0]), parseInt(wrk.end.split(':')[1]), 0, 0);
+                
+                const transIda = new Date(workStart.getTime() - 60 * 60000);
+                const transVuelta = new Date(workEnd.getTime() + 60 * 60000);
+                
+                if (start < transVuelta && end > transIda) return false;
             }
-            // Otras Tareas
+            
+            // 4. Otras Tareas ya recomendadas
             const startTS = start.getTime();
             const endTS = end.getTime();
             for (let id in DB.tasks) {
@@ -799,8 +814,7 @@
                 }
             }
             return true;
-        }
-
+        }      
         function generateRecommendation(task) {
             const now = new Date();
             const due = new Date(task.dueDate + 'T' + task.dueTime);
